@@ -9,6 +9,7 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 
+//Routing (Need to separate)
 //base endpoint
 app.get('/', (req, res) => {
     res.sendFile(path.resolve() + '/src/pages/HomePage/index.html');

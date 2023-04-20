@@ -11,5 +11,5 @@ RUN npm install
 #Copy website files to the container
 COPY . .
 
-#Command to run
+#Command to run (when deploying to prod, no need to restart for changes)
 CMD ["node", "index.js"]
