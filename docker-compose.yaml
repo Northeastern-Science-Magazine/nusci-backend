@@ -1,0 +1,10 @@
+#local dev env only
+services:
+  app:
+    build: .
+    container_name: nusci-container
+    command: npm start
+    ports:
+      - 9090:9999
+    volumes:
+      - .:/app
