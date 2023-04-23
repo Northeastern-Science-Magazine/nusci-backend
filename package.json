@@ -12,7 +12,7 @@
     "url": "git+https://github.com/Boeufin/NUSciWebsite.git"
   },
   "author": "Ethan Szeto, Raisa Bhuiyan",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Boeufin/NUSciWebsite/issues"
   },
