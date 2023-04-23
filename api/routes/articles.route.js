@@ -10,10 +10,10 @@ the entire thing from the file routing system.
 
 import express from 'express'
 import ArticlesCTRL from './controllers/articles.controller.js'
-import path from 'path'
 
 const router = express.Router();
 
+//any valid ID of an article should work... ID or NAME perhaps
 router.route('/articles/:id').get(ArticlesCTRL.apiGetArticles)
 
 //export default router

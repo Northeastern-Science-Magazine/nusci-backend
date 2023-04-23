@@ -1,9 +1,12 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import path from 'path';
 import pages from './routes/pages.route.js'
 //import articles from './routes/articles.route.js'
+
+/* We're gonna importing MongoDB and accessing it here with
+ENVIRONMENT VARIABLES !!!! YAy
+  */
 
 //rename file to app.js
 const app = express();
