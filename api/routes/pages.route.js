@@ -2,10 +2,11 @@
 /*
 - Home Page
  - All Articles???
- - Authors
+ - Authors?????
  - Eboard
- - Editors
+ - Editors?????
  - Contact
+ - About Us
 */
 
 import express from 'express'

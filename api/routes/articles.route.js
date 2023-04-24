@@ -9,7 +9,7 @@ the entire thing from the file routing system.
 */
 
 import express from 'express'
-import ArticlesCTRL from './controllers/articles.controller.js'
+import ArticlesCTRL from './api/controllers/articles.controller.js'
 
 const router = express.Router();
 

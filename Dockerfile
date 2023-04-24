@@ -1,4 +1,6 @@
 FROM node:18-alpine
+
+#are we in production? hmmm
 ENV NODE_ENV=production
 
 #Sets working directory of this container

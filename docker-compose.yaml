@@ -5,6 +5,6 @@ services:
     container_name: nusci-container
     command: npm start
     ports:
-      - 9090:9999
+      - 9999:9998
     volumes:
       - .:/app
