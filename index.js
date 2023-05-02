@@ -1,9 +1,13 @@
 //Entry point file. Getting an endpoint from app
-import app from './api/app.js';
+import app from './api/app.js'
 
-/* We're gonna importing MongoDB and accessing it here with
-ENVIRONMENT VARIABLES !!!! YAy
-*/
+//import mongodb from 'mongodb'
+
+//const MongoClient = mongodb.MongoClient;
+//const mongo_username = proccess.env('MONGO_USERNAME');
+//const mongo_password = proccess.env('MONGO_PASSWORD');
+//const mongo_cluster = proccess.env('MONGO_CLUSTER');
+//const uri = ``;
 
 const HOSTNAME = '0.0.0.0';
 const PORT = 9998;

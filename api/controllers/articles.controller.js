@@ -1,1 +1,1 @@
-//controller for finished articles request
+//controller for finished articles request (on the database)

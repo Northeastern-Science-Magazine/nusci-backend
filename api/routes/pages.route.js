@@ -15,19 +15,15 @@ import path from 'path'
 const router = express.Router();
 
 router.route('/').get((req, res) => {
-    res.sendFile(path.resolve() + '/src/pages/homepage/index.html');
+    res.sendFile(path.resolve() + '/src/static/homepage/index.html');
 })
 
 router.route('/authors').get((req, res) => {
-    res.sendFile(path.resolve() + '/src/pages/authors/authors.html');
-})
-
-router.route('/articles').get((req, res) => {
-    res.sendFile(path.resolve() + '/src/pages/articles/articles.html');
+    res.sendFile(path.resolve() + '/src/static/authors/authors.html');
 })
 
 router.route('/eboard').get((req, res) => {
-    res.sendFile(path.resolve() + '/src/pages/eboard/eboard.html');
+    res.sendFile(path.resolve() + '/src/static/eboard/eboard.html');
 })
 
 export default router
