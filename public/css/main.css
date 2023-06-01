@@ -3,10 +3,6 @@
 .btn {
     padding: 0px;
     transition: transform .3s;
-    background: #ffffff;
-    border-color: #000000;
-    border-width: 3px;
-    color: #000000;
     font-family: Monaco, monospace;
     font-size: 15px;
     height: 30px;
@@ -15,8 +11,6 @@
   
   .btn:hover {
     cursor: pointer;
-    background: #000000;
-    color: #ffffff;
     transform: scale(1.05);
   }
   

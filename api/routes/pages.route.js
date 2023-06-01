@@ -26,8 +26,12 @@ router.route('/eboard').get((req, res) => {
     res.sendFile(path.resolve() + '/public/eboard.html');
 })
 
-router.route('/public/css/homepage.css').get((req, res) => {
-    res.sendFile(path.resolve() + 'public/css/homepage.css')
+router.route('/public/css/main.css').get((req, res) => {
+    res.sendFile(path.resolve() + 'public/css/main.css')
+})
+
+router.route('/public/css/themes/:themeName.css').get((req, res) => {
+    res.sendFile(path.resolve() + 'public/css/themes/' + req.params.themeName + '.css');
 })
 
 export default router
