@@ -2,7 +2,6 @@ import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import pages from './routes/pages.route.js'
-import path from 'path'
 //import articles from './routes/articles.route.js'
 
 const app = express()
