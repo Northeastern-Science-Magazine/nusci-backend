@@ -1,20 +1,23 @@
-import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
-import pages from './routes/pages.route.js'
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import pagesRouter from "./routes/pages.route.js";
+import articlesRouter from "./routes/articles.route.js";
 //import articles from './routes/articles.route.js'
 
-const app = express()
+const app = express();
 
-app.use(cors())
-app.use(helmet())
-app.use(express.json())
+app.set("view engine", "ejs");
 
-app.use('/public', express.static(process.cwd() + '/public'));
+app.use(cors());
+app.use(helmet());
+app.use(express.json());
 
-app.use('/', pages)
-app.use('/eboard', pages)
-app.use('/authors', pages)
+app.use("/public", express.static(process.cwd() + "/public"));
+
+app.use("/", pagesRouter);
+
+app.use("/articles", articlesRouter);
 //app.use('/public/css/main.css', pages)
 
 export default app;

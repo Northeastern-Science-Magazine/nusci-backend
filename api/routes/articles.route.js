@@ -7,12 +7,12 @@ we can read it straight off the database and not have to control
 the entire thing from the file routing system.
 */
 
-import express from 'express'
-import ArticlesCTRL from './api/controllers/articles.controller.js'
+import express from "express";
+import ArticlesCTRL from "../controllers/articles.controller.js";
 
-const router = express.Router()
+const router = express.Router();
 
 //any valid ID of an article should work... ID or NAME perhaps
-router.route('/articles/:id').get(ArticlesCTRL.apiGetArticles)
+router.route("/:slug").get(ArticlesCTRL.apiGetArticle);
 
-//export default router
+export default router;
