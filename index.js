@@ -1,7 +1,10 @@
-//Entry point file. Getting an endpoint from app
 import app from './api/app.js'
 import 'dotenv/config'
 import mongodb from 'mongodb'
+
+/**
+ * This file is the project entry point.
+ */
 
 const MongoClient = mongodb.MongoClient;
 const mongo_username = process.env['MONGO_USERNAME'];
@@ -26,4 +29,3 @@ MongoClient.connect(
       console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
     });
   })
-

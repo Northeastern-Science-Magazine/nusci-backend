@@ -1,17 +1,17 @@
 FROM node:18-alpine
 
-#are we in production? hmmm
+# Environment Type
 ENV NODE_ENV=production
 
-#Sets working directory of this container
+# Sets working directory of this container
 WORKDIR /app
 
-#Install dependencies (dev)
+# Install dependencies (dev)
 COPY ["package.json", "package-lock.json*", "./"]
 RUN npm install
 
-#Copy website files to the container
+# Copy website files to the container
 COPY . .
 
-#Command to run (when deploying to prod, no need to restart for changes)
+# Command to run (when deploying to prod, no need to restart for changes)
 CMD ["node", "index.js"]
