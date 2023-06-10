@@ -16,10 +16,10 @@ app.use(cors())
 app.use(helmet())
 app.use(express.json())
 
+app.use('/public', express.static(process.cwd() + '/public'));
+
 app.use('/', pages)
 app.use('/eboard', pages)
 app.use('/authors', pages)
-
-app.use('/public', express.static(process.cwd() + '/public'));
 
 export default app;
