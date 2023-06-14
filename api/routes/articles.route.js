@@ -13,6 +13,6 @@ import ArticlesCTRL from "../controllers/articles.controller.js";
 const router = express.Router();
 
 //any valid ID of an article should work... ID or NAME perhaps
-router.route("/:slug").get(ArticlesCTRL.apiGetArticle);
+router.route("/:id").get(ArticlesCTRL.apiGetArticle);
 
 export default router;
