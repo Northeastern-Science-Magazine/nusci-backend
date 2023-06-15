@@ -1,6 +1,7 @@
 import app from './api/app.js'
 import 'dotenv/config'
 import mongodb from 'mongodb'
+import ArticlesAccessor from './api/database_accessor/articles_accessor.js'
 
 /**
  * This file is the project entry point.
@@ -25,6 +26,7 @@ MongoClient.connect(
     console.error(err.stack)
     process.exit(1)
   }).then(async client => {
+    await ArticlesAccessor.InjectDB(client);
     app.listen(PORT, () => {
       console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
     });
