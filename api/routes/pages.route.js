@@ -30,4 +30,29 @@ router.route('/public/css/homepage.css').get((req, res) => {
     res.sendFile(path.resolve() + 'public/css/homepage.css')
 })
 
+router.route('/secrets').get(isAuth, (req, res) => {
+    const secrets = [
+        {
+            id: 1,
+            name: "Secret 1",
+        },
+        {
+            id: 2,
+            name: "Secret",
+        }
+    ];
+  
+    res.json(secrets);
+});
+
+function isAuth(req, res, next) {
+    const auth = req.headers.authorization;
+    if (auth === 'password') {
+      next();
+    } else {
+      res.status(401);
+      res.send('Access forbidden');
+    }
+}
+
 export default router
