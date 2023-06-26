@@ -15,4 +15,4 @@ const router = express.Router()
 //any valid ID of an article should work... ID or NAME perhaps
 router.route('/articles/:id').get(ArticlesCTRL.apiGetArticles)
 
-//export default router
+export default router
