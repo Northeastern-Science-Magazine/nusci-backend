@@ -16,12 +16,14 @@ const { SECRET = "secret" } = process.env;
 router.post("/signup", async (req, res) => {
   try {
     // hash the password
+    //req.body.password = "hello";
     req.body.password = await bcrypt.hash(req.body.password, 10);
     // create a new user
     const user = await User.create(req.body);
     // send new user as response
     res.json(user);
-  } catch (error) {
+  } catch (error){
+    console.log(error);
     res.status(400).json({ error });
   }
 });

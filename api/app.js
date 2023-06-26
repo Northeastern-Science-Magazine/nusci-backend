@@ -5,6 +5,8 @@ import pages from './routes/pages.route.js'
 import path from 'path'
 import morgan from 'morgan'
 import UserRouter from './controllers/User.js'
+import dotenv from 'dotenv'
+dotenv.config();
 import log from 'mercedlogger';
 import TodoRouter from './controllers/Todo.js'
 

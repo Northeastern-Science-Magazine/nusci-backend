@@ -30,6 +30,4 @@ const isLoggedIn = async (req, res, next) => {
 };
 
 // export custom middleware
-export default {
-    isLoggedIn,
-  };
+export default isLoggedIn;
