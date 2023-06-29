@@ -2,7 +2,7 @@ import app from './api/app.js'
 import 'dotenv/config'
 import mongodb from 'mongodb'
 import ArticlesAccessor from './api/database_accessor/articles_accessor.js'
-
+import UserAccessor from './api/database_accessor/user_accessor.js'
 /**
  * This file is the project entry point.
  */

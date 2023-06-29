@@ -4,7 +4,7 @@ const OBJECT_ID = new mongodb.ObjectId();
 let users;
 
 export default class UserAccessor {
-    static async injectDB(connection) {
+    static async InjectDB(connection) {
         if (users) {
             return;
         }
