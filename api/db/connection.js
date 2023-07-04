@@ -6,8 +6,12 @@ import mongoose from 'mongoose' // import mongoose
 import { log } from 'mercedlogger';
 
 //DESTRUCTURE ENV VARIABLES
-const {DATABASE_URL} = process.env 
+// DESTRUCTURE ENV VARIABLES
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
+const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
 
+// CONNECT TO MONGO
+mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 // CONNECT TO MONGO
 mongoose.connect = mongoose.connect(DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
 
