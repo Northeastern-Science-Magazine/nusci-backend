@@ -1,5 +1,6 @@
 import express from 'express'
 import path from 'path'
+import { isLoggedIn } from "../controllers/middleware.js";
 
 /**
  * This file controls the routing for the static
@@ -16,6 +17,7 @@ router.route('/').get((req, res) => {
 
 /* Authors HTML Router */
 router.route('/authors').get((req, res) => {
+    console.log(isLoggedIn);
     res.sendFile(path.resolve() + '/public/html/authors.html');
 })
 
