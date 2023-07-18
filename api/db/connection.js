@@ -5,15 +5,21 @@ dotenvConfig(); // load .env variables
 import mongoose from 'mongoose' // import mongoose
 import { log } from 'mercedlogger';
 
-//DESTRUCTURE ENV VARIABLES
 // DESTRUCTURE ENV VARIABLES
 const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
 const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
+const HOSTNAME = '0.0.0.0';
+const PORT = 9998;
 
 // CONNECT TO MONGO
-mongoose.connect(DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
-// CONNECT TO MONGO
-mongoose.connect = mongoose.connect(DATABASE_URL, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect = mongoose.connect(
+    DATABASE_URL,
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        maxPoolSize: 50,
+        socketTimeoutMS: 2500
+    })
 
 // CONNECTION EVENTS
 mongoose.connection

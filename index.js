@@ -16,18 +16,6 @@ const uri = `mongodb+srv://${mongo_username}:${mongo_password}@${mongo_cluster}.
 const HOSTNAME = '0.0.0.0';
 const PORT = 9998;
 
-MongoClient.connect(
-  uri,
-  {
-    maxPoolSize: 50,
-    wtimeoutMS: 2500,
-    useNewUrlParser: true
-  }).catch(err => {
-    console.error(err.stack)
-    process.exit(1)
-  }).then(async client => {
-    await ArticlesAccessor.InjectDB(client);
-    app.listen(PORT, () => {
-      console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
-    });
-  })
+app.listen(PORT, () => {
+  console.log(`Server running at http://${HOSTNAME}:${PORT}/`);
+});

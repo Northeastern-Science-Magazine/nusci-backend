@@ -3,7 +3,7 @@ import { config as dotenvConfig } from 'dotenv';
 dotenvConfig(); // load .env variables
 
 import Router from "express"; // import router from express
-import User from "../models/User.js"; // import user model
+import User from "../models/user.js"; // import user model
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 

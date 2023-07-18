@@ -2,7 +2,8 @@ import { Schema, model } from '../db/connection.js';
 // User Schema
 const UserSchema = new Schema({
     username: {type: String, unique: true, required: true},
-    password: {type: String, required: true}
+    password: {type: String, required: true},
+    email: {type: String, required: true}
 })
 
 // User model

@@ -1,6 +1,6 @@
 import express from 'express'
 import path from 'path'
-import { isLoggedIn } from "../controllers/middleware.js";
+import { isLoggedIn } from "../controllers/login_verification.js";
 
 /**
  * This file controls the routing for the static
