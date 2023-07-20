@@ -8,8 +8,6 @@ import { log } from 'mercedlogger';
 // DESTRUCTURE ENV VARIABLES
 const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
 const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
-const HOSTNAME = '0.0.0.0';
-const PORT = 9998;
 
 // CONNECT TO MONGO
 mongoose.connect = mongoose.connect(
@@ -29,5 +27,6 @@ mongoose.connection
 
 const Schema = mongoose.Schema;
 const model = mongoose.model;
+
 // EXPORT CONNECTION
 export { Schema, model };
