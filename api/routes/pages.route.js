@@ -26,6 +26,11 @@ router.route('/eboard').get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/eboard.html');
 })
 
+/* Login Page Router */
+router.route('/login').get((req, res) => {
+    res.sendFile(path.resolve() + '/public/html/login.html');
+})
+
 /* Main CSS Router */
 router.route('/public/css/main.css').get((req, res) => {
     res.sendFile(path.resolve() + 'public/css/main.css')

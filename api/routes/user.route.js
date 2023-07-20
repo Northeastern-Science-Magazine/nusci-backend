@@ -13,7 +13,7 @@ const router = Router(); // create router to create route bundle
 const { SECRET = "secret" } = process.env;
 
 // Signup route to create a new user
-router.post("/signup", async (req, res) => {
+router.post("/signup-request", async (req, res) => {
   try {
     console.log("Sign up username: " + req.body.username);
     console.log("Sign up password: " + req.body.password);
@@ -31,7 +31,7 @@ router.post("/signup", async (req, res) => {
 });
 
 // Login route to verify a user and get a token
-router.post("/login", async (req, res) => {
+router.post("/login-request", async (req, res) => {
   try {
     // check if the user exists
     const user = await User.findOne({ username: req.body.username });
