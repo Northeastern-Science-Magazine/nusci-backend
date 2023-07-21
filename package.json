@@ -19,6 +19,7 @@
     "homepage": "https://github.com/Boeufin/NUSciWebsite#readme",
     "dependencies": {
         "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.2",
         "cors": "^2.8.5",
         "dotenv": "^16.3.1",
         "ejs": "^3.1.9",
@@ -31,6 +32,6 @@
         "morgan": "^1.10.0"
     },
     "devDependencies": {
-        "nodemon": "^2.0.22"
+        "nodemon": "^3.0.1"
     }
 }
