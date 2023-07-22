@@ -1,6 +1,6 @@
-//controller for finished articles request (on the database)
-import path from "path";
 import ArticlesAccessor from "../database_accessor/articles_accessor.js";
+
+//controller for finished articles request (on the database)
 
 export default class ArticlesCTRL {
     static async apiGetArticle(req, res, next) {
