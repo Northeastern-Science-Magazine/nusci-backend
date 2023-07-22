@@ -1,16 +1,16 @@
 import mongodb from "mongodb";
 
 const OBJECT_ID = new mongodb.ObjectId();
-let reviews;
+let articles;
 
 export default class ArticlesAccessor {
-    static async InjectDB(connection) {
-        if (reviews) {
+    static async injectDB(connection) {
+        if (articles) {
             return;
         }
 
         try {
-            reviews = await connection
+            articles = await connection
                 .db("ArticleDatabase")
                 .collection("ArticleInfo");
         } catch (e) {
@@ -18,9 +18,23 @@ export default class ArticlesAccessor {
         }
     }
 
+    static async postArticles(author, article) {
+        try {
+            const articleDoc = {
+                author: author,
+                article: article
+            }
+
+            return await articles.insertOne(articleDoc)
+        } catch (e) {
+            console.error(e);
+            return { error: e };
+        }
+    }
+
     static async getArticles(articleId) {
         try {
-            return await reviews.findOne({ _id: OBJECT_ID(articleId) });
+            return await articles.findOne({ _id: OBJECT_ID(articleId) });
         } catch (e) {
             console.error(e);
             return { error: e };

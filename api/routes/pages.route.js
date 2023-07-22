@@ -38,7 +38,7 @@ router.route('/public/css/main.css').get((req, res) => {
 
 /* CSS Themes Router */
 router.route('/public/css/themes/:themeName.css').get((req, res) => {
-    res.sendFile(path.resolve() + 'public/css/themes/' + req.params.themeName + '.css');
+    res.sendFile(path.resolve() + `public/css/themes/${req.params.themeName}.css`);
 })
 
 /* Sign Up Page Router */
