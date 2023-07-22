@@ -4,17 +4,33 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Sign Up!</title>
-
+    <link href="/public/css/signup.css" rel="stylesheet" type="text/css" />
   </head>
 
   <body>
     <h1>Create an Account!</h1>
     <p>This is a description</p>
-    <form method="POST">
+    <form method="POST" id="signup">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username">
-        <label for="password">Password:</label>
+        <label for="role" >Role:</label>
+        <select id="role" name="role">
+          <option value="Author">Author</option>
+          <option value="Editor">Editor</option>
+          <option value="Developer">Developer</option>
+        </select>
+        <label class="form-label" for="email">Email:</label>
+        <input type="text" id="email" name="email">
+        <label class="form-label" for="password">Password:</label>
         <input type="password" id="password" name="password">
+        <label class="form-label" for="year">Year of Graduation:</label>
+        <input type="number" id="year" name="year">
+        <label class="form-label" for="major">Major</label>
+        <input type="text" id="major" name="major">
+        <label class="form-label" for="bio">Bio</label>
+        <input type="text" id="bio" name="bio">
+        <label class="form-label" for="image">Link to Profile Image</label>
+        <input type="text" id="image" name="image">
         <input type="submit" value="Submit">
     </form>
   </body>

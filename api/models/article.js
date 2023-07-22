@@ -4,15 +4,22 @@ const ArticleSchema = new Schema(
     {
         title: String,
         author: String,
+        year: Number,
+        major: String,
+        categories: [{type: String}],
         date: Date,
-        body: String,
+        coverImage: String,
+        images: [{type: String}],
+        body:[{type: String}],
         pullquotes: [{type: String}],
         sources: [{type: String}],
         comments: [{
             author: String,
             date: Date,
             body: String
-        }]
+        }],
+        theme: String,
+        elementOrder: [{type: String}]
     }
 )
 

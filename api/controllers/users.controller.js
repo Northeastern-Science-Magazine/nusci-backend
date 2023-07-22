@@ -3,6 +3,7 @@ import { config as dotenvConfig } from 'dotenv';
 import User from "../models/user.js"; // import user model
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
+
 //DESTRUCTURE ENV VARIABLES WITH DEFAULTS
 const { SECRET = "secret" } = process.env;
 
