@@ -1,6 +1,6 @@
 dotenvConfig(); // load .env variables
 import { config as dotenvConfig } from "dotenv";
-import UsersAccessor from "../database_accessor/users.accessor";
+import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
