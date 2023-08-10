@@ -1,26 +1,34 @@
 dotenvConfig(); // load .env variables
-import { config as dotenvConfig } from 'dotenv';
-import User from "../models/User.js"; // import user model
+import { config as dotenvConfig } from "dotenv";
+import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
 //DESTRUCTURE ENV VARIABLES WITH DEFAULTS
 const { SECRET = "secret" } = process.env;
 
-export default class UserCTRL {
+export default class UsersCTRL {
     static async apiPostLogin(req, res) {
         try {
             // check if the user exists
-            const user = await User.findOne({ username: req.body.username });
+            const user = await UsersAccessor.getUserByUsername(
+                req.body.username
+            );
             if (user) {
                 //check if password matches
-                const result = await bcrypt.compare(req.body.password, user.password);
+                const result = await bcrypt.compare(
+                    req.body.password,
+                    user.password
+                );
                 if (result) {
-                // sign token and send it in response
-                const token = await jwt.sign({ username: user.username }, SECRET);
-                res.json({ token });
+                    // sign token and send it in response
+                    const token = await jwt.sign(
+                        { username: user.username },
+                        SECRET
+                    );
+                    res.json({ token });
                 } else {
-                res.status(400).json({ error: "password doesn't match" });
+                    res.status(400).json({ error: "password doesn't match" });
                 }
             } else {
                 res.status(400).json({ error: "User doesn't exist" });
@@ -46,12 +54,10 @@ export default class UserCTRL {
             }
             
             // create a new user in database
-            const user = await User.create(req.body);
-
+            const user = await UsersAccessor.createUser(req.body);
             // send new user as response
             res.json(user);
         } catch (error) {
-            console.log(error);
             res.status(400).json({ error });
         }
     }

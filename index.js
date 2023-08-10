@@ -1,5 +1,4 @@
 import app from './api/app.js'
-import 'dotenv/config'
 
 /**
  * This file is the project entry point.
