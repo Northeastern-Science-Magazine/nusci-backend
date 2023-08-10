@@ -44,6 +44,15 @@ export default class UsersCTRL {
             console.log("Sign up password: " + req.body.password);
             // hash the password
             req.body.password = await bcrypt.hash(req.body.password, 10);
+            
+            // make sure nested data is structured properly
+            req.body.information = {
+                year: req.body.year,
+                major: req.body.major,
+                bio: req.body.bio,
+                image: req.body.image,
+            }
+            
             // create a new user in database
             const user = await UsersAccessor.createUser(req.body);
             // send new user as response

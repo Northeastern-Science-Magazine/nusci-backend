@@ -5,10 +5,12 @@ const UserSchema = new Schema({
     role: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true},
-    year: Number,
-    major: String,
-    bio: String,
-    image: String
+    information: {
+        year: Number,
+        major: String,
+        bio: String,
+        image: String
+    }
 })
 
 // User model
