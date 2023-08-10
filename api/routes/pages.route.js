@@ -14,7 +14,6 @@ router.use(bodyParser.urlencoded({ extended: false }));
  * hardcoded pages not served from the database.
  */
 
-
 /* Default Page Router */
 router.route('/').get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/index.html');

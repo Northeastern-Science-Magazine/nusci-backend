@@ -1,4 +1,8 @@
-import { Schema, model } from '../db/connection.js';
+import mongoose from 'mongoose';
+
+const Schema = mongoose.Schema;
+const model = mongoose.model;
+
 // User Schema
 const UserSchema = new Schema({
     username: {type: String, unique: true, required: true},
@@ -10,8 +14,9 @@ const UserSchema = new Schema({
         major: String,
         bio: String,
         image: String
-    }
-})
+    }, {
+    collection: 'unregistered'
+});
 
 // User model
 const User = model("User", UserSchema)
