@@ -14,7 +14,8 @@ const UserSchema = new Schema({
         major: String,
         bio: String,
         image: String
-    }, {
+    }
+}, {
     collection: 'unregistered'
 });
 
