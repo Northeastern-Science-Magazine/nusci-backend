@@ -14,6 +14,9 @@ router.use(bodyParser.urlencoded({ extended: false }));
  * hardcoded pages not served from the database.
  */
 
+router.route('*').get((req, res) => {
+    res.json("Bad Page");
+})
 
 /* Default Page Router */
 router.route('/').get((req, res) => {

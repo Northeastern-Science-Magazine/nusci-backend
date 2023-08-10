@@ -21,7 +21,7 @@ app.set("view engine", "ejs");
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
-app.use(morgan("tiny")) // log the request for debugging
+app.use(morgan("tiny")); // log the request for debugging
 
 app.use(bodyParser.json());
 app.use("/public", express.static(process.cwd() + "/public"));
