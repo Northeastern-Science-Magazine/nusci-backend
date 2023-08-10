@@ -24,7 +24,7 @@ export default class UsersAccessor {
      */
     static async injectDB(dbName) {
         try {
-            return await Database.connect(dbName);
+            return await Database.connectTo(dbName);
         } catch(e) {
             console.log(e);
             throw e;

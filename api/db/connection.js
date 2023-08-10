@@ -1,11 +1,11 @@
 import { config as dotenvConfig } from 'dotenv';
-import mongoose from 'mongoose' // import mongoose
+import mongoose from 'mongoose'; // import mongoose
 import { log } from 'mercedlogger';
 
 export default class Database {
 
     //Establishes the connection to the database given a collection
-    static async connect(db) {
+    static async connectTo(db) {
         dotenvConfig(); // load .env variables
 
         // DESTRUCTURE ENV VARIABLES
