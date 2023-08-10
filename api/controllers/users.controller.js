@@ -1,6 +1,6 @@
 dotenvConfig(); // load .env variables
 import { config as dotenvConfig } from 'dotenv';
-import User from "../models/user.js"; // import user model
+import User from "../models/User.js"; // import user model
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
@@ -36,8 +36,18 @@ export default class UserCTRL {
             console.log("Sign up password: " + req.body.password);
             // hash the password
             req.body.password = await bcrypt.hash(req.body.password, 10);
+            
+            // make sure nested data is structured properly
+            req.body.information = {
+                year: req.body.year,
+                major: req.body.major,
+                bio: req.body.bio,
+                image: req.body.image,
+            }
+            
             // create a new user in database
             const user = await User.create(req.body);
+
             // send new user as response
             res.json(user);
         } catch (error) {
