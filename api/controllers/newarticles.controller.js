@@ -1,7 +1,7 @@
 //controller for the create new articles request
 //import dao
 import path from "path";
-import ArticlesAccessor from "../database_accessor/articles_accessor.js";
+import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 
 export default class NewArticlesCTRL {
     static async apiPostArticle(req, res, next) {

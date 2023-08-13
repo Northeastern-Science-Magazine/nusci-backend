@@ -1,5 +1,5 @@
-import User from "../models/User.js";
-import Database from "../db/connection.js";
+import UnregisteredUser from "../models/user.unregistered.js";
+import Connection from "../db/connection.js";
 
 /**
  * UserAccessor Class
@@ -24,7 +24,7 @@ export default class UsersAccessor {
      */
     static async injectDB(dbName) {
         try {
-            return await Database.connectTo(dbName);
+            return await Connection.open(dbName);
         } catch(e) {
             console.log(e);
             throw e;
@@ -32,6 +32,10 @@ export default class UsersAccessor {
     }
 
     /**
+     * NOTE: upon completion, search should only go
+     * through registered users. There should be separate
+     * methods to find unregistered and registered users.
+     * 
      * getUserByUsername Method
      * 
      * This method retrieves the user MongoDB object from the
@@ -47,8 +51,8 @@ export default class UsersAccessor {
     static async getUserByUsername(username) {
         try {
             const connection = await this.injectDB('users');
-            const user = await User.findOne({ username: username });
-            Database.close(connection);
+            const user = await UnregisteredUser.findOne({ username: username });
+            Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
@@ -72,12 +76,21 @@ export default class UsersAccessor {
     static async createUser(userDoc) {
         try {
             const connection = await this.injectDB('users');
-            const user = await User.create(userDoc);
-            Database.close(connection);
+            const user = await UnregisteredUser.create(userDoc);
+            Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
             throw e;
         }
     }
+
+    /**
+     * registerUser Method
+     * 
+     * This method should only be accessible to admins.
+     * This method takes the name of an unregistered user
+     * and moves them to the registered user database.
+     * 
+     */
 }
