@@ -4,10 +4,25 @@ import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
-//DESTRUCTURE ENV VARIABLES WITH DEFAULTS
 const { SECRET = "secret" } = process.env;
 
+/**
+ * UsersCTRL Class
+ * 
+ * This class controls the behaviour of any web request
+ * related to Users.
+ */
 export default class UsersCTRL {
+    /**
+     * apiPostLogin Method
+     * 
+     * This method checks whether or not the request
+     * to sign in is valid. Utilizes the getUserByUsername
+     * UserAccessor method to accomplish this.
+     * 
+     * @param {*} req web request object
+     * @param {*} res web response
+     */
     static async apiPostLogin(req, res) {
         try {
             // check if the user exists
@@ -38,6 +53,17 @@ export default class UsersCTRL {
         }
     }
 
+    /**
+     * apiPostSignUp Method
+     * 
+     * This method adds a new user to the unregistered user
+     * collection in the user database. It accomplishes this
+     * by calling the user.accessor.js file and creating a new
+     * user with the existing req data.
+     * 
+     * @param {*} req web request information for signup
+     * @param {*} res weh response object
+     */
     static async apiPostSignUp(req, res) {
         try {
             console.log("Sign up username: " + req.body.username);

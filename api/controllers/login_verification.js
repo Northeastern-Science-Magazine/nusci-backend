@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
 
+/* This file may or may not be used */
+
 let isLoggedIn = false; // Initialize the variable as false
 
 const isLoggedInMiddleware = async (req, res, next) => {

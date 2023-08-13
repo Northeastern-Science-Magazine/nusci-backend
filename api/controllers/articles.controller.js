@@ -1,4 +1,4 @@
-import ArticlesAccessor from "../database_accessor/articles_accessor.js";
+import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 
 //controller for finished articles request (on the database)
 
