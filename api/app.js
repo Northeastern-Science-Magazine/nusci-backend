@@ -6,6 +6,7 @@ import articlesRouter from "./routes/articles.route.js";
 import morgan from "morgan";
 import bodyParser from "body-parser";
 //import articles from './routes/articles.route.js'
+import authenticate from "./controllers/login_verification.js";
 
 /**
  * This file controls the express server and
@@ -29,6 +30,8 @@ app.use("/", pagesRouter);
 
 app.use("/articles", articlesRouter);
 
-app.get("/profile")
+app.get("/profile", authenticate, (req, res) => {
+    res.render('profile', {loggedIn: "yes"});
+});
 
 export default app;
