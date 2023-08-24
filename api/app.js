@@ -29,4 +29,6 @@ app.use("/", pagesRouter);
 
 app.use("/articles", articlesRouter);
 
+app.get("/profile")
+
 export default app;

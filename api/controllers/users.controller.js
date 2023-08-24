@@ -4,8 +4,6 @@ import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
-const { SECRET = "secret" } = process.env;
-
 /**
  * UsersCTRL Class
  * 
@@ -39,8 +37,9 @@ export default class UsersCTRL {
                     // sign token and send it in response
                     const token = await jwt.sign(
                         { username: user.username },
-                        SECRET
+                        process.env.TOKEN_KEY
                     );
+                    //need to send the token to the authorization header
                     res.json({ token });
                 } else {
                     res.status(400).json({ error: "password doesn't match" });
