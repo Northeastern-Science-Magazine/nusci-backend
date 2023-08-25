@@ -2,8 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
 
-/* This file may or may not be used */
-const authenticate = async (req, res, next) => {
+const authorize = async (req, res, next) => {
   try {
     console.log("token: " + token);
     console.log("payload: " + payload);
@@ -34,4 +33,4 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-export default authenticate;
+export default authorize;

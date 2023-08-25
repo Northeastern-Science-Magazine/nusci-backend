@@ -39,7 +39,7 @@ export default class UsersCTRL {
                         { username: user.username },
                         process.env.TOKEN_KEY
                     );
-                    //need to send the token to the authorization header or cookie, or somewhere to save it
+                    //Instead of a cookie, this should be set to the Authorization Request Header
                     res.cookie("Authorization", "Bearer " + token);
                     res.json({ token });
                 } else {

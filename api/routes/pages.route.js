@@ -1,6 +1,6 @@
 import express from 'express'
 import path from 'path'
-import authenticate from "../controllers/login_verification.js";
+import authenticate from "../auth/login_verification.js";
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
 
