@@ -36,11 +36,15 @@ export default class UsersCTRL {
                 if (result) {
                     // sign token and send it in response
                     const token = await jwt.sign(
-                        { username: user.username },
+                        {
+                            username: user.username,
+                            role: user.role,
+                            information: user.information
+                        },
                         process.env.TOKEN_KEY
                     );
                     //Instead of a cookie, this should be set to the Authorization Request Header
-                    res.cookie("Authorization", "Bearer " + token);
+                    res.cookie("token", token);
                     res.json({ token });
                 } else {
                     res.status(400).json({ error: "password doesn't match" });
