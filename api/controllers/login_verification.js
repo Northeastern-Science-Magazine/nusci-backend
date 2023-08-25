@@ -17,7 +17,7 @@ const authenticate = async (req, res, next) => {
         console.log("payload: " + payload);
         if (payload) {
           // store user data in request object
-          req.user = payload;
+          //req.user = payload;
 
           next();
         } else {
@@ -34,4 +34,4 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-export { isLoggedIn, isLoggedInMiddleware };
+export default authenticate;

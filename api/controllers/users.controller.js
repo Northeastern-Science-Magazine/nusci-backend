@@ -39,7 +39,8 @@ export default class UsersCTRL {
                         { username: user.username },
                         process.env.TOKEN_KEY
                     );
-                    //need to send the token to the authorization header
+                    //need to send the token to the authorization header or cookie, or somewhere to save it
+                    res.cookie("Authorization", "Bearer " + token);
                     res.json({ token });
                 } else {
                     res.status(400).json({ error: "password doesn't match" });
