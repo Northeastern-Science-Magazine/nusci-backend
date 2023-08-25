@@ -27,6 +27,7 @@ export default class UsersCTRL {
             const user = await UsersAccessor.getUserByUsername(
                 req.body.username
             );
+
             if (user) {
                 //check if password matches
                 const result = await bcrypt.compare(
@@ -35,7 +36,7 @@ export default class UsersCTRL {
                 );
                 if (result) {
                     // sign token and send it in response
-                    const token = await jwt.sign(
+                    const token = jwt.sign(
                         {
                             username: user.username,
                             role: user.role,
@@ -43,9 +44,8 @@ export default class UsersCTRL {
                         },
                         process.env.TOKEN_KEY
                     );
-                    //Instead of a cookie, this should be set to the Authorization Request Header
-                    res.cookie("token", token);
-                    res.json({ token });
+                    res.cookie("token", token, {httpOnly: true, maxAge: 10 * 1000});
+                    res.redirect('/profile');
                 } else {
                     res.status(400).json({ error: "password doesn't match" });
                 }

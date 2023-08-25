@@ -31,7 +31,7 @@ export default class Connection {
         const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
 
         //Mongoose connect to the database.
-        mongoose.connect = mongoose.connect(
+        mongoose.connect(
             DATABASE_URL,
             {
                 useNewUrlParser: true,

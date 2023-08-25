@@ -1,6 +1,5 @@
 import express from 'express'
 import path from 'path'
-import authenticate from "../auth/login_verification.js";
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
 
@@ -50,7 +49,10 @@ router.route('/signup')
 /* Login Page Router */
 router.route('/login')
 .get((req, res) => {
-  res.sendFile(path.resolve() + '/public/html/login.html');
+    if(req.cookies.token) {
+        res.redirect('/profile');
+    }
+    res.sendFile(path.resolve() + '/public/html/login.html');
 })
 .post(UserCTRL.apiPostLogin);
 
