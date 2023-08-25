@@ -20,7 +20,6 @@ router.route('/').get((req, res) => {
 
 /* Authors HTML Router */
 router.route('/authors').get((req, res) => {
-    console.log(isLoggedIn);
     res.sendFile(path.resolve() + '/public/html/authors.html');
 })
 
@@ -51,8 +50,9 @@ router.route('/login')
 .get((req, res) => {
     if(req.cookies.token) {
         res.redirect('/profile');
+    } else {
+        res.sendFile(path.resolve() + '/public/html/login.html');
     }
-    res.sendFile(path.resolve() + '/public/html/login.html');
 })
 .post(UserCTRL.apiPostLogin);
 

@@ -23,6 +23,7 @@ export default class Connection {
      * @returns the connection object
      */
     static async open(db) {
+        console.log("opened");
         //Load Environment variables
         dotenvConfig();
 
