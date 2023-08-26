@@ -4,8 +4,6 @@ import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 
-const { SECRET = "secret" } = process.env;
-
 /**
  * UsersCTRL Class
  * 
@@ -25,28 +23,39 @@ export default class UsersCTRL {
      */
     static async apiPostLogin(req, res) {
         try {
-            // check if the user exists
-            const user = await UsersAccessor.getUserByUsername(
-                req.body.username
-            );
-            if (user) {
-                //check if password matches
-                const result = await bcrypt.compare(
-                    req.body.password,
-                    user.password
+            if(!req.cookies.token) {
+                // check if the user exists
+                const user = await UsersAccessor.getUserByUsername(
+                    req.body.username
                 );
-                if (result) {
-                    // sign token and send it in response
-                    const token = await jwt.sign(
-                        { username: user.username },
-                        SECRET
+                if (user) {
+                    //check if password matches
+                    const result = await bcrypt.compare(
+                        req.body.password,
+                        user.password
                     );
-                    res.json({ token });
+                    if (result) {
+                        // sign token and send it in response
+                        const token = jwt.sign(
+                            {
+                                username: user.username,
+                                role: user.role,
+                                information: user.information
+                            },
+                            process.env.TOKEN_KEY
+                        );
+
+                        //Users are logged in for 1 hour
+                        res.cookie('token', token, {httpOnly: true, maxAge: 60 * 60 * 1000});
+                        res.redirect('/profile');
+                    } else {
+                        res.status(400).json({ error: "password doesn't match" });
+                    }
                 } else {
-                    res.status(400).json({ error: "password doesn't match" });
+                    res.status(400).json({ error: "User doesn't exist" });
                 }
             } else {
-                res.status(400).json({ error: "User doesn't exist" });
+                res.redirect('/profile');
             }
         } catch (error) {
             res.status(400).json({ error });
@@ -80,9 +89,10 @@ export default class UsersCTRL {
             }
             
             // create a new user in database
-            const user = await UsersAccessor.createUser(req.body);
+            await UsersAccessor.createUser(req.body);
+
             // send new user as response
-            res.json(user);
+            res.redirect('/login');
         } catch (error) {
             res.status(400).json({ error });
         }

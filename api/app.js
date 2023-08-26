@@ -5,6 +5,7 @@ import pagesRouter from "./routes/pages.route.js";
 import articlesRouter from "./routes/articles.route.js";
 import morgan from "morgan";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 //import articles from './routes/articles.route.js'
 
 /**
@@ -21,7 +22,7 @@ app.use(cors());
 app.use(helmet());
 app.use(express.json());
 app.use(morgan("tiny"));
-
+app.use(cookieParser())
 app.use(bodyParser.json());
 app.use("/public", express.static(process.cwd() + "/public"));
 

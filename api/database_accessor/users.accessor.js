@@ -1,4 +1,4 @@
-import UnregisteredUser from "../models/user.unregistered.js";
+import UserInfo from "../models/user.unregistered.js";
 import Connection from "../db/connection.js";
 
 /**
@@ -8,28 +8,6 @@ import Connection from "../db/connection.js";
  * user data to the MongoDB Cluster are in this class.
  */
 export default class UsersAccessor {
-
-    /**
-     * injectDB Method
-     * 
-     * Connects to the given database within the
-     * MongoDB Cluster. "Injects" the correct DB
-     * into the requestbefore making the connection.
-     * 
-     * Static - no instance required.
-     * Async - promises to make the connection.
-     * 
-     * @param {String} dbName database name to connect to.
-     * @returns the established DB connection
-     */
-    static async injectDB(dbName) {
-        try {
-            return await Connection.open(dbName);
-        } catch(e) {
-            console.log(e);
-            throw e;
-        }        
-    }
 
     /**
      * NOTE: upon completion, search should only go
@@ -50,9 +28,9 @@ export default class UsersAccessor {
      */
     static async getUserByUsername(username) {
         try {
-            const connection = await this.injectDB('users');
-            const user = await UnregisteredUser.findOne({ username: username });
-            Connection.close(connection);
+            const connection = await Connection.open('users');
+            const user = await UserInfo.findOne({ username: username });
+            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
@@ -75,9 +53,9 @@ export default class UsersAccessor {
      */
     static async createUser(userDoc) {
         try {
-            const connection = await this.injectDB('users');
+            //const connection = await Connection.open('users');
             const user = await UnregisteredUser.create(userDoc);
-            Connection.close(connection);
+            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
