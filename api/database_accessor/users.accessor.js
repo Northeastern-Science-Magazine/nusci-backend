@@ -28,9 +28,8 @@ export default class UsersAccessor {
      */
     static async getUserByUsername(username) {
         try {
-            const connection = await Connection.open('users');
+            await Connection.open('users');
             const user = await UserInfo.findOne({ username: username });
-            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
@@ -53,9 +52,8 @@ export default class UsersAccessor {
      */
     static async createUser(userDoc) {
         try {
-            //const connection = await Connection.open('users');
+            await Connection.open('users');
             const user = await UnregisteredUser.create(userDoc);
-            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
