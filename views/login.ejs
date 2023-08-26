@@ -9,7 +9,9 @@
 
   <body>
     <h1>Login</h1>
-    <p>This is a description</p>
+    <% if( error ){ %>
+      <p><%= error %></p>
+    <% } %>  
     <form method="POST">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username">

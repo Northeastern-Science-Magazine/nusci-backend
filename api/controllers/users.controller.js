@@ -49,19 +49,20 @@ export default class UsersCTRL {
                         res.cookie('token', token, {httpOnly: true, maxAge: 60 * 60 * 1000});
                         res.redirect('/profile');
                     } else {
-                        res.status(400).json({ error: "password doesn't match" });
+                        req.error = 4002;
+                        return next();
                     }
                 } else {
-                    req.error = "password doesn't match";   
+                    req.error = 4001;
                     return next();
-                    // res.status(400).json({ error: "password doesn't match" });
-
                 }
             } else {
-                res.redirect('/profile');
+                req.error = 4003;
+                return next();
             }
         } catch (error) {
-            res.status(400).json({ error });
+            req.error = 4000;
+            return next();
         }
     }
 
