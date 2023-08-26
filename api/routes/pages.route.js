@@ -45,13 +45,36 @@ router.route('/signup')
 .get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/signup.html');
 })
-.post(UserCTRL.apiPostSignUp);
+.post((req, res) => {
+    UserCTRL.apiPostSignUp(req, res);
+    errorHandling(res);
+});
 
 /* Login Page Router */
 router.route('/login')
 .get((req, res) => {
   res.sendFile(path.resolve() + '/public/html/login.html');
 })
-.post(UserCTRL.apiPostLogin);
+.post((req, res) => {
+    UserCTRL.apiPostLogin(req, res);
+    errorHandling(res);
+});
+
+
+/* Error Page Router */
+router.route('/error').get((req, res) => {
+    res.render("error_page", {statusCode : res.statusCode, error: res});
+})
+
+/* redirects to error page if error occurs */
+function errorHandling(res) {
+    if (res.status != 200) {
+
+        // console.log (res.text());
+        // console.log (res.json());
+        // console.log(res.data());
+        res.redirect("/error")
+    }
+}
 
 export default router
