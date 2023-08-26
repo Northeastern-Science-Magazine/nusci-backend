@@ -1,4 +1,4 @@
-import UnregisteredUser from "../models/user.unregistered.js";
+import UserInfo from "../models/user.unregistered.js";
 import Connection from "../db/connection.js";
 
 /**
@@ -29,8 +29,8 @@ export default class UsersAccessor {
     static async getUserByUsername(username) {
         try {
             const connection = await Connection.open('users');
-            const user = await UnregisteredUser.findOne({ username: username });
-            Connection.close(connection);
+            const user = await UserInfo.findOne({ username: username });
+            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);
@@ -53,9 +53,9 @@ export default class UsersAccessor {
      */
     static async createUser(userDoc) {
         try {
-            const connection = await Connection.open('users');
+            //const connection = await Connection.open('users');
             const user = await UnregisteredUser.create(userDoc);
-            Connection.close(connection);
+            //Connection.close(connection);
             return user;
         } catch (e) {
             console.log(e);

@@ -12,7 +12,7 @@ const authorizeToken = async (req, res, next) => {
             res.json({Message: "Bad token"});
         }
     } else {
-        res.json({Message: "Not Logged in"});
+        res.redirect("/login");
     }
 }
 

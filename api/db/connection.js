@@ -2,6 +2,9 @@ import { config as dotenvConfig } from 'dotenv';
 import mongoose from 'mongoose'; // import mongoose
 import { log } from 'mercedlogger';
 
+//Map of all connections to each database
+let connections = new Map();
+
 /**
  * Connection Class
  * 
@@ -23,33 +26,38 @@ export default class Connection {
      * @returns the connection object
      */
     static async open(db) {
-        console.log("opened");
-        //Load Environment variables
-        dotenvConfig();
+        if(!connections.get(db)) {
+            //Load Environment variables
+            dotenvConfig();
 
-        //Destructure variables
-        const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
-        const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
+            //Destructure variables
+            const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
+            const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
 
-        //Mongoose connect to the database.
-        mongoose.connect(
-            DATABASE_URL,
-            {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                maxPoolSize: 50,
-                socketTimeoutMS: 2500,
-                dbName: db
-            }
-        );
+            //Mongoose connect to the database.
+            mongoose.connect(
+                DATABASE_URL,
+                {
+                    useNewUrlParser: true,
+                    useUnifiedTopology: true,
+                    maxPoolSize: 50,
+                    socketTimeoutMS: 2500,
+                    dbName: db
+                }
+            );
 
-        //Log when open/closed
-        mongoose.connection
-        .on("open", () => log.green("DATABASE STATE", "Connection Open"))
-        .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
-        .on("error", (error) => log.red("DATABASE STATE", error))
+            connections.set(db, mongoose.connection);
+            
+            //Log when open/closed
+            mongoose.connection
+            .on("open", () => log.green("DATABASE STATE", "Connection Open"))
+            .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
+            .on("error", (error) => log.red("DATABASE STATE", error))
 
-        return mongoose.connection;
+            return mongoose.connection;
+        } else {
+            return connections.get(db);
+        }
     }
 
     /**
@@ -66,3 +74,5 @@ export default class Connection {
         connection.close();
     }
 }
+
+//export default {class: Connection};

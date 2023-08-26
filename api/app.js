@@ -38,7 +38,6 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/profile", authorizeToken, (req, res) => {
-    //console.log(req.user);
     const user = req.user;
     res.render('profile',
     {
