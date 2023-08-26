@@ -55,25 +55,21 @@ router.route('/login')
 .get((req, res) => {
   res.sendFile(path.resolve() + '/public/html/login.html');
 })
-.post((req, res) => {
-    UserCTRL.apiPostLogin(req, res);
-    errorHandling(res);
-});
+.post(UserCTRL.apiPostLogin, errorHandling);
 
 
 /* Error Page Router */
 router.route('/error').get((req, res) => {
-    res.render("error_page", {statusCode : res.statusCode, error: res});
+    let errorMsg = req.cookies.errorMsg;
+    res.render("error_page", {statusCode : "testcode", 
+        error: errorMsg});
 })
 
 /* redirects to error page if error occurs */
-function errorHandling(res) {
-    if (res.status != 200) {
-
-        // console.log (res.text());
-        // console.log (res.json());
-        // console.log(res.data());
-        res.redirect("/error")
+function errorHandling(req, res) {
+    if (true) {
+        res.cookie("errorMsg", "Asdf");
+        res.redirect("/error");
     }
 }
 

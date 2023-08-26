@@ -23,7 +23,7 @@ export default class UsersCTRL {
      * @param {*} req web request object
      * @param {*} res web response
      */
-    static async apiPostLogin(req, res) {
+    static async apiPostLogin(req, res, next) {
         try {
             // check if the user exists
             const user = await UsersAccessor.getUserByUsername(
@@ -43,7 +43,9 @@ export default class UsersCTRL {
                     );
                     res.json({ token });
                 } else {
-                    res.status(400).json({ error: "password doesn't match" });
+                    req.error = "password doesn't match";   
+                    return next();
+                    // res.status(400).json({ error: "password doesn't match" });
                 }
             } else {
                 res.status(400).json({ error: "User doesn't exist" });
