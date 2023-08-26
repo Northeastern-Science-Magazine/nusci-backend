@@ -2,6 +2,7 @@ import express from 'express'
 import path from 'path'
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
+import authorizeToken from "../auth/authorization.js";
 
 const router = express.Router();
 
@@ -45,6 +46,13 @@ router.route('/signup')
 })
 .post(UserCTRL.apiPostSignUp);
 
+/*--------------NOTE----------------*/
+/**
+ * We need to figure out a way to separate this functionality (below) so that
+ * this file is clean. Right now this file handles things that are not exclusively
+ * routing information.
+ */
+
 /* Login Page Router */
 router.route('/login')
 .get((req, res) => {
@@ -55,5 +63,25 @@ router.route('/login')
     }
 })
 .post(UserCTRL.apiPostLogin);
+
+/* Logout Router */
+router.route('/logout').get((req, res) => {
+    res.clearCookie('token');
+    res.redirect('/');
+    console.log("Signed out");
+});
+
+/* Profile Router */
+router.route('/profile').get(authorizeToken, (req, res) => {
+    const user = req.user;
+    res.render('profile',
+    {
+        name: user.username,
+        role: user.role,
+        year: user.information.year,
+        major: user.information.major,
+        bio: user.information.bio,
+    });
+});
 
 export default router

@@ -7,7 +7,6 @@ import morgan from "morgan";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
 //import articles from './routes/articles.route.js'
-import authorizeToken from "./auth/authorization.js";
 
 /**
  * This file controls the express server and
@@ -30,24 +29,5 @@ app.use("/public", express.static(process.cwd() + "/public"));
 app.use("/", pagesRouter);
 
 app.use("/articles", articlesRouter);
-
-app.get('/logout', (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/');
-    console.log("Signed out");
-});
-
-app.get("/profile", authorizeToken, (req, res) => {
-    const user = req.user;
-    res.render('profile',
-    {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-    }
-);
-});
 
 export default app;

@@ -2,7 +2,7 @@ import { config as dotenvConfig } from 'dotenv';
 import mongoose from 'mongoose'; // import mongoose
 import { log } from 'mercedlogger';
 
-//Map of all connections to each database
+//Map of all connections to the databases
 let connections = new Map();
 
 /**
