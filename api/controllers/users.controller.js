@@ -21,7 +21,7 @@ export default class UsersCTRL {
      * @param {*} req web request object
      * @param {*} res web response
      */
-    static async apiPostLogin(req, res) {
+    static async apiPostLogin(req, res, next) {
         try {
             if(!req.cookies.token) {
                 // check if the user exists
@@ -49,16 +49,20 @@ export default class UsersCTRL {
                         res.cookie('token', token, {httpOnly: true, maxAge: 60 * 60 * 1000});
                         res.redirect('/profile');
                     } else {
-                        res.status(400).json({ error: "password doesn't match" });
+                        req.error = 4002;
+                        return next();
                     }
                 } else {
-                    res.status(400).json({ error: "User doesn't exist" });
+                    req.error = 4001;
+                    return next();
                 }
             } else {
-                res.redirect('/profile');
+                req.error = 4003;
+                return next();
             }
         } catch (error) {
-            res.status(400).json({ error });
+            req.error = 4000;
+            return next();
         }
     }
 

@@ -3,6 +3,7 @@ import path from 'path'
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
 import authorizeToken from "../auth/authorization.js";
+import catchError from '../routes/error.route.js';
 
 const router = express.Router();
 
@@ -44,7 +45,9 @@ router.route('/signup')
 .get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/signup.html');
 })
-.post(UserCTRL.apiPostSignUp);
+.post((req, res) => {
+    UserCTRL.apiPostSignUp(req, res);
+});
 
 /*--------------NOTE----------------*/
 /**
@@ -59,10 +62,21 @@ router.route('/login')
     if(req.cookies.token) {
         res.redirect('/profile');
     } else {
-        res.sendFile(path.resolve() + '/public/html/login.html');
+        res.render('login', {error: req.cookies.error});
     }
 })
-.post(UserCTRL.apiPostLogin);
+.post(UserCTRL.apiPostLogin, catchError);
+
+
+/* Error Page Router */
+router.route('/error').get((req, res) => {
+    //if the user requests the error page and an error doesn't exist, redirect to main
+    if(req.cookies.error) {
+        res.render('error', {error: req.cookies.error});
+    } else {
+        res.redirect('/');
+    }
+})
 
 /* Logout Router */
 router.route('/logout').get((req, res) => {
@@ -72,7 +86,7 @@ router.route('/logout').get((req, res) => {
 });
 
 /* Profile Router */
-router.route('/profile').get(authorizeToken, (req, res) => {
+router.route('/profile').get(authorizeToken, catchError, (req, res) => {
     const user = req.user;
     res.render('profile',
     {
@@ -83,5 +97,10 @@ router.route('/profile').get(authorizeToken, (req, res) => {
         bio: user.information.bio,
     });
 });
+
+router.route('/*').get((req, res, next) => {
+    req.error = 4040;
+    next();
+}, catchError);
 
 export default router

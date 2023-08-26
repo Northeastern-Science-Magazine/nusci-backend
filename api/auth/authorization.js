@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-dotenv.config();
 import jwt from "jsonwebtoken";
 
 /**
@@ -14,16 +13,19 @@ import jwt from "jsonwebtoken";
  * @param {*} next http method
  */
 const authorizeToken = async (req, res, next) => {
+    dotenv.config();
     if(req.cookies.token) {
         const payload = await jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
         if(payload) {
             req.user = payload;
             next();
         } else {
-            res.json({Message: "Bad token"});
+            res.error = 4012;
+            next();
         }
     } else {
-        res.redirect("/login");
+        req.error = 4011;
+        next();
     }
 }
 
