@@ -3,7 +3,7 @@ import path from 'path'
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
 import authorizeToken from "../auth/authorization.js";
-import catchError from '../routes/error.route.js';
+import catchError from '../controllers/errors.controller.js';
 
 const router = express.Router();
 
@@ -45,9 +45,7 @@ router.route('/signup')
 .get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/signup.html');
 })
-.post((req, res) => {
-    UserCTRL.apiPostSignUp(req, res);
-});
+.post(UserCTRL.apiPostSignUp, catchError);
 
 /*--------------NOTE----------------*/
 /**
@@ -86,17 +84,21 @@ router.route('/logout').get((req, res) => {
 });
 
 /* Profile Router */
-router.route('/profile').get(authorizeToken, catchError, (req, res) => {
-    const user = req.user;
-    res.render('profile',
-    {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-    });
-});
+router.route('/profile').get(authorizeToken, (req, res, next) => {
+    if(!req.error) {
+        const user = req.user;
+        res.render('profile',
+        {
+            name: user.username,
+            role: user.role,
+            year: user.information.year,
+            major: user.information.major,
+            bio: user.information.bio,
+        });
+    } else {
+        next();
+    }
+}, catchError);
 
 router.route('/*').get((req, res, next) => {
     req.error = 4040;
