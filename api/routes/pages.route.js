@@ -2,8 +2,9 @@ import express from 'express'
 import path from 'path'
 import UserCTRL from '../controllers/users.controller.js';
 import bodyParser from 'body-parser';
-import authorizeToken from "../auth/authorization.js";
+import Authorize from "../auth/authorization.js";
 import catchError from '../routes/error.route.js';
+import RoutesController from "../controllers/routes.controller.js";
 
 const router = express.Router();
 
@@ -49,58 +50,18 @@ router.route('/signup')
     UserCTRL.apiPostSignUp(req, res);
 });
 
-/*--------------NOTE----------------*/
-/**
- * We need to figure out a way to separate this functionality (below) so that
- * this file is clean. Right now this file handles things that are not exclusively
- * routing information.
- */
-
 /* Login Page Router */
 router.route('/login')
-.get((req, res) => {
-    if(req.cookies.token) {
-        res.redirect('/profile');
-    } else {
-        res.render('login', {error: req.cookies.error});
-    }
-})
+.get(RoutesController.getLogin)
 .post(UserCTRL.apiPostLogin, catchError);
 
-
 /* Error Page Router */
-router.route('/error').get((req, res) => {
-    //if the user requests the error page and an error doesn't exist, redirect to main
-    if(req.cookies.error) {
-        res.render('error', {error: req.cookies.error});
-    } else {
-        res.redirect('/');
-    }
-})
+router.route('/error').get(RoutesController.getError);
 
 /* Logout Router */
-router.route('/logout').get((req, res) => {
-    res.clearCookie('token');
-    res.redirect('/');
-    console.log("Signed out");
-});
+router.route('/logout').get(RoutesController.getLogout);
 
 /* Profile Router */
-router.route('/profile').get(authorizeToken, catchError, (req, res) => {
-    const user = req.user;
-    res.render('profile',
-    {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-    });
-});
-
-router.route('/*').get((req, res, next) => {
-    req.error = 4040;
-    next();
-}, catchError);
+router.route('/profile').get(Authorize.author, RoutesController.getProfile, catchError);
 
 export default router
