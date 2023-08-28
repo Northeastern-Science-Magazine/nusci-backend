@@ -6,7 +6,6 @@ import Authorize from "../auth/authorization.js";
 import catchError from '../routes/error.route.js';
 import RoutesController from "../controllers/routes.controller.js";
 
-
 const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
@@ -47,7 +46,9 @@ router.route('/signup')
 .get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/signup.html');
 })
-.post(UserCTRL.apiPostSignUp, catchError);
+.post((req, res) => {
+    UserCTRL.apiPostSignUp(req, res);
+});
 
 /* Login Page Router */
 router.route('/login')
@@ -61,21 +62,6 @@ router.route('/error').get(RoutesController.getError);
 router.route('/logout').get(RoutesController.getLogout);
 
 /* Profile Router */
-router.route('/profile').get(authorizeToken, catchError, (req, res) => {
-    const user = req.user;
-    res.render('profile',
-    {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-    });
-});
-
-router.route('/*').get((req, res, next) => {
-    req.error = 4040;
-    next();
-}, catchError);
+router.route('/profile').get(Authorize.author, RoutesController.getProfile, catchError);
 
 export default router;
