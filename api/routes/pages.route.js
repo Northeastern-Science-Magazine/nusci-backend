@@ -78,4 +78,4 @@ router.route('/*').get((req, res, next) => {
     next();
 }, catchError);
 
-export default router
+export default router;
