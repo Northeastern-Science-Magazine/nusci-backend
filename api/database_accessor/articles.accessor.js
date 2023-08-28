@@ -1,43 +1,43 @@
-import mongodb from "mongodb";
-
-const OBJECT_ID = new mongodb.ObjectId();
-let articles;
+import Article from "../models/article.js";
+import Connection from "../db/connection.js";
+import mongoose from "mongoose";
 
 export default class ArticlesAccessor {
-    static async injectDB(connection) {
-        if (articles) {
-            return;
-        }
-
-        try {
-            articles = await connection
-                .db("ArticleDatabase")
-                .collection("ArticleInfo");
-        } catch (e) {
-            console.error(e);
-        }
-    }
-
     static async postArticles(author, article) {
         try {
             const articleDoc = {
                 author: author,
-                article: article
-            }
+                article: article,
+            };
 
-            return await articles.insertOne(articleDoc)
+            return await Article.create(articleDoc);
         } catch (e) {
             console.error(e);
-            return { error: e };
+            throw e;
         }
     }
 
-    static async getArticles(articleId) {
+    static async getArticle(articleId) {
         try {
-            return await articles.findOne({ _id: OBJECT_ID(articleId) });
+            await Connection.open("ArticleInfo");
+            const article = await Article.findById(
+                new mongoose.Types.ObjectId(articleId)
+            );
+            return article;
         } catch (e) {
             console.error(e);
-            return { error: e };
+            throw e;
+        }
+    }
+
+    static async getAllArticles() {
+        try {
+            await Connection.open("ArticleInfo");
+            const articles = await Article.find({});
+            return articles;
+        } catch (e) {
+            console.error(e);
+            throw e;
         }
     }
 }
