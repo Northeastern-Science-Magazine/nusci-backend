@@ -64,4 +64,4 @@ router.route('/logout').get(RoutesController.getLogout);
 /* Profile Router */
 router.route('/profile').get(Authorize.author, RoutesController.getProfile, catchError);
 
-export default router
+export default router;
