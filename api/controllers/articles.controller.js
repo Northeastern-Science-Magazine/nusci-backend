@@ -11,13 +11,15 @@ export default class ArticlesCTRL {
             let reviews = await ArticlesAccessor.getArticles(id);
 
             if (!reviews) {
-                return res.status(404).json({ error: "Not found." });
+                req.error = 4040;
+                return next();
             }
 
             // will be templated, this is just boilerplate
             return res.json({ reviews });
         } catch (e) {
-            return res.status(500).json({ error: "Server error" });
+            req.error = 4000;
+            return next();
         }
     }
 }
