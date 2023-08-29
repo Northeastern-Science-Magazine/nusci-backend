@@ -46,9 +46,7 @@ router.route('/signup')
 .get((req, res) => {
     res.sendFile(path.resolve() + '/public/html/signup.html');
 })
-.post((req, res) => {
-    UserCTRL.apiPostSignUp(req, res);
-});
+.post(UserCTRL.apiPostSignUp, catchError);
 
 /* Login Page Router */
 router.route('/login')
