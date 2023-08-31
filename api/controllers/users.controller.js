@@ -77,7 +77,7 @@ export default class UsersCTRL {
      * @param {*} req web request information for signup
      * @param {*} res weh response object
      */
-    static async apiPostSignUp(req, res) {
+    static async apiPostSignUp(req, res, next) {
         try {
             console.log("Sign up username: " + req.body.username);
             console.log("Sign up password: " + req.body.password);
@@ -98,7 +98,8 @@ export default class UsersCTRL {
             // send new user as response
             res.redirect('/login');
         } catch (error) {
-            res.status(400).json({ error });
+            req.error = 4000;
+            return next();
         }
     }
 }

@@ -10,9 +10,10 @@ export default class ArticlesCTRL {
             let article = await ArticlesAccessor.getArticle(id);
 
             if (!article) {
-                return res.status(404).json({ error: "Not found." });
+                req.error = 4040;
+                return next();
             }
-
+          
             return res.render("article.ejs", { article });
         } catch (e) {
             return res.status(500).json({ error: "Server error" });
@@ -25,7 +26,8 @@ export default class ArticlesCTRL {
 
             return res.json({ articles });
         } catch (e) {
-            return res.status(500).json({ error: "Server error" });
+            req.error = 4000;
+            return next();
         }
     }
 }
