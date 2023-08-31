@@ -3,14 +3,11 @@ import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
 export default class ArticlesAccessor {
-    static async postArticles(author, article) {
+    static async postArticles(articleDoc) {
         try {
-            const articleDoc = {
-                author: author,
-                article: article,
-            };
-
-            return await Article.create(articleDoc);
+            await Connection.open("articles")
+            const article = await Article.create(articleDoc);
+            return article;
         } catch (e) {
             console.error(e);
             throw e;
@@ -19,7 +16,7 @@ export default class ArticlesAccessor {
 
     static async getArticle(articleId) {
         try {
-            await Connection.open("ArticleInfo");
+            await Connection.open("articles");
             const article = await Article.findById(
                 new mongoose.Types.ObjectId(articleId)
             );
@@ -32,7 +29,7 @@ export default class ArticlesAccessor {
 
     static async getAllArticles() {
         try {
-            await Connection.open("ArticleInfo");
+            await Connection.open("articles");
             const articles = await Article.find({});
             return articles;
         } catch (e) {
