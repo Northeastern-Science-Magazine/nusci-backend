@@ -27,7 +27,7 @@ const ArticleSchema = new Schema({
     collection: 'pending-articles'
 });
 
-const db = mongoose.connection.useDb("ArticleInfo");
+const db = mongoose.connection.useDb("articles");
 
 
 // article model
