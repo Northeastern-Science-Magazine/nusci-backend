@@ -17,13 +17,17 @@ export default class AdminController {
     }
 
     static async postUserApprovals(req, res, next) {
-        let usernames = [];
-        const reqUserObj = req.body;
-        for(var name in reqUserObj) {
-            usernames.push(name);
+        if(!req.error) {
+            let usernames = [];
+            const reqUserObj = req.body;
+            for(var name in reqUserObj) {
+                usernames.push(name);
+            }
+            const users = await UsersAccessor.registerUsers(usernames);
+            res.json(users);
+        } else {
+            return next();
         }
-
-        res.json({usernames});
     }
 }
  

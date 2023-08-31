@@ -1,6 +1,6 @@
-import UserInfo from "../models/user.unregistered.js";
 import Connection from "../db/connection.js";
 import UnregisteredUser from "../models/user.unregistered.js";
+import RegisteredUser from "../models/user.registered.js";
 
 /**
  * UserAccessor Class
@@ -11,10 +11,6 @@ import UnregisteredUser from "../models/user.unregistered.js";
 export default class UsersAccessor {
 
     /**
-     * NOTE: upon completion, search should only go
-     * through registered users. There should be separate
-     * methods to find unregistered and registered users.
-     * 
      * getUserByUsername Method
      * 
      * This method retrieves the user MongoDB object from the
@@ -30,7 +26,7 @@ export default class UsersAccessor {
     static async getUserByUsername(username) {
         try {
             await Connection.open('users');
-            const user = await UserInfo.findOne({ username: username });
+            const user = await RegisteredUser.findOne({ username: username });
             return user;
         } catch (e) {
             console.log(e);
@@ -71,7 +67,7 @@ export default class UsersAccessor {
             }
             return users;
         } catch (e) {
-
+            //server error 500
         }
     }
 
@@ -79,8 +75,24 @@ export default class UsersAccessor {
      * registerUser Method
      * 
      * This method should only be accessible to admins.
-     * This method takes the name of an unregistered user
+     * This method takes the names of an unregistered users
      * and moves them to the registered user database.
      * 
      */
+    static async registerUsers(usernames) {
+        try {
+            await Connection.open('users');
+            const users = [];
+            for await (const name of usernames) {
+                const unregisteredUser = await UnregisteredUser.findOne({ username: name });
+                const registeredUser = await RegisteredUser.create(unregisteredUser.toJSON());
+                await UnregisteredUser.deleteOne({ username: name });
+                users.push(registeredUser);
+            }
+            return users;
+        } catch (e) {
+            //server error 500
+        }
+        
+    }
 }
