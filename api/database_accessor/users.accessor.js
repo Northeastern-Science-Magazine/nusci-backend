@@ -1,5 +1,6 @@
-import UserInfo from "../models/user.unregistered.js";
 import Connection from "../db/connection.js";
+import UnregisteredUser from "../models/user.unregistered.js";
+import RegisteredUser from "../models/user.registered.js";
 
 /**
  * UserAccessor Class
@@ -10,11 +11,7 @@ import Connection from "../db/connection.js";
 export default class UsersAccessor {
 
     /**
-     * NOTE: upon completion, search should only go
-     * through registered users. There should be separate
-     * methods to find unregistered and registered users.
-     * 
-     * getUserByUsername Method
+     * getRegisteredByUsername Method
      * 
      * This method retrieves the user MongoDB object from the
      * database. Throws an error if there is a pathology.
@@ -26,10 +23,30 @@ export default class UsersAccessor {
      * @returns the User associated with the given Username in
      *          the database.
      */
-    static async getUserByUsername(username) {
+    static async getRegisteredByUsername(username) {
         try {
             await Connection.open('users');
-            const user = await UserInfo.findOne({ username: username });
+            const user = await RegisteredUser.findOne({ username: username });
+            return user;
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
+    }
+
+    /**
+     * getUnregisteredByUsername Method
+     * 
+     * This method pulls from the unregistered user database to find
+     * a specific user given a username
+     * 
+     * @param {*} username of user to find
+     * @returns the found user
+     */
+    static async getUnregisteredByUsername(username) {
+        try {
+            await Connection.open('users');
+            const user = await UnregisteredUser.findOne({ username: username });
             return user;
         } catch (e) {
             console.log(e);
@@ -62,11 +79,50 @@ export default class UsersAccessor {
     }
 
     /**
+     * getAllUnregistered Method
+     * 
+     * Gets a list of all the users in the unregistered collection.
+     * 
+     * @returns a list of all the unregistered users.
+     */
+    static async getAllUnregistered() {
+        try {
+            await Connection.open('users')
+            const users = [];
+            for await (const doc of UnregisteredUser.find()) {
+                users.push(doc);
+            }
+            return users;
+        } catch (e) {
+            //server error 500
+            throw e;
+        }
+    }
+
+    /**
      * registerUser Method
      * 
      * This method should only be accessible to admins.
-     * This method takes the name of an unregistered user
-     * and moves them to the registered user database.
+     * This method takes the names of an unregistered users
+     * and moves them to the registered user collection.
      * 
+     * @param {*} usernames list of usernames to make registered
      */
+    static async registerUsers(usernames) {
+        try {
+            await Connection.open('users');
+            const users = [];
+            for await (const name of usernames) {
+                const unregisteredUser = await UnregisteredUser.findOne({ username: name });
+                const registeredUser = await RegisteredUser.create(unregisteredUser.toJSON());
+                await UnregisteredUser.deleteOne({ username: name });
+                users.push(registeredUser);
+            }
+            return users;
+        } catch (e) {
+            //server error 500, throw up the stack
+            throw e;
+        }
+        
+    }
 }

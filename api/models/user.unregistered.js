@@ -26,6 +26,6 @@ const UnregisteredUser = new Schema({
 });
 
 const db = mongoose.connection.useDb("users");
-const UserInfo = db.model("User", UnregisteredUser);
+const UserInfo = db.model("UnregisteredUser", UnregisteredUser);
 
 export default UserInfo;

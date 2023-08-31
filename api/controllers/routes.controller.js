@@ -41,4 +41,5 @@ export default class RoutesController {
         res.redirect('/');
         console.log("Signed out");
     }
+
 }
