@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link href="/public/css/signup.css" rel="stylesheet" type="text/css" />
+        <title>Approve New Users</title>
+    </head>
+    <body>
+        <h1>Approve New Users</h1>
+        <!--<p><%= allUsers %></p>-->
+
+        <% allUsers.forEach((user) => { %>
+            <div>
+                <p>Username: <%= user.username %></p>
+                <p>Email: <%= user.email %></p>
+                <p>Role: <%= user.role %></p>
+                <p>Year: <%= user.information.year %></p>
+                <p>Major: <%= user.information.major %></p>
+                <p>Bio: <%= user.information.bio %></p>
+
+                <!-- Somehow, onlick, get the information of the clicked person -->
+                <button class="btn">Approve</button>
+                <button class="btn">Deny</button>
+                <hr>
+            </div>
+        <% }); %>
+    </body>
+</html>

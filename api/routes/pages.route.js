@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import Authorize from "../auth/authorization.js";
 import catchError from '../routes/error.route.js';
 import RoutesController from "../controllers/routes.controller.js";
+import AdminController from "../controllers/admin.controller.js";
 
 const router = express.Router();
 
@@ -61,5 +62,8 @@ router.route('/logout').get(RoutesController.getLogout);
 
 /* Profile Router */
 router.route('/profile').get(Authorize.author, RoutesController.getProfile, catchError);
+
+/* New User Approval Router */
+router.route('/approve-user').get(Authorize.admin, AdminController.getUserApprovals, catchError);
 
 export default router;

@@ -1,5 +1,6 @@
 import UserInfo from "../models/user.unregistered.js";
 import Connection from "../db/connection.js";
+import UnregisteredUser from "../models/user.unregistered.js";
 
 /**
  * UserAccessor Class
@@ -58,6 +59,19 @@ export default class UsersAccessor {
         } catch (e) {
             console.log(e);
             throw e;
+        }
+    }
+
+    static async getAllUnregistered() {
+        try {
+            await Connection.open('users')
+            const users = [];
+            for await (const doc of UnregisteredUser.find()) {
+                users.push(doc);
+            }
+            return users;
+        } catch (e) {
+
         }
     }
 
