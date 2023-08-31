@@ -7,16 +7,24 @@ export default class ArticlesCTRL {
         try {
             let id = req.params.id || {};
 
-            // GET INFORMATION FROM DB HERE ONCE MODELS ARE IMPLEMENTED
-            let reviews = await ArticlesAccessor.getArticles(id);
+            let article = await ArticlesAccessor.getArticle(id);
 
-            if (!reviews) {
+            if (!article) {
                 req.error = 4040;
                 return next();
             }
+          
+            return res.render("article.ejs", { article });
+        } catch (e) {
+            return res.status(500).json({ error: "Server error" });
+        }
+    }
 
-            // will be templated, this is just boilerplate
-            return res.json({ reviews });
+    static async apiGetArticles(req, res, next) {
+        try {
+            let articles = await ArticlesAccessor.getAllArticles();
+
+            return res.json({ articles });
         } catch (e) {
             req.error = 4000;
             return next();
