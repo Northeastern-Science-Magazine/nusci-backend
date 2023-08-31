@@ -15,5 +15,15 @@ export default class AdminController {
             return next();
         }
     }
+
+    static async postUserApprovals(req, res, next) {
+        let usernames = [];
+        const reqUserObj = req.body;
+        for(var name in reqUserObj) {
+            usernames.push(name);
+        }
+
+        res.json({usernames});
+    }
 }
  

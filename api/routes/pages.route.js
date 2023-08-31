@@ -64,6 +64,8 @@ router.route('/logout').get(RoutesController.getLogout);
 router.route('/profile').get(Authorize.author, RoutesController.getProfile, catchError);
 
 /* New User Approval Router */
-router.route('/approve-user').get(Authorize.admin, AdminController.getUserApprovals, catchError);
+router.route('/approve-user')
+.get(Authorize.admin, AdminController.getUserApprovals, catchError)
+.post(Authorize.admin, AdminController.postUserApprovals, catchError);
 
 export default router;
