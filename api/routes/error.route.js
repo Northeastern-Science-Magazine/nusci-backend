@@ -17,6 +17,8 @@
  * - 4001 - Login attempt to user that does not exist
  * - 4002 - Login attempt with invalid password
  * - 4003 - Login attempt when logged in
+ * - 4004 - Sign up attempt with existing username
+ * - 4005 - Login attempt for unregistered account
  * 
  * -- Types of 401 Errors --
  * - 4010 - Unauthorized
@@ -46,6 +48,12 @@ const catchError = (req, res, next) => {
             break;
         case 4003:
             res.redirect("/profile");
+        case 4004:
+            res.cookie("error", "Username already exists", {maxAge: 1000});
+            res.redirect("/signup");
+        case 4005:
+            res.cookie("error", "You currently have an unregistered account. Ask an Admin to approve your registration.");
+            res.redirect("/login");
         case 4010:
             res.cookie("error", "Unauthorized", {maxAge: 1000});
             res.redirect("/error");

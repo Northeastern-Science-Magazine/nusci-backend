@@ -11,7 +11,7 @@ import RegisteredUser from "../models/user.registered.js";
 export default class UsersAccessor {
 
     /**
-     * getUserByUsername Method
+     * getRegisteredByUsername Method
      * 
      * This method retrieves the user MongoDB object from the
      * database. Throws an error if there is a pathology.
@@ -23,10 +23,30 @@ export default class UsersAccessor {
      * @returns the User associated with the given Username in
      *          the database.
      */
-    static async getUserByUsername(username) {
+    static async getRegisteredByUsername(username) {
         try {
             await Connection.open('users');
             const user = await RegisteredUser.findOne({ username: username });
+            return user;
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
+    }
+
+    /**
+     * getUnregisteredByUsername Method
+     * 
+     * This method pulls from the unregistered user database to find
+     * a specific user given a username
+     * 
+     * @param {*} username of user to find
+     * @returns the found user
+     */
+    static async getUnregisteredByUsername(username) {
+        try {
+            await Connection.open('users');
+            const user = await UnregisteredUser.findOne({ username: username });
             return user;
         } catch (e) {
             console.log(e);
@@ -58,6 +78,13 @@ export default class UsersAccessor {
         }
     }
 
+    /**
+     * getAllUnregistered Method
+     * 
+     * Gets a list of all the users in the unregistered collection.
+     * 
+     * @returns a list of all the unregistered users.
+     */
     static async getAllUnregistered() {
         try {
             await Connection.open('users')
@@ -68,6 +95,7 @@ export default class UsersAccessor {
             return users;
         } catch (e) {
             //server error 500
+            throw e;
         }
     }
 
@@ -76,8 +104,9 @@ export default class UsersAccessor {
      * 
      * This method should only be accessible to admins.
      * This method takes the names of an unregistered users
-     * and moves them to the registered user database.
+     * and moves them to the registered user collection.
      * 
+     * @param {*} usernames list of usernames to make registered
      */
     static async registerUsers(usernames) {
         try {
@@ -91,7 +120,8 @@ export default class UsersAccessor {
             }
             return users;
         } catch (e) {
-            //server error 500
+            //server error 500, throw up the stack
+            throw e;
         }
         
     }

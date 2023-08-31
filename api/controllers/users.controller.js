@@ -15,7 +15,7 @@ export default class UsersCTRL {
      * apiPostLogin Method
      * 
      * This method checks whether or not the request
-     * to sign in is valid. Utilizes the getUserByUsername
+     * to sign in is valid. Utilizes the getRegisteredByUsername
      * UserAccessor method to accomplish this.
      * 
      * @param {*} req web request object
@@ -24,8 +24,8 @@ export default class UsersCTRL {
     static async apiPostLogin(req, res, next) {
         try {
             if(!req.cookies.token) {
-                // check if the user exists
-                const user = await UsersAccessor.getUserByUsername(
+                // check if the user is registered
+                const user = await UsersAccessor.getRegisteredByUsername(
                     req.body.username
                 );
                 if (user) {
@@ -53,8 +53,16 @@ export default class UsersCTRL {
                         return next();
                     }
                 } else {
-                    req.error = 4001;
-                    return next();
+                    //check if the user is unregistered                 
+                    const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
+                    if(unregistered) {
+                        req.error = 4005;
+                        return next();
+                    } else {
+                        //doesn't exist
+                        req.error = 4001;
+                        return next();
+                    }
                 }
             } else {
                 req.error = 4003;
@@ -79,8 +87,6 @@ export default class UsersCTRL {
      */
     static async apiPostSignUp(req, res, next) {
         try {
-            console.log("Sign up username: " + req.body.username);
-            console.log("Sign up password: " + req.body.password);
             // hash the password
             req.body.password = await bcrypt.hash(req.body.password, 10);
             
@@ -91,12 +97,17 @@ export default class UsersCTRL {
                 bio: req.body.bio,
                 image: req.body.image,
             }
-            
-            // create a new user in database
-            await UsersAccessor.createUser(req.body);
 
-            // send new user as response
-            res.redirect('/login');
+            const registered = await UsersAccessor.getRegisteredByUsername(req.body.username);
+            const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
+            
+            if(!registered && !unregistered) {
+                await UsersAccessor.createUser(req.body);
+                res.redirect('/login');
+            } else {
+                req.error = 4004;
+                next();
+            }  
         } catch (error) {
             req.error = 4000;
             return next();
