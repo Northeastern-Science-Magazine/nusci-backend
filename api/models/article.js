@@ -31,6 +31,6 @@ const db = mongoose.connection.useDb("articles");
 
 
 // article model
-const Article = model("Article", ArticleSchema)
+const Article = db.model("Article", ArticleSchema)
 
 export default Article;
