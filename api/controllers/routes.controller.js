@@ -3,7 +3,7 @@
  */
 
 export default class RoutesController {
-    static getLogin(req, res, next) {
+    static getLogin(req, res) {
         if(req.cookies.token) {
             res.redirect('/profile');
         } else {

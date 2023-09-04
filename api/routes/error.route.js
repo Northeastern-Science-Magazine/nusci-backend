@@ -52,7 +52,7 @@ const catchError = (req, res, next) => {
             res.cookie("error", "Username already exists", {maxAge: 1000});
             res.redirect("/signup");
         case 4005:
-            res.cookie("error", "You currently have an unregistered account. Ask an Admin to approve your registration.");
+            res.cookie("error", "You currently have an unregistered account. Ask an Admin to approve your registration.", {maxAge: 1000});
             res.redirect("/login");
         case 4010:
             res.cookie("error", "Unauthorized", {maxAge: 1000});
@@ -67,7 +67,7 @@ const catchError = (req, res, next) => {
             res.redirect('/error');
             break;
         case 4013:
-            res.cookie("error", "Bad Token. Don't tamper with it.", {maxAge: 1000})
+            res.cookie("error", "Bad Token. Don't tamper with it.", {maxAge: 1000});
             res.redirect('/error');
             break;
         case 4040:
