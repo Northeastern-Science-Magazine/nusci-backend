@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create an Article</title>
+    <link href="/public/css/signup.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <body>
+    <h1>Create an Article</h1>
+    <p>This is a description</p>
+    <form method="POST" id="article">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title">
+
+        <label for="author">Author:</label>
+        <input type="text" id="author" name="author">
+
+        <label class="form-label" for="year">Year:</label>
+        <input type="number" id="year" name="year">
+
+        <label class="form-label" for="major">Major:</label>
+        <input type="text" id="major" name="major"><br><br>
+
+        <div id="categories-container">
+          <label for="categories">Categories:</label>
+            <div class="category-row">
+                <input type="text" class="category-input" name="categories">
+                <button type="button" class="remove-category">Remove</button>
+            </div>
+        </div>
+        <button type="button" id="add-category">Add Category</button><br><br>
+
+        <label for="date">Publication Date:</label>
+        <input type="date" id="date" name="date"><br><br>
+
+        <label for="coverImage">Cover Image URL:</label>
+        <input type="text" id="coverImage" name="coverImage"><br><br>
+
+        <div id="images-container">
+          <label for="images">Images:</label>
+            <div class="image-row">
+                <input type="text" class="image-input" name="images">
+                <button type="button" class="remove-image">Remove</button>
+            </div>
+        </div>
+        <button type="button" id="add-image">Add Image</button><br><br>
+
+        <label for="body">Article Body (one paragraph per line):</label>
+        <textarea id="body" name="body" rows="6"></textarea><br><br>
+
+        <div id="pullquotes-container">
+          <label for="pullquotes">Pull Quotes:</label>
+            <div class="pullquote-row">
+                <input type="text" class="pullquote-input" name="pullquotes">
+                <button type="button" class="remove-pullquote">Remove</button>
+            </div>
+        </div>
+        <button type="button" id="add-pullquote">Add Pull Quote</button><br><br>
+
+        <div id="sources-container">
+          <label for="sources">Sources:</label>
+            <div class="source-row">
+                <input type="text" class="source-input" name="sources">
+                <button type="button" class="remove-source">Remove</button>
+            </div>
+        </div>
+        <button type="button" id="add-source">Add Source</button><br><br>
+
+        <label for="theme">Theme:</label>
+        <input type="text" id="theme" name="theme"><br><br>
+
+        <div id="elementOrder-container">
+          <label for="elementOrder">Element Order:</label>
+            <div class="element-row">
+                <input type="text" class="element-input" name="elementOrder">
+                <button type="button" class="remove-element">Remove</button>
+            </div>
+        </div>
+        <button type="button" id="add-element">Add Element</button><br><br>
+
+        <input id="submit" type="submit" value="Submit">
+    </form>
+    <script src="public/js/dynamic_inputs.js"></script>
+  </body>
+</html>

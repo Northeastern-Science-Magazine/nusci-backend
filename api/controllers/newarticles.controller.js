@@ -6,14 +6,20 @@ import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 export default class NewArticlesCTRL {
     static async apiPostArticle(req, res, next) {
         try {
-            const author = req.body.author
-            const article = req.body.article
+            // Comments can and should be blank when article is first created
+            req.body.comments = []
 
-            const articleResponse = await ArticlesAccessor.postArticles(
-                author,
-                article
-            )
-            res.json({ status: "success" })
+            // Get article body
+            const bodyText = req.body.body;
+
+            // Split article body into paragraphs using line breaks
+            const paragraphs = bodyText.split('\n').map(paragraph => paragraph.trim());
+
+            // Assign the paragraphs to different elements of array within req.body.body
+            req.body.body = paragraphs;
+
+            const articleResponse = await ArticlesAccessor.postArticles(req.body)
+            res.json(articleResponse);
         } catch (e) {
             return res.status(500).json({ error: "Server error" });
         }

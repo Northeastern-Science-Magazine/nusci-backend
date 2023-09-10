@@ -1,6 +1,7 @@
 import express from 'express'
 import path from 'path'
 import UserCTRL from '../controllers/users.controller.js';
+import ArticleCTRL from '../controllers/newarticles.controller.js';
 import bodyParser from 'body-parser';
 import Authorize from "../auth/authorization.js";
 import catchError from '../routes/error.route.js';
@@ -67,5 +68,12 @@ router.route('/profile').get(Authorize.author, RoutesController.getProfile, catc
 router.route('/approve-user')
 .get(Authorize.admin, AdminController.getUserApprovals, catchError)
 .post(Authorize.admin, AdminController.postUserApprovals, catchError);
+
+/* Create Article Page Router */
+router.route('/createarticle')
+.get((req, res) => {
+    res.sendFile(path.resolve() + '/public/html/createarticle.html');
+})
+.post(ArticleCTRL.apiPostArticle, catchError);
 
 export default router;
