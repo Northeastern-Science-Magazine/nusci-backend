@@ -19,7 +19,6 @@ export default class NewArticlesCTRL {
             req.body.body = paragraphs;
 
             const articleResponse = await ArticlesAccessor.postArticles(req.body)
-            res.json(articleResponse);
         } catch (e) {
             return res.status(500).json({ error: "Server error" });
         }
