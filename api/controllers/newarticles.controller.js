@@ -18,7 +18,8 @@ export default class NewArticlesCTRL {
             // Assign the paragraphs to different elements of array within req.body.body
             req.body.body = paragraphs;
 
-            const articleResponse = await ArticlesAccessor.postArticles(req.body)
+            const articleResponse = await ArticlesAccessor.postArticles(req.body);
+            res.json(articleResponse);
         } catch (e) {
             return res.status(500).json({ error: "Server error" });
         }
