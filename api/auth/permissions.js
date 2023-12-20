@@ -32,8 +32,8 @@ class Permission {
 export default class PermissionSet {
   static permissions = [
     new Permission("GET profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
-    new Permission("GET user-approvals", [Acc.Admin]),
-    new Permission("POST user-approvals", [Acc.Admin]),
+    new Permission("GET approve-user", [Acc.Admin]),
+    new Permission("POST approve-user", [Acc.Admin]),
   ];
 
   static check(permission, role) {

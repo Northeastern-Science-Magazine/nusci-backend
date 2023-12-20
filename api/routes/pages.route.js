@@ -39,9 +39,7 @@ router.route("/public/css/main.css").get((req, res) => {
 
 /* CSS Themes Router */
 router.route("/public/css/themes/:themeName.css").get((req, res) => {
-  res.sendFile(
-    path.resolve() + `public/css/themes/${req.params.themeName}.css`
-  );
+  res.sendFile(path.resolve() + `public/css/themes/${req.params.themeName}.css`);
 });
 
 /* Sign Up Page Router */
@@ -53,10 +51,7 @@ router
   .post(UserCTRL.apiPostSignUp, catchError);
 
 /* Login Page Router */
-router
-  .route("/login")
-  .get(RoutesController.getLogin)
-  .post(UserCTRL.apiPostLogin, catchError);
+router.route("/login").get(RoutesController.getLogin).post(UserCTRL.apiPostLogin, catchError);
 
 /* Error Page Router */
 router.route("/error").get(RoutesController.getError);
@@ -65,14 +60,30 @@ router.route("/error").get(RoutesController.getError);
 router.route("/logout").get(RoutesController.getLogout);
 
 /* Profile Router */
-router
-  .route("/profile")
-  .get(Authorize.author, RoutesController.getProfile, catchError);
+router.route("/profile").get(
+  (req, res, next) => {
+    Authorize.auth(req, res, next, "GET profile");
+  },
+  RoutesController.getProfile,
+  catchError
+);
 
 /* New User Approval Router */
 router
   .route("/approve-user")
-  .get(Authorize.admin, AdminController.getUserApprovals, catchError)
-  .post(Authorize.admin, AdminController.postUserApprovals, catchError);
+  .get(
+    (req, res, next) => {
+      Authorize.auth(req, res, next, "GET approve-user");
+    },
+    AdminController.getUserApprovals,
+    catchError
+  )
+  .post(
+    (req, res, next) => {
+      Authorize.auth(req, res, next, "POST approve-user");
+    },
+    AdminController.postUserApprovals,
+    catchError
+  );
 
 export default router;
