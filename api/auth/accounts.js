@@ -1,5 +1,8 @@
 /**
  * Enumerated Class for Account Types
+ *
+ * None - should never be part of a permission set
+ * It is simply denoting that such a role does not exist.
  */
 export default class Accounts {
   static None = new Accounts("none");

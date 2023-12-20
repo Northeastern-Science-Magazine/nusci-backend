@@ -36,6 +36,13 @@ export default class PermissionSet {
     new Permission("POST approve-user", [Acc.Admin]),
   ];
 
+  /**
+   * Checks if the given role has the given permission
+   *
+   * @param {String} permission
+   * @param {Accounts} role
+   * @returns {Boolean}
+   */
   static check(permission, role) {
     let output = false;
     for (const p of PermissionSet.permissions) {
