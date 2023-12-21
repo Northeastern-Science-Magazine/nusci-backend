@@ -1,5 +1,7 @@
 import UsersAccessor from "../database_accessor/users.accessor.js";
 import Authorize from "../auth/authorization.js";
+import Error from "../error/errors.js";
+import handleError from "../error/error.handler.js";
 /**
  * This file controlls routes that require functionality.
  */
@@ -23,7 +25,7 @@ export default class RoutesController {
   }
 
   static async getProfile(req, res, next) {
-    if (!req.error) {
+    try {
       const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
       console.log(user);
       res.render("profile", {
@@ -33,8 +35,8 @@ export default class RoutesController {
         major: user.information.major,
         bio: user.information.bio,
       });
-    } else {
-      next();
+    } catch (e) {
+      return handleError(res, Error[500].DataGET);
     }
   }
 

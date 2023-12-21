@@ -1,9 +1,8 @@
 import express from "express";
 import path from "path";
-import UserCTRL from "../controllers/users.controller.js";
+import UserController from "../controllers/users.controller.js";
 import bodyParser from "body-parser";
 import Authorize from "../auth/authorization.js";
-import catchError from "../error/error.handler.js";
 import RoutesController from "../controllers/routes.controller.js";
 import AdminController from "../controllers/admin.controller.js";
 
@@ -48,10 +47,10 @@ router
   .get((req, res) => {
     res.sendFile(path.resolve() + "/public/html/signup.html");
   })
-  .post(UserCTRL.apiPostSignUp, catchError);
+  .post(UserController.apiPostSignUp);
 
 /* Login Page Router */
-router.route("/login").get(RoutesController.getLogin).post(UserCTRL.apiPostLogin, catchError);
+router.route("/login").get(RoutesController.getLogin).post(UserController.apiPostLogin);
 
 /* Error Page Router */
 router.route("/error").get(RoutesController.getError);
@@ -60,30 +59,18 @@ router.route("/error").get(RoutesController.getError);
 router.route("/logout").get(RoutesController.getLogout);
 
 /* Profile Router */
-router.route("/profile").get(
-  (req, res, next) => {
-    Authorize.auth(req, res, next, "GET profile");
-  },
-  RoutesController.getProfile,
-  catchError
-);
+router.route("/profile").get((req, res, next) => {
+  Authorize.auth(req, res, next, "GET profile");
+}, RoutesController.getProfile);
 
 /* New User Approval Router */
 router
   .route("/approve-user")
-  .get(
-    (req, res, next) => {
-      Authorize.auth(req, res, next, "GET approve-user");
-    },
-    AdminController.getUserApprovals,
-    catchError
-  )
-  .post(
-    (req, res, next) => {
-      Authorize.auth(req, res, next, "POST approve-user");
-    },
-    AdminController.postUserApprovals,
-    catchError
-  );
+  .get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET approve-user");
+  }, AdminController.getUserApprovals)
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST approve-user");
+  }, AdminController.postUserApprovals);
 
 export default router;

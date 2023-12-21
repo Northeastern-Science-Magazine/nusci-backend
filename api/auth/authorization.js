@@ -27,13 +27,13 @@ export default class Authorize {
         if (Permissions.check(route, role)) {
           next();
         } else {
-          handleError(res, Error[403].Forbidden);
+          return handleError(res, Error[403].Forbidden);
         }
       } else {
-        handleError(res, Error[403].Forbidden);
+        return handleError(res, Error[403].Forbidden);
       }
     } else {
-      handleError(res, Error[401].Unauthorized);
+      return handleError(res, Error[401].Unauthorized);
     }
   }
 
@@ -50,10 +50,10 @@ export default class Authorize {
       if (payload) {
         return payload.username;
       } else {
-        handleError(res, Error[403].Forbidden);
+        return handleError(res, Error[403].Forbidden);
       }
     } else {
-      handleError(res, Error[401].Unauthorized);
+      return handleError(res, Error[401].Unauthorized);
     }
   }
 }

@@ -9,13 +9,17 @@
  */
 export default Error = {
   400: {
-    BadRequest: "Bad Request",
-    Login: "Bad Login Request",
+    BadRequest: "Bad request",
+    Login: {
+      LoggedIn: "Already logged in",
+      Username: "User does not exist",
+      Password: "Invalid password",
+    },
     SignUp: {
       Username: "Username already exists",
       Email: "Email already registered",
     },
-    Unregistered: "Unregistered Account",
+    Unregistered: "Unregistered account",
   },
   401: {
     Unauthorized: "Unauthorized",
@@ -24,14 +28,14 @@ export default Error = {
     Forbidden: "Forbidden",
   },
   404: {
-    NotFound: "Page Not Found",
+    NotFound: "Page not found",
   },
   418: {
     Teapot: "I'm a teapot",
   },
   500: {
-    InternalServerError: "Internal Server Error",
-    DataRetrieval: "Could Not Get Data",
-    DataEntry: "Could Not Post Data",
+    InternalServerError: "Internal server error",
+    DataGET: "Could not get data",
+    DataPOST: "Could not post data",
   },
 };

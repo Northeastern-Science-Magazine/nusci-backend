@@ -19,8 +19,16 @@ const handleError = (res, error) => {
       res.cookie("error", "Bad Request", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[400].Login:
-      res.cookie("error", "Bad Login", { maxAge: 1000 });
+    case Error[400].Login.LoggedIn:
+      res.cookie("error", "Already logged in", { maxAge: 1000 });
+      res.redirect("/profile");
+      break;
+    case Error[400].Login.Username:
+      res.cookie("error", "User does not exist", { maxAge: 1000 });
+      res.redirect("/login");
+      break;
+    case Error[400].Login.Password:
+      res.cookie("error", "Incorrect password", { maxAge: 1000 });
       res.redirect("/login");
       break;
     case Error[400].SignUp.Username:
