@@ -1,6 +1,6 @@
 import path from "path";
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
-import Error from "../error/errors.js";
+import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
 export default class NewArticlesCTRL {
@@ -12,7 +12,7 @@ export default class NewArticlesCTRL {
       const articleResponse = await ArticlesAccessor.postArticles(author, article);
       res.json({ status: "success" });
     } catch (e) {
-      return handleError(res, Error[500].DataPOST);
+      return handleError(res, Errors[500].DataPOST);
     }
   }
 }

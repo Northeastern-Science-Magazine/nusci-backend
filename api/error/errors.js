@@ -7,7 +7,7 @@
  * an error for a case not covered, please add it.
  *
  */
-export default Error = {
+const Errors = {
   400: {
     BadRequest: "Bad request",
     Login: {
@@ -39,3 +39,5 @@ export default Error = {
     DataPOST: "Could not post data",
   },
 };
+
+export default Errors;

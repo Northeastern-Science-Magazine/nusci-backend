@@ -1,4 +1,4 @@
-import Error from "./errors.js";
+import Errors from "./errors.js";
 
 /**
  * catchError method
@@ -15,61 +15,61 @@ import Error from "./errors.js";
 const handleError = (res, error) => {
   res.clearCookie("error");
   switch (error) {
-    case Error[400].BadRequest:
+    case Errors[400].BadRequest:
       res.cookie("error", "Bad Request", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[400].Login.LoggedIn:
+    case Errors[400].Login.LoggedIn:
       res.cookie("error", "Already logged in", { maxAge: 1000 });
       res.redirect("/profile");
       break;
-    case Error[400].Login.Username:
+    case Errors[400].Login.Username:
       res.cookie("error", "User does not exist", { maxAge: 1000 });
       res.redirect("/login");
       break;
-    case Error[400].Login.Password:
+    case Errors[400].Login.Password:
       res.cookie("error", "Incorrect password", { maxAge: 1000 });
       res.redirect("/login");
       break;
-    case Error[400].SignUp.Username:
+    case Errors[400].SignUp.Username:
       res.cookie("error", "Username already exists", { maxAge: 1000 });
       res.redirect("/signup");
       break;
-    case Error[400].SignUp.Email:
+    case Errors[400].SignUp.Email:
       res.cookie("error", "Email already registered", { maxAge: 1000 });
       res.redirect("/signup");
       break;
-    case Error[400].Unregistered:
+    case Errors[400].Unregistered:
       res.cookie("error", "You currently have an unregistered account. Ask an Admin to approve your registration.", {
         maxAge: 1000,
       });
       res.redirect("/login");
       break;
-    case Error[401].Unauthorized:
+    case Errors[401].Unauthorized:
       res.cookie("error", "Please log in to access that page.", { maxAge: 1000 });
       res.redirect("/login");
       break;
-    case Error[403].Forbidden:
+    case Errors[403].Forbidden:
       res.cookie("error", "You do not have permission to access this page.", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[404].NotFound:
+    case Errors[404].NotFound:
       res.cookie("error", "Page Not Found", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[418].Teapot:
+    case Errors[418].Teapot:
       res.cookie("error", "Attempted to brew coffee with a teapot", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[500].InternalServerError:
+    case Errors[500].InternalServerError:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[500].DataRetrieval:
+    case Errors[500].DataRetrieval:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Error[500].DataEntry:
+    case Errors[500].DataEntry:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;

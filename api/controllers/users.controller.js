@@ -3,7 +3,7 @@ import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
-import Error from "../error/errors.js";
+import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
 /**
@@ -48,26 +48,26 @@ export default class UsersCTRL {
             });
             res.redirect("/profile");
           } else {
-            return handleError(res, Error[400].Login.Password);
+            return handleError(res, Errors[400].Login.Password);
           }
         } else {
           //check if the user is unregistered
           const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
           if (unregistered) {
-            return handleError(res, Error[400].Unregistered);
+            return handleError(res, Errors[400].Unregistered);
           } else {
             //doesn't exist
-            return handleError(res, Error[400].Login.Username);
+            return handleError(res, Errors[400].Login.Username);
           }
         }
       } else {
         //already logged in
-        return handleError(res, Error[400].Login.LoggedIn);
+        return handleError(res, Errors[400].Login.LoggedIn);
       }
     } catch (e) {
       console.log(e);
       //something else went wrong
-      return handleError(res, Error[400].BadRequest);
+      return handleError(res, Errors[400].BadRequest);
     }
   }
 
@@ -102,11 +102,11 @@ export default class UsersCTRL {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
-        return handleError(res, Error[400].SignUp.Username);
+        return handleError(res, Errors[400].SignUp.Username);
       }
     } catch (e) {
       console.log(e);
-      return handleError(res, Error[500].DataPOST);
+      return handleError(res, Errors[500].DataPOST);
     }
   }
 }

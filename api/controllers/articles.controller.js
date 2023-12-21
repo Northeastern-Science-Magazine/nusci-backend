@@ -1,5 +1,5 @@
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
-import Error from "../error/errors.js";
+import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
 //controller for finished articles request (on the database)
@@ -12,12 +12,12 @@ export default class ArticlesCTRL {
       let article = await ArticlesAccessor.getArticle(id);
 
       if (!article) {
-        return handleError(res, Error[404].NotFound);
+        return handleError(res, Errors[404].NotFound);
       }
 
       res.render("article.ejs", { article });
     } catch (e) {
-      return handleError(res, Error[500].DataPOST);
+      return handleError(res, Errors[500].DataPOST);
     }
   }
 
@@ -27,7 +27,7 @@ export default class ArticlesCTRL {
 
       return res.json({ articles });
     } catch (e) {
-      return handleError(res, Error[500].DataGET);
+      return handleError(res, Errors[500].DataGET);
     }
   }
 }

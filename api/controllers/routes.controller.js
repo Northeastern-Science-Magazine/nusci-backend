@@ -1,6 +1,6 @@
 import UsersAccessor from "../database_accessor/users.accessor.js";
 import Authorize from "../auth/authorization.js";
-import Error from "../error/errors.js";
+import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 /**
  * This file controlls routes that require functionality.
@@ -36,7 +36,7 @@ export default class RoutesController {
         bio: user.information.bio,
       });
     } catch (e) {
-      return handleError(res, Error[500].DataGET);
+      return handleError(res, Errors[500].DataGET);
     }
   }
 
