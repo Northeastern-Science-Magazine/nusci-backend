@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import Permissions from "./permissions.js";
 import Accounts from "./accounts.js";
+import Error from "../error/errors.js";
+import handleError from "../error/error.handler.js";
 
 export default class Authorize {
   /**
@@ -25,16 +27,13 @@ export default class Authorize {
         if (Permissions.check(route, role)) {
           next();
         } else {
-          req.error = 4012;
-          next();
+          return handleError(res, Error[403].Forbidden);
         }
       } else {
-        req.error = 4013;
-        next();
+        return handleError(res, Error[403].Forbidden);
       }
     } else {
-      req.error = 4011;
-      next();
+      return handleError(res, Error[401].Unauthorized);
     }
   }
 
@@ -51,10 +50,10 @@ export default class Authorize {
       if (payload) {
         return payload.username;
       } else {
-        //
+        return handleError(res, Error[403].Forbidden);
       }
     } else {
-      //
+      return handleError(res, Error[401].Unauthorized);
     }
   }
 }

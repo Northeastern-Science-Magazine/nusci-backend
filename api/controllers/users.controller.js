@@ -3,6 +3,8 @@ import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
+import Errors from "../error/errors.js";
+import handleError from "../error/error.handler.js";
 
 /**
  * UsersCTRL Class
@@ -25,9 +27,7 @@ export default class UsersCTRL {
     try {
       if (!req.cookies.token) {
         // check if the user is registered
-        const user = await UsersAccessor.getRegisteredByUsername(
-          req.body.username
-        );
+        const user = await UsersAccessor.getRegisteredByUsername(req.body.username);
         if (user) {
           //check if password matches
           const result = await bcrypt.compare(req.body.password, user.password);
@@ -48,30 +48,26 @@ export default class UsersCTRL {
             });
             res.redirect("/profile");
           } else {
-            req.error = 4002;
-            return next();
+            return handleError(res, Errors[400].Login.Password);
           }
         } else {
           //check if the user is unregistered
-          const unregistered = await UsersAccessor.getUnregisteredByUsername(
-            req.body.username
-          );
+          const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
           if (unregistered) {
-            req.error = 4005;
-            return next();
+            return handleError(res, Errors[400].Unregistered);
           } else {
             //doesn't exist
-            req.error = 4001;
-            return next();
+            return handleError(res, Errors[400].Login.Username);
           }
         }
       } else {
-        req.error = 4003;
-        return next();
+        //already logged in
+        return handleError(res, Errors[400].Login.LoggedIn);
       }
-    } catch (error) {
-      req.error = 4000;
-      return next();
+    } catch (e) {
+      console.log(e);
+      //something else went wrong
+      return handleError(res, Errors[400].BadRequest);
     }
   }
 
@@ -99,23 +95,18 @@ export default class UsersCTRL {
         image: req.body.image,
       };
 
-      const registered = await UsersAccessor.getRegisteredByUsername(
-        req.body.username
-      );
-      const unregistered = await UsersAccessor.getUnregisteredByUsername(
-        req.body.username
-      );
+      const registered = await UsersAccessor.getRegisteredByUsername(req.body.username);
+      const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
 
       if (!registered && !unregistered) {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
-        req.error = 4004;
-        next();
+        return handleError(res, Errors[400].SignUp.Username);
       }
-    } catch (error) {
-      req.error = 4000;
-      return next();
+    } catch (e) {
+      console.log(e);
+      return handleError(res, Errors[500].DataPOST);
     }
   }
 }
