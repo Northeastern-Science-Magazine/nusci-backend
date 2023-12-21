@@ -3,7 +3,7 @@ import path from "path";
 import UserCTRL from "../controllers/users.controller.js";
 import bodyParser from "body-parser";
 import Authorize from "../auth/authorization.js";
-import catchError from "../routes/error.route.js";
+import catchError from "../error/error.handler.js";
 import RoutesController from "../controllers/routes.controller.js";
 import AdminController from "../controllers/admin.controller.js";
 
