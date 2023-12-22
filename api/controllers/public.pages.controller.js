@@ -2,11 +2,12 @@ import UsersAccessor from "../database_accessor/users.accessor.js";
 import Authorize from "../auth/authorization.js";
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
+
 /**
- * This file controlls routes that require functionality.
+ * This file controls routes from the public pages routes file.
  */
 
-export default class RoutesController {
+export default class PublicPagesController {
   static getLogin(req, res) {
     if (req.cookies.token) {
       res.redirect("/profile");

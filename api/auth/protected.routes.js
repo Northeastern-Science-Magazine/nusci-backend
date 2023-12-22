@@ -1,10 +1,19 @@
 import Acc from "./accounts.js";
 
 /**
- * Handles a single permission
+ * Permission class
+ *
+ * Handles a single instance of a permission
  */
 class Permission {
   /**
+   * Constructor for a Route Permission
+   *
+   * Permission field is a string that should correspond to the
+   * permission name given in the router file.
+   *
+   * Roles that have permission to access this route should be added as
+   * a list.
    *
    * @param {String} permission permission to give
    * @param {Array of Accounts} roles roles that have this permission
@@ -15,7 +24,9 @@ class Permission {
   }
 
   /**
-   * Checks if the given role has the given permission
+   * Check method
+   *
+   * Checks if the given role has *this* permission
    *
    * @param {String} permission
    * @param {Array of Accounts} role
@@ -27,17 +38,27 @@ class Permission {
 }
 
 /**
- * Handles the set of permissions
+ * Handles the set of permissions that exist on all routers
  */
-export default class PermissionSet {
-  static permissions = [
+export default class ProtectedRoutes {
+  /**
+   * static field permissions
+   *
+   * Set of all permissions on this website. Constructed as an array
+   * of Permission objects. If you want to add another protected route,
+   * this is the place to add it.
+   */
+  static routes = [
     new Permission("GET profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
     new Permission("GET approve-user", [Acc.Admin]),
     new Permission("POST approve-user", [Acc.Admin]),
   ];
 
   /**
+   * Check method
+   *
    * Checks if the given role has the given permission
+   * Checks all permissions
    *
    * @param {String} permission
    * @param {Accounts} role
@@ -45,7 +66,7 @@ export default class PermissionSet {
    */
   static check(permission, role) {
     let output = false;
-    for (const p of PermissionSet.permissions) {
+    for (const p of ProtectedRoutes.routes) {
       output = output || p.check(permission, role);
     }
     return output;

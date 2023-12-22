@@ -1,10 +1,17 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import Permissions from "./permissions.js";
+import ProtectedRoutes from "./protected.routes.js";
 import Accounts from "./accounts.js";
-import Error from "../error/errors.js";
+import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
+/**
+ * Authorize class
+ *
+ * Contains methods that are used to authorize users
+ * by authenticating tokens, and verify valid permissions
+ * to routes requested by said users.
+ */
 export default class Authorize {
   /**
    * auth Method
@@ -24,21 +31,22 @@ export default class Authorize {
       const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
       if (payload) {
         const role = Accounts.toAccount(payload.role);
-        if (Permissions.check(route, role)) {
+        if (ProtectedRoutes.check(route, role)) {
           next();
         } else {
-          return handleError(res, Error[403].Forbidden);
+          return handleError(res, Errors[403].Forbidden);
         }
       } else {
-        return handleError(res, Error[403].Forbidden);
+        return handleError(res, Errors[403].Forbidden);
       }
     } else {
-      return handleError(res, Error[401].Unauthorized);
+      return handleError(res, Errors[401].Unauthorized);
     }
   }
 
   /**
    * getUsername of the currently logged in user
+   * using the token as auth
    *
    * @param {HTTP REQ} req
    * @returns {String} String username
@@ -49,6 +57,27 @@ export default class Authorize {
       const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
       if (payload) {
         return payload.username;
+      } else {
+        return handleError(res, Error[403].Forbidden);
+      }
+    } else {
+      return handleError(res, Error[401].Unauthorized);
+    }
+  }
+
+  /**
+   * getRole of the currently logged in user
+   * using the token as auth
+   *
+   * @param {HTTP REQ} req
+   * @returns {String} String role
+   */
+  static getRole(req) {
+    dotenv.config();
+    if (req.cookies.token) {
+      const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
+      if (payload) {
+        return payload.role;
       } else {
         return handleError(res, Error[403].Forbidden);
       }

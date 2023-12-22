@@ -2,19 +2,17 @@ import express from "express";
 import path from "path";
 import UserController from "../controllers/users.controller.js";
 import bodyParser from "body-parser";
-import Authorize from "../auth/authorization.js";
-import RoutesController from "../controllers/routes.controller.js";
-import AdminController from "../controllers/admin.controller.js";
+import PagesController from "../controllers/public.pages.controller.js";
+
+/**
+ * This file controls all routes on the main, public
+ * facing side of the website. (i.e. pages and routes
+ * that not need login in to access)
+ */
 
 const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
-
-/**
- * This file controls the routing for the static
- * pages on the NU SCI Website. This includes all
- * hardcoded pages not served from the database.
- */
 
 /* Default Page Router */
 router.route("/").get((req, res) => {
@@ -50,27 +48,12 @@ router
   .post(UserController.apiPostSignUp);
 
 /* Login Page Router */
-router.route("/login").get(RoutesController.getLogin).post(UserController.apiPostLogin);
+router.route("/login").get(PagesController.getLogin).post(UserController.apiPostLogin);
 
 /* Error Page Router */
-router.route("/error").get(RoutesController.getError);
+router.route("/error").get(PagesController.getError);
 
 /* Logout Router */
-router.route("/logout").get(RoutesController.getLogout);
-
-/* Profile Router */
-router.route("/profile").get((req, res, next) => {
-  Authorize.auth(req, res, next, "GET profile");
-}, RoutesController.getProfile);
-
-/* New User Approval Router */
-router
-  .route("/approve-user")
-  .get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET approve-user");
-  }, AdminController.getUserApprovals)
-  .post((req, res, next) => {
-    Authorize.auth(req, res, next, "POST approve-user");
-  }, AdminController.postUserApprovals);
+router.route("/logout").get(PagesController.getLogout);
 
 export default router;

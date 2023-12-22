@@ -20,8 +20,9 @@ export default class UsersCTRL {
    * to sign in is valid. Utilizes the getRegisteredByUsername
    * UserAccessor method to accomplish this.
    *
-   * @param {*} req web request object
-   * @param {*} res web response
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response
+   * @param {function} next middleware function
    */
   static async apiPostLogin(req, res, next) {
     try {
@@ -46,7 +47,7 @@ export default class UsersCTRL {
               httpOnly: true,
               maxAge: 60 * 60 * 1000,
             });
-            res.redirect("/profile");
+            res.redirect("/internal/profile");
           } else {
             return handleError(res, Errors[400].Login.Password);
           }
@@ -79,8 +80,9 @@ export default class UsersCTRL {
    * by calling the user.accessor.js file and creating a new
    * user with the existing req data.
    *
-   * @param {*} req web request information for signup
-   * @param {*} res weh response object
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
    */
   static async apiPostSignUp(req, res, next) {
     try {

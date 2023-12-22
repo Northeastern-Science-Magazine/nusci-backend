@@ -1,3 +1,5 @@
+/** REQUIRES REWORK */
+
 import express from "express";
 import ArticlesCTRL from "../controllers/articles.controller.js";
 import catchError from "../error/error.handler.js";
