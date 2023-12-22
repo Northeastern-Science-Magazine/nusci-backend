@@ -65,11 +65,11 @@ const handleError = (res, error) => {
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Errors[500].DataRetrieval:
+    case Errors[500].DataGET:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;
-    case Errors[500].DataEntry:
+    case Errors[500].DataPOST:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;
