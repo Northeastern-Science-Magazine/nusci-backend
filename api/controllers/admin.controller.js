@@ -3,11 +3,12 @@ import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
 /**
- * This file controls all the routes/requests that only admins
- * should have access to.
+ * AdminController class
+ *
+ * Contains methods that handle requests only admins should
+ * have access to.
  *
  */
-
 export default class AdminController {
   static async getUserApprovals(req, res, next) {
     try {

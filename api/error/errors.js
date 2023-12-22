@@ -6,6 +6,9 @@
  * Extensible on purpose - if you need to throw
  * an error for a case not covered, please add it.
  *
+ * To add a new error, you have to add it here,
+ * and you have to add a case in error.handler.js
+ * in order to actually have that error be handled.
  */
 const Errors = {
   400: {

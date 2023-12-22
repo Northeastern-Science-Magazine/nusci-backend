@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 
 /**
  * Articles Accessor Class
+ *
+ * I am truly unsure about this one dawg
  */
 export default class ArticlesAccessor {
   static async postArticles(articleDoc) {

@@ -3,7 +3,10 @@ import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
 //controller for finished articles request (on the database)
-
+/**
+ * Unsure about this one too
+ *
+ */
 export default class ArticlesCTRL {
   static async apiGetArticle(req, res, next) {
     try {
