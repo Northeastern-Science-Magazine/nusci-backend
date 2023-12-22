@@ -1,3 +1,5 @@
+/** REQUIRES REWORK */
+
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
@@ -18,7 +20,7 @@ export default class ArticlesCTRL {
         return handleError(res, Errors[404].NotFound);
       }
 
-      res.render("article.ejs", { article });
+      res.json({ article });
     } catch (e) {
       return handleError(res, Errors[500].DataPOST);
     }
