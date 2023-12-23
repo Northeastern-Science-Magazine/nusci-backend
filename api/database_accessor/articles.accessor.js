@@ -1,4 +1,5 @@
 import PendingArticle from "../models/pending.article.js";
+import Article from "../models/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
@@ -30,13 +31,13 @@ export default class ArticlesAccessor {
    *
    * Gets an article based off of its Mongo ObjectID
    *
-   * @param {String} articleId
+   * @param {String} articleID
    * @returns article
    */
-  static async getPendingArticle(articleId) {
+  static async getPendingArticle(articleID) {
     try {
       await Connection.open("articles");
-      const article = await PendingArticle.findById(new mongoose.Types.ObjectId(articleId));
+      const article = await PendingArticle.findById(new mongoose.Types.ObjectId(articleID));
       return article;
     } catch (e) {
       console.error(e);
@@ -62,5 +63,47 @@ export default class ArticlesAccessor {
     }
   }
 
-  static async approveArticles(articleID) {}
+  /**
+   * approveArticles method
+   *
+   * Given the Mongo ObjectIDs of pending articles,
+   * this method will approve them.
+   *
+   * @param {*} articleIDs
+   * @returns
+   */
+  static async approveArticles(articleIDs) {
+    try {
+      const articles = [];
+      for await (const id of articleIDs) {
+        const pendingArticle = await PendingArticle.findById(new mongoose.Types.ObjectId(id));
+        const approvedArticle = await Article.create(pendingArticle.toJSON());
+        await PendingArticle.deleteOne({ ObjectId: id });
+        articles.push(approvedArticle);
+      }
+      return articles;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  /**
+   * getArticle method
+   *
+   * returns the article with given ID
+   *
+   * @param {String} articleID
+   * @returns article
+   */
+  static async getArticle(articleID) {
+    try {
+      await Connection.open("articles");
+      const article = await Article.findById(new mongoose.Types.ObjectId(articleID));
+      return article;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
 }
