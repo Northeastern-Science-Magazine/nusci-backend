@@ -3,10 +3,8 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 const model = mongoose.model;
 
-/**
- * Approved Article Schema
- */
-const ArticleSchema = new Schema(
+// article Schema
+const PendingArticleSchema = new Schema(
   {
     title: String,
     author: String,
@@ -28,16 +26,15 @@ const ArticleSchema = new Schema(
     ],
     theme: String,
     elementOrder: [{ type: String }],
-    approver: String,
   },
   {
-    collection: "articles",
+    collection: "pending-articles",
   }
 );
 
 const db = mongoose.connection.useDb("articles");
 
 // article model
-const Article = db.model("Article", ArticleSchema);
+const PendingArticle = db.model("Article", PendingArticleSchema);
 
-export default Article;
+export default PendingArticle;

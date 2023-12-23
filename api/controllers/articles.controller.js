@@ -1,3 +1,5 @@
+/** REQUIRES REWORK */
+
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
@@ -12,13 +14,13 @@ export default class ArticlesCTRL {
     try {
       let id = req.params.id || {};
 
-      let article = await ArticlesAccessor.getArticle(id);
+      let article = await ArticlesAccessor.getPendingArticle(id);
 
       if (!article) {
         return handleError(res, Errors[404].NotFound);
       }
 
-      res.render("article.ejs", { article });
+      res.json({ article });
     } catch (e) {
       return handleError(res, Errors[500].DataPOST);
     }

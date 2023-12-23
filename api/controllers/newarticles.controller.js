@@ -12,7 +12,7 @@ export default class NewArticlesCTRL {
       const author = req.body.author;
       const article = req.body.article;
 
-      const articleResponse = await ArticlesAccessor.postArticles(author, article);
+      const articleResponse = await ArticlesAccessor.postArticle(author, article);
       res.json({ status: "success" });
     } catch (e) {
       return handleError(res, Errors[500].DataPOST);
