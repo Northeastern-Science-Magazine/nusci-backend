@@ -14,7 +14,7 @@ export default class ArticlesCTRL {
     try {
       let id = req.params.id || {};
 
-      let article = await ArticlesAccessor.getArticle(id);
+      let article = await ArticlesAccessor.getPendingArticle(id);
 
       if (!article) {
         return handleError(res, Errors[404].NotFound);
