@@ -18,4 +18,9 @@ export default class NewArticlesCTRL {
       return handleError(res, Errors[500].DataPOST);
     }
   }
+
+  static async apiGetPostArticlePage(req, res, next) {
+    //get the existing draft if needed, then send it in EJS to load fields
+    res.render("post_article");
+  }
 }
