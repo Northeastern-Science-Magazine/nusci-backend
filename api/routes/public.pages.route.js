@@ -34,6 +34,18 @@ router.route("/public/css/main.css").get((req, res) => {
   res.sendFile(path.resolve() + "public/css/main.css");
 });
 
+router.route("/public/css/draggable.css").get((req, res) => {
+  res.sendFile(path.resolve() + "public/css/draggable.css");
+});
+
+router.route("/public/css/panel.css").get((req, res) => {
+  res.sendFile(path.resolve() + "public/css/panel.css");
+});
+
+router.route("/public/css/articlepost.css").get((req, res) => {
+  res.sendFile(path.resolve() + "public/css/articlepost.css");
+});
+
 /* CSS Themes Router */
 router.route("/public/css/themes/:themeName.css").get((req, res) => {
   res.sendFile(path.resolve() + `public/css/themes/${req.params.themeName}.css`);

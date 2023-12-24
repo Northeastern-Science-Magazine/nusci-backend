@@ -4,17 +4,62 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Submit Your Article</title>
-    <script src="/public/js/draggable.js"></script>
+    <link href="/public/css/draggable.css" rel="stylesheet" type="text/css" />
+    <link href="/public/css/panel.css" rel="stylesheet" type="text/css" />
+    <link href="/public/css/articlepost.css" rel="stylesheet" type="text/css" />
+    <script defer src="/public/js/draggable.js"></script>
   </head>
   <body>
     <h1>Submit an Article!</h1>
-    <form method="POST">
-      <hr />
-      <input type="text" name="title" />
-      <input type="text" name="author" />
-      <input type="text" name="year" />
-      <input type="text" name="major" />
-      <hr />
-    </form>
+    <div id="container">
+      <div id="article-content">
+        <div id="article-header">
+          <h3>Article Header</h3>
+        </div>
+        <div id="article-body">
+          <ul class="body-elements">
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 1</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 2</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 3</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 4</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 5</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+            <li class="item" draggable="true">
+              <div class="details">
+                <p>Element 6</p>
+              </div>
+              <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div id="add-element-panel">
+        <p>Add an element:</p>
+      </div>
+    </div>
   </body>
 </html>

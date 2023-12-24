@@ -1,0 +1,23 @@
+#container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100vw;
+}
+
+#article-header {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width: 100%;
+}
+
+#article-content {
+  background-color: #666666;
+  width: 50%;
+}
+
+#add-element-panel {
+  background-color: #dddddd;
+  width: 30%;
+}
