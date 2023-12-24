@@ -17,6 +17,7 @@
   border: 1px solid #ccc;
   justify-content: space-between;
 }
+
 .item .details {
   display: flex;
   align-items: center;
@@ -47,4 +48,12 @@
   height: 20px;
   user-select: none;
   pointer-events: none;
+}
+
+.input-text {
+  resize: none;
+  width: 40vw;
+  border: none;
+  margin-top: 5px;
+  height: 10vh;
 }
