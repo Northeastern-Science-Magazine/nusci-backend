@@ -1,13 +1,9 @@
-/** REQUIRES REWORK */
-
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 
-//controller for finished articles request (on the database)
 /**
- * Unsure about this one too
- *
+ * Articles Controller class
  */
 export default class ArticlesCTRL {
   static async apiGetArticle(req, res, next) {
@@ -16,11 +12,11 @@ export default class ArticlesCTRL {
 
       let article = await ArticlesAccessor.getPendingArticle(id);
 
-      if (!article) {
+      if (article) {
+        res.render("article", { article });
+      } else {
         return handleError(res, Errors[404].NotFound);
       }
-
-      res.json({ article });
     } catch (e) {
       return handleError(res, Errors[500].DataPOST);
     }
