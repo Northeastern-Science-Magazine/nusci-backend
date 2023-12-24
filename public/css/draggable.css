@@ -4,14 +4,6 @@
   justify-content: left;
 }
 
-.body-elements {
-  width: 100%;
-  margin: 20px 20px 20px 20px;
-  background: #fff;
-  border-radius: 7px;
-  padding: 30px 25px 20px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-}
 .body-elements .item {
   list-style: none;
   display: flex;

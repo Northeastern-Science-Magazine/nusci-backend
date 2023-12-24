@@ -14,13 +14,18 @@
     <div id="container">
       <div id="article-content">
         <div id="article-header">
-          <h3>Article Header</h3>
+          <div class="panel">
+            <h3>Article Header</h3>
+          </div>
         </div>
         <div id="article-body">
-          <ul class="body-elements">
+          <ul class="body-elements panel">
             <li class="item" draggable="true">
               <div class="details">
                 <p>Element 1</p>
+                <br />
+                <br />
+                <input type="text" />
               </div>
               <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
             </li>
@@ -57,8 +62,12 @@
           </ul>
         </div>
       </div>
-      <div id="add-element-panel">
-        <p>Add an element:</p>
+      <div id="add-element-container">
+        <div class="panel-container">
+          <div id="add-panel" class="panel">
+            <p>Add an element:</p>
+          </div>
+        </div>
       </div>
     </div>
   </body>
