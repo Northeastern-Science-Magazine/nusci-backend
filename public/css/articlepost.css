@@ -27,3 +27,29 @@ h1 {
 #add-element-container {
   width: 30%;
 }
+
+.btn {
+  padding: 0px;
+  transition: transform 0.3s;
+  background: #ffffff;
+  border-color: #000000;
+  border-width: 3px;
+  color: #000000;
+  padding: 10px 10px 10px 10px;
+  width: 100%;
+}
+
+.btn:hover {
+  cursor: pointer;
+  background: #000000;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+.btn span {
+  transition: transform 0.3s;
+}
+
+.btn:hover span {
+  transform: scale(0.95);
+}

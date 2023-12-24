@@ -50,6 +50,12 @@
   pointer-events: none;
 }
 
+.ui-delete-element {
+  height: 20px;
+  user-select: none;
+  pointer-events: none;
+}
+
 .input-text {
   resize: none;
   width: 40vw;
