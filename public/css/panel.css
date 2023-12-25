@@ -3,7 +3,7 @@
   margin: 20px 20px 20px 20px;
   background: #fff;
   border-radius: 7px;
-  padding: 30px 25px 20px;
+  padding: 25px 25px 25px 25px;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -15,4 +15,8 @@
 
 #add-panel {
   height: 100vh;
+}
+
+#body-panel {
+  justify-content: center;
 }

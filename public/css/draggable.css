@@ -4,6 +4,10 @@
   justify-content: left;
 }
 
+.body-elements {
+  padding: none;
+}
+
 .body-elements .item {
   list-style: none;
   display: flex;
@@ -58,7 +62,7 @@
 
 .input-text {
   resize: none;
-  width: 40vw;
+  width: 35vw;
   border: none;
   margin-top: 5px;
   height: 10vh;
