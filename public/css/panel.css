@@ -1,0 +1,28 @@
+.panel {
+  width: 100%;
+  margin: 20px 20px 20px 20px;
+  background: #fff;
+  border-radius: 7px;
+  padding: 25px 25px 25px 25px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.panel-container {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+#add-panel {
+  height: 100vh;
+}
+
+#body-panel {
+  justify-content: center;
+}
+
+#header-panel {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

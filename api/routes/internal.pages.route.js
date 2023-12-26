@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import Authorize from "../auth/authorization.js";
 import PagesController from "../controllers/public.pages.controller.js";
 import AdminController from "../controllers/admin.controller.js";
+import NewArticlesCTRL from "../controllers/newarticles.controller.js";
 
 /**
  * This file controls all routes on the internally
@@ -46,5 +47,14 @@ router
   .post((req, res, next) => {
     Authorize.auth(req, res, next, "POST approve-user");
   }, AdminController.postUserApprovals);
+
+router
+  .route("/submit-article")
+  .get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET submit-article");
+  }, NewArticlesCTRL.apiGetPostArticlePage)
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST submit-article");
+  }, NewArticlesCTRL.apiPostArticle);
 
 export default router;
