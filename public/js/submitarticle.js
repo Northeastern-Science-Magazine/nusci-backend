@@ -3,6 +3,8 @@ window.addEventListener("load", () => {
   const items = sortableList.querySelectorAll(".item");
   var list = document.getElementById("element-list");
 
+  updateFormFields();
+
   document.getElementById("add-body-pg").addEventListener("click", () => {
     list = document.getElementById("element-list");
     list.appendChild(generateElement("body", "", items.length));
