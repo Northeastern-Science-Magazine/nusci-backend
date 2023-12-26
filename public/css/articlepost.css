@@ -28,12 +28,6 @@ h1 {
   width: 30%;
 }
 
-#header-panel {
-  display: flex;
-  flex-direction: row;
-  justify-content: cneter;
-}
-
 .header-col {
   margin: 20px 20px 20px 20px;
 }

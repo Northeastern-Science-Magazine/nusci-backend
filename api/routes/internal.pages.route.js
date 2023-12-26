@@ -48,8 +48,13 @@ router
     Authorize.auth(req, res, next, "POST approve-user");
   }, AdminController.postUserApprovals);
 
-router.route("/submit-article").get((req, res, next) => {
-  Authorize.auth(req, res, next, "GET submit-article");
-}, NewArticlesCTRL.apiGetPostArticlePage);
+router
+  .route("/submit-article")
+  .get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET submit-article");
+  }, NewArticlesCTRL.apiGetPostArticlePage)
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST submit-article");
+  }, NewArticlesCTRL.apiPostArticle);
 
 export default router;

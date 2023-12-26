@@ -12,9 +12,9 @@
   </head>
   <body>
     <h1>Submit an Article!</h1>
-    <div id="container">
-      <div id="article-content">
-        <form method="POST">
+    <form method="POST">
+      <div id="container">
+        <div id="article-content">
           <div id="article-header">
             <div class="panel">
               <h3>Article Header</h3>
@@ -87,43 +87,48 @@
             </div>
           </div>
           <div id="article-body">
-            <div id="body-panel" class="panel">
-              <h3>Article Body</h3>
-              <ul id="element-list" class="body-elements">
-                <li class="item" draggable="true">
-                  <div class="details">
-                    <textarea class="input-text body" placeholder="body"></textarea>
-                  </div>
-                  <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
-                  <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
-                </li>
-                <li class="item" draggable="true">
-                  <div class="details">
-                    <textarea class="input-text pull" placeholder="pull"></textarea>
-                  </div>
-                  <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
-                  <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
-                </li>
-              </ul>
+            <div class="panel">
+              <div id="body-panel">
+                <h3>Article Body</h3>
+                <ul id="element-list" class="body-elements">
+                  <li class="item" draggable="true">
+                    <div class="details">
+                      <textarea class="input-text body" placeholder="body"></textarea>
+                    </div>
+                    <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
+                    <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+                  </li>
+                  <li class="item" draggable="true">
+                    <div class="details">
+                      <textarea class="input-text pull" placeholder="pull"></textarea>
+                    </div>
+                    <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
+                    <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-        </form>
-      </div>
-      <div id="add-element-container">
-        <div class="panel-container">
-          <div id="add-panel" class="panel">
-            <h3>Add an element:</h3>
-            <button class="btn" id="add-body-pg">Add body paragraph</button>
-            <br />
-            <br />
-            <button class="btn" id="add-pull-quote">Add pull quote</button>
-            <br />
-            <br />
-            <hr />
-            <button class="btn" id="submit">Submit</button>
+          <input id="body-list" type="hidden" name="body" />
+          <input id="pull-list" type="hidden" name="pull" />
+          <input id="order" type="hidden" name="order" />
+        </div>
+        <div id="add-element-container">
+          <div class="panel-container">
+            <div id="add-panel" class="panel">
+              <h3>Add an element:</h3>
+              <button class="btn" id="add-body-pg">Add body paragraph</button>
+              <br />
+              <br />
+              <button class="btn" id="add-pull-quote">Add pull quote</button>
+              <br />
+              <br />
+              <hr />
+              <input type="submit" class="btn" id="submit" />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </body>
 </html>

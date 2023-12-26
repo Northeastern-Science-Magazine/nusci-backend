@@ -7,18 +7,19 @@ window.addEventListener("load", () => {
     list = document.getElementById("element-list");
     list.appendChild(generateElement("body", "", items.length));
     makeDraggable();
+    updateFormFields();
   });
   document.getElementById("add-pull-quote").addEventListener("click", () => {
     list = document.getElementById("element-list");
     list.appendChild(generateElement("pull", "", items.length));
     makeDraggable();
+    updateFormFields();
   });
 });
 
 function generateElement(type, text, index) {
   //textarea
   let textarea = document.createElement("textarea");
-  textarea.id = `textarea-${index}`;
   textarea.classList.add("input-text", type);
   textarea.placeholder = type;
   textarea.innerHTML = text;
@@ -49,12 +50,23 @@ function generateElement(type, text, index) {
   return li;
 }
 
+function updateFormFields() {
+  const bps = JSON.stringify(getAllBodyParagraphs());
+  const pqs = JSON.stringify(getAllPullQuotes());
+  const order = JSON.stringify(getOrder());
+
+  document.getElementById("body-list").value = bps;
+  document.getElementById("pull-list").value = pqs;
+  document.getElementById("order").value = order;
+}
+
 //may want to abstract in the future when there are more dynamic text-based elements
+
 function getAllBodyParagraphs() {
   const bodyElements = document.querySelectorAll(".body");
   const bodyParagraphs = [];
   for (let bp of bodyElements) {
-    bodyParagraphs.push(bp.innerHTML);
+    bodyParagraphs.push(bp.value);
   }
   return bodyParagraphs;
 }
@@ -63,13 +75,13 @@ function getAllPullQuotes() {
   const pullElements = document.querySelectorAll(".pull");
   const pullQuotes = [];
   for (let pq of pullElements) {
-    pullQuotes.push(pq.innerHTML);
+    pullQuotes.push(pq.value);
   }
   return pullQuotes;
 }
 
 function getOrder() {
-  const elements = document.querySelectorAll(".body", ".pull");
+  const elements = document.querySelectorAll(".body, .pull");
   const order = [];
   for (let e of elements) {
     if (e.classList.contains("body")) {
