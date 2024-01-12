@@ -13,6 +13,9 @@ window.addEventListener("load", () => {
     list.appendChild(generateElement("pull", "", items.length));
     makeDraggable();
   });
+  document.getElementById("submit").addEventListener("click", () => {
+    updateFormFields();
+  });
 });
 
 function generateElement(type, text, index) {
@@ -90,8 +93,3 @@ function getOrder() {
   }
   return order;
 }
-
-document.getElementById("submit").addEventListener("click", () => {
-  // Call the updateFormFields function only when the form is submitted
-  updateFormFields();
-});
