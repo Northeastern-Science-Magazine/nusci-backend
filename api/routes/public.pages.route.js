@@ -26,24 +26,12 @@ router.route("/authors").get((req, res) => {
 
 /* Eboard Page Router */
 router.route("/eboard").get((req, res) => {
-  res.sendFile(path.resolve() + "/public/html/eboard.html");
+  res.sendFile(path.resolve() + "/public/html/eboard20232024.html");
 });
 
 /* Main CSS Router */
-router.route("/public/css/main.css").get((req, res) => {
-  res.sendFile(path.resolve() + "public/css/main.css");
-});
-
-router.route("/public/css/draggable.css").get((req, res) => {
-  res.sendFile(path.resolve() + "public/css/draggable.css");
-});
-
-router.route("/public/css/panel.css").get((req, res) => {
-  res.sendFile(path.resolve() + "public/css/panel.css");
-});
-
-router.route("/public/css/articlepost.css").get((req, res) => {
-  res.sendFile(path.resolve() + "public/css/articlepost.css");
+router.route("/public/css/:style.css").get((req, res) => {
+  res.sendFile(path.resolve() + `public/css/${req.params.style}.css`);
 });
 
 /* CSS Themes Router */
