@@ -41,6 +41,38 @@ export default class PublicPagesController {
     }
   }
 
+  static async getEditProfile(req, res, next) {
+    try {
+      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
+      console.log(user);
+      res.render("edit_profile", {
+        name: user.username,
+        role: user.role,
+        year: user.information.year,
+        major: user.information.major,
+        bio: user.information.bio,
+      });
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
+    }
+  }
+
+  static async postEditProfile(req, res, next) {
+    try {
+      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
+      console.log(user);
+      res.render("profile", {
+        name: user.username,
+        role: user.role,
+        year: user.information.year,
+        major: user.information.major,
+        bio: user.information.bio,
+      });
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
+    }
+  }
+
   static getLogout(req, res) {
     res.clearCookie("token");
     res.redirect("/");

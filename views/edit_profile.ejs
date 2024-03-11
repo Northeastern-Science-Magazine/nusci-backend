@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Edit Profile</title>
+    </head>
+    <body>
+        <h1>Edit rofile</h1>
+
+        <form method="POST">
+            <label for="username">Name:</label>
+            <input type="text" id="username" name="username" value="<%= name %>">
+            <br />
+            <br />
+            <label for="role">Role:</label>
+            <input type="text" id="role" name="role" value="<%= role %>">
+            <br />
+            <br />
+            <label for="year">Year:</label>
+            <input type="text" id="year" name="year" value="<%= year %>">
+            <br />
+            <br />
+            <label for="major">Major:</label>
+            <input type="text" id="major" name="major" value="<%= major %>">
+            <br />
+            <br />
+            <label for="bio">Bio:</label>
+            <input type="text" id="bio" name="bio" value="<%= bio %>">
+            <br />
+            <br />
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html> 
