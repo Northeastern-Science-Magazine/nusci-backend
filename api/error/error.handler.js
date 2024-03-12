@@ -21,7 +21,7 @@ const handleError = (res, error) => {
       break;
     case Errors[400].Login.LoggedIn:
       res.cookie("error", "Already logged in", { maxAge: 1000 });
-      res.redirect("/profile");
+      res.redirect("/internal/profile");
       break;
     case Errors[400].Login.Username:
       res.cookie("error", "User does not exist", { maxAge: 1000 });

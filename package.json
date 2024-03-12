@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Boeufin/NUSciWebsite.git"
+    "url": "git+https://github.com/Northeastern-Science-Magazine/nusci-website.git"
   },
   "author": "Ethan Szeto, Raisa Bhuiyan",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Boeufin/NUSciWebsite/issues"
+    "url": "https://github.com/Northeastern-Science-Magazine/nusci-website/issues"
   },
-  "homepage": "https://github.com/Boeufin/NUSciWebsite#readme",
+  "homepage": "https://github.com/Northeastern-Science-Magazine/nusci-website#readme",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",

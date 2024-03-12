@@ -29,6 +29,11 @@ router.route("/eboard").get((req, res) => {
   res.sendFile(path.resolve() + "/public/html/eboard20232024.html");
 });
 
+/* Contact Page Router */
+router.route("/contact").get((req, res) => {
+  res.sendFile(path.resolve() + "/public/html/contact.html")
+});
+
 /* Main CSS Router */
 router.route("/public/css/:style.css").get((req, res) => {
   res.sendFile(path.resolve() + `public/css/${req.params.style}.css`);
