@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = '/profile';
 
         } catch (error) {
-            console.log("help");
             console.error(error.message);
         }
     });

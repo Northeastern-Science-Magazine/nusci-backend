@@ -138,7 +138,7 @@ static async updateUser(updatedUser) {
     
     // Assuming you have a common field like "username" to identify the user
     const filter = { username: updatedUser.username }; // Update with the appropriate field for your use case
-    console.log(updatedUser.username);
+
     // Find the existing user
     const existingUser = await RegisteredUser.findOne(filter);
 
