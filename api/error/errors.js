@@ -41,6 +41,7 @@ const Errors = {
     InternalServerError: "Internal server error",
     DataGET: "Could not get data",
     DataPOST: "Could not post data",
+    DataPUT: "Could not put data",
   },
 };
 
