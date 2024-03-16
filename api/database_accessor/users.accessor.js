@@ -136,14 +136,13 @@ static async updateUser(updatedUser) {
   try {
     await Connection.open("users");
     
-    // Assuming you have a common field like "username" to identify the user
-    const filter = { username: updatedUser.username }; // Update with the appropriate field for your use case
+    const filter = { username: updatedUser.username };
 
     // Find the existing user
     const existingUser = await RegisteredUser.findOne(filter);
 
     if (!existingUser) {
-      // If the user is not found, return null or throw an error based on your preference
+      // If the user is not found, return null
       return null;
     }
 
