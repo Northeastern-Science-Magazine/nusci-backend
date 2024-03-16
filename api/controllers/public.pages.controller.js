@@ -44,7 +44,7 @@ export default class PublicPagesController {
   static async getEditProfile(req, res, next) {
     try {
       const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
-      console.log(user);
+      
       res.render("edit_profile", {
         name: user.username,
         role: user.role,
@@ -57,19 +57,36 @@ export default class PublicPagesController {
     }
   }
 
-  static async postEditProfile(req, res, next) {
+  static async putEditProfile(req, res, next) {
     try {
-      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
-      console.log(user);
-      res.render("profile", {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-      });
-    } catch (e) {
-      return handleError(res, Errors[500].DataGET);
+      // Update the user information
+      const updatedUser = {
+        username: req.body.name,
+        role: req.body.role,
+        information: {
+          year: req.body.year,
+          major: req.body.major,
+          bio: req.body.bio,
+          image: req.body.image,
+        },
+      };
+  
+      // Update the password if provided (might be a nifty feature for the future)
+      if (req.body.password) {
+        updatedUser.password = await bcrypt.hash(req.body.password, 10);
+      }
+
+      // Update the user in the database
+      const updatedUserData = await UsersAccessor.updateUser(updatedUser);
+      if (!updatedUserData) {
+        // Handle case where the user is not found
+        return handleError(res, Errors[404].UserNotFound);
+      }
+
+      res.redirect("/profile");
+    } catch (e) {;
+      console.log(e);
+      return handleError(res, Errors[500].DataPUT);
     }
   }
 

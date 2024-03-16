@@ -44,9 +44,9 @@ router
   .get((req, res, next) => {
     Authorize.auth(req, res, next, "GET edit-profile");
   }, PagesController.getEditProfile)
-  .post((req, res, next) => {
-    Authorize.auth(req, res, next, "POST edit-profile");
-  }, PagesController.postEditProfile);
+  .put((req, res, next) => {
+    Authorize.auth(req, res, next, "PUT edit-profile");
+  }, PagesController.putEditProfile);
 
 /* New User Approval Router */
 router

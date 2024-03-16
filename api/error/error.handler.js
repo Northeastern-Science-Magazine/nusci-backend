@@ -57,6 +57,10 @@ const handleError = (res, error) => {
       res.cookie("error", "Page Not Found", { maxAge: 1000 });
       res.redirect("/error");
       break;
+    case Errors[404].UserNotFound:
+      res.cookie("error", "User Not Found", { maxAge: 1000 });
+      res.redirect("/error");
+      break;
     case Errors[418].Teapot:
       res.cookie("error", "Attempted to brew coffee with a teapot", { maxAge: 1000 });
       res.redirect("/error");
@@ -70,6 +74,10 @@ const handleError = (res, error) => {
       res.redirect("/error");
       break;
     case Errors[500].DataPOST:
+      res.cookie("error", "Internal server error", { maxAge: 1000 });
+      res.redirect("/error");
+      break;
+    case Errors[500].DataPUT:
       res.cookie("error", "Internal server error", { maxAge: 1000 });
       res.redirect("/error");
       break;

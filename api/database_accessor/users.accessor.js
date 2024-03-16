@@ -123,4 +123,42 @@ export default class UsersAccessor {
       throw e;
     }
   }
+
+  /**
+ * updateUser Method
+ *
+ * This method updates an existing user in the database.
+ *
+ * @param {User} updatedUser Updated user object
+ * @returns {User|null} Updated user or null if the user is not found
+ */
+static async updateUser(updatedUser) {
+  try {
+    await Connection.open("users");
+    
+    // Assuming you have a common field like "username" to identify the user
+    const filter = { username: updatedUser.username }; // Update with the appropriate field for your use case
+    console.log(updatedUser.username);
+    // Find the existing user
+    const existingUser = await RegisteredUser.findOne(filter);
+
+    if (!existingUser) {
+      // If the user is not found, return null or throw an error based on your preference
+      return null;
+    }
+
+    // Update the user fields with the new data
+    existingUser.role = updatedUser.role;
+    existingUser.information = updatedUser.information;
+    // existingUser.password = updatedUser.password; // Password may be updated as part of future ticket
+
+    // Save the updated user
+    await existingUser.save();
+
+    return existingUser;
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
+}
 }
