@@ -1,6 +1,6 @@
 ## Pull Request
 
-[comment]: <> (But N/A if a section does not apply.)
+[comment]: <> (Put N/A if a section does not apply.)
 
 ### General Summary
 - 
