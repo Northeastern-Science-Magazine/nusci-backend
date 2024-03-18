@@ -54,7 +54,7 @@ docker compose up -d
     
 3. Work on your branch, commit and push when necessary. Be descriptive and clear with your commit messages.
 
-4. Once finished, create a pull request to merge into the ```main``` branch.
+4. Once finished, create a pull request to merge into the ```main``` branch. The pull request should properly describe the changes made.
 
 5. An admin will review your ticket, and either approve your changes, or request changes. If changes requested, checkout to your branch and make requested changes.
 
