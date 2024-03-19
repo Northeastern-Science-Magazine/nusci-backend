@@ -106,4 +106,24 @@ export default class ArticlesAccessor {
       throw e;
     }
   }
+
+  /**
+   * getArticlesByCategory method
+   *
+   * Return all categories containing the
+   * given category
+   *
+   * @param {String} category
+   * @returns array of articles
+   */
+  static async getArticlesByCategory(category) {
+    try {
+      await Connection.open("articles");
+      const articles = await Article.find({ categories: { $in: [category] } });
+      return articles;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
 }
