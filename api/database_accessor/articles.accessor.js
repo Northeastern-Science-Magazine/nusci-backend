@@ -106,4 +106,15 @@ export default class ArticlesAccessor {
       throw e;
     }
   }
+
+  static async searchArticleByTitle(articleKeyword) {
+    try {
+      await Connection.open("articles");
+      const articles = await Article.find({"title": {$regex: articleKeyword, $options: i}})
+      return articles;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
 }
