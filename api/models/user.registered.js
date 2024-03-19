@@ -13,6 +13,7 @@ const RegisteredUser = new Schema({
     role: {type: String, required: true},
     email: {type: String, required: true},
     password: {type: String, required: true},
+    deactivated: {type: Boolean, default: false},
     information: {
         year: Number,
         major: String,

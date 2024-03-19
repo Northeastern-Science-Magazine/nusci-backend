@@ -33,21 +33,28 @@ export default class UsersCTRL {
           //check if password matches
           const result = await bcrypt.compare(req.body.password, user.password);
           if (result) {
-            // sign token and send it in response
-            const token = jwt.sign(
-              {
-                username: user.username,
-                role: user.role,
-              },
-              process.env.TOKEN_KEY
-            );
+            // check if the user has been deactivated
+            const deactive = await user.deactivated;
+            if (!deactive) {
+              // sign token and send it in response
+              const token = jwt.sign(
+                {
+                  username: user.username,
+                  role: user.role,
+                },
+                process.env.TOKEN_KEY
+              );
 
-            //Users are logged in for 1 hour
-            res.cookie("token", token, {
-              httpOnly: true,
-              maxAge: 60 * 60 * 1000,
-            });
-            res.redirect("/internal/profile");
+              //Users are logged in for 1 hour
+              res.cookie("token", token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000,
+              });
+              res.redirect("/internal/profile");
+            } else {
+              return handleError(res, Errors[400].Deactivated);
+            }
+
           } else {
             return handleError(res, Errors[400].Login.Password);
           }
