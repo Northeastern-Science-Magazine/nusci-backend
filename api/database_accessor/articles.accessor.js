@@ -107,6 +107,14 @@ export default class ArticlesAccessor {
     }
   }
 
+  /**
+   * searchArticleByTitle method
+   *
+   * returns the articles with the given keyword in its title
+   *
+   * @param {String} articleKeyword
+   * @returns articles as an array
+   */
   static async searchArticleByTitle(articleKeyword) {
     try {
       await Connection.open("articles");
