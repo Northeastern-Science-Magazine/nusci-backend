@@ -6,6 +6,8 @@ import UnregisteredUserSchema from "../api/models/user.unregistered.js";
 
 const allConnections = SetupHelper.openConnections(databases_seed);
 
+process.stdout.write("Dropping all collections...\n");
+
 RegisteredUserSchema.collection.drop();
 UnregisteredUserSchema.collection.drop();
 

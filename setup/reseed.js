@@ -7,6 +7,8 @@ import UnregisteredUserSchema from "../api/models/user.unregistered.js";
 import registered_users_seed from "./seed/registered_users_seed.js";
 import unregistered_users_seed from "./seed/unregistered_users_seed.js";
 
+process.stdout.write("Reseeding database...\n");
+
 const allConnections = SetupHelper.openConnections(databases_seed);
 
 createDocuments(RegisteredUserSchema, registered_users_seed);
