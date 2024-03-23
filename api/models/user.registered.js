@@ -1,31 +1,34 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 const model = mongoose.model;
 
 /**
  * UserSchema
- * 
+ *
  * Mongoose Schema defined for Registered Users.
  */
-const RegisteredUser = new Schema({
-    username: {type: String, unique: true, required: true},
-    role: {type: String, required: true},
-    email: {type: String, required: true},
-    password: {type: String, required: true},
+const RegisteredUser = new Schema(
+  {
+    username: { type: String, unique: true, required: true },
+    role: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
     information: {
-        year: Number,
-        major: String,
-        bio: String,
-        image: String
-    }
-}, {
+      year: Number,
+      major: String,
+      bio: String,
+      image: String,
+    },
+  },
+  {
     //Defines the collection objects of this schema get saved to.
-    collection: 'registered'
-});
+    collection: "registered",
+  }
+);
 
 // User model
 const db = mongoose.connection.useDb("users");
-const UserInfo = db.model("RegisteredUser", RegisteredUser);
+const RegisteredUserSchema = db.model("RegisteredUser", RegisteredUser);
 
-export default UserInfo;
+export default RegisteredUserSchema;
