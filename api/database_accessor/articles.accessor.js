@@ -17,7 +17,7 @@ export default class ArticlesAccessor {
    */
   static async postArticle(articleDoc) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await PendingArticle.create(articleDoc);
       return article;
     } catch (e) {
@@ -36,7 +36,7 @@ export default class ArticlesAccessor {
    */
   static async getPendingArticle(articleID) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await PendingArticle.findById(new mongoose.Types.ObjectId(articleID));
       return article;
     } catch (e) {
@@ -54,7 +54,7 @@ export default class ArticlesAccessor {
    */
   static async getAllPendingArticles() {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const articles = await PendingArticle.find({});
       return articles;
     } catch (e) {
@@ -98,7 +98,7 @@ export default class ArticlesAccessor {
    */
   static async getArticle(articleID) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await Article.findById(new mongoose.Types.ObjectId(articleID));
       return article;
     } catch (e) {
