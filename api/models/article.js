@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-
+import helper from "helper";
 const Schema = mongoose.Schema;
 const model = mongoose.model;
 
@@ -24,6 +24,16 @@ const ArticleSchema = new Schema(
         author: String,
         date: Date,
         body: String,
+      },
+    ],
+
+    status: [
+      {
+        type: String,
+        required: true,
+        enum: Object.values(helper),
+        default: helper.IN_PROGRESS,
+        
       },
     ],
     theme: String,
