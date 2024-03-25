@@ -46,4 +46,15 @@ export default class PublicPagesController {
     res.redirect("/");
     console.log("Signed out");
   }
+
+  static async getDeactivate(req, res) {
+    try {
+      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
+      console.log(user);
+      user.deactivated = true;
+      res.render("deactivate", { error: req.cookies.error });
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
+    }
+  }
 }
