@@ -110,7 +110,7 @@ export default class ArticlesAccessor {
   /**
    * getArticlesByCategory method
    *
-   * Return all categories containing the
+   * Return all articles containing the
    * given category
    *
    * @param {String} category
