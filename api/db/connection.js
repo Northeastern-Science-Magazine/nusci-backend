@@ -65,6 +65,9 @@ export default class Connection {
    * @param {MongoDB Connection} connection The given connection.
    */
   static async close() {
-    connection.close();
+    await connection.close();
+    connection.on("open", () => log.green("DATABASE STATE", "Connection Open"))
+    .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
+    .on("error", (error) => log.red("DATABASE STATE", error));
   }
 }

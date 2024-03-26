@@ -8,26 +8,32 @@ import Connection from "../api/db/connection.js";
 
 process.stdout.write("Reseeding database...\n");
 
-await Connection.open();
+// createDocuments(RegisteredUserSchema, registered_users_seed);
+// createDocuments(UnregisteredUserSchema, unregistered_users_seed);
 
-createDocuments(RegisteredUserSchema, registered_users_seed);
-createDocuments(UnregisteredUserSchema, unregistered_users_seed);
+const connection = await Connection.open();
 
-await Connection.close();
-
-setTimeout(() => {
-  process.exit();
-}, 2000);
-
-//SetupHelper.closeConnections(allConnections);
+Promise.all([connection])
+  .then(async () => {
+    const registeredUsers = await createDocuments(RegisteredUserSchema, registered_users_seed);
+    const unregisteredUsers = await createDocuments(UnregisteredUserSchema, unregistered_users_seed);
+    Promise.all([registeredUsers, unregisteredUsers])
+    .then(async ()=>{
+      await Connection.close()
+      .then(()=>{
+        process.exit();
+      })
+    })
+  });
 
 /**
  *
  * @param {*} schema
  * @param {*} documents
  */
-function createDocuments(schema, documents) {
-  documents.forEach((doc) => {
-    schema.create(doc);
-  });
+async function createDocuments(schema, documents) {
+  for (const doc of documents) {
+    await schema.create(doc);
+  }
 }
+
