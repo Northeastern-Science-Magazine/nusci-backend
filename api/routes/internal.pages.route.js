@@ -57,4 +57,28 @@ router
     Authorize.auth(req, res, next, "POST submit-article");
   }, NewArticlesCTRL.apiPostArticle);
 
+
+/* Deactivate Account Router From /profile Page */
+router
+  .route("/deactivateProfile")
+  .get(PagesController.getDeactivateProfile);
+  /*.get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET ?????");
+  }, PagesController.getDeactivateProfile) */
+  /*.post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST ??????");
+  }, ??????);
+ */
+
+/* Deactivate Account Router From /deactivate Page */
+router
+  .route("/deactivate")
+  /*.get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET ?????");
+  }, PagesController.getDeactivate) */
+  /*.post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST ??????");
+  }, ??????);
+ */
+
 export default router;

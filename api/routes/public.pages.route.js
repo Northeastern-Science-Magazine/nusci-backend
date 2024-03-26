@@ -61,9 +61,6 @@ router.route("/error").get(PagesController.getError);
 /* Logout Router */
 router.route("/logout").get(PagesController.getLogout);
 
-/* Deactivate Account Router */
-router.route("/deactivate").get(PagesController.getDeactivate);
-
 /* About Us Router */
 router.route("/about-us").get((req, res) => {
   res.sendFile(path.resolve() + "/public/html/about_us.html");
