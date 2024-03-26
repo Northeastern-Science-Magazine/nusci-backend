@@ -5,8 +5,6 @@ import Connection from "../api/db/connection.js";
 
 process.stdout.write("Dropping all collections...\n");
 
-const connection = await Connection.open();
-
 try {
   await Connection.open();
   await Promise.all([
