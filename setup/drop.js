@@ -7,14 +7,15 @@ process.stdout.write("Dropping all collections...\n");
 
 const connection = await Connection.open();
 
-Promise.all([connection])
-  .then(async () => {
-    await RegisteredUserSchema.collection.drop();
-    await UnregisteredUserSchema.collection.drop();
-  })
-  .then(async () => {
-    await Connection.close();
-  })
-  .then(() => {
-    process.exit();
-  });
+try {
+  await Connection.open();
+  await Promise.all([
+    RegisteredUserSchema.collection.drop(),
+    UnregisteredUserSchema.collection.drop()
+  ]);
+  await Connection.close();
+  process.exit();
+} catch (error) {
+  console.error("Error while dropping database:", error);
+  process.exit(1);
+}

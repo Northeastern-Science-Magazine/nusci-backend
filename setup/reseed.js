@@ -8,23 +8,18 @@ import Connection from "../api/db/connection.js";
 
 process.stdout.write("Reseeding database...\n");
 
-// createDocuments(RegisteredUserSchema, registered_users_seed);
-// createDocuments(UnregisteredUserSchema, unregistered_users_seed);
-
-const connection = await Connection.open();
-
-Promise.all([connection])
-  .then(async () => {
-    const registeredUsers = await createDocuments(RegisteredUserSchema, registered_users_seed);
-    const unregisteredUsers = await createDocuments(UnregisteredUserSchema, unregistered_users_seed);
-    Promise.all([registeredUsers, unregisteredUsers])
-    .then(async ()=>{
-      await Connection.close()
-      .then(()=>{
-        process.exit();
-      })
-    })
-  });
+try {
+  await Connection.open();
+  await Promise.all([
+    createDocuments(RegisteredUserSchema, registered_users_seed),
+    createDocuments(UnregisteredUserSchema, unregistered_users_seed)
+  ]);
+  await Connection.close();
+  process.exit();
+} catch (error) {
+  console.error("Error while seeding database:", error);
+  process.exit(1);
+}
 
 /**
  *
