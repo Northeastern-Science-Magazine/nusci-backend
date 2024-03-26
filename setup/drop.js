@@ -14,6 +14,6 @@ try {
   await Connection.close();
   process.exit();
 } catch (error) {
-  console.error("Error while dropping database:", error);
+  process.stdout.write("Error while dropping database: " + error + "\n");
   process.exit(1);
 }

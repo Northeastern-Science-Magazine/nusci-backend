@@ -17,7 +17,7 @@ try {
   await Connection.close();
   process.exit();
 } catch (error) {
-  console.error("Error while seeding database:", error);
+  process.stdout.write("Error while reseeding database: " + error + "\n");
   process.exit(1);
 }
 
