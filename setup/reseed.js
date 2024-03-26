@@ -1,32 +1,34 @@
-import databases_seed from "./seed/databases.js";
-import SetupHelper from "./helpers.js";
-
 import RegisteredUserSchema from "../api/models/user.registered.js";
 import UnregisteredUserSchema from "../api/models/user.unregistered.js";
 
 import registered_users_seed from "./seed/registered_users_seed.js";
 import unregistered_users_seed from "./seed/unregistered_users_seed.js";
 
+import Connection from "../api/db/connection.js";
+
 process.stdout.write("Reseeding database...\n");
 
-const allConnections = SetupHelper.openConnections(databases_seed);
-
-createDocuments(RegisteredUserSchema, registered_users_seed);
-createDocuments(UnregisteredUserSchema, unregistered_users_seed);
-
-setTimeout(() => {
+try {
+  await Connection.open();
+  await Promise.all([
+    createDocuments(RegisteredUserSchema, registered_users_seed),
+    createDocuments(UnregisteredUserSchema, unregistered_users_seed)
+  ]);
+  await Connection.close();
   process.exit();
-}, 2000);
-
-//SetupHelper.closeConnections(allConnections);
+} catch (error) {
+  process.stdout.write("Error while reseeding database: " + error + "\n");
+  process.exit(1);
+}
 
 /**
  *
  * @param {*} schema
  * @param {*} documents
  */
-function createDocuments(schema, documents) {
-  documents.forEach((doc) => {
-    schema.create(doc);
-  });
+async function createDocuments(schema, documents) {
+  for (const doc of documents) {
+    await schema.create(doc);
+  }
 }
+
