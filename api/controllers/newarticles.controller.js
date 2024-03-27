@@ -42,9 +42,17 @@ export default class NewArticlesCTRL {
         elementOrder: JSON.parse(req.body.order)
       }
 
-      // Create article in the database
-      await ArticlesAccessor.postArticle(articleDoc);
-      res.json(req.body);
+      // assumes two articles cannot be given the same name
+      const article = await ArticlesAccessor.getArticleByTitle(req.body.title);
+      const pendingArticle = await ArticlesAccessor.getPendingArticleByTitle(req.body.title);
+      
+      if (!article && !pendingArticle) {
+        // Create article in the database
+        await ArticlesAccessor.postArticle(articleDoc);
+        res.json(req.body);
+      } else {
+        return handleError(res, Errors[400].PostArticle.Title);
+      }
     } catch (e) {
       process.stdout.write(e + "\n");
       return handleError(res, Errors[500].DataPOST);
