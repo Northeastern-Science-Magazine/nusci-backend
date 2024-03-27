@@ -25,7 +25,7 @@ export default class NewArticlesCTRL {
       // Handle the case where year is not a valid number
       // For example, return an error response or set a default value
       if (isNaN(req.body.year)) {
-        return handleError(res, Errors[400].InvalidYear);
+        return handleError(res, Errors[400].PostArticle.Year);
       }
 
       // Construct article object based on schema

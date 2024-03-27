@@ -24,9 +24,9 @@ const Errors = {
     },
     PostArticle: {
       Title: "Title already exists",
+      Year: "Invalid year entered",
     },
     Unregistered: "Unregistered account",
-    InvalidYear: "Invalid year entered",
   },
   401: {
     Unauthorized: "Unauthorized",
