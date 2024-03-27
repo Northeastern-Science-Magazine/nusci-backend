@@ -20,8 +20,33 @@ export default class NewArticlesCTRL {
   static async apiPostArticle(req, res, next) {
     try {
       //parse through the submission, enter it into the database
+      //res.json(req.body);
+
+      // Handle the case where year is not a valid number
+      // For example, return an error response or set a default value
+      if (isNaN(req.body.year)) {
+        return handleError(res, Errors[400].InvalidYear);
+      }
+
+      // Construct article object based on schema
+      const articleDoc = {
+        title: req.body.title,
+        author: req.body.author,
+        year: parseInt(req.body.year),
+        major: req.body.major,
+        categories: JSON.parse(req.body.selectedCategories),
+        date: req.body.date,
+        coverImage: req.body.coverimage,
+        body: JSON.parse(req.body.body),
+        pullquotes: JSON.parse(req.body.pull),
+        elementOrder: JSON.parse(req.body.order)
+      }
+
+      // Create article in the database
+      await ArticlesAccessor.postArticle(articleDoc);
       res.json(req.body);
     } catch (e) {
+      process.stdout.write(e + "\n");
       return handleError(res, Errors[500].DataPOST);
     }
   }

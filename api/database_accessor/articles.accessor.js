@@ -12,8 +12,11 @@ export default class ArticlesAccessor {
   /**
    * Posts a new article to the pending articles database
    *
+   * Static - no instance required.
+   * Async - promises to return the user after creating it.
+   * 
    * @param {*} articleDoc
-   * @returns {JSON} object
+   * @returns MongoDB user object
    */
   static async postArticle(articleDoc) {
     try {

@@ -23,6 +23,7 @@ const Errors = {
       Email: "Email already registered",
     },
     Unregistered: "Unregistered account",
+    InvalidYear: "Invalid year entered",
   },
   401: {
     Unauthorized: "Unauthorized",

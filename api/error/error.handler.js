@@ -45,6 +45,12 @@ const handleError = (res, error) => {
       });
       res.redirect("/login");
       break;
+    case Errors[400].InvalidYear:
+      res.cookie("error", "An invalid year has been entered for article.", {
+        maxAge: 1000,
+      });
+      res.redirect("/internal/submit-article");
+      break;
     case Errors[401].Unauthorized:
       res.cookie("error", "Please log in to access that page.", { maxAge: 1000 });
       res.redirect("/login");
