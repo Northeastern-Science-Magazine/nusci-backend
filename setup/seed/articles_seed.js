@@ -32,6 +32,7 @@ export default [
     ],
     theme: "Technology",
     elementOrder: ["body", "pull", "body", "pull", "body"],
+    approver: "Ethan",
   },
   {
     title: "Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern",
@@ -66,6 +67,7 @@ export default [
     ],
     theme: "Technology",
     elementOrder: ["body", "pull", "body", "pull", "body"],
+    approver: "Gary",
   },
   {
     title: "World Death Rate Holding Steady at 100 Percent",
@@ -100,5 +102,6 @@ export default [
     ],
     theme: "Health",
     elementOrder: ["body", "pull", "body", "pull", "body"],
+    approver: "Greg",
   },
 ];
