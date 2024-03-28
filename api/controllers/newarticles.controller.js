@@ -21,11 +21,6 @@ export default class NewArticlesCTRL {
     try {
       //parse through the submission, enter it into the database
 
-      // Handle the case where year is not a numerical value
-      if (isNaN(req.body.year)) {
-        return handleError(res, Errors[400].PostArticle.Year);
-      }
-
       // Construct article object based on schema
       const articleDoc = {
         title: req.body.title,

@@ -17,13 +17,6 @@ const PendingArticleSchema = new Schema(
     body: [{ type: String }],
     pullquotes: [{ type: String }],
     sources: [{ type: String }],
-    comments: [
-      {
-        author: String,
-        date: Date,
-        body: String,
-      },
-    ],
     theme: String,
     elementOrder: [{ type: String }],
   },

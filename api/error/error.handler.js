@@ -45,12 +45,6 @@ const handleError = (res, error) => {
       });
       res.redirect("/login");
       break;
-    case Errors[400].PostArticle.Year:
-      res.cookie("error", "An invalid year has been entered for article.", {
-        maxAge: 1000,
-      });
-      res.redirect("/internal/submit-article");
-      break;
     case Errors[400].PostArticle.Title:
       res.cookie("error", "Title already exists", { maxAge: 1000 });
       res.redirect("/internal/submit-article");
