@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.route("/:id").get(ArticlesCTRL.apiGetArticle);
 
+router.route("/:slug").get(ArticlesCTRL.apiGetArticleBySlug);
+
 router.route("/").get(ArticlesCTRL.apiGetArticles);
 
 export default router;

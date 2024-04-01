@@ -155,6 +155,25 @@ export default class ArticlesAccessor {
   }
 
   /**
+   * getPendingArticleBySlug method
+   *
+   * Gets an article based off its slug
+   *
+   * @param {String} articleSlug
+   * @returns article
+   */
+  static async getArticleBySlug(articleSlug) {
+    try {
+      await Connection.open("articles");
+      const article = await Article.findOne({ slug: articleSlug });
+      return article;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+
+  /**
    * searchArticleByTitle method
    *
    * returns the articles with the given keyword in its title

@@ -22,6 +22,22 @@ export default class ArticlesCTRL {
     }
   }
 
+  static async apiGetArticleBySlug(req, res, next) {
+    try {
+      let slug = req.params.slug || {};
+
+      let article = await ArticlesAccessor.getArticleBySlug(slug);
+
+      if (article) {
+        res.render("article", { article });
+      } else {
+        return handleError(res, Errors[404].NotFound);
+      }
+    } catch (e) {
+      return handleError(res, Errors[500].DataPOST);
+    }
+  }
+
   static async apiGetArticles(req, res, next) {
     try {
       let articles = await ArticlesAccessor.getAllArticles();
