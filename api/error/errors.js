@@ -22,6 +22,10 @@ const Errors = {
       Username: "Username already exists",
       Email: "Email already registered",
     },
+    PostArticle: {
+      Title: "Title already exists",
+      Year: "Invalid year entered",
+    },
     Unregistered: "Unregistered account",
   },
   401: {

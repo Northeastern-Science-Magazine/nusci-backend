@@ -20,8 +20,34 @@ export default class NewArticlesCTRL {
   static async apiPostArticle(req, res, next) {
     try {
       //parse through the submission, enter it into the database
-      res.json(req.body);
+
+      // Construct article object based on schema
+      const articleDoc = {
+        title: req.body.title,
+        author: req.body.author,
+        year: parseInt(req.body.year),
+        major: req.body.major,
+        categories: JSON.parse(req.body.selectedCategories),
+        date: req.body.date,
+        coverImage: req.body.coverimage,
+        body: JSON.parse(req.body.body),
+        pullquotes: JSON.parse(req.body.pull),
+        elementOrder: JSON.parse(req.body.order)
+      }
+
+      // assumes two articles cannot be given the same name
+      const article = await ArticlesAccessor.getArticleByTitle(req.body.title);
+      const pendingArticle = await ArticlesAccessor.getPendingArticleByTitle(req.body.title);
+      
+      if (!article && !pendingArticle) {
+        // Create article in the database
+        await ArticlesAccessor.postArticle(articleDoc);
+        res.json(req.body);
+      } else {
+        return handleError(res, Errors[400].PostArticle.Title);
+      }
     } catch (e) {
+      process.stdout.write(e + "\n");
       return handleError(res, Errors[500].DataPOST);
     }
   }

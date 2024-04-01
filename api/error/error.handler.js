@@ -45,6 +45,10 @@ const handleError = (res, error) => {
       });
       res.redirect("/login");
       break;
+    case Errors[400].PostArticle.Title:
+      res.cookie("error", "Title already exists", { maxAge: 1000 });
+      res.redirect("/internal/submit-article");
+      break;
     case Errors[401].Unauthorized:
       res.cookie("error", "Please log in to access that page.", { maxAge: 1000 });
       res.redirect("/login");

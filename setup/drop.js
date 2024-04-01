@@ -1,5 +1,7 @@
 import RegisteredUserSchema from "../api/models/user.registered.js";
 import UnregisteredUserSchema from "../api/models/user.unregistered.js";
+import ArticleSchema from "../api/models/article.js";
+import PendingArticleSchema from "../api/models/pending.article.js";
 
 import Connection from "../api/db/connection.js";
 
@@ -9,7 +11,9 @@ try {
   await Connection.open();
   await Promise.all([
     RegisteredUserSchema.collection.drop(),
-    UnregisteredUserSchema.collection.drop()
+    UnregisteredUserSchema.collection.drop(),
+    ArticleSchema.collection.drop(),
+    PendingArticleSchema.collection.drop(),
   ]);
   await Connection.close();
   process.exit();

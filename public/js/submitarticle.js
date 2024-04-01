@@ -59,6 +59,15 @@ function updateFormFields() {
   document.getElementById("body-list").value = bps;
   document.getElementById("pull-list").value = pqs;
   document.getElementById("order").value = order;
+
+  // put selected categories into selectedCategories
+  const selectedCategories = [];
+  document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+    selectedCategories.push(checkbox.name);
+  });
+
+  // Convert to JSON string and update hidden input value
+  document.getElementById("selectedCategories").value = JSON.stringify(selectedCategories);
 }
 
 //may want to abstract in the future when there are more dynamic text-based elements
