@@ -18,6 +18,10 @@ const PendingArticleSchema = new Schema(
     pullquotes: [{ type: String }],
     sources: [{ type: String }],
     theme: String,
+    approver: String,
+    submitter: String,
+    submission_time: Date,
+    approval_time: Date,
     elementOrder: [{ type: String }],
   },
   {
