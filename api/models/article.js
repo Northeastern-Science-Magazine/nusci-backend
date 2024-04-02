@@ -9,6 +9,7 @@ const model = mongoose.model;
 const ArticleSchema = new Schema(
   {
     title: String,
+    slug: String,
     author: String,
     year: Number,
     major: String,
