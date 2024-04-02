@@ -60,22 +60,22 @@ router
 
 /* Deactivate Account Router From /profile Page */
 router
-  .route("/deactivateProfile")
-  .get(PagesController.getDeactivateProfile);
-  /*.get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET ?????");
-  }, PagesController.getDeactivateProfile) */
+  .route("/deactivate-profile")
+  //.get(PagesController.getDeactivateProfile);
+  .get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET deactivate-profile");
+  }, PagesController.getDeactivateProfile) 
   /*.post((req, res, next) => {
-    Authorize.auth(req, res, next, "POST ??????");
-  }, ??????);
- */
+    Authorize.auth(req, res, next, "POST deactivate-profile");
+  }, ??????);*/
+ 
 
 /* Deactivate Account Router From /deactivate Page */
 router
   .route("/deactivate")
-  /*.get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET ?????");
-  }, PagesController.getDeactivate) */
+  .get((req, res, next) => {
+    Authorize.auth(req, res, next, "GET deactivate");
+  }, PagesController.getDeactivate)
   /*.post((req, res, next) => {
     Authorize.auth(req, res, next, "POST ??????");
   }, ??????);

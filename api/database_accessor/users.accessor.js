@@ -123,4 +123,31 @@ export default class UsersAccessor {
       throw e;
     }
   }
+  /**
+   * deactivateUser Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deactivates their account.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deactivateUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const users = [];
+      
+        const user = await RegisteredUser.findOne({ username: username });
+        
+        await RegisteredUser.updateOne( { username: username }, {
+          $set: {
+            deactivated: true
+          }
+        });
+        return user;
+      }catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
 }

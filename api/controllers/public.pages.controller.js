@@ -53,8 +53,6 @@ export default class PublicPagesController {
 
   static async getDeactivate(req, res) {
     try {
-      // const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
-      // console.log(user);
       await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
     } catch (e) {
       return handleError(res, Errors[500].DataGET);
