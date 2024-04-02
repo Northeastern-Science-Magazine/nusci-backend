@@ -58,4 +58,16 @@ export default class PublicPagesController {
       return handleError(res, Errors[500].DataGET);
     }
   }
+
+  static getDeleteProfile(req, res) {
+    res.render("delete", { error: req.cookies.error });
+  }
+
+  static async getDelete(req, res) {
+    try {
+      await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
+    }
+  }
 }

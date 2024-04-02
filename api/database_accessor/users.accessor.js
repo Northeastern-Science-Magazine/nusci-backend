@@ -123,8 +123,9 @@ export default class UsersAccessor {
       throw e;
     }
   }
+
   /**
-   * deactivateUser Method
+   * deactivateUserByUsername Method
    *
    * This method should be accessible to all registered users.
    * This method takes the name of a user
@@ -144,6 +145,31 @@ export default class UsersAccessor {
             deactivated: true
           }
         });
+        return user;
+      }catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+
+  /**
+   * deleteUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deletes their account and all their contributions to the website.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deleteUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const users = [];
+      
+        const user = await RegisteredUser.findOne({ username: username });
+        
+        await RegisteredUser.deleteOne( { username: username });
         return user;
       }catch (e) {
       //server error 500, throw up the stack

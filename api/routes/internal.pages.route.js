@@ -81,4 +81,27 @@ router
   }, ??????);
  */
 
+/* Delete Account Router From /profile Page */
+router
+.route("/delete-profile")
+//.get(PagesController.getDeactivateProfile);
+.get((req, res, next) => {
+  Authorize.auth(req, res, next, "GET delete-profile");
+}, PagesController.getDeleteProfile) 
+/*.post((req, res, next) => {
+  Authorize.auth(req, res, next, "POST deactivate-profile");
+}, ??????);*/
+
+
+/* Deactivate Account Router From /deactivate Page */
+router
+.route("/delete")
+.get((req, res, next) => {
+  Authorize.auth(req, res, next, "GET delete");
+}, PagesController.getDelete)
+/*.post((req, res, next) => {
+  Authorize.auth(req, res, next, "POST ??????");
+}, ??????);
+*/
+
 export default router;
