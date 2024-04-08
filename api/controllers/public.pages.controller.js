@@ -46,28 +46,4 @@ export default class PublicPagesController {
     res.redirect("/");
     console.log("Signed out");
   }
-
-  static getDeactivateProfile(req, res) {
-    res.render("deactivate", { error: req.cookies.error });
-  }
-
-  static async getDeactivate(req, res) {
-    try {
-      await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
-    } catch (e) {
-      return handleError(res, Errors[500].DataGET);
-    }
-  }
-
-  static getDeleteProfile(req, res) {
-    res.render("delete", { error: req.cookies.error });
-  }
-
-  static async getDelete(req, res) {
-    try {
-      await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
-    } catch (e) {
-      return handleError(res, Errors[500].DataGET);
-    }
-  }
 }
