@@ -1,6 +1,7 @@
 import Connection from "../db/connection.js";
 import UnregisteredUser from "../models/user.unregistered.js";
 import RegisteredUser from "../models/user.registered.js";
+import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 
 /**
  * UserAccessor Class
@@ -136,17 +137,19 @@ export default class UsersAccessor {
   static async deactivateUserByUsername(username) {
     try {
       await Connection.open("users");
-      const users = [];
-      
-        const user = await RegisteredUser.findOne({ username: username });
-        
-        await RegisteredUser.updateOne( { username: username }, {
-          $set: {
-            deactivated: true
-          }
-        });
-        return user;
-      }catch (e) {
+      /*const user = await RegisteredUser.findOne({ username: username });
+      await RegisteredUser.updateOne( { username: username }, {
+        $set: {
+          deactivated: true
+        }
+      });*/
+      const user = await RegisteredUser.findOneAndUpdate({ username: username}, 
+        {$set: {
+          deactivated: true
+        }
+      });
+      return user;
+    } catch (e) {
       //server error 500, throw up the stack
       throw e;
     }
@@ -169,9 +172,14 @@ export default class UsersAccessor {
       
         const user = await RegisteredUser.findOne({ username: username });
         
+        // delete profile record
         await RegisteredUser.deleteOne( { username: username });
+
+        // delete all articles they wrote
+        await ArticlesAccessor.deleteDeleteProfile(username);
+
         return user;
-      }catch (e) {
+      } catch (e) {
       //server error 500, throw up the stack
       throw e;
     }

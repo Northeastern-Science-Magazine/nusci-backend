@@ -6,6 +6,7 @@ import PagesController from "../controllers/public.pages.controller.js";
 import AdminController from "../controllers/admin.controller.js";
 import NewArticlesCTRL from "../controllers/newarticles.controller.js";
 
+
 /**
  * This file controls all routes on the internally
  * facing side of the website. (i.e. pages and routes
@@ -61,7 +62,6 @@ router
 /* Deactivate Account Router From /profile Page */
 router
   .route("/deactivate-profile")
-  //.get(PagesController.getDeactivateProfile);
   .get((req, res, next) => {
     Authorize.auth(req, res, next, "GET deactivate-profile");
   }, UserController.getDeactivateProfile) 
@@ -73,24 +73,12 @@ router
 /* Delete Account Router From /profile Page */
 router
 .route("/delete-profile")
-//.get(PagesController.getDeactivateProfile);
 .get((req, res, next) => {
   Authorize.auth(req, res, next, "GET delete-profile");
-}, PagesController.getDeleteProfile) 
-/*.post((req, res, next) => {
-  Authorize.auth(req, res, next, "POST deactivate-profile");
-}, ??????);*/
+}, UserController.getDeleteProfile)
+.delete((req, res, next) => {
+  Authorize.auth(req, res, next, "DELETE delete-profile");
+}, UserController.deleteDeleteProfile)
 
-
-/* Deactivate Account Router From /deactivate Page */
-router
-.route("/delete")
-.get((req, res, next) => {
-  Authorize.auth(req, res, next, "GET delete");
-}, PagesController.getDelete)
-/*.post((req, res, next) => {
-  Authorize.auth(req, res, next, "POST ??????");
-}, ??????);
-*/
 
 export default router;

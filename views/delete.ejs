@@ -10,7 +10,9 @@
         <h1>Account Deletion</h1>
         <p><%= name %></p>
         <p>Are you sure you want to deactivate your account? This will mean that the you cannot log in and all contributions you have made to the NU Sci website will be deleted.</p>
-        <a href="/delete">click to delete</a>
+        <form method="delete" action="/delete-profile">
+            <input type="submit" value="click to deactivate">
+        </form>
         <a href="/profile">click to cancel deletion</a>
     </body>
 </html>

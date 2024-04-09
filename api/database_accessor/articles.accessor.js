@@ -106,4 +106,16 @@ export default class ArticlesAccessor {
       throw e;
     }
   }
+  
+  static async deleteArticleByUsername(username) {
+    try {
+      await Connection.open("articles");
+      await Article.deleteMany({authorUsername : username});
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+
+
 }

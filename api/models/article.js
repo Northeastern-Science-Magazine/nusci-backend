@@ -10,6 +10,7 @@ const ArticleSchema = new Schema(
   {
     title: String,
     author: String,
+    authorUsername: String,
     year: Number,
     major: String,
     categories: [{ type: String }],
