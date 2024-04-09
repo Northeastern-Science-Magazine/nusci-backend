@@ -41,6 +41,8 @@ docker compose build
 docker compose up -d
 ```
 
+6. To run the project, run the docker container and navigate to ```localhost:9999``` to view the website.
+
 <hr>
 
 ### Contribution Guidelines

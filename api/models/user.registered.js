@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 const model = mongoose.model;
 
 /**
  * UserSchema
- * 
+ *
  * Mongoose Schema defined for Registered Users.
  */
 const RegisteredUser = new Schema({
@@ -15,18 +15,20 @@ const RegisteredUser = new Schema({
     password: {type: String, required: true},
     deactivated: {type: Boolean, default: false},
     information: {
-        year: Number,
-        major: String,
-        bio: String,
-        image: String
-    }
-}, {
+      year: Number,
+      major: String,
+      bio: String,
+      image: String,
+    },
+  },
+  {
     //Defines the collection objects of this schema get saved to.
-    collection: 'registered'
-});
+    collection: "registered",
+  }
+);
 
 // User model
 const db = mongoose.connection.useDb("users");
-const UserInfo = db.model("RegisteredUser", RegisteredUser);
+const RegisteredUserSchema = db.model("RegisteredUser", RegisteredUser);
 
-export default UserInfo;
+export default RegisteredUserSchema;

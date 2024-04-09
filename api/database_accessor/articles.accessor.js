@@ -10,14 +10,61 @@ import mongoose from "mongoose";
  */
 export default class ArticlesAccessor {
   /**
+   * ArticlesAccessor Method
+   *
+   * This method retrieves the article MongoDB object from the
+   * database. Throws an error if there is a pathology.
+   *
+   * Static - no instance required.
+   * Async - promises to return the user after finding it.
+   *
+   * @param {String} username
+   * @returns the Article associated with the given Title in
+   *          the database.
+   */
+  static async getArticleByTitle(title) {
+    try {
+      await Connection.open();
+      const article = await Article.findOne({ title: title });
+      return article;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  /**
+   * getPendingArticleByTitle Method
+   *
+   * This method pulls from the pending articles database to find
+   * a specific article given a title
+   *
+   * @param {*} title of article to find
+   * @returns the found article
+   */
+  static async getPendingArticleByTitle(title) {
+    try {
+      await Connection.open();
+      const article = await PendingArticle.findOne({ title: title });
+      return article;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
+
+  /**
    * Posts a new article to the pending articles database
    *
+   * Static - no instance required.
+   * Async - promises to return the user after creating it.
+   * 
    * @param {*} articleDoc
-   * @returns {JSON} object
+   * @returns MongoDB user object
    */
   static async postArticle(articleDoc) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await PendingArticle.create(articleDoc);
       return article;
     } catch (e) {
@@ -36,7 +83,7 @@ export default class ArticlesAccessor {
    */
   static async getPendingArticle(articleID) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await PendingArticle.findById(new mongoose.Types.ObjectId(articleID));
       return article;
     } catch (e) {
@@ -54,7 +101,7 @@ export default class ArticlesAccessor {
    */
   static async getAllPendingArticles() {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const articles = await PendingArticle.find({});
       return articles;
     } catch (e) {
@@ -98,7 +145,7 @@ export default class ArticlesAccessor {
    */
   static async getArticle(articleID) {
     try {
-      await Connection.open("articles");
+      await Connection.open();
       const article = await Article.findById(new mongoose.Types.ObjectId(articleID));
       return article;
     } catch (e) {
@@ -118,4 +165,23 @@ export default class ArticlesAccessor {
   }
 
 
+
+  /**
+   * searchArticleByTitle method
+   *
+   * returns the articles with the given keyword in its title
+   *
+   * @param {String} articleKeyword
+   * @returns articles as an array
+   */
+  static async searchArticleByTitle(articleKeyword) {
+    try {
+      await Connection.open("articles");
+      const articles = await Article.find({title: {$regex: /articleKeyword/, $options: 'i'}})
+      return articles;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
 }

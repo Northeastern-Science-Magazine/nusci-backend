@@ -25,7 +25,7 @@ export default class UsersAccessor {
    */
   static async getRegisteredByUsername(username) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await RegisteredUser.findOne({ username: username });
       return user;
     } catch (e) {
@@ -45,7 +45,7 @@ export default class UsersAccessor {
    */
   static async getUnregisteredByUsername(username) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await UnregisteredUser.findOne({ username: username });
       return user;
     } catch (e) {
@@ -69,7 +69,7 @@ export default class UsersAccessor {
    */
   static async createUser(userDoc) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await UnregisteredUser.create(userDoc);
       return user;
     } catch (e) {
@@ -87,7 +87,7 @@ export default class UsersAccessor {
    */
   static async getAllUnregistered() {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const users = [];
       for await (const doc of UnregisteredUser.find()) {
         users.push(doc);
@@ -110,7 +110,7 @@ export default class UsersAccessor {
    */
   static async registerUsers(usernames) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const users = [];
       for await (const name of usernames) {
         const unregisteredUser = await UnregisteredUser.findOne({ username: name });
