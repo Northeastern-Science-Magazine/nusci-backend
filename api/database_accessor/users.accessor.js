@@ -137,12 +137,7 @@ export default class UsersAccessor {
   static async deactivateUserByUsername(username) {
     try {
       await Connection.open("users");
-      /*const user = await RegisteredUser.findOne({ username: username });
-      await RegisteredUser.updateOne( { username: username }, {
-        $set: {
-          deactivated: true
-        }
-      });*/
+      
       const user = await RegisteredUser.findOneAndUpdate({ username: username}, 
         {$set: {
           deactivated: true
