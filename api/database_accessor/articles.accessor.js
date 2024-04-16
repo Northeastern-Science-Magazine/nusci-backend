@@ -100,8 +100,6 @@ export default class ArticlesAccessor {
     try {
       await Connection.open("articles");
       const article = await Article.findById(new mongoose.Types.ObjectId(articleID));
-      console.log('Article: ', article);
-      return article
     } catch (e) {
       console.error(e);
       throw e;
@@ -110,6 +108,9 @@ export default class ArticlesAccessor {
 
   /**
    * sortArticles method
+   * 
+   * the method returns an array of the
+   * sorted articles  
    * 
    * @param {String} sortBy - The field to sort by, defaulting to Date.
    * @param {String} order - The order of sorting, 'asc' for ascending and 'desc' for descending, defaulting to 'asc'.
