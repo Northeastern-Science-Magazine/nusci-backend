@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
+import Authorize from "../auth/authorization.js";
 
 /**
  * UsersCTRL Class
@@ -120,12 +121,19 @@ export default class UsersCTRL {
   }
 
   static getDeactivateProfile(req, res) {
-    res.render("deactivate", { error: req.cookies.error });
+    if (!req.cookies.error) {
+      res.render("deactivate-profile", { name : Authorize.getUsername(req) }); // get username
+    }
+    else {
+      res.render("deactivate-profile", { error :  req.cookies.error});
+    }
+    
   }
 
   static async putDeactivateProfile(req, res) {
     try {
       await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
+      res.redirect("/logout")
     } catch (e) {
       return handleError(res, Errors[500].DataGET);
     }

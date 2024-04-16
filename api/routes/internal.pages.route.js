@@ -65,7 +65,7 @@ router
   .get((req, res, next) => {
     Authorize.auth(req, res, next, "GET deactivate-profile");
   }, UserController.getDeactivateProfile) 
-  .put((req, res, next) => {
+  .post((req, res, next) => {
     Authorize.auth(req, res, next, "PUT deactivate-profile");
   }, UserController.putDeactivateProfile);
  
