@@ -66,8 +66,8 @@ router
     Authorize.auth(req, res, next, "GET deactivate-profile");
   }, UserController.getDeactivateProfile) 
   .post((req, res, next) => {
-    Authorize.auth(req, res, next, "PUT deactivate-profile");
-  }, UserController.putDeactivateProfile);
+    Authorize.auth(req, res, next, "POST deactivate-profile");
+  }, UserController.postDeactivateProfile);
  
 
 /* Delete Account Router From /profile Page */
@@ -76,9 +76,9 @@ router
 .get((req, res, next) => {
   Authorize.auth(req, res, next, "GET delete-profile");
 }, UserController.getDeleteProfile)
-.delete((req, res, next) => {
-  Authorize.auth(req, res, next, "DELETE delete-profile");
-}, UserController.deleteDeleteProfile)
+.post((req, res, next) => {
+  Authorize.auth(req, res, next, "POST delete-profile");
+}, UserController.postDeleteProfile)
 
 
 export default router;

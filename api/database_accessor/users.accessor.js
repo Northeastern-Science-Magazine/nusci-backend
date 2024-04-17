@@ -163,17 +163,15 @@ export default class UsersAccessor {
   static async deleteUserByUsername(username) {
     try {
       await Connection.open("users");
-      const users = [];
-      
-        const user = await RegisteredUser.findOne({ username: username });
+      const user = await RegisteredUser.findOne({ username: username });
         
-        // delete profile record
-        await RegisteredUser.deleteOne( { username: username });
+      // delete profile record
+      await RegisteredUser.deleteOne( { username: username });
 
-        // delete all articles they wrote
-        await ArticlesAccessor.deleteDeleteProfile(username);
-
-        return user;
+      // delete all articles they wrote
+      await ArticlesAccessor.deleteArticleByUsername(username);
+        
+      return user;
       } catch (e) {
       //server error 500, throw up the stack
       throw e;

@@ -55,9 +55,9 @@ export default class ProtectedRoutes {
     new Permission("GET submit-article", [Acc.Editor, Acc.Admin]),
     new Permission("POST submit-article", [Acc.Editor, Acc.Admin]),
     new Permission("GET deactivate-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
-    new Permission("PUT deactivate-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
+    new Permission("POST deactivate-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
     new Permission("GET delete-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
-    new Permission("DELETE delete-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
+    new Permission("POST delete-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
   ];
 
   /**
