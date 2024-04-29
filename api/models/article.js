@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import ArticleStatus from "ArticleStatus";
+import ArticleStatus from "./helper.js";
 const Schema = mongoose.Schema;
 const model = mongoose.model;
 
@@ -33,7 +33,6 @@ const ArticleSchema = new Schema(
         required: true,
         enum: Object.values(ArticleStatus),
         default: ArticleStatus.IN_PROGRESS,
-        
       },
     ],
     theme: String,
