@@ -2,6 +2,7 @@ export default [
   {
     title: "Exploring the Future: AI Integration in Everyday Life",
     author: "Alexandra Chen",
+    authorUsername: "ethan",
     year: 2024,
     major: "Artificial Intelligence",
     categories: ["Technology", "Science"],
@@ -37,6 +38,7 @@ export default [
   {
     title: "Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern",
     author: "George",
+    authorUsername: "ethan",
     year: 2024,
     major: "Computer Science",
     categories: ["World", "Technology"],
@@ -72,6 +74,7 @@ export default [
   {
     title: "World Death Rate Holding Steady at 100 Percent",
     author: "Joe Schmoe",
+    authorUsername: "jasmine",
     year: 2025,
     major: "Computer Science",
     categories: ["Newsletter", "Health"],

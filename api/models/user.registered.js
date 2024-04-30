@@ -8,12 +8,12 @@ const model = mongoose.model;
  *
  * Mongoose Schema defined for Registered Users.
  */
-const RegisteredUser = new Schema(
-  {
-    username: { type: String, unique: true, required: true },
-    role: { type: String, required: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
+const RegisteredUser = new Schema({
+    username: {type: String, unique: true, required: true},
+    role: {type: String, required: true},
+    email: {type: String, required: true},
+    password: {type: String, required: true},
+    deactivated: {type: Boolean, default: false},
     information: {
       year: Number,
       major: String,

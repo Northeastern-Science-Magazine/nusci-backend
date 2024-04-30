@@ -17,6 +17,7 @@ const Errors = {
       LoggedIn: "Already logged in",
       Username: "User does not exist",
       Password: "Invalid password",
+      Deactivated: "This account has been deactivated",
     },
     SignUp: {
       Username: "Username already exists",

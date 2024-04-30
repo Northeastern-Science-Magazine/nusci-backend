@@ -31,6 +31,12 @@ const handleError = (res, error) => {
       res.cookie("error", "Incorrect password", { maxAge: 1000 });
       res.redirect("/login");
       break;
+    case Errors[400].Login.Deactivated:
+      res.cookie("error", "This account has been deactivated. Contact an admin to change this.", {
+        maxAge: 1000,
+      });
+      res.redirect("/login");
+      break;
     case Errors[400].SignUp.Username:
       res.cookie("error", "Username already exists", { maxAge: 1000 });
       res.redirect("/signup");

@@ -1,6 +1,7 @@
 import Connection from "../db/connection.js";
 import UnregisteredUser from "../models/user.unregistered.js";
 import RegisteredUser from "../models/user.registered.js";
+import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 
 /**
  * UserAccessor Class
@@ -119,6 +120,59 @@ export default class UsersAccessor {
       }
       return users;
     } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * deactivateUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deactivates their account.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deactivateUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      console.log("made it here")
+      const user = await RegisteredUser.findOneAndUpdate({ username: username}, 
+        {$set: {
+          deactivated: true
+        }
+      });
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+
+  /**
+   * deleteUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deletes their account and all their contributions to the website.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deleteUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const user = await RegisteredUser.findOne({ username: username });
+        
+      // delete profile record
+      await RegisteredUser.deleteOne( { username: username });
+
+      // delete all articles they wrote
+      await ArticlesAccessor.deleteArticleByUsername(username);
+        
+      return user;
+      } catch (e) {
       //server error 500, throw up the stack
       throw e;
     }
