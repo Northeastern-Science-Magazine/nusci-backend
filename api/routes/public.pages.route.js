@@ -29,6 +29,11 @@ router.route("/eboard").get((req, res) => {
   res.sendFile(path.resolve() + "/public/html/eboard20232024.html");
 });
 
+/* Contact Page Router */
+router.route("/contact").get((req, res) => {
+  res.sendFile(path.resolve() + "/public/html/contact.html")
+});
+
 /* Main CSS Router */
 router.route("/public/css/:style.css").get((req, res) => {
   res.sendFile(path.resolve() + `public/css/${req.params.style}.css`);
@@ -55,5 +60,10 @@ router.route("/error").get(PagesController.getError);
 
 /* Logout Router */
 router.route("/logout").get(PagesController.getLogout);
+
+/* About Us Router */
+router.route("/about-us").get((req, res) => {
+  res.sendFile(path.resolve() + "/public/html/about_us.html");
+});
 
 export default router;

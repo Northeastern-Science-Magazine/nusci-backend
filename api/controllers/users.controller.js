@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
+import Authorize from "../auth/authorization.js";
 
 /**
  * UsersCTRL Class
@@ -33,21 +34,28 @@ export default class UsersCTRL {
           //check if password matches
           const result = await bcrypt.compare(req.body.password, user.password);
           if (result) {
-            // sign token and send it in response
-            const token = jwt.sign(
-              {
-                username: user.username,
-                role: user.role,
-              },
-              process.env.TOKEN_KEY
-            );
+            // check if the user has been deactivated
+            const deactive = await user.deactivated;
+            if (!deactive) {
+              // sign token and send it in response
+              const token = jwt.sign(
+                {
+                  username: user.username,
+                  role: user.role,
+                },
+                process.env.TOKEN_KEY
+              );
 
-            //Users are logged in for 1 hour
-            res.cookie("token", token, {
-              httpOnly: true,
-              maxAge: 60 * 60 * 1000,
-            });
-            res.redirect("/internal/profile");
+              //Users are logged in for 1 hour
+              res.cookie("token", token, {
+                httpOnly: true,
+                maxAge: 60 * 60 * 1000,
+              });
+              res.redirect("/internal/profile");
+            } else {
+              return handleError(res, Errors[400].Login.Deactivated);
+            }
+
           } else {
             return handleError(res, Errors[400].Login.Password);
           }
@@ -108,6 +116,81 @@ export default class UsersCTRL {
       }
     } catch (e) {
       console.log(e);
+      return handleError(res, Errors[500].DataPOST);
+    }
+  }
+
+  /**
+   * getDeactivateProfile Method
+   *
+   * This method renders the deactivate profile page where 
+   * users can either confirm the deactivation of their account
+   * or cancel and return to the profile page.
+   *
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   */
+  static getDeactivateProfile(req, res) {
+    if (!req.cookies.error) {
+      res.render("deactivate-profile", { name : Authorize.getUsername(req) }); // get username
+    }
+    else {
+      res.render("deactivate-profile", { error :  req.cookies.error});
+    }
+    
+  }
+
+  /**
+   * postDeactivateProfile Method
+   *
+   * This method dispatches to the user accessor where the username passed 
+   * from the Auth getUsername() method is then deactivated.
+   *
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   */
+  static async postDeactivateProfile(req, res) {
+    try {
+      await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
+      res.redirect("/logout");
+    } catch (e) {
+      return handleError(res, Errors[500].DataPOST);
+    }
+  }
+
+  /**
+   * getDeleteProfile Method
+   *
+   * This method renders the delete profile page where 
+   * users can either confirm the deletion of their account
+   * or cancel and return to the profile page.
+   *
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   */
+  static getDeleteProfile(req, res) {
+    if (!req.cookies.error) {
+      res.render("delete-profile", { name : Authorize.getUsername(req) }); // get username
+    }
+    else {
+      res.render("delete-profile", { error: req.cookies.error });
+    }
+  }
+
+  /**
+   * postDeleteProfile Method
+   *
+   * This method dispatches to the user accessor where the username passed 
+   * from the Auth getUsername() method is then deleted and so is all associated work.
+   *
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   */
+  static async postDeleteProfile(req, res) {
+    try {
+      await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
+      res.redirect("/logout");
+    } catch (e) {
       return handleError(res, Errors[500].DataPOST);
     }
   }

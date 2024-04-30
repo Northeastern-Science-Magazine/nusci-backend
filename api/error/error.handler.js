@@ -31,6 +31,12 @@ const handleError = (res, error) => {
       res.cookie("error", "Incorrect password", { maxAge: 1000 });
       res.redirect("/login");
       break;
+    case Errors[400].Login.Deactivated:
+      res.cookie("error", "This account has been deactivated. Contact an admin to change this.", {
+        maxAge: 1000,
+      });
+      res.redirect("/login");
+      break;
     case Errors[400].SignUp.Username:
       res.cookie("error", "Username already exists", { maxAge: 1000 });
       res.redirect("/signup");
@@ -44,6 +50,10 @@ const handleError = (res, error) => {
         maxAge: 1000,
       });
       res.redirect("/login");
+      break;
+    case Errors[400].PostArticle.Title:
+      res.cookie("error", "Title already exists", { maxAge: 1000 });
+      res.redirect("/internal/submit-article");
       break;
     case Errors[401].Unauthorized:
       res.cookie("error", "Please log in to access that page.", { maxAge: 1000 });

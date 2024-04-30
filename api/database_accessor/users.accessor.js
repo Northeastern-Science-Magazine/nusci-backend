@@ -1,6 +1,7 @@
 import Connection from "../db/connection.js";
 import UnregisteredUser from "../models/user.unregistered.js";
 import RegisteredUser from "../models/user.registered.js";
+import ArticlesAccessor from "../database_accessor/articles.accessor.js";
 
 /**
  * UserAccessor Class
@@ -24,7 +25,7 @@ export default class UsersAccessor {
    */
   static async getRegisteredByUsername(username) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await RegisteredUser.findOne({ username: username });
       return user;
     } catch (e) {
@@ -44,7 +45,7 @@ export default class UsersAccessor {
    */
   static async getUnregisteredByUsername(username) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await UnregisteredUser.findOne({ username: username });
       return user;
     } catch (e) {
@@ -68,7 +69,7 @@ export default class UsersAccessor {
    */
   static async createUser(userDoc) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const user = await UnregisteredUser.create(userDoc);
       return user;
     } catch (e) {
@@ -86,7 +87,7 @@ export default class UsersAccessor {
    */
   static async getAllUnregistered() {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const users = [];
       for await (const doc of UnregisteredUser.find()) {
         users.push(doc);
@@ -109,7 +110,7 @@ export default class UsersAccessor {
    */
   static async registerUsers(usernames) {
     try {
-      await Connection.open("users");
+      await Connection.open();
       const users = [];
       for await (const name of usernames) {
         const unregisteredUser = await UnregisteredUser.findOne({ username: name });
@@ -125,39 +126,149 @@ export default class UsersAccessor {
   }
 
   /**
- * updateUser Method
- *
- * This method updates an existing user in the database.
- *
- * @param {User} updatedUser Updated user object
- * @returns {User|null} Updated user or null if the user is not found
- */
-static async updateUser(updatedUser) {
-  try {
-    await Connection.open("users");
-    
-    const filter = { username: updatedUser.username };
-
-    // Find the existing user
-    const existingUser = await RegisteredUser.findOne(filter);
-
-    if (!existingUser) {
-      // If the user is not found, return null
-      return null;
+   * deactivateUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deactivates their account.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deactivateUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      console.log("made it here");
+      const user = await RegisteredUser.findOneAndUpdate(
+        { username: username },
+        {
+          $set: {
+            deactivated: true,
+          },
+        }
+      );
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
     }
-
-    // Update the user fields with the new data
-    existingUser.role = updatedUser.role;
-    existingUser.information = updatedUser.information;
-    // existingUser.password = updatedUser.password; // Password may be updated as part of future ticket
-
-    // Save the updated user
-    await existingUser.save();
-
-    return existingUser;
-  } catch (e) {
-    console.log(e);
-    throw e;
   }
-}
+
+  /**
+   * deleteUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deletes their account and all their contributions to the website.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deleteUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const user = await RegisteredUser.findOne({ username: username });
+
+      // delete profile record
+      await RegisteredUser.deleteOne({ username: username });
+
+      // delete all articles they wrote
+      await ArticlesAccessor.deleteArticleByUsername(username);
+
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * deactivateUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deactivates their account.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deactivateUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      console.log("made it here");
+      const user = await RegisteredUser.findOneAndUpdate(
+        { username: username },
+        {
+          $set: {
+            deactivated: true,
+          },
+        }
+      );
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * deleteUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deletes their account and all their contributions to the website.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deleteUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const user = await RegisteredUser.findOne({ username: username });
+
+      // delete profile record
+      await RegisteredUser.deleteOne({ username: username });
+
+      // delete all articles they wrote
+      await ArticlesAccessor.deleteArticleByUsername(username);
+
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * updateUser Method
+   *
+   * This method updates an existing user in the database.
+   *
+   * @param {User} updatedUser Updated user object
+   * @returns {User|null} Updated user or null if the user is not found
+   */
+  static async updateUser(updatedUser) {
+    try {
+      await Connection.open("users");
+
+      const filter = { username: updatedUser.username };
+
+      // Find the existing user
+      const existingUser = await RegisteredUser.findOne(filter);
+
+      if (!existingUser) {
+        // If the user is not found, return null
+        return null;
+      }
+
+      // Update the user fields with the new data
+      existingUser.role = updatedUser.role;
+      existingUser.information = updatedUser.information;
+      // existingUser.password = updatedUser.password; // Password may be updated as part of future ticket
+
+      // Save the updated user
+      await existingUser.save();
+
+      return existingUser;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  }
 }

@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "reset": "node setup/drop.js",
+    "postreset": "node setup/reseed.js"
   },
   "repository": {
     "type": "git",
