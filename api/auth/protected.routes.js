@@ -50,6 +50,8 @@ export default class ProtectedRoutes {
    */
   static routes = [
     new Permission("GET profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
+    new Permission("GET edit-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
+    new Permission("PUT edit-profile", [Acc.Author, Acc.Editor, Acc.Photographer, Acc.Developer, Acc.Admin]),
     new Permission("GET approve-user", [Acc.Admin]),
     new Permission("POST approve-user", [Acc.Admin]),
     new Permission("GET submit-article", [Acc.Editor, Acc.Admin]),

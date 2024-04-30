@@ -137,19 +137,21 @@ export default class UsersAccessor {
   static async deactivateUserByUsername(username) {
     try {
       await Connection.open("users");
-      console.log("made it here")
-      const user = await RegisteredUser.findOneAndUpdate({ username: username}, 
-        {$set: {
-          deactivated: true
+      console.log("made it here");
+      const user = await RegisteredUser.findOneAndUpdate(
+        { username: username },
+        {
+          $set: {
+            deactivated: true,
+          },
         }
-      });
+      );
       return user;
     } catch (e) {
       //server error 500, throw up the stack
       throw e;
     }
   }
-
 
   /**
    * deleteUserByUsername Method
@@ -164,16 +166,108 @@ export default class UsersAccessor {
     try {
       await Connection.open("users");
       const user = await RegisteredUser.findOne({ username: username });
-        
+
       // delete profile record
-      await RegisteredUser.deleteOne( { username: username });
+      await RegisteredUser.deleteOne({ username: username });
 
       // delete all articles they wrote
       await ArticlesAccessor.deleteArticleByUsername(username);
-        
+
       return user;
-      } catch (e) {
+    } catch (e) {
       //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * deactivateUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deactivates their account.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deactivateUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      console.log("made it here");
+      const user = await RegisteredUser.findOneAndUpdate(
+        { username: username },
+        {
+          $set: {
+            deactivated: true,
+          },
+        }
+      );
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * deleteUserByUsername Method
+   *
+   * This method should be accessible to all registered users.
+   * This method takes the name of a user
+   * and deletes their account and all their contributions to the website.
+   *
+   * @param {*} username username to make deactivated
+   */
+  static async deleteUserByUsername(username) {
+    try {
+      await Connection.open("users");
+      const user = await RegisteredUser.findOne({ username: username });
+
+      // delete profile record
+      await RegisteredUser.deleteOne({ username: username });
+
+      // delete all articles they wrote
+      await ArticlesAccessor.deleteArticleByUsername(username);
+
+      return user;
+    } catch (e) {
+      //server error 500, throw up the stack
+      throw e;
+    }
+  }
+
+  /**
+   * updateUser Method
+   *
+   * This method updates an existing user in the database.
+   *
+   * @param {User} updatedUser Updated user object
+   * @returns {User|null} Updated user or null if the user is not found
+   */
+  static async updateUser(updatedUser) {
+    try {
+      await Connection.open("users");
+
+      const filter = { username: updatedUser.username };
+
+      // Find the existing user
+      const existingUser = await RegisteredUser.findOne(filter);
+
+      if (!existingUser) {
+        // If the user is not found, return null
+        return null;
+      }
+
+      // Update the user fields with the new data
+      existingUser.role = updatedUser.role;
+      existingUser.information = updatedUser.information;
+      // existingUser.password = updatedUser.password; // Password may be updated as part of future ticket
+
+      // Save the updated user
+      await existingUser.save();
+
+      return existingUser;
+    } catch (e) {
+      console.log(e);
       throw e;
     }
   }
