@@ -1,3 +1,6 @@
+/**
+ * Enumerated Class for Writing Statuses
+ */
 export default class WritingStatus {
     static Needs_Editor = new AccountStatus("needs_editor");
     static Has_Editor = new AccountStatus("has_editor");
@@ -12,7 +15,7 @@ export default class WritingStatus {
   static enum verification method
   * @param {String} str
   */
-    static toAccountStatus(str) {
+    static toWritingStatus(str) {
       switch (str.toLowerCase()) {
         case "needs_editor":
            return this.Needs_Editor;

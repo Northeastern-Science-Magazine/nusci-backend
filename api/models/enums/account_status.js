@@ -1,8 +1,5 @@
 /**
  * Enumerated Class for Account Statuses
- *
- * None - should never be part of a permission set
- * It is simply denoting that such a role does not exist.
  */
 export default class AccountStatus {
   static Pending = new AccountStatus("pending");

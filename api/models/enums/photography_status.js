@@ -1,3 +1,6 @@
+/**
+ * Enumerated Class for Photography Statuses
+ */
 export default class PhotographyStatus {
   static No_Photo = new AccountStatus("no_photo");
   static Needs_Photographer = new AccountStatus("needs_photographer");
@@ -8,7 +11,7 @@ export default class PhotographyStatus {
  static enum verification method
  * @param {String} str
  */
-  static toAccountStatus(str) {
+  static toPhotographyStatus(str) {
     switch (str.toLowerCase()) {
       case "no_photo":
         return this.No_Photo;

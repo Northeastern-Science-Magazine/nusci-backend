@@ -1,3 +1,6 @@
+/**
+ * Enumerated Class for Design Statuses
+ */
 export default class DesignStatus {
   static Needs_Designer = new AccountStatus("needs_designer");
   static Has_Designer = new AccountStatus("has_designer");
@@ -8,7 +11,7 @@ export default class DesignStatus {
  static enum verification method
  * @param {String} str
  */
-  static toAccountStatus(str) {
+  static toDesignStatus(str) {
     switch (str.toLowerCase()) {
       case "needs_designer":
         return this.Needs_Designer;

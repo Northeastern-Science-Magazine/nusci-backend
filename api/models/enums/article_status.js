@@ -1,3 +1,6 @@
+/**
+ * Enumerated Class for Article Statuses
+ */
 export default class ArticleStatus {
   static Pending = new AccountStatus("pending");
   static Print = new AccountStatus("print");
@@ -7,7 +10,7 @@ export default class ArticleStatus {
  static enum verification method
  * @param {String} str
  */
-  static toAccountStatus(str) {
+  static toArticleStatus(str) {
     switch (str.toLowerCase()) {
       case "pending":
         return this.Pending;

@@ -1,3 +1,6 @@
+/**
+ * Enumerated Class for Internal Comment Statuses
+ */
 export default class InternalCommentStatus {
   static Resolved = new AccountStatus("resolved");
   static Unresolved = new AccountStatus("unresolved");
@@ -6,7 +9,7 @@ export default class InternalCommentStatus {
 static enum verification method
 * @param {String} str
 */
-  static toAccountStatus(str) {
+  static toInternalCommentStatus(str) {
     switch (str.toLowerCase()) {
       case "resolved":
         return this.Resolved;
