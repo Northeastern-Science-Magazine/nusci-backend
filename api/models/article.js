@@ -13,39 +13,18 @@ const ArticleSchema = new Schema(
   {
     title: { type: String, required: true },
     authors: [{ type: ObjectId, required: true }],
-    categories: {
-      type: [String],
-      required: true,
-    },
-    sources: {
-      type: [String],
-      required: true,
-    },
+    categories: { type: [String], required: true },
+    sources: { type: [String], required: true },
     ArticleContent: [
       {
-        contentType: {
-          type: String,
-          enum: ["PullQuote", "body", "image"],
-          required: true,
-        },
-        content: {
-          type: String,
-          required: true,
-        },
+        contentType: { type: String, enum: ["PullQuote", "body", "image"], required: true },
+        content: { type: String, required: true },
       },
     ],
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+    slug: { type: String, required: true, unique: true },
     articleStatus: {
       type: String,
-      enum: [
-        ArticleStatus.Pending.status,
-        ArticleStatus.Print.status,
-        ArticleStatus.Online.status,
-      ],
+      enum: [ArticleStatus.Pending.status, ArticleStatus.Print.status, ArticleStatus.Online.status],
       required: true,
     },
     writingStatus: {
@@ -61,12 +40,8 @@ const ArticleSchema = new Schema(
       ],
       required: true,
     },
-    issueNumber: {
-      type: Number,
-    },
-    editors: {
-      type: [ObjectId],
-    },
+    issueNumber: { type: Number },
+    editors: { type: [ObjectId] },
     Comments: [
       {
         user: { type: ObjectId, required: true },
@@ -84,16 +59,9 @@ const ArticleSchema = new Schema(
         modificationTime: { type: Date, required: true },
       },
     ],
-    link: {
-      type: String,
-    },
-    pageLength: {
-      type: Number,
-      required: true,
-    },
-    designers: {
-      type: [ObjectId],
-    },
+    link: { type: String },
+    pageLength: { type: Number, required: true },
+    designers: { type: [ObjectId] },
     designStatus: {
       type: [String],
       enum: [
@@ -117,20 +85,10 @@ const ArticleSchema = new Schema(
         PhotographyStatus.Photographer_Assigned.status,
       ],
     },
-    approvingUser: {
-      type: ObjectId,
-    },
-    approvalTime: {
-      type: Date,
-    },
-    creationTime: {
-      type: Date,
-      required: true,
-    },
-    modificationTime: {
-      type: Date,
-      required: true,
-    },
+    approvingUser: { type: ObjectId },
+    approvalTime: { type: Date },
+    creationTime: { type: Date, required: true },
+    modificationTime: { type: Date, required: true },
   },
   {
     //saved to the collection "article"
