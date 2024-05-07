@@ -6,6 +6,10 @@ export default class ArticleStatus {
   static Print = new AccountStatus("print");
   static Online = new AccountStatus("online");
 
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
@@ -19,7 +23,6 @@ export default class ArticleStatus {
       case "online":
         return this.Online;
       default:
-
     }
   }
-};
+}

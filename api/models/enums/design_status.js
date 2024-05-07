@@ -7,6 +7,10 @@ export default class DesignStatus {
   static In_Progress = new AccountStatus("in_progress");
   static Completed = new AccountStatus("completed");
 
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
@@ -22,7 +26,6 @@ export default class DesignStatus {
       case "completed":
         return this.Completed;
       default:
-
     }
   }
-};
+}

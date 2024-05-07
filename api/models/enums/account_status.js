@@ -6,6 +6,10 @@ export default class AccountStatus {
   static Deactivated = new AccountStatus("deactivated");
   static Approved = new AccountStatus("approved");
 
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
@@ -19,8 +23,6 @@ export default class AccountStatus {
       case "approved":
         return this.Approved;
       default:
-
     }
   }
-};
-
+}

@@ -7,6 +7,10 @@ export default class PhotographyStatus {
   static Phtoographer_Assigned = new AccountStatus("phtoographer_assigned");
   static Photo_Complete = new AccountStatus("photo_complete");
 
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
@@ -22,7 +26,6 @@ export default class PhotographyStatus {
       case "photo_complete":
         return this.Photo_Complete;
       default:
-
     }
   }
-};
+}

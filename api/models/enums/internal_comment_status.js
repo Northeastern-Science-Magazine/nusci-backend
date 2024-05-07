@@ -5,6 +5,10 @@ export default class InternalCommentStatus {
   static Resolved = new AccountStatus("resolved");
   static Unresolved = new AccountStatus("unresolved");
 
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
 static enum verification method
 * @param {String} str
@@ -16,7 +20,6 @@ static enum verification method
       case "unresolved":
         return this.Unresolved;
       default:
-
     }
   }
-};
+}
