@@ -4,6 +4,7 @@
 export default class InternalCommentStatus {
   static Resolved = new AccountStatus("resolved");
   static Unresolved = new AccountStatus("unresolved");
+  static Public = new AccountStatus("public");
 
   constructor(status) {
     this.status = status;
@@ -19,6 +20,8 @@ static enum verification method
         return this.Resolved;
       case "unresolved":
         return this.Unresolved;
+      case "public":
+        return this.Public;
       default:
     }
   }

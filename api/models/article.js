@@ -1,53 +1,143 @@
+import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
-import ArticleStatus from "./helper.js";
-const Schema = mongoose.Schema;
-const model = mongoose.model;
+import ArticleStatus from "./enums/article_status";
+import WritingStatus from "./enums/writing_status";
+import InternalCommentStatus from "./enums/internal_comment_status";
+import DesignStatus from "./enums/design_status";
+import PhotographyStatus from "./enums/photography_status";
 
-/**
- * Approved Article Schema
- */
+const Schema = mongoose.Schema;
+
+//article schema
 const ArticleSchema = new Schema(
   {
-    title: String,
-    author: String,
-    authorUsername: String,
-    year: Number,
-    major: String,
-    categories: [{ type: String }],
-    date: Date,
-    coverImage: String,
-    images: [{ type: String }],
-    body: [{ type: String }],
-    pullquotes: [{ type: String }],
-    sources: [{ type: String }],
-    comments: [
+    title: { type: String, required: true },
+    authors: [{ type: ObjectId, required: true }],
+    categories: {
+      type: [String],
+      required: true,
+    },
+    sources: {
+      type: [String],
+      required: true,
+    },
+    ArticleContent: [
       {
-        author: String,
-        date: Date,
-        body: String,
+        contentType: {
+          type: String,
+          enum: ["PullQuote", "body", "image"],
+          required: true,
+        },
+        content: {
+          type: String,
+          required: true,
+        },
       },
     ],
-
-    status: [
+    slug: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    articleStatus: {
+      type: String,
+      enum: [
+        ArticleStatus.Pending.status,
+        ArticleStatus.Print.status,
+        ArticleStatus.Online.status,
+      ],
+      required: true,
+    },
+    writingStatus: {
+      type: String,
+      enum: [
+        WritingStatus.Dropped.status,
+        WritingStatus.Edits_Complete.status,
+        WritingStatus.Eic_Approved.status,
+        WritingStatus.Has_Editor.status,
+        WritingStatus.Rough_Draft_Complete.status,
+        WritingStatus.Copy_Edits_Complete.status,
+        WritingStatus.Needs_Editor.status,
+      ],
+      required: true,
+    },
+    issueNumber: {
+      type: Number,
+    },
+    editors: {
+      type: [ObjectId],
+    },
+    Comments: [
       {
-        type: String,
-        required: true,
-        enum: Object.values(ArticleStatus),
-        default: ArticleStatus.IN_PROGRESS,
+        user: { type: ObjectId, required: true },
+        comment: { type: String, required: true },
+        commentStatus: {
+          type: String,
+          enum: [
+            InternalCommentStatus.Public.status,
+            InternalCommentStatus.Unresolved.status,
+            InternalCommentStatus.Resolved.status,
+          ],
+          required: true,
+        },
+        creationTime: { type: Date, required: true },
+        modificationTime: { type: Date, required: true },
       },
     ],
-    theme: String,
-    elementOrder: [{ type: String }],
-    approver: String,
+    link: {
+      type: String,
+    },
+    pageLength: {
+      type: Number,
+      required: true,
+    },
+    designers: {
+      type: [ObjectId],
+    },
+    designStatus: {
+      type: [String],
+      enum: [
+        DesignStatus.Completed.status,
+        DesignStatus.Has_Designer.status,
+        DesignStatus.Needs_Designer.status,
+        DesignStatus.In_Progress.status,
+      ],
+      required: true,
+    },
+    photographers: {
+      type: [ObjectId],
+    },
+    photographyStatus: {
+      type: String,
+      required: true,
+      enum: [
+        PhotographyStatus.Needs_Photographer.status,
+        PhotographyStatus.No_Photo.status,
+        PhotographyStatus.Photo_Complete.status,
+        PhotographyStatus.Photographer_Assigned.status,
+      ],
+    },
+    approvingUser: {
+      type: ObjectId,
+    },
+    approvalTime: {
+      type: Date,
+    },
+    creationTime: {
+      type: Date,
+      required: true,
+    },
+    modificationTime: {
+      type: Date,
+      required: true,
+    },
   },
   {
-    collection: "articles",
+    //saved to the collection "article"
+    collection: "article",
   }
 );
-
 const db = mongoose.connection.useDb("articles");
-
-// article model
 const Article = db.model("Article", ArticleSchema);
 
 export default Article;
