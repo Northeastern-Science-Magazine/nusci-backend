@@ -2,13 +2,13 @@
  * Enumerated Class for Writing Statuses
  */
 export default class WritingStatus {
-  static Needs_Editor = new AccountStatus("needs_editor");
-  static Has_Editor = new AccountStatus("has_editor");
-  static Rough_Draft_Complete = new AccountStatus("rough_draft_complete");
-  static Edits_Complete = new AccountStatus("edits_complete");
-  static Copy_Edits_Complete = new AccountStatus("copy_edits_complete");
-  static EIC_Approved = new AccountStatus("eic_approved");
-  static Dropped = new AccountStatus("dropped");
+  static Needs_Editor = new WritingStatus("needs_editor");
+  static Has_Editor = new WritingStatus("has_editor");
+  static Rough_Draft_Complete = new WritingStatus("rough_draft_complete");
+  static Edits_Complete = new WritingStatus("edits_complete");
+  static Copy_Edits_Complete = new WritingStatus("copy_edits_complete");
+  static EIC_Approved = new WritingStatus("eic_approved");
+  static Dropped = new WritingStatus("dropped");
 
   // Get all WritingStatuses
   static list = [
@@ -24,29 +24,37 @@ export default class WritingStatus {
     return status.status;
   });
 
+  /**
+   * INTERNAL USE ONLY
+   * Construct a WritingStatus enum
+   *
+   * @param {String} status
+   */
   constructor(status) {
     this.status = status;
   }
 
   /**
-  static enum verification method
-  * @param {String} str
-  */
+   * String to its associated WritingStatus object
+   *
+   * @param {String} str
+   * @returns {WritingStatus}
+   */
   static toWritingStatus(str) {
     switch (str.toLowerCase()) {
-      case "needs_editor":
+      case this.Needs_Editor.status:
         return this.Needs_Editor;
-      case "has_editor":
+      case this.Has_Editor.stats:
         return this.Has_Editor;
-      case "rough_draft_complete":
+      case this.Rough_Draft_Complete.status:
         return this.Rough_Draft_Complete;
-      case "edits_complete":
+      case this.Edits_Complete.status:
         return this.Edits_Complete;
-      case "copy_edits_complete":
+      case this.Copy_Edits_Complete.status:
         return this.Copy_Edits_Complete;
-      case "eic_approved":
+      case this.EIC_Approved.status:
         return this.EIC_Approved;
-      case "dropped":
+      case this.Dropped.status:
         return this.Dropped;
       default:
     }

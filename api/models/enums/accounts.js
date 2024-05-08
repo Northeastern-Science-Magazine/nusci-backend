@@ -18,28 +18,33 @@ export default class Accounts {
     return role.role;
   });
 
+  /**
+   * INTERNAL USE ONLY
+   * Construct an Account enum
+   *
+   * @param {String} role
+   */
   constructor(role) {
     this.role = role;
   }
 
   /**
-   * I know it seems redundant but having an
-   * Accounts Class will hopefully keep our
-   * middleware more organized
+   * String into its associated Account object
    *
    * @param {String} str
+   * @returns {Accounts}
    */
   static toAccount(str) {
     switch (str.toLowerCase()) {
-      case "author":
+      case this.Author.role:
         return this.Author;
-      case "editor":
+      case this.Editor.role:
         return this.Editor;
-      case "photographer":
+      case this.Photographer.role:
         return this.Photographer;
-      case "developer":
+      case this.Developer.role:
         return this.Developer;
-      case "admin":
+      case this.Admin.role:
         return this.Admin;
       default:
         return this.None;

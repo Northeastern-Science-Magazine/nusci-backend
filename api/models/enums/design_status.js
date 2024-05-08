@@ -2,10 +2,10 @@
  * Enumerated Class for Design Statuses
  */
 export default class DesignStatus {
-  static Needs_Designer = new AccountStatus("needs_designer");
-  static Has_Designer = new AccountStatus("has_designer");
-  static In_Progress = new AccountStatus("in_progress");
-  static Completed = new AccountStatus("completed");
+  static Needs_Designer = new DesignStatus("needs_designer");
+  static Has_Designer = new DesignStatus("has_designer");
+  static In_Progress = new DesignStatus("in_progress");
+  static Completed = new DesignStatus("completed");
 
   // Get all DesignStatuses
   static list = [this.Needs_Designer, this.Has_Designer, this.In_Progress, this.Completed];
@@ -13,23 +13,31 @@ export default class DesignStatus {
     return status.status;
   });
 
+  /**
+   * INTERNAL USE ONLY
+   * Construct a DesignStatus enum
+   *
+   * @param {String} status
+   */
   constructor(status) {
     this.status = status;
   }
 
   /**
- static enum verification method
- * @param {String} str
- */
+   * String to its associated DesginStatus object
+   *
+   * @param {String} str
+   * @returns {DesignStatus}
+   */
   static toDesignStatus(str) {
     switch (str.toLowerCase()) {
-      case "needs_designer":
+      case this.Needs_Designer.status:
         return this.Needs_Designer;
-      case "has_designer":
+      case this.Has_Designer.status:
         return this.Has_Designer;
-      case "in_progress":
+      case this.In_Progress.status:
         return this.In_Progress;
-      case "completed":
+      case this.Completed.status:
         return this.Completed;
       default:
     }
