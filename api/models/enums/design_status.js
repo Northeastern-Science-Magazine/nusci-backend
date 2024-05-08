@@ -7,6 +7,12 @@ export default class DesignStatus {
   static In_Progress = new AccountStatus("in_progress");
   static Completed = new AccountStatus("completed");
 
+  // Get all DesignStatuses
+  static list = [this.Needs_Designer, this.Has_Designer, this.In_Progress, this.Completed];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
   constructor(status) {
     this.status = status;
   }

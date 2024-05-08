@@ -12,6 +12,12 @@ export default class Accounts {
   static Developer = new Accounts("developer");
   static Admin = new Accounts("admin");
 
+  // Get all Account Types
+  static list = [this.Author, this.Editor, this.Photographer, this.Developer, this.Admin];
+  static listStr = this.list.map((role) => {
+    return role.role;
+  });
+
   constructor(role) {
     this.role = role;
   }

@@ -41,7 +41,7 @@ const isImage = (content) => {
 };
 
 /**
- * function that validates the mixed data types in the article content array, 
+ * function that validates the mixed data types in the article content array,
  * returns false if the array's subdocuments do not match the schemas
  */
 const validateArticleContent = (content) => {
@@ -70,7 +70,7 @@ const validateArticleContent = (content) => {
 const ArticleSchema = new Schema(
   {
     title: { type: String, required: true },
-    authors: [{ type: Schema.Types.ObjectId, required: true }],
+    authors: { type: [Schema.Types.ObjectId], required: true },
     categories: { type: [String], required: true },
     sources: { type: [String], required: true },
     ArticleContent: {
@@ -80,11 +80,7 @@ const ArticleSchema = new Schema(
     slug: { type: String, required: true, unique: true },
     articleStatus: {
       type: String,
-      enum: [
-        ArticleStatus.Pending.status,
-        ArticleStatus.Print.status,
-        ArticleStatus.Online.status,
-      ],
+      enum: [ArticleStatus.Pending.status, ArticleStatus.Print.status, ArticleStatus.Online.status],
       required: true,
     },
     writingStatus: {

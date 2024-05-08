@@ -1,4 +1,4 @@
-import Acc from "./accounts.js";
+import Acc from "../models/enums/accounts.js";
 
 /**
  * Permission class

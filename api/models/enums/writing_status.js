@@ -7,8 +7,22 @@ export default class WritingStatus {
   static Rough_Draft_Complete = new AccountStatus("rough_draft_complete");
   static Edits_Complete = new AccountStatus("edits_complete");
   static Copy_Edits_Complete = new AccountStatus("copy_edits_complete");
-  static Eic_Approved = new AccountStatus("eic_approved");
+  static EIC_Approved = new AccountStatus("eic_approved");
   static Dropped = new AccountStatus("dropped");
+
+  // Get all WritingStatuses
+  static list = [
+    this.Needs_Editor,
+    this.Has_Editor,
+    this.Rough_Draft_Complete,
+    this.Edits_Complete,
+    this.Copy_Edits_Complete,
+    this.EIC_Approved,
+    this.Dropped,
+  ];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
 
   constructor(status) {
     this.status = status;
@@ -31,7 +45,7 @@ export default class WritingStatus {
       case "copy_edits_complete":
         return this.Copy_Edits_Complete;
       case "eic_approved":
-        return this.Eic_Approved;
+        return this.EIC_Approved;
       case "dropped":
         return this.Dropped;
       default:

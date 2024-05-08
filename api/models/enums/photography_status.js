@@ -7,6 +7,12 @@ export default class PhotographyStatus {
   static Photographer_Assigned = new AccountStatus("photographer_assigned");
   static Photo_Complete = new AccountStatus("photo_complete");
 
+  // Get all PhotographyStatuses
+  static list = [this.No_Photo, this.Needs_Photographer, this.Photographer_Assigned, this.Photo_Complete];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
   constructor(status) {
     this.status = status;
   }

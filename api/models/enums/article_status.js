@@ -6,6 +6,12 @@ export default class ArticleStatus {
   static Print = new AccountStatus("print");
   static Online = new AccountStatus("online");
 
+  // Get all ArticleStatuses
+  static list = [this.Pending, this.Print, this.Online];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
   constructor(status) {
     this.status = status;
   }

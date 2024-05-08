@@ -6,14 +6,21 @@ export default class AccountStatus {
   static Deactivated = new AccountStatus("deactivated");
   static Approved = new AccountStatus("approved");
 
+  // Get all AccountStatuses
+  static list = [this.Pending, this.Deactivated, this.Approved];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
   constructor(status) {
     this.status = status;
   }
 
   /**
- static enum verification method
- * @param {String} str
- */
+   *
+   * @param {String} str
+   * @returns {Boolean}
+   */
   static toAccountStatus(str) {
     switch (str.toLowerCase()) {
       case "pending":
