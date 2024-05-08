@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Accounts from "../models/enums/accounts.js";
+import Accounts from "./enums/accounts.js";
 
 const Schema = mongoose.Schema;
 
@@ -12,19 +12,19 @@ const CalendarEventSchema = new Schema(
     endTime: { type: Date, required: true },
     location: { type: String },
     public: { type: Boolean, required: true, default: false },
-    // visibleToRoles: { type: [String], enum: Accounts.listStr, required: true },
-    // associatedWithRoles: { type: [String], enum: Accounts.listStr },
-    creatingUser: { type: Schema.Types.ObjectId, required: true },
+    visibleToRoles: { type: [{ enum: Accounts.listStr }], required: true },
+    associatedWithRoles: { type: [{ enum: Accounts.listStr }] },
+    creatingUser: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },
   {
     //saved to the collection "calendar_event"
-    collection: "calendar_event",
+    collection: "calendar_events",
   }
 );
 
-const db = mongoose.connection.useDb("calendar_event");
-const CalendarEvent = db.model("CalendarEvent", CalendarEventSchema);
+const db = mongoose.connection.useDb("calendar_events");
+const CalendarEvent = db.model("CalendarEvents", CalendarEventSchema);
 
 export default CalendarEvent;

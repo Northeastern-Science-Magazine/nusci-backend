@@ -8,19 +8,6 @@ import ArticleContent from "./enums/article_content.js";
 
 const Schema = mongoose.Schema;
 
-const ArticleContentSchema = new Schema({
-  contentType: { type: ArticleContent.listStr, required: true },
-  content: { type: String, required: true },
-});
-
-const CommentSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, required: true },
-  comment: { type: String, required: true },
-  commentStatus: { type: String, enum: CommentStatus.listStr, required: true },
-  creationTime: { type: Date, required: true },
-  modificationTime: { type: Date, required: true },
-});
-
 //article schema
 const ArticleSchema = new Schema(
   {
@@ -28,30 +15,43 @@ const ArticleSchema = new Schema(
     slug: { type: String, required: true, unique: true },
     issueNumber: { type: Number },
     categories: { type: [String], required: true },
-    articleContent: { type: [ArticleContentSchema] },
+    articleContent: [
+      {
+        contentType: { type: ArticleContent.listStr, required: true },
+        content: { type: String, required: true },
+      },
+    ],
     sources: { type: [String], required: true },
     link: { type: String },
     pageLength: { type: Number, required: true },
-    comments: [CommentSchema],
+    comments: [
+      {
+        user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+        comment: { type: String, required: true },
+        commentStatus: { type: String, enum: CommentStatus.listStr, required: true },
+        creationTime: { type: Date, required: true },
+        modificationTime: { type: Date, required: true },
+      },
+    ],
     articleStatus: { type: String, enum: ArticleStatus.listStr, required: true },
     writingStatus: { type: String, enum: WritingStatus.listStr, required: true },
     designStatus: { type: String, enum: DesignStatus.listStr, required: true },
     photographyStatus: { type: String, enum: PhotographyStatus.listStr, required: true },
-    authors: { type: [Schema.Types.ObjectId] },
-    editors: { type: [Schema.Types.ObjectId] },
-    designers: { type: [Schema.Types.ObjectId] },
-    photographers: { type: [Schema.Types.ObjectId] },
-    approvingUser: { type: Schema.Types.ObjectId },
+    authors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    editors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    designers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    photographers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    approvingUser: { type: Schema.Types.ObjectId, ref: "Users" },
     approvalTime: { type: Date },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },
   {
     //saved to the collection "article"
-    collection: "article",
+    collection: "articles",
   }
 );
 const db = mongoose.connection.useDb("articles");
-const Article = db.model("Article", ArticleSchema);
+const Article = db.model("Articles", ArticleSchema);
 
 export default Article;

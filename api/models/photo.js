@@ -6,19 +6,19 @@ const Schema = mongoose.Schema;
 const PhotoSchema = new Schema(
   {
     url: { type: String, unique: true, required: true },
-    tags: [{ type: Schema.Types.ObjectId, ref: "photo_tag", required: true }],
-    photographers: { type: [Schema.Types.ObjectId], required: true },
-    photoTime: { type: Date, required: true },
-    rights: { type: String, required: true, default: ""},
+    tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
+    photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+    photoTime: { type: Date },
+    rights: { type: String, required: true, default: "" },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },
   {
     //saved to the collection "photo"
-    collection: "photo",
+    collection: "photos",
   }
 );
-const db = mongoose.connection.useDb("photo");
-const Photo = db.model("Photo", PhotoSchema);
+const db = mongoose.connection.useDb("photos");
+const Photo = db.model("Photos", PhotoSchema);
 
 export default Photo;

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Accounts from "../auth/accounts.js";
-import AccountStatus from "./enums/account_status";
+import Accounts from "./enums/accounts.js";
+import AccountStatus from "./enums/account_status.js";
 
 const Schema = mongoose.Schema;
 
@@ -19,38 +19,19 @@ const UserSchema = new Schema(
     bio: { type: String },
     emails: { type: [String], required: true, unique: true },
     phone: { type: String, unique: true },
-    roles: {
-      type: [String],
-      enum: [
-        Accounts.None.role,
-        Accounts.Author.role,
-        Accounts.Editor.role,
-        Accounts.Photographer.role,
-        Accounts.Developer.role,
-        Accounts.Admin.role,
-      ],
-      required: true,
-    },
-    status: {
-      type: String,
-      enum: [
-        AccountStatus.Pending.status,
-        AccountStatus.Deactivated.status,
-        AccountStatus.Approved.status,
-      ],
-      required: true,
-    },
+    roles: { type: [{ enum: Accounts.listStr }], required: true },
+    status: { type: String, enum: AccountStatus.listStr, required: true },
     approvingUser: { type: Schema.Types.ObjectId },
-    gameData: {type : Schema.Types.ObjectId }, 
+    gameData: { type: Schema.Types.ObjectId },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },
   {
     //saved to the collection "user"
-    collection: "user",
+    collection: "users",
   }
 );
-const db = mongoose.connection.useDb("user");
-const User = db.model("User", UserSchema);
+const db = mongoose.connection.useDb("users");
+const User = db.model("Users", UserSchema);
 
 export default User;
