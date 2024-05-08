@@ -1,40 +1,19 @@
 import mongoose from "mongoose";
-import Accounts from "../auth/accounts";
+import Accounts from "../models/enums/accounts.js";
 
 const Schema = mongoose.Schema;
 
 //calendar event schema
 const CalendarEventSchema = new Schema(
   {
+    title: { type: String, required: true },
+    description: { type: String },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
-    subject: { type: String, required: true },
-    description: { type: String },
     location: { type: String },
     public: { type: Boolean, required: true, default: false },
-    visibleToRoles: {
-      type: [String],
-      enum: [
-        Accounts.None.role,
-        Accounts.Author.role,
-        Accounts.Editor.role,
-        Accounts.Photographer.role,
-        Accounts.Developer.role,
-        Accounts.Admin.role,
-      ],
-      required: true,
-    },
-    associatedWithRoles: {
-      type: [String],
-      enum: [
-        Accounts.None.role,
-        Accounts.Author.role,
-        Accounts.Editor.role,
-        Accounts.Photographer.role,
-        Accounts.Developer.role,
-        Accounts.Admin.role,
-      ],
-    },
+    // visibleToRoles: { type: [String], enum: Accounts.listStr, required: true },
+    // associatedWithRoles: { type: [String], enum: Accounts.listStr },
     creatingUser: { type: Schema.Types.ObjectId, required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },

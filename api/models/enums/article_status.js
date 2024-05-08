@@ -22,11 +22,11 @@ export default class ArticleStatus {
  */
   static toArticleStatus(str) {
     switch (str.toLowerCase()) {
-      case "pending":
+      case this.Pending.status:
         return this.Pending;
-      case "print":
+      case this.Print.status:
         return this.Print;
-      case "online":
+      case this.Online.status:
         return this.Online;
       default:
     }
