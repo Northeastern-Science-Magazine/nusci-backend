@@ -6,20 +6,29 @@ export default class ArticleStatus {
   static Print = new AccountStatus("print");
   static Online = new AccountStatus("online");
 
+  // Get all ArticleStatuses
+  static list = [this.Pending, this.Print, this.Online];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
  */
   static toArticleStatus(str) {
     switch (str.toLowerCase()) {
-      case "pending":
+      case this.Pending.status:
         return this.Pending;
-      case "print":
+      case this.Print.status:
         return this.Print;
-      case "online":
+      case this.Online.status:
         return this.Online;
       default:
-
     }
   }
-};
+}

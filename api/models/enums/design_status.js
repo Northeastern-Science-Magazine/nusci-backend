@@ -7,6 +7,16 @@ export default class DesignStatus {
   static In_Progress = new AccountStatus("in_progress");
   static Completed = new AccountStatus("completed");
 
+  // Get all DesignStatuses
+  static list = [this.Needs_Designer, this.Has_Designer, this.In_Progress, this.Completed];
+  static listStr = this.list.map((status) => {
+    return status.status;
+  });
+
+  constructor(status) {
+    this.status = status;
+  }
+
   /**
  static enum verification method
  * @param {String} str
@@ -22,7 +32,6 @@ export default class DesignStatus {
       case "completed":
         return this.Completed;
       default:
-
     }
   }
-};
+}

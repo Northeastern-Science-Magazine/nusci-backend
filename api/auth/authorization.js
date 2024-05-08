@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import ProtectedRoutes from "./protected.routes.js";
-import Accounts from "./accounts.js";
+import Accounts from "../models/enums/accounts.js";
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 

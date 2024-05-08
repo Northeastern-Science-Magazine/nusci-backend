@@ -1,53 +1,57 @@
 import mongoose from "mongoose";
-import ArticleStatus from "./helper.js";
-const Schema = mongoose.Schema;
-const model = mongoose.model;
+import ArticleStatus from "./enums/article_status";
+import WritingStatus from "./enums/writing_status";
+import CommentStatus from "./enums/comment_status";
+import DesignStatus from "./enums/design_status";
+import PhotographyStatus from "./enums/photography_status";
+import ArticleContent from "./enums/article_content.js";
 
-/**
- * Approved Article Schema
- */
+const Schema = mongoose.Schema;
+
+//article schema
 const ArticleSchema = new Schema(
   {
-    title: String,
-    author: String,
-    authorUsername: String,
-    year: Number,
-    major: String,
-    categories: [{ type: String }],
-    date: Date,
-    coverImage: String,
-    images: [{ type: String }],
-    body: [{ type: String }],
-    pullquotes: [{ type: String }],
-    sources: [{ type: String }],
+    title: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    issueNumber: { type: Number },
+    categories: { type: [String], required: true },
+    articleContent: [
+      {
+        contentType: { type: ArticleContent.listStr, required: true },
+        content: { type: String, required: true },
+      },
+    ],
+    sources: { type: [String], required: true },
+    link: { type: String },
+    pageLength: { type: Number, required: true },
     comments: [
       {
-        author: String,
-        date: Date,
-        body: String,
+        user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
+        comment: { type: String, required: true },
+        commentStatus: { type: String, enum: CommentStatus.listStr, required: true },
+        creationTime: { type: Date, required: true },
+        modificationTime: { type: Date, required: true },
       },
     ],
-
-    status: [
-      {
-        type: String,
-        required: true,
-        enum: Object.values(ArticleStatus),
-        default: ArticleStatus.IN_PROGRESS,
-      },
-    ],
-    theme: String,
-    elementOrder: [{ type: String }],
-    approver: String,
+    articleStatus: { type: String, enum: ArticleStatus.listStr, required: true },
+    writingStatus: { type: String, enum: WritingStatus.listStr, required: true },
+    designStatus: { type: String, enum: DesignStatus.listStr, required: true },
+    photographyStatus: { type: String, enum: PhotographyStatus.listStr, required: true },
+    authors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    editors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    designers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    photographers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
+    approvingUser: { type: Schema.Types.ObjectId, ref: "Users" },
+    approvalTime: { type: Date },
+    creationTime: { type: Date, required: true },
+    modificationTime: { type: Date, required: true },
   },
   {
+    //saved to the collection "article"
     collection: "articles",
   }
 );
-
 const db = mongoose.connection.useDb("articles");
-
-// article model
-const Article = db.model("Article", ArticleSchema);
+const Article = db.model("Articles", ArticleSchema);
 
 export default Article;
