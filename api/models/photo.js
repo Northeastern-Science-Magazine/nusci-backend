@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
@@ -7,8 +6,8 @@ const Schema = mongoose.Schema;
 const PhotoSchema = new Schema(
   {
     url: { type: String, unique: true, required: true },
-    tags: [{ type: ObjectId, ref: "photo_tag", required: true }],
-    photographers: { type: [ObjectId], required: true },
+    tags: [{ type: Schema.Types.ObjectId, ref: "photo_tag", required: true }],
+    photographers: { type: [Schema.Types.ObjectId], required: true },
     photoTime: { type: Date, required: true },
     rights: { type: String, required: true, default: ""},
     creationTime: { type: Date, required: true },

@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import Accounts from "../auth/accounts";
 
@@ -7,7 +6,6 @@ const Schema = mongoose.Schema;
 //calendar event schema
 const CalendarEventSchema = new Schema(
   {
-    ObjectId: { type: ObjectId, required: true, unique: true },
     startTime: { type: Date, required: true },
     endTime: { type: Date, required: true },
     subject: { type: String, required: true },
@@ -37,7 +35,7 @@ const CalendarEventSchema = new Schema(
         Accounts.Admin.role,
       ],
     },
-    creatingUser: { type: ObjectId, required: true },
+    creatingUser: { type: Schema.Types.ObjectId, required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },

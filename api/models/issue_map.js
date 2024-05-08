@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
@@ -6,21 +5,19 @@ const Schema = mongoose.Schema;
 //issue map schema
 const IssueMapSchema = new Schema(
   {
-    ObjectId: { type: ObjectId, required: true, unique: true },
     issueNumber: { type: Number, required: true },
     issueName: { type: String, required: true, unique: true },
-    sections: {
-      objectId: { type: ObjectId, required: true },
+    sections: [{
       sectionName: { type: String, required: true, unique: true },
       color: { type: String, required: true },
-      creatingUser: { type: ObjectId, required: true },
-      articles: [{ type: ObjectId }],
+      creatingUser: { type: Schema.Types.ObjectId, required: true },
+      articles: [{ type: Schema.Types.ObjectId }],
       creationTime: { type: Date, required: true },
       modificationTime: { type: Date, required: true },
-    },
-    articles: [{ type: ObjectId, unique: true }],
+    }],
+    articles: [{ type: Schema.Types.ObjectId, unique: true }],
     pages: { type: Number, required: true },
-    creatingUser: { type: ObjectId, required: true },
+    creatingUser: { type: Schema.Types.ObjectId, required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },

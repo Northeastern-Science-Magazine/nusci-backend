@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
 import Accounts from "../auth/accounts.js";
 import AccountStatus from "./enums/account_status";
@@ -8,7 +7,6 @@ const Schema = mongoose.Schema;
 //user schema
 const UserSchema = new Schema(
   {
-    ObjectId: { type: ObjectId, required: true, unique: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     username: { type: String, required: true, unique: true },
@@ -42,8 +40,8 @@ const UserSchema = new Schema(
       ],
       required: true,
     },
-    approvingUser: { type: ObjectId },
-    gameData: {type : ObjectId }, 
+    approvingUser: { type: Schema.Types.ObjectId },
+    gameData: {type : Schema.Types.ObjectId }, 
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
   },
