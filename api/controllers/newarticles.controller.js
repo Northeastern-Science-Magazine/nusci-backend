@@ -32,13 +32,13 @@ export default class NewArticlesCTRL {
         coverImage: req.body.coverimage,
         body: JSON.parse(req.body.body),
         pullquotes: JSON.parse(req.body.pull),
-        elementOrder: JSON.parse(req.body.order)
-      }
+        elementOrder: JSON.parse(req.body.order),
+      };
 
       // assumes two articles cannot be given the same name
       const article = await ArticlesAccessor.getArticleByTitle(req.body.title);
       const pendingArticle = await ArticlesAccessor.getPendingArticleByTitle(req.body.title);
-      
+
       if (!article && !pendingArticle) {
         // Create article in the database
         await ArticlesAccessor.postArticle(articleDoc);
