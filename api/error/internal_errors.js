@@ -4,9 +4,15 @@ class InternalError extends Error {
   }
 }
 
+export class ErrorInternalAPIModelFieldValidation extends InternalError {
+  constructor(msg) {
+    super(msg);
+  }
+}
+
 export class ErrorInternalAPIModelValidation extends InternalError {
-  constructor() {
-    super("API Model Validation Error.");
+  constructor(msg) {
+    super(msg);
   }
 }
 
