@@ -66,8 +66,9 @@ export default class Connection {
    */
   static async close() {
     await connection.close();
-    connection.on("open", () => log.green("DATABASE STATE", "Connection Open"))
-    .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
-    .on("error", (error) => log.red("DATABASE STATE", error));
+    connection
+      .on("open", () => log.green("DATABASE STATE", "Connection Open"))
+      .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
+      .on("error", (error) => log.red("DATABASE STATE", error));
   }
 }

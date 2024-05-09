@@ -55,7 +55,6 @@ export default class UsersCTRL {
             } else {
               return handleError(res, Errors[400].Login.Deactivated);
             }
-
           } else {
             return handleError(res, Errors[400].Login.Password);
           }
@@ -123,7 +122,7 @@ export default class UsersCTRL {
   /**
    * getDeactivateProfile Method
    *
-   * This method renders the deactivate profile page where 
+   * This method renders the deactivate profile page where
    * users can either confirm the deactivation of their account
    * or cancel and return to the profile page.
    *
@@ -132,18 +131,16 @@ export default class UsersCTRL {
    */
   static getDeactivateProfile(req, res) {
     if (!req.cookies.error) {
-      res.render("deactivate-profile", { name : Authorize.getUsername(req) }); // get username
+      res.render("deactivate-profile", { name: Authorize.getUsername(req) }); // get username
+    } else {
+      res.render("deactivate-profile", { error: req.cookies.error });
     }
-    else {
-      res.render("deactivate-profile", { error :  req.cookies.error});
-    }
-    
   }
 
   /**
    * postDeactivateProfile Method
    *
-   * This method dispatches to the user accessor where the username passed 
+   * This method dispatches to the user accessor where the username passed
    * from the Auth getUsername() method is then deactivated.
    *
    * @param {HTTP REQ} req web request information for signup
@@ -161,7 +158,7 @@ export default class UsersCTRL {
   /**
    * getDeleteProfile Method
    *
-   * This method renders the delete profile page where 
+   * This method renders the delete profile page where
    * users can either confirm the deletion of their account
    * or cancel and return to the profile page.
    *
@@ -170,9 +167,8 @@ export default class UsersCTRL {
    */
   static getDeleteProfile(req, res) {
     if (!req.cookies.error) {
-      res.render("delete-profile", { name : Authorize.getUsername(req) }); // get username
-    }
-    else {
+      res.render("delete-profile", { name: Authorize.getUsername(req) }); // get username
+    } else {
       res.render("delete-profile", { error: req.cookies.error });
     }
   }
@@ -180,7 +176,7 @@ export default class UsersCTRL {
   /**
    * postDeleteProfile Method
    *
-   * This method dispatches to the user accessor where the username passed 
+   * This method dispatches to the user accessor where the username passed
    * from the Auth getUsername() method is then deleted and so is all associated work.
    *
    * @param {HTTP REQ} req web request information for signup

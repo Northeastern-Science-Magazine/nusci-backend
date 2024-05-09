@@ -44,7 +44,7 @@ export default class PublicPagesController {
   static async getEditProfile(req, res, next) {
     try {
       const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
-      
+
       res.render("edit_profile", {
         name: user.username,
         role: user.role,
@@ -70,7 +70,7 @@ export default class PublicPagesController {
           image: req.body.image,
         },
       };
-  
+
       // Update the password if provided (might be a nifty feature for the future)
       if (req.body.password) {
         updatedUser.password = await bcrypt.hash(req.body.password, 10);
@@ -84,7 +84,7 @@ export default class PublicPagesController {
       }
 
       res.redirect("/profile");
-    } catch (e) {;
+    } catch (e) {
       console.log(e);
       return handleError(res, Errors[500].DataPUT);
     }
