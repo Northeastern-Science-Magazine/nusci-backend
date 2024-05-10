@@ -158,7 +158,7 @@ export default class ArticlesAccessor {
    * @param {Integer} issueNumber 
    * @returns article
    */
-  static async getArticleBySlug(issueNumber) {
+  static async getArticleByIssueNumber(issueNumber) {
     try {
       await Connection.open();
       const articles = await Article.find({ issueNumber : issueNumber });
