@@ -1,15 +1,6 @@
-import PendingArticle from "../models/pending.article.js";
 import Article from "../models/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import PhotographyStatus from "../models/enums/photography_status.js";
-
-/**
-get articles by author username
-get articles by multiple categories
-get articles by WritingStatus
-get articles by issue number
- */
 
 /**
  * Articles Accessor Class
@@ -224,7 +215,7 @@ export default class ArticlesAccessor {
    * This method retrieves all articles based on 
    * the photography status.
    * 
-   * @param {PhotographyStatusStatus} photographyStatus 
+   * @param {PhotographyStatus} photographyStatus 
    * @returns array of articles
    */
   static async getArticlesByPhotographyStatus(photographyStatus) {
