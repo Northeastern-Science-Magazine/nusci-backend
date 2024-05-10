@@ -3,7 +3,7 @@ import ArticleStatus from "./enums/article_status.js";
 import WritingStatus from "./enums/writing_statu.js";
 import CommentStatus from "./enums/comment_status.js";
 import DesignStatus from "./enums/design_status.js";
-import PhotographyStatus from "./enums/photography_statu.js";
+import PhotographyStatus from "./enums/photography_status.js";
 import ArticleContent from "./enums/article_content.js";
 
 const Schema = mongoose.Schema;
