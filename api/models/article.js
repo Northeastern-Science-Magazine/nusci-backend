@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import ArticleStatus from "./enums/article_status";
-import WritingStatus from "./enums/writing_status";
-import CommentStatus from "./enums/comment_status";
-import DesignStatus from "./enums/design_status";
-import PhotographyStatus from "./enums/photography_status";
+import ArticleStatus from "./enums/article_status.js";
+import WritingStatus from "./enums/writing_statu.js";
+import CommentStatus from "./enums/comment_status.js";
+import DesignStatus from "./enums/design_status.js";
+import PhotographyStatus from "./enums/photography_statu.js";
 import ArticleContent from "./enums/article_content.js";
 
 const Schema = mongoose.Schema;
