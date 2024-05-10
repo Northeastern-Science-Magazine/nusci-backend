@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import ArticleStatus from "./enums/article_status.js";
-import WritingStatus from "./enums/writing_statu.js";
+import WritingStatus from "./enums/writing_status.js";
 import CommentStatus from "./enums/comment_status.js";
 import DesignStatus from "./enums/design_status.js";
 import PhotographyStatus from "./enums/photography_status.js";
