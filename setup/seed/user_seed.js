@@ -6,7 +6,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000000"),
     firstName: "Ethan",
-    lastName: "Lastname",
+    lastName: "S",
     username: "ethan",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
@@ -25,7 +25,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000001"),
     firstName: "Raisa",
-    lastName: "Lastname",
+    lastName: "B",
     username: "raisa",
     password: "$2a$10$eNQFIiJpW0gBdsAimJqM0epCC6MueAlaujx/NEO.5tO1S1iqTQs.y", // raisa
     graduationYear: 2025,
@@ -44,7 +44,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000002"),
     firstName: "Sutton",
-    lastName: "Lastname",
+    lastName: "S",
     username: "sutton",
     password: "$2a$10$W0scuYJIQPaHhqgU4z.hWuuLYYyg7fqH156BJPIQITpV6oClheGNq", // atnaris
     graduationYear: 2026,
@@ -64,7 +64,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000003"),
     firstName: "Arushi",
-    lastName: "Lastname",
+    lastName: "A",
     username: "arushi",
     password: "$2a$10$Hqwbxn2u3iYHFbGTamAbnOyGJf0WL4p2VocQpmnteweyBy3XKF.5u", // 12345
     graduationYear: 2027,
@@ -84,7 +84,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000004"),
     firstName: "Jiajia",
-    lastName: "Lastname",
+    lastName: "J",
     username: "jiajia",
     password: "$2a$10$l9dcpC3PT1poWDEn9KOr.OjwBSSJ8YJb0DcpOFGnqkRPngROGfx7O", // azi
     graduationYear: 2026,
@@ -104,7 +104,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000005"),
     firstName: "Noah",
-    lastName: "Lastname",
+    lastName: "H",
     username: "noah",
     password: "$2a$10$WkjXpemM3V4ZQv77RrJp2.b1AEHnPxTH47umftgIl0JTF7vvIByTC", // editorial
     graduationYear: 2024,
@@ -124,7 +124,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000006"),
     firstName: "Nethra",
-    lastName: "Lastname",
+    lastName: "P",
     username: "nethra",
     password: "$2a$10$hs9TUiQSldQ46.1NJrfOHO1i705hF8DjZjsipiaNgVh8CPtgWHIyy", // treasurer
     graduationYear: 2024,
@@ -144,7 +144,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000007"),
     firstName: "Vianna",
-    lastName: "Lastname",
+    lastName: "W",
     username: "vianna",
     password: "$2a$10$FYx.oMLNXKW.gsjZA62fWO9iiuoux7X4MHtPsZYKHw1QOMhNp8hSO", // designer
     graduationYear: 2025,
@@ -164,7 +164,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000008"),
     firstName: "Jasmine",
-    lastName: "Lastname",
+    lastName: "N",
     username: "jasmine",
     password: "$2a$10$pxCrSe3i7f/xSFZMF/0tPOqSKdvpgOIKfFcDXJGJtocqFE09SV6MO", // sndfhqwdakjqfqlnwkjjd
     graduationYear: 2025,
