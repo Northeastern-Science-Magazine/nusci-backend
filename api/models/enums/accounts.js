@@ -10,10 +10,11 @@ export default class Accounts {
   static Editor = new Accounts("editor");
   static Photographer = new Accounts("photographer");
   static Developer = new Accounts("developer");
+  static Designer = new Accounts("designer");
   static Admin = new Accounts("admin");
 
   // Get all Account Types
-  static list = [this.Author, this.Editor, this.Photographer, this.Developer, this.Admin];
+  static list = [this.Author, this.Editor, this.Photographer, this.Developer, this.Designer, this.Admin];
   static listStr = this.list.map((role) => {
     return role.role;
   });
@@ -44,6 +45,8 @@ export default class Accounts {
         return this.Photographer;
       case this.Developer.role:
         return this.Developer;
+      case this.Designer.role:
+        return this.Designer;
       case this.Admin.role:
         return this.Admin;
       default:
