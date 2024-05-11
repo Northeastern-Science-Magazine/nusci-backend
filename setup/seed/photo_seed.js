@@ -8,8 +8,8 @@ export default [
     photographers: [new mongoose.Types.ObjectId("b00000000000000000000004")],
     photoTime: new Date("2024-05-10T10:00:00"),
     rights: "All rights reserved",
-    creationTime: new Date(),
-    modificationTime: new Date(),
+    creationTime: new Date("2024-04-02"),
+    modificationTime: new Date("2024-04-02"),
   },
   {
     _id: new mongoose.Types.ObjectId("e00000000000000000000001"),
@@ -18,8 +18,8 @@ export default [
     photographers: [new mongoose.Types.ObjectId("b00000000000000000000004")],
     photoTime: new Date("2024-05-15T14:30:00"),
     rights: "All rights reserved",
-    creationTime: new Date(),
-    modificationTime: new Date(),
+    creationTime: new Date("2024-04-03"),
+    modificationTime: new Date("2024-04-03"),
   },
   {
     _id: new mongoose.Types.ObjectId("e00000000000000000000002"),
@@ -28,8 +28,8 @@ export default [
     photographers: [new mongoose.Types.ObjectId("b00000000000000000000004")],
     photoTime: new Date("2024-06-01T08:45:00"),
     rights: "All rights reserved",
-    creationTime: new Date(),
-    modificationTime: new Date(),
+    creationTime: new Date("2024-04-05"),
+    modificationTime: new Date("2024-04-05"),
   },
   {
     _id: new mongoose.Types.ObjectId("e00000000000000000000003"),
@@ -38,8 +38,8 @@ export default [
     photographers: [new mongoose.Types.ObjectId("b00000000000000000000004")],
     photoTime: new Date("2024-06-20T16:00:00"),
     rights: "All rights reserved",
-    creationTime: new Date(),
-    modificationTime: new Date(),
+    creationTime: new Date("2024-04-07"),
+    modificationTime: new Date("2024-04-07"),
   },
   {
     _id: new mongoose.Types.ObjectId("e00000000000000000000004"),
@@ -48,7 +48,7 @@ export default [
     photographers: [new mongoose.Types.ObjectId("b00000000000000000000004")],
     photoTime: new Date("2024-07-05T11:20:00"),
     rights: "All rights reserved",
-    creationTime: new Date(),
-    modificationTime: new Date(),
+    creationTime: new Date("2024-04-08"),
+    modificationTime: new Date("2024-04-08"),
   },
 ];
