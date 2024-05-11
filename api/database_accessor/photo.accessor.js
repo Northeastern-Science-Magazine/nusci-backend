@@ -8,6 +8,11 @@ import mongoose from "mongoose";
  * Accesses the photos
  */
 export default class PhotoAccessor {
+  /**
+   * Get all photos
+   *
+   * @returns all photos
+   */
   static async getAllPhotos() {
     try {
       await Connection.open();
@@ -19,6 +24,12 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photo by its ID
+   *
+   * @param {ObjectID} photoID - The ID of the photo
+   * @returns Photo
+   */
   static async getPhotoByID(photoID) {
     try {
       await Connection.open();
@@ -30,17 +41,29 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photo by its URL
+   *
+   * @param {String} url - The URL of the photo
+   * @returns Photo
+   */
   static async getPhotoByUrl(url) {
     try {
       await Connection.open();
       const photo = await Photo.findOne({ url: url });
       return photo;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       throw e;
     }
   }
 
+  /**
+   * Find photos by tag
+   *
+   * @param {ObjectID} tagID - The ID of the tag
+   * @returns photos
+   */
   static async getPhotosByTag(tagID) {
     try {
       await Connection.open();
@@ -52,6 +75,12 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photos by photographer
+   *
+   * @param {ObjectID} photographerID - The ID of the photographer
+   * @returns photos
+   */
   static async getPhotosByPhotographer(photographerID) {
     try {
       await Connection.open();
@@ -63,6 +92,13 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photos by time range
+   *
+   * @param {Date} startDate - Start of time range
+   * @param {Date} endDate - End of time range
+   * @returns photos
+   */
   static async getPhotosByTimeRange(startDate, endDate) {
     try {
       await Connection.open();
@@ -74,6 +110,12 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photos with specific rights
+   *
+   * @param {String} rights - The rights of the photos
+   * @returns photos
+   */
   static async getPhotosWithRights(rights) {
     try {
       await Connection.open();
@@ -85,6 +127,13 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photos by creation time range
+   *
+   * @param {Date} start - Start of creation time range
+   * @param {Date} end - End of creation time range
+   * @returns photos
+   */
   static async getPhotosByCreationTimeRange(start, end) {
     try {
       await Connection.open();
@@ -96,6 +145,13 @@ export default class PhotoAccessor {
     }
   }
 
+  /**
+   * Find photos by modification time range
+   *
+   * @param {Date} start - Start of modification time range
+   * @param {Date} end - End of modification time range
+   * @returns photos
+   */
   static async getPhotosByModificationTimeRange(start, end) {
     try {
       await Connection.open();
