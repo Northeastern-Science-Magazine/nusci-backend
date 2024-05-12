@@ -1,4 +1,3 @@
-import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 import AccountStatus from "../models/enums/account_status.js";
 import Accounts from "../models/enums/accounts.js";
 import { BaseModel, BaseModelUpdate, number, string, date, empty } from "./base_model.js";
@@ -30,11 +29,7 @@ export class UserCreate extends BaseModel {
   };
 
   constructor(json) {
-    try {
-      super(json, UserCreate.schema);
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
-    }
+    super(json, UserCreate.schema);
   }
 }
 
@@ -64,11 +59,7 @@ export class UserResponse extends BaseModel {
   };
 
   constructor(json) {
-    try {
-      super(json, UserResponse.schema);
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
-    }
+    super(json, UserResponse.schema);
   }
 }
 
@@ -93,11 +84,7 @@ export class UserPublicResponse extends BaseModel {
     modificationTime: { type: date, required: true },
   };
   constructor(json) {
-    try {
-      super(json, UserPublicResponse.schema);
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
-    }
+    super(json, UserPublicResponse.schema);
   }
 }
 
@@ -127,11 +114,7 @@ export class UserUpdate extends BaseModelUpdate {
   };
 
   constructor(json) {
-    try {
-      super(json, UserUpdate.schema);
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
-    }
+    super(json, UserUpdate.schema);
   }
 }
 
@@ -144,10 +127,6 @@ export class UserDelete extends BaseModel {
   };
 
   constructor(json) {
-    try {
-      super(json, UserDelete.schema);
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
-    }
+    super(json, UserDelete.schema);
   }
 }

@@ -1,4 +1,5 @@
 import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors";
+import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 
 // Delegated Atomic Types
 export const number = "number";
@@ -17,9 +18,13 @@ export const empty = "undefined";
  */
 export class BaseModel {
   constructor(json, schema) {
-    this.validate(json, schema);
-    for (const key of Object.keys(json)) {
-      this[key] = json[key];
+    try {
+      this.validate(json, schema);
+      for (const key of Object.keys(json)) {
+        this[key] = json[key];
+      }
+    } catch (e) {
+      throw new ErrorInternalAPIModelValidation(e.message);
     }
   }
 
