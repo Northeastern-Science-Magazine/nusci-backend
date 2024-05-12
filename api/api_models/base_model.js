@@ -26,7 +26,7 @@ export class BaseModel {
   /**
    * METHOD LOOKING TO BE IMPROVED
    * - validate the fields and only the correct fields there (cut out invalid)
-   * - validate more specific things that could go wrong.
+   * - validate more specific things that could go wrong (ex. non boolean in required)
    *
    * Given a Schema, this method will ensure the given JSON
    * conforms to the types defined in the schema. Throws an error
