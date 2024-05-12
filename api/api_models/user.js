@@ -1,8 +1,7 @@
 import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 import AccountStatus from "../models/enums/account_status.js";
 import Accounts from "../models/enums/accounts.js";
-import { BaseModel } from "./base_model.js";
-import { BaseModelUpdate } from "./base_model.js";
+import { BaseModel, BaseModelUpdate, number, string, date, empty } from "./base_model.js";
 
 /**
  * Represents the http request body required
@@ -10,17 +9,24 @@ import { BaseModelUpdate } from "./base_model.js";
  */
 export class UserCreate extends BaseModel {
   static schema = {
-    firstName: { type: "string", required: true },
-    lastName: { type: "string", required: true },
-    username: { type: "string", required: true },
-    pronouns: { type: ["string"], required: false },
-    graduationYear: { type: "number", required: true },
-    majors: { type: ["string"], required: false },
-    location: { type: "string", required: false },
-    bio: { type: "string", required: true },
-    emails: { type: ["string"], required: true },
-    phone: { type: "string", required: false },
-    roles: { type: ["string"], enum: Accounts.allStr, required: true },
+    firstName: { type: string, required: true },
+    lastName: { type: string, required: true },
+    username: { type: string, required: true },
+    pronouns: { type: [string] },
+    graduationYear: { type: number, required: true },
+    majors: { type: [string] },
+    location: { type: string },
+    profileImage: { type: string },
+    bannerImage: { type: string },
+    bio: { type: string, required: true },
+    emails: { type: [string], required: true },
+    phone: { type: string },
+    roles: { type: [string], enum: Accounts.allStr, required: true },
+    status: { type: string, enum: AccountStatus.allStr, default: AccountStatus.Pending.status, override: true },
+    approvingUser: { type: empty, default: undefined, override: true },
+    gameData: { type: empty, default: undefined, override: true },
+    creationTime: { type: date, default: Date.now(), override: true },
+    modificationTime: { type: date, default: Date.now(), override: true },
   };
 
   constructor(json) {
@@ -29,24 +35,6 @@ export class UserCreate extends BaseModel {
     } catch (e) {
       throw new ErrorInternalAPIModelValidation(e.message);
     }
-    this.firstName = json.firstName;
-    this.lastName = json.lastName;
-    this.username = json.username;
-    this.pronouns = json.pronouns;
-    this.graduationYear = json.graduationYear;
-    this.majors = json.majors;
-    this.location = json.location;
-    this.profileImage = undefined;
-    this.bannerImage = undefined;
-    this.bio = json.bio;
-    this.emails = json.emails;
-    this.phone = json.phone ? json.phone : undefined;
-    this.roles = json.roles;
-    this.status = AccountStatus.Pending;
-    this.approvingUser = undefined;
-    this.gameData = undefined;
-    this.creationTime = Date.now();
-    this.modificationTime = Date.now();
   }
 }
 
@@ -55,33 +43,24 @@ export class UserCreate extends BaseModel {
  */
 export class UserResponse extends BaseModel {
   static schema = {
-    firstName: { type: "string", required: true },
-    lastName: { type: "string", required: true },
-    username: { type: "string", required: true },
-    pronouns: { type: ["string"], required: false },
-    graduationYear: { type: "number", required: true },
-    majors: { type: ["string"], required: false },
-    location: { type: "string", required: false },
-    profileImage: { type: "string", required: false },
-    bannerImage: { type: "string", required: false },
-    bio: { type: "string", required: true },
-    emails: { type: ["string"], required: true },
-    phone: { type: "string", required: false },
-    roles: { type: ["string"], enum: Accounts.allStr, required: true },
-    status: { type: "string", enum: AccountStatus.allStr, required: true },
-    approvingUser: {
-      type: {
-        firstName: { type: "string", required: false },
-        lastName: { type: "string", required: false },
-        username: { type: "string", required: false },
-        roles: { type: Accounts.allStr, required: false },
-        status: { type: "string", enum: AccountStatus.allStr, required: false },
-      },
-      required: false,
-    },
-    gameData: { type: "number", required: false },
-    creationTime: { type: "string", required: true },
-    modificationTime: { type: "string", required: true },
+    firstName: { type: string, required: true },
+    lastName: { type: string, required: true },
+    username: { type: string, required: true },
+    pronouns: { type: [string], required: false },
+    graduationYear: { type: number, required: true },
+    majors: { type: [string] },
+    location: { type: string },
+    profileImage: { type: string },
+    bannerImage: { type: string },
+    bio: { type: string, required: true },
+    emails: { type: [string], required: true },
+    phone: { type: string },
+    roles: { type: [string], enum: Accounts.allStr, required: true },
+    status: { type: string, enum: AccountStatus.allStr, required: true },
+    approvingUser: { type: UserPublicResponse.schema },
+    gameData: { type: empty },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
   };
 
   constructor(json) {
@@ -90,24 +69,6 @@ export class UserResponse extends BaseModel {
     } catch (e) {
       throw new ErrorInternalAPIModelValidation(e.message);
     }
-    this.firstName = json.firstName;
-    this.lastName = json.lastName;
-    this.username = json.username;
-    this.pronouns = json.pronouns;
-    this.graduationYear = json.graduationYear;
-    this.majors = json.majors;
-    this.location = json.location;
-    this.profileImage = json.profileImage;
-    this.bannerImage = json.bannerImage;
-    this.bio = json.bio;
-    this.emails = json.emails;
-    this.phone = json.phone;
-    this.roles = json.roles;
-    this.status = json.status;
-    this.approvingUser = json.approvingUser;
-    this.gameData = json.gameData;
-    this.creationTime = json.creationTime;
-    this.modificationTime = json.modificationTime;
   }
 }
 
@@ -116,20 +77,20 @@ export class UserResponse extends BaseModel {
  */
 export class UserPublicResponse extends BaseModel {
   static schema = {
-    firstName: { type: "string", required: true },
-    lastName: { type: "string", required: true },
-    username: { type: "string", required: true },
-    pronouns: { type: ["string"], required: false },
-    graduationYear: { type: "number", required: true },
-    majors: { type: ["string"], required: false },
-    location: { type: "string", required: false },
-    profileImage: { type: "string", required: false },
-    bannerImage: { type: "string", required: false },
-    bio: { type: "string", required: true },
-    roles: { type: ["string"], enum: Accounts.allStr, required: true },
-    gameData: { type: "number", required: false },
-    creationTime: { type: "string", required: true },
-    modificationTime: { type: "string", required: true },
+    firstName: { type: string, required: true },
+    lastName: { type: string, required: true },
+    username: { type: string, required: true },
+    pronouns: { type: [string] },
+    graduationYear: { type: number, required: true },
+    majors: { type: [string] },
+    location: { type: string },
+    profileImage: { type: string },
+    bannerImage: { type: string },
+    bio: { type: string, required: true },
+    roles: { type: [string], enum: Accounts.allStr, required: true },
+    gameData: { type: empty },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
   };
   constructor(json) {
     try {
@@ -137,20 +98,6 @@ export class UserPublicResponse extends BaseModel {
     } catch (e) {
       throw new ErrorInternalAPIModelValidation(e.message);
     }
-    this.firstName = json.firstName;
-    this.lastName = json.lastName;
-    this.username = json.username;
-    this.pronouns = json.pronouns;
-    this.graduationYear = json.graduationYear;
-    this.majors = json.majors;
-    this.location = json.location;
-    this.profileImage = json.profileImage;
-    this.bannerImage = json.bannerImage;
-    this.bio = json.bio;
-    this.roles = json.roles;
-    this.gameData = json.gameData;
-    this.creationTime = json.creationTime;
-    this.modificationTime = json.modificationTime;
   }
 }
 
@@ -160,46 +107,31 @@ export class UserPublicResponse extends BaseModel {
  */
 export class UserUpdate extends BaseModelUpdate {
   static schema = {
-    firstName: { type: "string", required: false },
-    lastName: { type: "string", required: false },
-    username: { type: "string", required: false },
-    pronouns: { type: ["string"], required: false },
-    graduationYear: { type: "number", required: false },
-    majors: { type: ["string"], required: false },
-    location: { type: "string", required: false },
-    profileImage: { type: "string", required: false },
-    bannerImage: { type: "string", required: false },
-    bio: { type: "string", required: false },
-    emails: { type: ["string"], required: false },
-    phone: { type: "string", required: false },
-    roles: { type: ["string"], enum: Accounts.allStr, required: false },
-    status: { type: "string", enum: AccountStatus.allStr, required: false },
-    approvingUser: { type: "string", required: false },
-    gameData: { type: "number", required: false },
+    firstName: { type: string },
+    lastName: { type: string },
+    username: { type: string },
+    pronouns: { type: [string] },
+    graduationYear: { type: number },
+    majors: { type: [string] },
+    location: { type: string },
+    profileImage: { type: string },
+    bannerImage: { type: string },
+    bio: { type: string },
+    emails: { type: [string] },
+    phone: { type: string },
+    roles: { type: [string], enum: Accounts.allStr },
+    status: { type: string, enum: AccountStatus.allStr },
+    approvingUser: { type: string },
+    gameData: { type: empty },
+    modificationTime: { type: date, default: Date.now(), override: true },
   };
+
   constructor(json) {
     try {
       super(json, UserUpdate.schema);
     } catch (e) {
       throw new ErrorInternalAPIModelValidation(e.message);
     }
-    this.firstName = json.firstName;
-    this.lastName = json.lastName;
-    this.username = json.username;
-    this.pronouns = json.pronouns;
-    this.graduationYear = json.graduationYear;
-    this.majors = json.majors;
-    this.location = json.location;
-    this.profileImage = json.profileImage;
-    this.bannerImage = json.bannerImage;
-    this.bio = json.bio;
-    this.emails = json.emails;
-    this.phone = json.phone;
-    this.roles = json.roles;
-    this.status = json.status;
-    this.approvingUser = json.approvingUser;
-    this.gameData = json.gameData;
-    this.modificationTime = Date.now();
   }
 }
 
@@ -208,7 +140,7 @@ export class UserUpdate extends BaseModelUpdate {
  */
 export class UserDelete extends BaseModel {
   static schema = {
-    username: { type: "string", required: true },
+    username: { type: string, required: true },
   };
 
   constructor(json) {
@@ -217,6 +149,5 @@ export class UserDelete extends BaseModel {
     } catch (e) {
       throw new ErrorInternalAPIModelValidation(e.message);
     }
-    this.username = json.username;
   }
 }
