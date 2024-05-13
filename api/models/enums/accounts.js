@@ -30,6 +30,15 @@ export default class Accounts {
   }
 
   /**
+   * Account to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.role;
+  }
+
+  /**
    * String into its associated Account object
    *
    * @param {String} str

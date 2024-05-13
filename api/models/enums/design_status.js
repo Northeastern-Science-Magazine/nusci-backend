@@ -24,6 +24,15 @@ export default class DesignStatus {
   }
 
   /**
+   * DesignStatus to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.status;
+  }
+
+  /**
    * String to its associated DesginStatus object
    *
    * @param {String} str
@@ -41,5 +50,21 @@ export default class DesignStatus {
         return this.Completed;
       default:
     }
+  }
+
+  /**
+   * Returns all DesignStatus objects as a list.
+   *
+   * @returns {List[DesignStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all DesignStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }
