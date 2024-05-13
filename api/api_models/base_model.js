@@ -1,18 +1,37 @@
 import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors";
+import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
+
+// Delegated Atomic Types
+export const number = "number";
+export const boolean = "boolean";
+export const string = "string";
+export const object = "object";
+export const date = "date";
+export const empty = "undefined";
 
 /**
  * BaseModel Abstract Class
  *
  * This class serves as the parent class for all other API Models,
  * and provides static utility functions that API Models should have.
+ *
  */
 export class BaseModel {
   constructor(json, schema) {
-    this.validate(json, schema);
+    try {
+      this.validate(json, schema);
+      for (const key of Object.keys(json)) {
+        this[key] = json[key];
+      }
+    } catch (e) {
+      throw new ErrorInternalAPIModelValidation(e.message);
+    }
   }
 
   /**
    * METHOD LOOKING TO BE IMPROVED
+   * - validate the fields and only the correct fields there (cut out invalid)
+   * - validate more specific things that could go wrong (ex. non boolean in required)
    *
    * Given a Schema, this method will ensure the given JSON
    * conforms to the types defined in the schema. Throws an error
@@ -23,8 +42,17 @@ export class BaseModel {
    */
   validate(json, schema) {
     for (const key in schema) {
-      const { type, required, enum: enumValues } = schema[key];
-      const value = json[key];
+      var value = json[key];
+      const type = schema[key].type;
+      const required = schema[key].required;
+      const enumValues = schema[key].enum;
+      const defaultValue = schema[key].default;
+      const override = schema[key].override;
+
+      if (value === undefined && (defaultValue !== undefined || override)) {
+        json[key] = defaultValue;
+        value = defaultValue;
+      }
 
       if (required && value === undefined) {
         throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' is required.`);
@@ -81,7 +109,11 @@ export class BaseModel {
           if (typeof value === "object") {
             this.validate(value, schema[key]); // Recursively validate nested object
           } else {
-            throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be of type '${type}'.`);
+            if (type === "date" && !value instanceof Date) {
+              throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be a Date.`);
+            } else {
+              throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be of type '${type}'.`);
+            }
           }
         }
       }
