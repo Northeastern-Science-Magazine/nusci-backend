@@ -39,4 +39,20 @@ export default class ArticleStatus {
       default:
     }
   }
+
+  /**
+   * Returns all ArticleStatus objects as a list.
+   *
+   * @returns {List[ArticleStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all ArticleStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
+  }
 }

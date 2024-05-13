@@ -37,20 +37,36 @@ export default class Accounts {
    */
   static toAccount(str) {
     switch (str.toLowerCase()) {
-      case this.Author.role:
+      case this.Author.toString():
         return this.Author;
-      case this.Editor.role:
+      case this.Editor.toString():
         return this.Editor;
-      case this.Photographer.role:
+      case this.Photographer.toString():
         return this.Photographer;
-      case this.Developer.role:
+      case this.Developer.toString():
         return this.Developer;
-      case this.Designer.role:
+      case this.Designer.toString():
         return this.Designer;
-      case this.Admin.role:
+      case this.Admin.toString():
         return this.Admin;
       default:
         return this.None;
     }
+  }
+
+  /**
+   * Returns all Accounts objects as a list.
+   *
+   * @returns {List[Accounts]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all Accounts as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }
