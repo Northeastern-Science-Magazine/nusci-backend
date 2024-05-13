@@ -21,6 +21,15 @@ export default class ArticleContent {
   }
 
   /**
+   * ArticleContent to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.type;
+  }
+
+  /**
    * String to its associated ArticleContent object
    *
    * @param {String} str
@@ -36,5 +45,21 @@ export default class ArticleContent {
         return this.Image;
       default:
     }
+  }
+
+  /**
+   * Returns all ArticleContent objects as a list.
+   *
+   * @returns {List[ArticleContent]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all ArticleContent as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }

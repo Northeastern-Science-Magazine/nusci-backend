@@ -35,6 +35,15 @@ export default class WritingStatus {
   }
 
   /**
+   * WritingStatus to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.status;
+  }
+
+  /**
    * String to its associated WritingStatus object
    *
    * @param {String} str
@@ -58,5 +67,21 @@ export default class WritingStatus {
         return this.Dropped;
       default:
     }
+  }
+
+  /**
+   * Returns all WritingStatus objects as a list.
+   *
+   * @returns {List[WritingStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all WritingStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }

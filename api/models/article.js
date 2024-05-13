@@ -5,6 +5,7 @@ import CommentStatus from "./enums/comment_status.js";
 import DesignStatus from "./enums/design_status.js";
 import PhotographyStatus from "./enums/photography_status.js";
 import ArticleContent from "./enums/article_content.js";
+import Categories from "./enums/categories.js";
 
 const Schema = mongoose.Schema;
 
@@ -14,14 +15,14 @@ const ArticleSchema = new Schema(
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     issueNumber: { type: Number },
-    categories: { type: [String], required: true },
+    categories: [{ type: String, enum: Categories.listr(), required: true }],
     articleContent: [
       {
         contentType: { type: ArticleContent.listStr, required: true },
         content: { type: String, required: true },
       },
     ],
-    sources: { type: [String], required: true },
+    sources: [{ type: String, required: true }],
     link: { type: String },
     pageLength: { type: Number, required: true },
     comments: [

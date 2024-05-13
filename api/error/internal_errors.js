@@ -17,7 +17,19 @@ export class ErrorInternalAPIModelValidation extends InternalError {
 }
 
 export class ErrorInternalEnumValidation extends InternalError {
-  constructor() {
-    super("Enum Validation Error.");
+  constructor(msg) {
+    super(msg);
+  }
+}
+
+export class ErrorCannotInitializeAbstractClass extends InternalError {
+  constuctor(msg) {
+    super(msg);
+  }
+}
+
+export class ErrorAbstractMethodNotInstantiated extends InternalError {
+  constructor(msg) {
+    super(msg);
   }
 }

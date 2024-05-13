@@ -128,6 +128,9 @@ export default class PhotoAccessor {
   }
 
   /**
+   * @TODO Assume start time is always passed in. If two parameters.
+   * then assume first param start, and second param end.
+   *
    * Find photos by creation time range
    *
    * @param {Date} start - Start of creation time range
@@ -146,6 +149,9 @@ export default class PhotoAccessor {
   }
 
   /**
+   * @TODO Assume start time is always passed in. If two parameters.
+   * then assume first param start, and second param end.
+   *
    * Find photos by modification time range
    *
    * @param {Date} start - Start of modification time range
