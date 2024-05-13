@@ -23,6 +23,15 @@ export default class CommentStatus {
   }
 
   /**
+   * CommentStatus to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.status;
+  }
+
+  /**
    * String to its associated CommentStatus object
    *
    * @param {String} str
@@ -38,5 +47,21 @@ export default class CommentStatus {
         return this.Public;
       default:
     }
+  }
+
+  /**
+   * Returns all CommentStatus objects as a list.
+   *
+   * @returns {List[CommentStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all CommentStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }

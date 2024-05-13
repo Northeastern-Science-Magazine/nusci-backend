@@ -24,6 +24,15 @@ export default class PhotographyStatus {
   }
 
   /**
+   * PhotographyStatus to its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.status;
+  }
+
+  /**
    * String to its associated PhotographyStatus object
    *
    * @param {String} str
@@ -41,5 +50,21 @@ export default class PhotographyStatus {
         return this.Photo_Complete;
       default:
     }
+  }
+
+  /**
+   * Returns all PhotographyStatus objects as a list.
+   *
+   * @returns {List[PhotographyStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all PhotographyStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }

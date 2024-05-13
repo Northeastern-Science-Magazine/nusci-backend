@@ -22,6 +22,10 @@ export default class ArticleStatus {
     this.status = status;
   }
 
+  toString() {
+    return this.status;
+  }
+
   /**
    * String to its associated ArticleStatus object
    *
@@ -30,13 +34,29 @@ export default class ArticleStatus {
    */
   static toArticleStatus(str) {
     switch (str.toLowerCase()) {
-      case this.Pending.status:
+      case this.Pending.toString():
         return this.Pending;
-      case this.Print.status:
+      case this.Print.toString():
         return this.Print;
-      case this.Online.status:
+      case this.Online.toString():
         return this.Online;
       default:
     }
+  }
+
+  /**
+   * Returns all ArticleStatus objects as a list.
+   *
+   * @returns {List[ArticleStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all ArticleStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }

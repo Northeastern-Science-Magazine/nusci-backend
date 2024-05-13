@@ -23,6 +23,15 @@ export default class AccountStatus {
   }
 
   /**
+   * AccountStatus into its associated string
+   *
+   * @returns {String}
+   */
+  toString() {
+    return this.status;
+  }
+
+  /**
    * String into its associated AccountStatus object
    *
    * @param {String} str
@@ -30,13 +39,29 @@ export default class AccountStatus {
    */
   static toAccountStatus(str) {
     switch (str.toLowerCase()) {
-      case this.Pending.status:
+      case this.Pending.toString():
         return this.Pending;
-      case this.Deactivated.status:
+      case this.Deactivated.toString():
         return this.Deactivated;
-      case this.Approved.status:
+      case this.Approved.toString():
         return this.Approved;
       default:
     }
+  }
+
+  /**
+   * Returns all AccountStatus objects as a list.
+   *
+   * @returns {List[AccountStatus]}
+   */
+  static list() {
+    return Object.values(this);
+  }
+
+  /**
+   * Returns all AccountStatus as a list of strings
+   */
+  static listr() {
+    return Object.values(this).map((val) => val.toString());
   }
 }
