@@ -2,7 +2,9 @@ import Connection from "../api/db/connection.js";
 import { set } from "../api/util.js";
 import schemaData from "./setup.js";
 
-process.stdout.write(set("[-] DROPPING ALL COLLECTIONS...\n-------------------------------\n").blue);
+process.stdout.write(
+  set("\n-------------------------------\n[-] DROPPING ALL COLLECTIONS...\n-------------------------------\n").blue
+);
 
 const schemas = schemaData.map((data) => data.schema);
 

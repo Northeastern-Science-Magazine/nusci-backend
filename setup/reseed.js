@@ -2,7 +2,9 @@ import schemaData from "./setup.js";
 import Connection from "../api/db/connection.js";
 import { set } from "../api/util.js";
 
-process.stdout.write(set("[+] RESEEDING ALL COLLECTIONS...\n-------------------------------\n").blue);
+process.stdout.write(
+  set("\n--------------------------------\n[+] RESEEDING ALL COLLECTIONS...\n--------------------------------\n").blue
+);
 
 try {
   await Connection.open();
