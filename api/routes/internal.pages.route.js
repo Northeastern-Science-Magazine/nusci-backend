@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import Authorize from "../auth/authorization.js";
 import PagesController from "../controllers/public.pages.controller.js";
 import AdminController from "../controllers/admin.controller.js";
+import UsersCTRL from "../controllers/users.controller.js";
 import NewArticlesCTRL from "../controllers/newarticles.controller.js";
 
 
@@ -37,7 +38,7 @@ router.use(bodyParser.urlencoded({ extended: false }));
 /* Profile Router */
 router.route("/my-profile").get((req, res, next) => {
   Authorize.auth(req, res, next, "GET profile");
-}, PagesController.getMyProfile);
+}, UsersCTRL.getMyProfile);
 
 /* Edit Profile Router */
 router
