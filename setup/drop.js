@@ -1,27 +1,38 @@
-import ArticleSchema from "../api/models/article.js";
-import CalendarEventSchema from "../api/models/calendar_event.js";
-import IssueMapSchema from "../api/models/issue_map.js";
-import PhotoTagSchema from "../api/models/photo_tag.js";
-import PhotoSchema from "../api/models/photo.js";
-import UserSchema from "../api/models/user.js";
-
 import Connection from "../api/db/connection.js";
+import { set } from "../api/util.js";
+import schemaData from "./setup.js";
 
-process.stdout.write("Dropping all collections...\n");
+process.stdout.write(set("[-] DROPPING ALL COLLECTIONS...\n-------------------------------\n").blue);
+
+const schemas = schemaData.map((data) => data.schema);
 
 try {
   await Connection.open();
-  await Promise.all([
-    ArticleSchema.collection.drop(),
-    CalendarEventSchema.collection.drop(),
-    IssueMapSchema.collection.drop(),
-    PhotoTagSchema.collection.drop(),
-    PhotoSchema.collection.drop(),
-    UserSchema.collection.drop(),
-  ]);
+  await dropIfExists(schemas);
   await Connection.close();
   process.exit();
 } catch (error) {
-  process.stdout.write("Error while dropping database: " + error + "\n");
+  process.stdout.write(set(`[-] Error while dropping database: ${error} \n`).red);
   process.exit(1);
+}
+
+/**
+ *
+ *
+ * @param {List[MongooseSchema]} schemas
+ */
+async function dropIfExists(schemas) {
+  for (const schema of schemas) {
+    try {
+      await schema.collection.drop();
+      process.stdout.write(`${set(`[-] DROP ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
+    } catch (error) {
+      if (error.code === 26) {
+        process.stdout.write(`${set(`[-] DROP ${schema.collection.name}: `).blue}${set("DOES NOT EXIST\n").yellow}`);
+      } else {
+        process.stdout.write(`${set(`[-] DROP ${schema.collection.name}: `).blue}${set("FAILED\n").red}`);
+        throw new Error(error);
+      }
+    }
+  }
 }
