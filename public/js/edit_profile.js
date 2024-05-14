@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error('Failed to update profile');
             }
 
-            window.location.href = '/profile';
+            window.location.href = '/my-profile';
 
         } catch (error) {
             console.error(error.message);

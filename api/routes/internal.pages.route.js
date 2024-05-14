@@ -35,9 +35,9 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 
 /* Profile Router */
-router.route("/profile").get((req, res, next) => {
+router.route("/my-profile").get((req, res, next) => {
   Authorize.auth(req, res, next, "GET profile");
-}, PagesController.getProfile);
+}, PagesController.getMyProfile);
 
 /* Edit Profile Router */
 router
@@ -69,7 +69,7 @@ router
   }, NewArticlesCTRL.apiPostArticle);
 
 
-/* Deactivate Account Router From /profile Page */
+/* Deactivate Account Router From /my-profile Page */
 router
   .route("/deactivate-profile")
   .get((req, res, next) => {
@@ -80,7 +80,7 @@ router
   }, UserController.postDeactivateProfile);
  
 
-/* Delete Account Router From /profile Page */
+/* Delete Account Router From /my-profile Page */
 router
 .route("/delete-profile")
 .get((req, res, next) => {
@@ -89,6 +89,5 @@ router
 .post((req, res, next) => {
   Authorize.auth(req, res, next, "POST delete-profile");
 }, UserController.postDeleteProfile)
-
 
 export default router;

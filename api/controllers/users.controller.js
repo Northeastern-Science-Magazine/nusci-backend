@@ -51,7 +51,7 @@ export default class UsersCTRL {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
               });
-              res.redirect("/internal/profile");
+              res.redirect("/internal/my-profile");
             } else {
               return handleError(res, Errors[400].Login.Deactivated);
             }

@@ -23,7 +23,7 @@ export class ErrorInternalEnumValidation extends InternalError {
 }
 
 export class ErrorCannotInitializeAbstractClass extends InternalError {
-  constuctor(msg) {
+  constructor(msg) {
     super(msg);
   }
 }

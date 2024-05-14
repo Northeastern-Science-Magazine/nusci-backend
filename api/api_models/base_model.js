@@ -1,4 +1,4 @@
-import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors";
+import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors.js";
 import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 
 // Delegated Atomic Types
