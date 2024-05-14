@@ -83,7 +83,7 @@ export class BaseModel {
         if (!Array.isArray(value)) {
           throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be an array.`);
         }
-        if (value.length === 0) {
+        if (value.length === 0 && required) {
           throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' cannot be an empty array.`);
         }
         const elementType = type[0];
