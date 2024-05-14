@@ -18,7 +18,7 @@ const ArticleSchema = new Schema(
     categories: [{ type: String, enum: Categories.listr(), required: true }],
     articleContent: [
       {
-        contentType: { type: ArticleContent.listStr, required: true },
+        contentType: { type: String, enum: ArticleContent.listStr, required: true },
         content: { type: String, required: true },
       },
     ],
