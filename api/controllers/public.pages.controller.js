@@ -10,7 +10,7 @@ import handleError from "../error/error.handler.js";
 export default class PublicPagesController {
   static getLogin(req, res) {
     if (req.cookies.token) {
-      res.redirect("/profile");
+      res.redirect("/my-profile");
     } else {
       res.render("login", { error: req.cookies.error });
     }
@@ -25,25 +25,9 @@ export default class PublicPagesController {
     }
   }
 
-  static async getProfile(req, res, next) {
-    try {
-      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
-      console.log(user);
-      res.render("profile", {
-        name: user.username,
-        role: user.role,
-        year: user.information.year,
-        major: user.information.major,
-        bio: user.information.bio,
-      });
-    } catch (e) {
-      return handleError(res, Errors[500].DataGET);
-    }
-  }
-
   static async getEditProfile(req, res, next) {
     try {
-      const user = await UsersAccessor.getRegisteredByUsername(Authorize.getUsername(req));
+      const user = await UsersAccessor.getUserByUsername(Authorize.getUsername(req));
 
       res.render("edit_profile", {
         name: user.username,
@@ -83,7 +67,7 @@ export default class PublicPagesController {
         return handleError(res, Errors[404].UserNotFound);
       }
 
-      res.redirect("/profile");
+      res.redirect("/my-profile");
     } catch (e) {
       console.log(e);
       return handleError(res, Errors[500].DataPUT);

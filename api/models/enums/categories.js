@@ -7,13 +7,14 @@ export default class Category {
   static Chemistry = new Category("chemistry");
   static ComputerScience = new Category("computer_science");
   static Culture = new Category("culture");
-  static Health = new Category("environment");
+  static Health = new Category("health");
   static Environment = new Category("environment");
   static Medicine = new Category("medicine");
-  static Newsletter = new Category("environment");
+  static Newsletter = new Category("newsletter");
   static Opinion = new Category("opinion");
   static Physics = new Category("physics");
   static Psychology = new Category("psychology");
+  static Science = new Category("science");
   static Space = new Category("space");
   static Technology = new Category("technology");
 
@@ -68,6 +69,8 @@ export default class Category {
         return this.Physics;
       case this.Psychology.toString():
         return this.Psychology;
+      case this.Science.toString():
+        return this.Science;
       case this.Space.toString():
         return this.Space;
       case this.Technology.toString():

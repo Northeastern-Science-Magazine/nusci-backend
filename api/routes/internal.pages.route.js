@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import Authorize from "../auth/authorization.js";
 import PagesController from "../controllers/public.pages.controller.js";
 import AdminController from "../controllers/admin.controller.js";
+import UsersCTRL from "../controllers/users.controller.js";
 import NewArticlesCTRL from "../controllers/newarticles.controller.js";
 
 
@@ -35,9 +36,9 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 
 /* Profile Router */
-router.route("/profile").get((req, res, next) => {
+router.route("/my-profile").get((req, res, next) => {
   Authorize.auth(req, res, next, "GET profile");
-}, PagesController.getProfile);
+}, UsersCTRL.getMyProfile);
 
 /* Edit Profile Router */
 router
@@ -69,7 +70,7 @@ router
   }, NewArticlesCTRL.apiPostArticle);
 
 
-/* Deactivate Account Router From /profile Page */
+/* Deactivate Account Router From /my-profile Page */
 router
   .route("/deactivate-profile")
   .get((req, res, next) => {
@@ -80,7 +81,7 @@ router
   }, UserController.postDeactivateProfile);
  
 
-/* Delete Account Router From /profile Page */
+/* Delete Account Router From /my-profile Page */
 router
 .route("/delete-profile")
 .get((req, res, next) => {
@@ -89,6 +90,5 @@ router
 .post((req, res, next) => {
   Authorize.auth(req, res, next, "POST delete-profile");
 }, UserController.postDeleteProfile)
-
 
 export default router;

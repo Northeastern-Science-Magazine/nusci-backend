@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Errors from "../error/errors.js";
 import handleError from "../error/error.handler.js";
 import Authorize from "../auth/authorization.js";
+import { UserPublicResponse, UserResponse } from "../api_models/user.js";
 
 /**
  * UsersCTRL Class
@@ -51,7 +52,7 @@ export default class UsersCTRL {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
               });
-              res.redirect("/internal/profile");
+              res.redirect("/internal/my-profile");
             } else {
               return handleError(res, Errors[400].Login.Deactivated);
             }
@@ -188,6 +189,56 @@ export default class UsersCTRL {
       res.redirect("/logout");
     } catch (e) {
       return handleError(res, Errors[500].DataPOST);
+    }
+  }
+
+  /**
+   * getMyProfile Method
+   *
+   * This method retrieves the profile of the logged-in user.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async getMyProfile(req, res, next) {
+    try {
+      const username = Authorize.getUsername(req);
+      const user = await UsersAccessor.getUserByUsername(username);
+
+      if (!user) {
+        return handleError(res, Errors[404].NotFound);
+      }
+
+      const userProfile = new UserResponse(user.toObject());
+      res.json(userProfile);
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
+    }
+  }
+
+  /**
+   * getPublicProfile Method
+   *
+   * This method retrieves the public profile of a user by their username.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async getPublicProfile(req, res, next) {
+    try {
+      const username = req.params.username;
+      const user = await UsersAccessor.getUserByUsername(username);
+
+      if (!user) {
+        return handleError(res, Errors[404].NotFound);
+      }
+
+      const publicUser = new UserPublicResponse(user.toObject());
+      res.json(publicUser);
+    } catch (e) {
+      return handleError(res, Errors[500].DataGET);
     }
   }
 }

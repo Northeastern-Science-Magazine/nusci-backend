@@ -12,7 +12,7 @@ export default [
     title: "Exploring the Future: AI Integration in Everyday Life",
     slug: "exploring-the-future-ai-integration-in-everyday-life",
     issueNumber: 1,
-    categories: ["Technology", "Science"],
+    categories: ["technology", "science"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -80,7 +80,7 @@ export default [
     title: "Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern",
     slug: "mark-s-w-sweess-reflects-on-success-creativity-making-mistakes-and-his-time-at-northeastern",
     issueNumber: 4,
-    categories: ["World", "Technology"],
+    categories: ["technology"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -146,7 +146,7 @@ export default [
     title: "World Death Rate Holding Steady at 100 Percent",
     slug: "world-death-rate-holding-steady-at-100-percent",
     issueNumber: 902,
-    categories: ["Newsletter", "Health"],
+    categories: ["newsletter", "health"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -209,7 +209,7 @@ export default [
     title: "Discovery of Ancient Flying Machine Leaves Scientists Baffled",
     slug: "discovery-of-ancient-flying-machine-leaves-scientists-baffled",
     issueNumber: 89,
-    categories: ["History", "Science"],
+    categories: ["science"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -258,7 +258,7 @@ export default [
     title: "Archaeological Dig Uncovers Ancient Race Of Skeleton People",
     slug: "archaeological-dig-uncovers-ancient-race-of-skeleton-people",
     issueNumber: 29,
-    categories: ["World", "Biology"],
+    categories: ["biology"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -310,7 +310,7 @@ export default [
     title: "World Death Rate Holding Steady at 100 Percent",
     slug: "world-death-rate-holding-steady-at-100-percent-2",
     issueNumber: 3,
-    categories: ["Newsletter", "Health"],
+    categories: ["newsletter", "health"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,

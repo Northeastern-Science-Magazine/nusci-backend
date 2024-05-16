@@ -34,6 +34,31 @@ export class UserCreate extends BaseModel {
 }
 
 /**
+ * Represents the http response body returned to a frontend with no private data.
+ */
+export class UserPublicResponse extends BaseModel {
+  static schema = {
+    firstName: { type: string, required: true },
+    lastName: { type: string, required: true },
+    username: { type: string, required: true },
+    pronouns: { type: [string] },
+    graduationYear: { type: number, required: true },
+    majors: { type: [string] },
+    location: { type: string },
+    profileImage: { type: string },
+    bannerImage: { type: string },
+    bio: { type: string, required: true },
+    roles: { type: [string], enum: Accounts.allStr, required: true },
+    gameData: { type: empty },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
+  };
+  constructor(json) {
+    super(json, UserPublicResponse.schema);
+  }
+}
+
+/**
  * Represents the http response body returned to a frontend.
  */
 export class UserResponse extends BaseModel {
@@ -60,31 +85,6 @@ export class UserResponse extends BaseModel {
 
   constructor(json) {
     super(json, UserResponse.schema);
-  }
-}
-
-/**
- * Represents the http response body returned to a frontend with no private data.
- */
-export class UserPublicResponse extends BaseModel {
-  static schema = {
-    firstName: { type: string, required: true },
-    lastName: { type: string, required: true },
-    username: { type: string, required: true },
-    pronouns: { type: [string] },
-    graduationYear: { type: number, required: true },
-    majors: { type: [string] },
-    location: { type: string },
-    profileImage: { type: string },
-    bannerImage: { type: string },
-    bio: { type: string, required: true },
-    roles: { type: [string], enum: Accounts.allStr, required: true },
-    gameData: { type: empty },
-    creationTime: { type: date, required: true },
-    modificationTime: { type: date, required: true },
-  };
-  constructor(json) {
-    super(json, UserPublicResponse.schema);
   }
 }
 
