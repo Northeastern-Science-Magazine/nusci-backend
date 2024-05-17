@@ -1,4 +1,4 @@
-import { BaseModel, string, date } from "./base_model.js";
+import { BaseModel, BaseModelUpdate, string, date, boolean } from "./base_model.js";
 import Accounts from "../models/enums/accounts.js";
 import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 import { UserPublicResponse } from "./user.js";
