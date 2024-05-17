@@ -5,6 +5,7 @@ import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
 export const number = "number";
 export const boolean = "boolean";
 export const string = "string";
+export const array = "array";
 export const object = "object";
 export const date = "date";
 export const empty = "undefined";
@@ -41,83 +42,143 @@ export class BaseModel {
    * @param {JSON} schema
    */
   validate(json, schema) {
-    for (const key in schema) {
+    for (const key in json) {
+      // the key does not exist in the schema
+      if (schema[key] === undefined) {
+        //console.log(JSON.stringify(schema));
+        //console.log(`\nDeleted {${key}: ${json[key]}}\n\n`);
+        delete json[key];
+        continue;
+      }
+
+      // key exists in schema
       var value = json[key];
-      const type = schema[key].type;
+      const schemaType = schema[key].type;
       const required = schema[key].required;
       const enumValues = schema[key].enum;
       const defaultValue = schema[key].default;
       const override = schema[key].override;
 
-      if (value === undefined && (defaultValue !== undefined || override)) {
+      // valid schema creation
+      if (required && type(required) !== boolean) {
+        throw new Error("Required option not boolean.");
+      }
+
+      if (override && type(override) !== boolean) {
+        throw new Error("Override option not boolean.");
+      }
+
+      if (enumValues && type(enumValues) !== array) {
+        throw new Error("Enum values must be a list.");
+      }
+
+      // override set
+      if ((value === undefined && defaultValue !== undefined) || override) {
         json[key] = defaultValue;
         value = defaultValue;
       }
 
+      // required
       if (required && value === undefined) {
-        throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' is required.`);
+        throw new Error(`Field '${key}' is required.`);
       }
 
-      if (value === undefined && !required) {
-        continue; // Skip validation for undefined values if not required
+      if (!required && value === undefined) {
+        continue;
       }
 
-      if (value === undefined && required) {
-        // might want to review this
-        throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be of type 'undefined'.`);
+      // mismatch type
+      if (type(value) !== type(schemaType)) {
+        throw new Error(`Field '${key}' must have type '${schemaType}.'`);
       }
 
+      // enum values (check complex enum values, like objects or lists)
       if (enumValues) {
-        if (!Array.isArray(value) && !enumValues.includes(value)) {
-          throw new ErrorInternalAPIModelFieldValidation(
-            `Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`
-          );
-        } else if (Array.isArray(value) && !value.every((enumValue) => enumValues.includes(enumValue))) {
-          throw new ErrorInternalAPIModelFieldValidation(
-            `Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`
-          );
+        if (type(value) !== array && !contains(enumValues, value)) {
+          // single enum
+          throw new Error(`Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`);
+        } else if (type(value) === array && !value.every((enumValue) => contains(enumValues, enumValue))) {
+          // list of enum
+          throw new Error(`Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`);
         }
+        // all enum values handled
+        continue;
       }
 
-      if (Array.isArray(type)) {
-        if (!Array.isArray(value)) {
-          throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be an array.`);
-        }
-        if (value.length === 0 && required) {
-          throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' cannot be an empty array.`);
-        }
-        const elementType = type[0];
-        for (const item of value) {
-          if (typeof elementType === "object") {
-            if (typeof item !== "object") {
-              throw new ErrorInternalAPIModelFieldValidation(`Elements of '${key}' array must be objects.`);
-            }
-            this.validate(item, elementType);
-          } else {
-            if (typeof item !== elementType) {
-              throw new ErrorInternalAPIModelFieldValidation(`Elements of '${key}' array must be of type '${elementType}'.`);
-            }
+      // object
+      if (type(schemaType) === object) {
+        this.validate(value, schemaType);
+        continue;
+      }
+
+      // array
+      if (type(schemaType) === array) {
+        const arrayType = schemaType[0];
+        if (type(arrayType) !== object) {
+          // basic list
+          if (value.some((item) => type(item) !== arrayType)) {
+            throw new Error(`Invalid element of '${value}' not of type '${arrayType}'`);
           }
-        }
-      } else if (typeof type === "object") {
-        if (typeof value !== "object" || Array.isArray(value)) {
-          throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be an object.`);
-        }
-        this.validate(value, type);
-      } else {
-        if (typeof value !== type) {
-          if (typeof value === "object") {
-            this.validate(value, schema[key]); // Recursively validate nested object
-          } else {
-            if (type === "date" && !value instanceof Date) {
-              throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be a Date.`);
-            } else {
-              throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must be of type '${type}'.`);
-            }
-          }
+        } else {
+          // list of objects
+          value.forEach((item) => this.validate(item, arrayType));
         }
       }
     }
+  }
+
+  /**
+   * type function
+   *
+   * Returns the API Model atomic type of the given object.
+   *
+   * @param {any} obj
+   * @returns {boolean}
+   */
+  type(obj) {
+    if (Array.isArray(obj)) {
+      return array;
+    }
+    if (obj instanceof Date) {
+      return date;
+    }
+    if (typeof obj === string) {
+      switch (obj) {
+        case boolean:
+          return boolean;
+        case number:
+          return number;
+        case string:
+          return string;
+        case object:
+          return object;
+        case array:
+          return array;
+        case date:
+          return date;
+        case empty:
+          return empty;
+      }
+    }
+    return typeof obj;
+  }
+
+  /**
+   * contains function
+   *
+   * Stronger contains that relies on JSON.stringify of
+   * objects to determine membership in a list.
+   *
+   * @param {Array} list
+   * @param {any} value
+   * @returns {boolean}
+   */
+  contains(list, value) {
+    if (type(list) !== array) {
+      return false;
+    }
+    let strValue = JSON.stringify(value);
+    return list.some((e) => JSON.stringify(e) === strValue);
   }
 }
 
