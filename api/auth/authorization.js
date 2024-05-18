@@ -28,7 +28,7 @@ export default class Authorize {
   static auth(req, res, next, route) {
     dotenv.config();
     if (req.cookies.token) {
-      const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
+      const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
         const role = Accounts.toAccount(payload.role);
         if (ProtectedRoutes.check(route, role)) {
@@ -54,7 +54,7 @@ export default class Authorize {
   static getUsername(req) {
     dotenv.config();
     if (req.cookies.token) {
-      const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
+      const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
         return payload.username;
       } else {
@@ -75,7 +75,7 @@ export default class Authorize {
   static getRole(req) {
     dotenv.config();
     if (req.cookies.token) {
-      const payload = jwt.verify(req.cookies.token, process.env.TOKEN_KEY);
+      const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
         return payload.role;
       } else {
