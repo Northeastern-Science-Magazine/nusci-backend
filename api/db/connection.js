@@ -1,7 +1,6 @@
 import { config as dotenvConfig } from "dotenv";
 import mongoose from "mongoose"; // import mongoose
-import { log } from "mercedlogger";
-import { set } from "../util.js";
+import logActivity from "./log_activity.js";
 
 //Connection to the cluster
 let connection;
@@ -45,10 +44,7 @@ export default class Connection {
       connection = mongoose.connection;
 
       //Log when open/closed
-      mongoose.connection
-        .on("open", () => process.stdout.write(set(set("DATABASE STATE: Connection Open").black).bgGreen + "\n"))
-        .on("close", () => process.stdout.write(set(set("DATABASE STATE: Connection Closed").black).bgBlue + "\n"))
-        .on("error", (error) => process.stdout.write(set(set(`DATABASE STATE: ${error}`).red + "\n")));
+      logActivity(mongoose.connection);
 
       return mongoose.connection;
     } else {
@@ -68,9 +64,6 @@ export default class Connection {
    */
   static async close() {
     await connection.close();
-    connection
-      .on("open", () => process.stdout.write(set(set("DATABASE STATE: Connection Open").black).bgGreen + "\n"))
-      .on("close", () => process.stdout.write(set(set("DATABASE STATE: Connection Closed").black).bgBlue + "\n"))
-      .on("error", (error) => process.stdout.write(set(set(`DATABASE STATE: ${error}`).red + "\n")));
+    logActivity(connection);
   }
 }

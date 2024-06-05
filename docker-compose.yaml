@@ -2,7 +2,7 @@
 services:
   app:
     build: .
-    container_name: backend
+    container_name: nusci-backend
     env_file:
       - .env
     command: npm start
@@ -14,7 +14,7 @@ services:
       - .:/app
   mongodb:
     image: mongodb/mongodb-community-server:6.0-ubi8
-    container_name: database
+    container_name: nusci-database
     env_file:
       - .env
     environment:

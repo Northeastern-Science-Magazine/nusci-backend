@@ -6,6 +6,10 @@ import handleError from "../error/error.handler.js";
  * Articles Controller class
  */
 export default class ArticlesCTRL {
+  static async getAllArticles(req, res) {}
+
+  static async getArticleBySlug(req, res) {}
+
   static async apiGetArticle(req, res, next) {
     try {
       let id = req.params.id || {};
