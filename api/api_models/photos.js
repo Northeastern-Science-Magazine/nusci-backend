@@ -11,10 +11,10 @@ export class PhotoCreate extends BaseModel{
         url: { type: String, unique: true, required: true },
         tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
         photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
-        photoTime: { type: Date },
+        photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
-        creationTime: { type: Date, required: true },
-        modificationTime: { type: Date, required: true },}
+        creationTime: { type: Date, default: Date.now(), required: true },
+        modificationTime: { type: Date, default:Date.now(), required: true },}
 
     constructor(json) {
         super(json, PhotoCreate.schema);
@@ -31,11 +31,10 @@ export class PhotoResponse extends BaseModel{
         url: { type: String, unique: true, required: true },
         tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
         photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
-        photoTime: { type: Date },
+        photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
-        creationTime: { type: Date, required: true },
-        modificationTime: { type: Date, required: true },}
-
+        creationTime: { type: Date, default: Date.now(), required: true },
+        modificationTime: { type: Date, default:Date.now(), required: true },}
     constructor(json) {
         super(json, PhotoResponse.schema);
       } catch(e) {
@@ -48,10 +47,10 @@ export class PhotoUpdate extends BaseModel{
         url: { type: String, unique: true, required: true },
         tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
         photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
-        photoTime: { type: Date },
+        photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
-        creationTime: { type: Date, required: true },
-        modificationTime: { type: Date, required: true },}
+        creationTime: { type: Date, default: Date.now(), required: true },
+        modificationTime: { type: Date, default:Date.now(), required: true },}
 
     constructor(json) {
         super(json, PhotoUpdate.schema);
@@ -65,10 +64,10 @@ export class PhotoDelete extends BaseModel{
         url: { type: String, unique: true, required: true },
         tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
         photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
-        photoTime: { type: Date },
+        photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
-        creationTime: { type: Date, required: true },
-        modificationTime: { type: Date, required: true },}
+        creationTime: { type: Date, default: Date.now(), required: true },
+        modificationTime: { type: Date, default: Date.now(), required: true },}
 
     constructor(json) {
         super(json, PhotoDelete.schema);
