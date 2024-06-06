@@ -22,7 +22,7 @@ const ArticleSchema = new Schema(
         content: { type: String, required: true },
       },
     ],
-    sources: [{ type: String, required: true }],
+    sources: [{ type: String }],
     link: { type: String },
     pageLength: { type: Number, required: true },
     comments: [
