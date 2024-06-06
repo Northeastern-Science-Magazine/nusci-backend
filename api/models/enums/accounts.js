@@ -13,12 +13,6 @@ export default class Accounts {
   static Designer = new Accounts("designer");
   static Admin = new Accounts("admin");
 
-  // Get all Account Types
-  static list = [this.Author, this.Editor, this.Photographer, this.Developer, this.Designer, this.Admin];
-  static listStr = this.list.map((role) => {
-    return role.role;
-  });
-
   /**
    * INTERNAL USE ONLY
    * Construct an Account enum

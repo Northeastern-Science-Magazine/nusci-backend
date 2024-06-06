@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Accounts from "./enums/accounts.js";
+import Accounts from "../enums/accounts.js";
 
 const Schema = mongoose.Schema;
 
@@ -12,8 +12,8 @@ const CalendarEventSchema = new Schema(
     endTime: { type: Date, required: true },
     location: { type: String },
     public: { type: Boolean, required: true, default: false },
-    visibleToRoles: [{ type: String, enum: Accounts.listStr, required: true }],
-    associatedWithRoles: [{ type: String, enum: Accounts.listStr }],
+    visibleToRoles: [{ type: String, enum: Accounts.listr(), required: true }],
+    associatedWithRoles: [{ type: String, enum: Accounts.listr() }],
     creatingUser: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },

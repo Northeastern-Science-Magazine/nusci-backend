@@ -6,12 +6,6 @@ export default class AccountStatus {
   static Deactivated = new AccountStatus("deactivated");
   static Approved = new AccountStatus("approved");
 
-  // Get all Account Statuses
-  static list = [this.Pending, this.Deactivated, this.Approved];
-  static listStr = this.list.map((status) => {
-    return status.status;
-  });
-
   /**
    * INTERNAL USE ONLY
    * Construct an AccountStatus enum

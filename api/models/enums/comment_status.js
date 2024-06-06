@@ -6,12 +6,6 @@ export default class CommentStatus {
   static Unresolved = new CommentStatus("unresolved");
   static Public = new CommentStatus("public");
 
-  // Get all Comment Statuses
-  static list = [this.Resolved, this.Unresolved, this.Public];
-  static listStr = this.list.map((status) => {
-    return status.status;
-  });
-
   /**
    * INTERNAL USE ONLY
    * Construct a CommentStatus enum

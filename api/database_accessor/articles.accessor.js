@@ -1,4 +1,4 @@
-import Article from "../models/article.js";
+import Article from "../models/db_models/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 

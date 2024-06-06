@@ -1,4 +1,4 @@
-import { set } from "../util.js";
+import { set } from "../util/util.js";
 
 export default function logActivity(connection) {
   connection

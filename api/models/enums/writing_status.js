@@ -10,20 +10,6 @@ export default class WritingStatus {
   static EIC_Approved = new WritingStatus("eic_approved");
   static Dropped = new WritingStatus("dropped");
 
-  // Get all WritingStatuses
-  static list = [
-    this.Needs_Editor,
-    this.Has_Editor,
-    this.Rough_Draft_Complete,
-    this.Edits_Complete,
-    this.Copy_Edits_Complete,
-    this.EIC_Approved,
-    this.Dropped,
-  ];
-  static listStr = this.list.map((status) => {
-    return status.status;
-  });
-
   /**
    * INTERNAL USE ONLY
    * Construct a WritingStatus enum

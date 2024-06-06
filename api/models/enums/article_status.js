@@ -6,12 +6,6 @@ export default class ArticleStatus {
   static Print = new ArticleStatus("print");
   static Online = new ArticleStatus("online");
 
-  // Get all ArticleStatuses
-  static list = [this.Pending, this.Print, this.Online];
-  static listStr = this.list.map((status) => {
-    return status.status;
-  });
-
   /**
    * INTERNAL USE ONLY
    * Constrct an ArticleStatus enum
