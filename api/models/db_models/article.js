@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
-import ArticleStatus from "./enums/article_status.js";
-import WritingStatus from "./enums/writing_status.js";
-import CommentStatus from "./enums/comment_status.js";
-import DesignStatus from "./enums/design_status.js";
-import PhotographyStatus from "./enums/photography_status.js";
-import ArticleContent from "./enums/article_content.js";
-import Categories from "./enums/categories.js";
+import ArticleStatus from "../enums/article_status.js";
+import WritingStatus from "../enums/writing_status.js";
+import CommentStatus from "../enums/comment_status.js";
+import DesignStatus from "../enums/design_status.js";
+import PhotographyStatus from "../enums/photography_status.js";
+import ArticleContent from "../enums/article_content.js";
+import Categories from "../enums/categories.js";
 
 const Schema = mongoose.Schema;
 
@@ -18,7 +18,7 @@ const ArticleSchema = new Schema(
     categories: [{ type: String, enum: Categories.listr(), required: true }],
     articleContent: [
       {
-        contentType: { type: String, enum: ArticleContent.listStr, required: true },
+        contentType: { type: String, enum: ArticleContent.listr(), required: true },
         content: { type: String, required: true },
       },
     ],
@@ -29,15 +29,15 @@ const ArticleSchema = new Schema(
       {
         user: { type: Schema.Types.ObjectId, ref: "Users", required: true },
         comment: { type: String, required: true },
-        commentStatus: { type: String, enum: CommentStatus.listStr, required: true },
+        commentStatus: { type: String, enum: CommentStatus.listr(), required: true },
         creationTime: { type: Date, required: true },
         modificationTime: { type: Date, required: true },
       },
     ],
-    articleStatus: { type: String, enum: ArticleStatus.listStr, required: true },
-    writingStatus: { type: String, enum: WritingStatus.listStr, required: true },
-    designStatus: { type: String, enum: DesignStatus.listStr, required: true },
-    photographyStatus: { type: String, enum: PhotographyStatus.listStr, required: true },
+    articleStatus: { type: String, enum: ArticleStatus.listr(), required: true },
+    writingStatus: { type: String, enum: WritingStatus.listr(), required: true },
+    designStatus: { type: String, enum: DesignStatus.listr(), required: true },
+    photographyStatus: { type: String, enum: PhotographyStatus.listr(), required: true },
     authors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
     editors: [{ type: Schema.Types.ObjectId, ref: "Users" }],
     designers: [{ type: Schema.Types.ObjectId, ref: "Users" }],
