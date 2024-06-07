@@ -5,9 +5,9 @@ import Category from "../enums/categories.js";
 import DesignStatus from "../enums/design_status.js";
 import PhotographyStatus from "../enums/photography_status.js";
 import WritingStatus from "../enums/writing_status.js";
-import { BaseModel, BaseModelUpdate, array, number, string } from "./base_model.js";
+import { BaseModel, BaseModelUpdate, array, number, string, now } from "./base_model.js";
 
-class ArticleCreate extends BaseModel {
+export class ArticleCreate extends BaseModel {
   static schema = {
     title: { type: string, required: true },
     slug: { type: string, required: true },
@@ -32,7 +32,7 @@ class ArticleCreate extends BaseModel {
   }
 }
 
-class ArticleResponse extends BaseModel {
+export class ArticleResponse extends BaseModel {
   static schema = {
     title: { type: string, required: true },
     slug: { type: string, required: true },
@@ -78,8 +78,92 @@ class ArticleResponse extends BaseModel {
   }
 }
 
-class ArticlePublicResponse extends BaseModel {}
+export class ArticlePublicResponse extends BaseModel {
+  static schema = {
+    title: { type: string, required: true },
+    slug: { type: string, required: true },
+    issueNumber: { type: number },
+    categories: { type: [string], enum: Category.listr(), required: true },
+    articleContent: {
+      type: [
+        {
+          contentType: { type: string, enum: ArticleContent.listr(), required: true },
+          content: { type: string, required: true },
+        },
+      ],
+    },
+    sources: { type: [string] },
+    pageLength: { type: number, required: true },
+    comments: {
+      type: [
+        {
+          user: { type: UserPublicResponse.schema },
+          comment: { type: string, required: true },
+          commentStatus: { type: string, enum: CommentStatus.listr(), required: true },
+          creationTime: { type: date, required: true },
+          modificationTime: { type: date, required: true },
+        },
+      ],
+    },
+    authors: { type: [UserPublicResponse.schema] },
+    editors: { type: [UserPublicResponse.schema] },
+    designers: { type: [UserPublicResponse.schema] },
+    photographers: { type: [UserPublicResponse.schema] },
+    approvingUser: { type: UserPublicResponse.schema },
+    approvalTime: { type: date },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
+  };
+  constructor(json) {
+    super(json, ArticlePublicResponse.schema);
+  }
+}
 
-class ArticleUpdate extends BaseModelUpdate {}
+export class ArticleUpdate extends BaseModelUpdate {
+  static schema = {
+    title: { type: string },
+    slug: { type: string },
+    issueNumber: { type: number },
+    categories: { type: [string], enum: Category.listr() },
+    articleContent: {
+      type: [
+        {
+          contentType: { type: string, enum: ArticleContent.listr() },
+          content: { type: string },
+        },
+      ],
+    },
+    sources: { type: [string] },
+    pageLength: { type: number },
+    comments: {
+      type: [
+        {
+          user: { type: UserPublicResponse.schema },
+          comment: { type: string },
+          commentStatus: { type: string, enum: CommentStatus.listr() },
+          creationTime: { type: date },
+          modificationTime: { type: date },
+        },
+      ],
+    },
+    authors: { type: [UserPublicResponse.schema] },
+    editors: { type: [UserPublicResponse.schema] },
+    designers: { type: [UserPublicResponse.schema] },
+    photographers: { type: [UserPublicResponse.schema] },
+    approvingUser: { type: UserPublicResponse.schema },
+    approvalTime: { type: date },
+    modificationTime: { type: date, default: now, override: true },
+  };
+  constructor(json) {
+    super(json, ArticleUpdate.schema);
+  }
+}
 
-class ArticleDelete extends BaseModel {}
+export class ArticleDelete extends BaseModel {
+  static schema = {
+    slug: { type: string, required: true },
+  };
+  constructor(json) {
+    super(json, ArticleDelete.schema);
+  }
+}
