@@ -11,7 +11,7 @@ export default class ArticlesCTRL {
 
       return res.json({ articles });
     } catch (e) {
-      throw ErrorArticleNotFound;
+      throw ErrorArticleNotFound.throwHttp(req, res);
     }
   }
 }

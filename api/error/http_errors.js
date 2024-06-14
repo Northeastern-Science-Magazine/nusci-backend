@@ -13,6 +13,24 @@ export class ErrorUserNotFound extends HttpError {
   }
 }
 
+export class ErrorUserDeactivated extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is deactavated." });
+  }
+}
+
+export class ErrorUserNotRegistered extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is not registered." });
+  }
+}
+
+export class ErrorUserLoggedIn extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is logged in." });
+  }
+}
+
 export class ErrorArticleNotFound extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "Article not found." });

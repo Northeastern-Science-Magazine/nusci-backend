@@ -43,11 +43,11 @@ export default class NewArticlesCTRL {
         await ArticlesAccessor.postArticle(articleDoc);
         res.json(req.body);
       } else {
-        throw ErrorValidation;
+        throw ErrorValidation.throwHttp(req, res);
       }
     } catch (e) {
       process.stdout.write(e + "\n");
-      throw ErrorValidation;
+      throw ErrorValidation.throwHttp(req, res);
     }
   }
 

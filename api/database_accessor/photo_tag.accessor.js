@@ -20,7 +20,7 @@ export default class PhotoTagAccessor {
       return tags;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -37,7 +37,7 @@ export default class PhotoTagAccessor {
       return tag;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -54,7 +54,7 @@ export default class PhotoTagAccessor {
       return tag;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -71,7 +71,7 @@ export default class PhotoTagAccessor {
       return tags;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -88,7 +88,7 @@ export default class PhotoTagAccessor {
       return tags;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -106,7 +106,7 @@ export default class PhotoTagAccessor {
       return tags;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -124,7 +124,7 @@ export default class PhotoTagAccessor {
       return tags;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }

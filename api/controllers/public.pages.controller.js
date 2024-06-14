@@ -31,13 +31,13 @@ export default class PublicPagesController {
       const updatedUserData = await UsersAccessor.updateUser(updatedUser);
       if (!updatedUserData) {
         // Handle case where the user is not found
-        throw ErrorUserNotFound;
+        throw ErrorUserNotFound.throwHttp(req, res);
       }
 
       res.redirect("/my-profile");
     } catch (e) {
       console.log(e);
-      throw ErrorValidation;
+      throw ErrorValidation.throwHttp(req, res);
     }
   }
 

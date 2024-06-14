@@ -20,7 +20,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -37,7 +37,7 @@ export default class CalendarEventAccessor {
       return event;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -54,7 +54,7 @@ export default class CalendarEventAccessor {
       return event;
     } catch (e) {
       console.log(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -72,7 +72,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -90,7 +90,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -107,7 +107,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -123,7 +123,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -139,7 +139,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -156,7 +156,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -173,7 +173,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -190,7 +190,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelValidation(e);
     }
   }
 }

@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import { UserPublicResponse, UserResponse } from "../api_models/user.js";
-import { ErrorUserNotFound, ErrorValidation } from "../error/http_errors.js";
+import { ErrorUserDeactivated, ErrorUserLoggedIn, ErrorUserNotFound, ErrorUserNotRegistered, ErrorValidation } from "../error/http_errors.js";
 
 /**
  * UsersCTRL Class
@@ -53,16 +53,16 @@ export default class UsersCTRL {
               });
               res.redirect("/internal/my-profile");
             } else {
-              throw ErrorUserNotFound.throwHttp(req, res);
+              throw ErrorValidation.throwHttp(req, res);
             }
           } else {
-            throw ErrorValidation.throwHttp(req, res);
+            throw ErrorUserDeactivated.throwHttp(req, res);
           }
         } else {
           //check if the user is unregistered
           const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
           if (unregistered) {
-            throw ErrorUserNotFound.throwHttp(req, res);
+            throw ErrorUserNotRegistered.throwHttp(req, res);
           } else {
             //doesn't exist
             throw ErrorUserNotFound.throwHttp(req, res);
@@ -70,7 +70,7 @@ export default class UsersCTRL {
         }
       } else {
         //already logged in
-        throw new throwHttp(req, res);
+        throw ErrorUserLoggedIn.throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
@@ -111,11 +111,11 @@ export default class UsersCTRL {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
-        throw new throwHttp(req, res);
+        throw ErrorValidation.throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
-      throw ErrorUserNotFound.throwHttp(req, res);
+      throw ErrorValidation.throwHttp(req, res);
     }
   }
 
@@ -176,7 +176,7 @@ export default class UsersCTRL {
       const userProfile = new UserResponse(user.toObject());
       res.json(userProfile);
     } catch (e) {
-      throw new throwHttp(req, res);
+      throw ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -201,7 +201,7 @@ export default class UsersCTRL {
       const publicUser = new UserPublicResponse(user.toObject());
       res.json(publicUser);
     } catch (e) {
-      throw ErrorValidation;
+      throw ErrorValidation.throwHttp(req, res);
     }
   }
 }

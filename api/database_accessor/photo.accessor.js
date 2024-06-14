@@ -54,7 +54,7 @@ export default class PhotoAccessor {
       return photo;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -71,7 +71,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -88,7 +88,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -106,7 +106,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -123,7 +123,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -144,7 +144,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -165,7 +165,7 @@ export default class PhotoAccessor {
       return photos;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }
