@@ -3,10 +3,9 @@ import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../database_accessor/users.accessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
-import Errors from "../error/errors.js";
-import handleError from "../error/error.handler.js";
 import Authorize from "../auth/authorization.js";
 import { UserPublicResponse, UserResponse } from "../api_models/user.js";
+import { ErrorUserNotFound, ErrorValidation } from "../error/http_errors.js";
 
 /**
  * UsersCTRL Class
@@ -54,29 +53,29 @@ export default class UsersCTRL {
               });
               res.redirect("/internal/my-profile");
             } else {
-              return handleError(res, Errors[400].Login.Deactivated);
+              throw ErrorUserNotFound.throwHttp(req, res);
             }
           } else {
-            return handleError(res, Errors[400].Login.Password);
+            throw ErrorValidation.throwHttp(req, res);
           }
         } else {
           //check if the user is unregistered
           const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
           if (unregistered) {
-            return handleError(res, Errors[400].Unregistered);
+            throw ErrorUserNotFound.throwHttp(req, res);
           } else {
             //doesn't exist
-            return handleError(res, Errors[400].Login.Username);
+            throw ErrorUserNotFound.throwHttp(req, res);
           }
         }
       } else {
         //already logged in
-        return handleError(res, Errors[400].Login.LoggedIn);
+        throw new throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
       //something else went wrong
-      return handleError(res, Errors[400].BadRequest);
+      throw new throwHttp(req, res);
     }
   }
 
@@ -112,29 +111,11 @@ export default class UsersCTRL {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
-        return handleError(res, Errors[400].SignUp.Username);
+        throw new throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
-      return handleError(res, Errors[500].DataPOST);
-    }
-  }
-
-  /**
-   * getDeactivateProfile Method
-   *
-   * This method renders the deactivate profile page where
-   * users can either confirm the deactivation of their account
-   * or cancel and return to the profile page.
-   *
-   * @param {HTTP REQ} req web request information for signup
-   * @param {HTTP RES} res web response object
-   */
-  static getDeactivateProfile(req, res) {
-    if (!req.cookies.error) {
-      res.render("deactivate-profile", { name: Authorize.getUsername(req) }); // get username
-    } else {
-      res.render("deactivate-profile", { error: req.cookies.error });
+      throw ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -152,25 +133,7 @@ export default class UsersCTRL {
       await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
       res.redirect("/logout");
     } catch (e) {
-      return handleError(res, Errors[500].DataPOST);
-    }
-  }
-
-  /**
-   * getDeleteProfile Method
-   *
-   * This method renders the delete profile page where
-   * users can either confirm the deletion of their account
-   * or cancel and return to the profile page.
-   *
-   * @param {HTTP REQ} req web request information for signup
-   * @param {HTTP RES} res web response object
-   */
-  static getDeleteProfile(req, res) {
-    if (!req.cookies.error) {
-      res.render("delete-profile", { name: Authorize.getUsername(req) }); // get username
-    } else {
-      res.render("delete-profile", { error: req.cookies.error });
+      throw ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -188,7 +151,7 @@ export default class UsersCTRL {
       await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
       res.redirect("/logout");
     } catch (e) {
-      return handleError(res, Errors[500].DataPOST);
+      throw ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -207,13 +170,13 @@ export default class UsersCTRL {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        return handleError(res, Errors[404].NotFound);
+        throw ErrorUserNotFound.throwHttp(req, res);
       }
 
       const userProfile = new UserResponse(user.toObject());
       res.json(userProfile);
     } catch (e) {
-      return handleError(res, Errors[500].DataGET);
+      throw new throwHttp(req, res);
     }
   }
 
@@ -232,13 +195,13 @@ export default class UsersCTRL {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        return handleError(res, Errors[404].NotFound);
+        throw ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());
       res.json(publicUser);
     } catch (e) {
-      return handleError(res, Errors[500].DataGET);
+      throw ErrorValidation;
     }
   }
 }

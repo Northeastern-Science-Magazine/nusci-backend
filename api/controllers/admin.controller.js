@@ -1,6 +1,5 @@
 import UsersAccessor from "../database_accessor/users.accessor.js";
-import Errors from "../error/errors.js";
-import handleError from "../error/error.handler.js";
+import { ErrorValidation } from "../error/http_errors.js";
 
 /**
  * AdminController class
@@ -10,15 +9,6 @@ import handleError from "../error/error.handler.js";
  *
  */
 export default class AdminController {
-  static async getUserApprovals(req, res, next) {
-    try {
-      const users = await UsersAccessor.getAllUnregistered();
-      res.render("approve_registration", { allUsers: users });
-    } catch (e) {
-      return handleError(res, Errors[500].DataGET);
-    }
-  }
-
   static async postUserApprovals(req, res, next) {
     try {
       let usernames = [];
@@ -29,7 +19,7 @@ export default class AdminController {
       const users = await UsersAccessor.registerUsers(usernames);
       res.json(users);
     } catch (e) {
-      return handleError(res, Errors[500].DataPOST);
+      throw ErrorValidation;
     }
   }
 }

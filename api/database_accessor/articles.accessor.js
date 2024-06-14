@@ -1,6 +1,5 @@
 import Article from "../models/article.js";
 import Connection from "../db/connection.js";
-import mongoose from "mongoose";
 
 /**
  * Articles Accessor Class
