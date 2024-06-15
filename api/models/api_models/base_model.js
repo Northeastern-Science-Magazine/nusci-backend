@@ -1,5 +1,5 @@
-import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors.js";
-import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
+import { ErrorInternalAPIModelFieldValidation } from "../../error/internal_errors.js";
+import { ErrorInternalAPIModelValidation } from "../../error/internal_errors.js";
 
 // Delegated Atomic Types
 export const number = "number";
