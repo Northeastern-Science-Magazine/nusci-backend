@@ -19,7 +19,7 @@ export default class AdminController {
       const users = await UsersAccessor.registerUsers(usernames);
       res.json(users);
     } catch (e) {
-      throw ErrorUserNotFound.throwHttp(req, res);
+      ErrorUserNotFound.throwHttp(req, res);
     }
   }
 }
