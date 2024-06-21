@@ -1,5 +1,5 @@
 import { BaseModel, BaseModelUpdate, string, date, now, boolean } from "./base_model.js";
-import Accounts from "../models/enums/accounts.js";
+import Accounts from "../enums/accounts.js";
 import { UserPublicResponse } from "./user.js";
 
 /**
