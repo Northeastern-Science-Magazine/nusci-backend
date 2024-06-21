@@ -5,7 +5,8 @@ import ArticlesCTRL from "../controllers/articles.controller.js";
 
 const router = express.Router();
 
-// router.route("/:id").get(ArticlesCTRL.apiGetArticle);
+//.get(ArticlesCTRL.apiGetArticle)
+router.route("/:id");
 
 router.route("/").get(ArticlesCTRL.apiGetArticles);
 

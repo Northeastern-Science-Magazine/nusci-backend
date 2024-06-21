@@ -40,15 +40,12 @@ router.route("/my-profile").get((req, res, next) => {
   Authorize.auth(req, res, next, "GET profile");
 }, UsersCTRL.getMyProfile);
 
-// /* New User Approval Router */
-// router
-//   .route("/approve-user")
-//   .get((req, res, next) => {
-//     Authorize.auth(req, res, next, "GET approve-user");
-//   }, AdminController.getUserApprovals)
-//   .post((req, res, next) => {
-//     Authorize.auth(req, res, next, "POST approve-user");
-//   }, AdminController.postUserApprovals);
+/* New User Approval Router */
+router
+  .route("/approve-user")
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST approve-user");
+  }, AdminController.postUserApprovals);
 
 router
   .route("/submit-article")
@@ -60,25 +57,19 @@ router
   }, NewArticlesCTRL.apiPostArticle);
 
 
-// /* Deactivate Account Router From /my-profile Page */
-// router
-//   .route("/deactivate-profile")
-//   .get((req, res, next) => {
-//     Authorize.auth(req, res, next, "GET deactivate-profile");
-//   }, UserController.getDeactivateProfile)
-//   .post((req, res, next) => {
-//     Authorize.auth(req, res, next, "POST deactivate-profile");
-//   }, UserController.postDeactivateProfile);
+/* Deactivate Account Router From /my-profile Page */
+router
+  .route("/deactivate-profile")
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST deactivate-profile");
+  }, UserController.postDeactivateProfile);
 
 
-// /* Delete Account Router From /my-profile Page */
-// router
-//   .route("/delete-profile")
-//   .get((req, res, next) => {
-//     Authorize.auth(req, res, next, "GET delete-profile");
-//   }, UserController.getDeleteProfile)
-//   .post((req, res, next) => {
-//     Authorize.auth(req, res, next, "POST delete-profile");
-//   }, UserController.postDeleteProfile)
+/* Delete Account Router From /my-profile Page */
+router
+  .route("/delete-profile")
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST delete-profile");
+  }, UserController.postDeleteProfile)
 
 export default router;

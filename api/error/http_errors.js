@@ -7,6 +7,24 @@ class HttpError {
   }
 }
 
+export class ErrorToken extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "No Token Provided." });
+  }
+}
+
+export class ErrorWrongPassword extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "Wrong Password." });
+  }
+}
+
+export class ErrorIncorrectUser extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is incorrect." });
+  }
+}
+
 export class ErrorUserNotFound extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "User not found." });
