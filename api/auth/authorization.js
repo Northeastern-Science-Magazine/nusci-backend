@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import ProtectedRoutes from "./protected.routes.js";
 import Accounts from "../models/enums/accounts.js";
-import handleError from "../error/error.handler.js";
 
 /**
  * Authorize class
@@ -33,7 +32,7 @@ export default class Authorize {
         if (ProtectedRoutes.check(route, role)) {
           next();
         } else {
-        
+
           return handleError(res, Errors[403].Forbidden);
         }
       } else {

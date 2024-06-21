@@ -90,7 +90,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -113,7 +113,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -133,7 +133,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -176,7 +176,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -196,7 +196,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -216,7 +216,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -236,7 +236,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -256,7 +256,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -280,7 +280,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -304,7 +304,7 @@ export default class ArticlesAccessor {
       return articles;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }

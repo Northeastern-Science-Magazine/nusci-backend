@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import UserController from "../controllers/users.controller.js";
 import bodyParser from "body-parser";
-import PagesController from "../controllers/public.pages.controller.js";
 
 /**
  * This file controls all routes on the main, public
@@ -51,15 +50,6 @@ router
     res.sendFile(path.resolve() + "/public/html/signup.html");
   })
   .post(UserController.apiPostSignUp);
-
-/* Login Page Router */
-router.route("/login").get(PagesController.getLogin).post(UserController.apiPostLogin);
-
-/* Error Page Router */
-router.route("/error").get(PagesController.getError);
-
-/* Logout Router */
-router.route("/logout").get(PagesController.getLogout);
 
 /* About Us Router */
 router.route("/about-us").get((req, res) => {

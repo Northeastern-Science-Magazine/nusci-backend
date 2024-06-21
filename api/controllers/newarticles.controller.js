@@ -1,5 +1,5 @@
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
-import { ErrorValidation } from "../error/http_errors.js";
+import { ErrorUserNotFound, ErrorValidation } from "../error/http_errors.js";
 
 export default class NewArticlesCTRL {
   /**
@@ -43,11 +43,11 @@ export default class NewArticlesCTRL {
         await ArticlesAccessor.postArticle(articleDoc);
         res.json(req.body);
       } else {
-        throw ErrorValidation.throwHttp(req, res);
+        ErrorValidation.throwHttp(req, res);
       }
     } catch (e) {
       process.stdout.write(e + "\n");
-      throw ErrorValidation.throwHttp(req, res);
+      ErrorValidation.throwHttp(req, res);
     }
   }
 

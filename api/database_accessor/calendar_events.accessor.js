@@ -190,7 +190,7 @@ export default class CalendarEventAccessor {
       return events;
     } catch (e) {
       console.error(e);
-      throw ErrorInternalAPIModelValidation(e);
+      ErrorInternalAPIModelValidation(e);
     }
   }
 }

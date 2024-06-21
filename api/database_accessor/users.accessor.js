@@ -26,7 +26,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -47,7 +47,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -69,7 +69,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -91,7 +91,7 @@ export default class UsersAccessor {
       return users;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -113,7 +113,7 @@ export default class UsersAccessor {
       return users;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -135,7 +135,7 @@ export default class UsersAccessor {
       return users;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -157,7 +157,7 @@ export default class UsersAccessor {
       return users;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -179,7 +179,7 @@ export default class UsersAccessor {
       return users;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -201,7 +201,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }

@@ -53,29 +53,29 @@ export default class UsersCTRL {
               });
               res.redirect("/internal/my-profile");
             } else {
-              throw ErrorValidation.throwHttp(req, res);
+              ErrorValidation.throwHttp(req, res);
             }
           } else {
-            throw ErrorUserDeactivated.throwHttp(req, res);
+            ErrorUserDeactivated.throwHttp(req, res);
           }
         } else {
           //check if the user is unregistered
           const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
           if (unregistered) {
-            throw ErrorUserNotRegistered.throwHttp(req, res);
+            ErrorUserNotRegistered.throwHttp(req, res);
           } else {
             //doesn't exist
-            throw ErrorUserNotFound.throwHttp(req, res);
+            ErrorUserNotFound.throwHttp(req, res);
           }
         }
       } else {
         //already logged in
-        throw ErrorUserLoggedIn.throwHttp(req, res);
+        ErrorUserLoggedIn.throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
       //something else went wrong
-      throw new throwHttp(req, res);
+      new throwHttp(req, res);
     }
   }
 
@@ -111,11 +111,11 @@ export default class UsersCTRL {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
-        throw ErrorValidation.throwHttp(req, res);
+        ErrorValidation.throwHttp(req, res);
       }
     } catch (e) {
       console.log(e);
-      throw ErrorValidation.throwHttp(req, res);
+      ErrorValidation.throwHttp(req, res);
     }
   }
 
@@ -133,7 +133,7 @@ export default class UsersCTRL {
       await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
       res.redirect("/logout");
     } catch (e) {
-      throw ErrorUserNotFound.throwHttp(req, res);
+      ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -151,7 +151,7 @@ export default class UsersCTRL {
       await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
       res.redirect("/logout");
     } catch (e) {
-      throw ErrorUserNotFound.throwHttp(req, res);
+      ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -170,13 +170,13 @@ export default class UsersCTRL {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        throw ErrorUserNotFound.throwHttp(req, res);
+        ErrorUserNotFound.throwHttp(req, res);
       }
 
       const userProfile = new UserResponse(user.toObject());
       res.json(userProfile);
     } catch (e) {
-      throw ErrorUserNotFound.throwHttp(req, res);
+      ErrorUserNotFound.throwHttp(req, res);
     }
   }
 
@@ -195,13 +195,13 @@ export default class UsersCTRL {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        throw ErrorUserNotFound.throwHttp(req, res);
+        ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());
       res.json(publicUser);
     } catch (e) {
-      throw ErrorValidation.throwHttp(req, res);
+      ErrorValidation.throwHttp(req, res);
     }
   }
 }

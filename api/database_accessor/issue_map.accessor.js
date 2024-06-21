@@ -142,7 +142,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -160,7 +160,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }
