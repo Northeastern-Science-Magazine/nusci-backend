@@ -8,13 +8,13 @@ import { ErrorInternalAPIModelValidation } from "../error/internal_errors.js";
  */
 export class PhotoCreate extends BaseModel{
     static schema = {
-        url: { type: String, unique: true, required: true },
-        tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
-        photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+        url: { type: String, required: true },
+        tags: [{ type: Schema.Types.ObjectId, required: true}],
+        photographers: [{ type: Schema.Types.ObjectId, required: true }],
         photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
         creationTime: { type: Date, default: Date.now(), required: true },
-        modificationTime: { type: Date, default:Date.now(), required: true },}
+        modificationTime: { type: Date, default: Date.now(), required: true },}
 
     constructor(json) {
         super(json, PhotoCreate.schema);
@@ -29,8 +29,8 @@ export class PhotoCreate extends BaseModel{
 export class PhotoResponse extends BaseModel{
     static schema = {
         url: { type: String, unique: true, required: true },
-        tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
-        photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+        tags: [{ type: Schema.Types.ObjectId, required: true}],
+        photographers: [{ type: Schema.Types.ObjectId, required: true }],
         photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
         creationTime: { type: Date, default: Date.now(), required: true },
@@ -45,8 +45,8 @@ export class PhotoResponse extends BaseModel{
 export class PhotoUpdate extends BaseModel{
     static schema = {
         url: { type: String, unique: true, required: true },
-        tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
-        photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+        tags: [{ type: Schema.Types.ObjectId, required: true}],
+        photographers: [{ type: Schema.Types.ObjectId, required: true }],
         photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
         creationTime: { type: Date, default: Date.now(), required: true },
@@ -62,8 +62,8 @@ export class PhotoUpdate extends BaseModel{
 export class PhotoDelete extends BaseModel{
     static schema = {
         url: { type: String, unique: true, required: true },
-        tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
-        photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+        tags: [{ type: Schema.Types.ObjectId, required: true }],
+        photographers: [{ type: Schema.Types.ObjectId, required: true }],
         photoTime: { type: Date, default: Date.now() },
         rights: { type: String, required: true, default: "" },
         creationTime: { type: Date, default: Date.now(), required: true },
