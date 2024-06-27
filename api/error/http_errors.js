@@ -7,9 +7,45 @@ class HttpError {
   }
 }
 
+export class ErrorToken extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "No Token Provided." });
+  }
+}
+
+export class ErrorWrongPassword extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "Wrong Password." });
+  }
+}
+
+export class ErrorIncorrectUser extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is incorrect." });
+  }
+}
+
 export class ErrorUserNotFound extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "User not found." });
+  }
+}
+
+export class ErrorUserDeactivated extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is deactavated." });
+  }
+}
+
+export class ErrorUserNotRegistered extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is not registered." });
+  }
+}
+
+export class ErrorUserLoggedIn extends HttpError {
+  static throwHttp(req, res) {
+    res.status(404).json({ error: "User is logged in." });
   }
 }
 

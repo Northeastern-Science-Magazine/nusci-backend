@@ -2,8 +2,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import ProtectedRoutes from "./protected.routes.js";
 import Accounts from "../models/enums/accounts.js";
-import Errors from "../error/errors.js";
-import handleError from "../error/error.handler.js";
+import { ErrorIncorrectUser, ErrorToken, ErrorWrongPassword } from "../error/http_errors.js";
 
 /**
  * Authorize class
@@ -34,13 +33,13 @@ export default class Authorize {
         if (ProtectedRoutes.check(route, role)) {
           next();
         } else {
-          return handleError(res, Errors[403].Forbidden);
+          ErrorIncorrectUser.throwHttp(req, res);
         }
       } else {
-        return handleError(res, Errors[403].Forbidden);
+        ErrorWrongPassword.throwHttp(req, res);
       }
     } else {
-      return handleError(res, Errors[401].Unauthorized);
+      ErrorToken.throwHttp(req, res);
     }
   }
 
@@ -58,10 +57,10 @@ export default class Authorize {
       if (payload) {
         return payload.username;
       } else {
-        return handleError(res, Error[403].Forbidden);
+        ErrorWrongPassword.throwHttp(req, res);
       }
     } else {
-      return handleError(res, Error[401].Unauthorized);
+      ErrorToken.throwHttp(req, res);
     }
   }
 
@@ -79,10 +78,10 @@ export default class Authorize {
       if (payload) {
         return payload.role;
       } else {
-        return handleError(res, Error[403].Forbidden);
+        ErrorWrongPassword.throwHttp(req, res);
       }
     } else {
-      return handleError(res, Error[401].Unauthorized);
+      ErrorToken.throwHttp(req, res);
     }
   }
 }

@@ -1,6 +1,7 @@
 import IssueMap from "../models/issue_map.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorInternalAPIModelFieldValidation } from "../error/internal_errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -20,7 +21,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -37,7 +38,7 @@ export default class IssueMapAccessor {
       return issue;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -54,7 +55,7 @@ export default class IssueMapAccessor {
       return issue;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -71,7 +72,7 @@ export default class IssueMapAccessor {
       return issue;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -88,7 +89,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -106,7 +107,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -123,7 +124,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      throw ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -141,7 +142,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 
@@ -159,7 +160,7 @@ export default class IssueMapAccessor {
       return issues;
     } catch (e) {
       console.error(e);
-      throw e;
+      ErrorInternalAPIModelFieldValidation(e);
     }
   }
 }

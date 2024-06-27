@@ -1,6 +1,5 @@
 import ArticlesAccessor from "../database_accessor/articles.accessor.js";
-import Errors from "../error/errors.js";
-import handleError from "../error/error.handler.js";
+import { ErrorUserNotFound, ErrorValidation } from "../error/http_errors.js";
 
 export default class NewArticlesCTRL {
   /**
@@ -44,11 +43,11 @@ export default class NewArticlesCTRL {
         await ArticlesAccessor.postArticle(articleDoc);
         res.json(req.body);
       } else {
-        return handleError(res, Errors[400].PostArticle.Title);
+        ErrorValidation.throwHttp(req, res);
       }
     } catch (e) {
       process.stdout.write(e + "\n");
-      return handleError(res, Errors[500].DataPOST);
+      ErrorValidation.throwHttp(req, res);
     }
   }
 
@@ -63,7 +62,6 @@ export default class NewArticlesCTRL {
    */
   static async apiGetPostArticlePage(req, res, next) {
     //get the existing draft if needed, then send it in EJS to load fields
-    res.render("post_article");
   }
 
   /**
@@ -76,5 +74,5 @@ export default class NewArticlesCTRL {
    * @param {*} res
    * @param {*} next
    */
-  static async apiSaveArticle(req, res, next) {}
+  static async apiSaveArticle(req, res, next) { }
 }

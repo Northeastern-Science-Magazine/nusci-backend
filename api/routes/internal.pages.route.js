@@ -40,22 +40,9 @@ router.route("/my-profile").get((req, res, next) => {
   Authorize.auth(req, res, next, "GET profile");
 }, UsersCTRL.getMyProfile);
 
-/* Edit Profile Router */
-router
-  .route("/edit-profile")
-  .get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET edit-profile");
-  }, PagesController.getEditProfile)
-  .put((req, res, next) => {
-    Authorize.auth(req, res, next, "PUT edit-profile");
-  }, PagesController.putEditProfile);
-
 /* New User Approval Router */
 router
   .route("/approve-user")
-  .get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET approve-user");
-  }, AdminController.getUserApprovals)
   .post((req, res, next) => {
     Authorize.auth(req, res, next, "POST approve-user");
   }, AdminController.postUserApprovals);
@@ -73,22 +60,16 @@ router
 /* Deactivate Account Router From /my-profile Page */
 router
   .route("/deactivate-profile")
-  .get((req, res, next) => {
-    Authorize.auth(req, res, next, "GET deactivate-profile");
-  }, UserController.getDeactivateProfile) 
   .post((req, res, next) => {
     Authorize.auth(req, res, next, "POST deactivate-profile");
   }, UserController.postDeactivateProfile);
- 
+
 
 /* Delete Account Router From /my-profile Page */
 router
-.route("/delete-profile")
-.get((req, res, next) => {
-  Authorize.auth(req, res, next, "GET delete-profile");
-}, UserController.getDeleteProfile)
-.post((req, res, next) => {
-  Authorize.auth(req, res, next, "POST delete-profile");
-}, UserController.postDeleteProfile)
+  .route("/delete-profile")
+  .post((req, res, next) => {
+    Authorize.auth(req, res, next, "POST delete-profile");
+  }, UserController.postDeleteProfile)
 
 export default router;

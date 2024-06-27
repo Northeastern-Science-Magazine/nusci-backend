@@ -5,7 +5,8 @@ import ArticlesController from "../controllers/articles.controller.js";
 
 const router = express.Router();
 
-router.route("/:slug").get(ArticlesController.getArticleBySlug);
+//.get(ArticlesCTRL.apiGetArticle)
+router.route("/:id");
 
 router.route("/").get(ArticlesController.getAllArticles);
 
