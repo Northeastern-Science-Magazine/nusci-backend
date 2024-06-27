@@ -1,5 +1,5 @@
 import Connection from "../db/connection.js";
-import User from "../models/user.js";
+import User from "../models/db_models/user.js";
 
 /**
  * UserAccessor Class

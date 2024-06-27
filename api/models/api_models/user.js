@@ -1,6 +1,6 @@
 import AccountStatus from "../models/enums/account_status.js";
 import Accounts from "../models/enums/accounts.js";
-import { BaseModel, BaseModelUpdate, number, string, date, empty } from "./base_model.js";
+import { BaseModel, BaseModelUpdate, number, string, date, empty, now } from "./base_model.js";
 
 /**
  * Represents the http request body required
@@ -24,8 +24,8 @@ export class UserCreate extends BaseModel {
     status: { type: string, enum: AccountStatus.allStr, default: AccountStatus.Pending.status, override: true },
     approvingUser: { type: empty, default: undefined, override: true },
     gameData: { type: empty, default: undefined, override: true },
-    creationTime: { type: date, default: Date.now(), override: true },
-    modificationTime: { type: date, default: Date.now(), override: true },
+    creationTime: { type: date, default: now, override: true },
+    modificationTime: { type: date, default: now, override: true },
   };
 
   constructor(json) {
@@ -110,7 +110,7 @@ export class UserUpdate extends BaseModelUpdate {
     status: { type: string, enum: AccountStatus.allStr },
     approvingUser: { type: string },
     gameData: { type: empty },
-    modificationTime: { type: date, default: Date.now(), override: true },
+    modificationTime: { type: date, default: now, override: true },
   };
 
   constructor(json) {

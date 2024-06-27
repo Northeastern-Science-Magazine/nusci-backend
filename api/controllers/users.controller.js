@@ -43,7 +43,7 @@ export default class UsersCTRL {
                   username: user.username,
                   role: user.role,
                 },
-                process.env.TOKEN_KEY
+                process.env.SERVER_TOKEN_KEY
               );
 
               //Users are logged in for 1 hour

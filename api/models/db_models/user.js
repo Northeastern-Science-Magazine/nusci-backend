@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Accounts from "./enums/accounts.js";
-import AccountStatus from "./enums/account_status.js";
+import Accounts from "../enums/accounts.js";
+import AccountStatus from "../enums/account_status.js";
 
 const Schema = mongoose.Schema;
 
@@ -20,8 +20,8 @@ const UserSchema = new Schema(
     bio: { type: String },
     emails: { type: [String], required: true, unique: true },
     phone: { type: String, unique: true },
-    roles: [{ type: String, enum: Accounts.listStr, required: true }],
-    status: { type: String, enum: AccountStatus.listStr, required: true },
+    roles: [{ type: String, enum: Accounts.listr(), required: true }],
+    status: { type: String, enum: AccountStatus.listr(), required: true },
     approvingUser: { type: Schema.Types.ObjectId },
     gameData: { type: Schema.Types.ObjectId },
     creationTime: { type: Date, required: true },

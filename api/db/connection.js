@@ -1,6 +1,6 @@
 import { config as dotenvConfig } from "dotenv";
 import mongoose from "mongoose"; // import mongoose
-import { log } from "mercedlogger";
+import logActivity from "./log_activity.js";
 
 //Connection to the cluster
 let connection;
@@ -29,8 +29,9 @@ export default class Connection {
       dotenvConfig();
 
       //Destructure env variables
-      const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_CLUSTER } = process.env;
-      const DATABASE_URL = `mongodb+srv://${MONGO_USERNAME}:${MONGO_PASSWORD}@${MONGO_CLUSTER}.xtdufxk.mongodb.net/?retryWrites=true&w=majority`;
+      const { MONGODB_INITDB_ROOT_USERNAME, MONGODB_INITDB_ROOT_PASSWORD, MONGODB_INITDB_HOSTNAME, MONGODB_INITDB_PORT } =
+        process.env;
+      const DATABASE_URL = `mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@${MONGODB_INITDB_HOSTNAME}:${MONGODB_INITDB_PORT}`;
 
       //Mongoose connect to the cluster.
       mongoose.connect(DATABASE_URL, {
@@ -43,10 +44,7 @@ export default class Connection {
       connection = mongoose.connection;
 
       //Log when open/closed
-      mongoose.connection
-        .on("open", () => log.green("DATABASE STATE", "Connection Open"))
-        .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
-        .on("error", (error) => log.red("DATABASE STATE", error));
+      logActivity(mongoose.connection);
 
       return mongoose.connection;
     } else {
@@ -66,9 +64,6 @@ export default class Connection {
    */
   static async close() {
     await connection.close();
-    connection
-      .on("open", () => log.green("DATABASE STATE", "Connection Open"))
-      .on("close", () => log.magenta("DATABASE STATE", "Connection Closed"))
-      .on("error", (error) => log.red("DATABASE STATE", error));
+    logActivity(connection);
   }
 }

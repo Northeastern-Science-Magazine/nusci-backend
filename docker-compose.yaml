@@ -2,9 +2,25 @@
 services:
   app:
     build: .
-    container_name: nusci-container
+    container_name: nusci-backend
+    env_file:
+      - .env
     command: npm start
+    depends_on:
+      - mongodb
     ports:
-      - 9999:9998
+      - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/app
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    container_name: nusci-database
+    env_file:
+      - .env
+    environment:
+      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
+      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
+    ports:
+      - ${MONGODB_INITDB_PORT}:${MONGODB_INITDB_PORT}
+    volumes:
+      - ./.database:/data/db

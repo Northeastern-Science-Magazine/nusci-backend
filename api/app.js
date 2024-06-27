@@ -21,10 +21,8 @@ const app = express();
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
-app.use(morgan("tiny"));
 app.use(cookieParser());
 app.use(bodyParser.json());
-app.use("/public", express.static(process.cwd() + "/public"));
 
 app.use("/", pagesRouter);
 app.use("/internal", internalRouter);
