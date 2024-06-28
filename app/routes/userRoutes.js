@@ -10,8 +10,10 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
+router.route("/login");
+router.route("/signup");
 router.route("/profile/:username").get(UserController.getPublicProfile);
 
-router.route("/profile/me").get(Authorize.allow([Accounts.Admin]), UserController.getMyProfile);
+router.route("/profile/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
 
 export default router;

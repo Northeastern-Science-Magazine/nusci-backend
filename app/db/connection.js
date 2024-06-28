@@ -63,7 +63,10 @@ export default class Connection {
    * @param {MongoDB Connection} connection The given connection.
    */
   static async close() {
-    await connection.close();
-    logActivity(connection);
+    if (connection) {
+      await connection.close();
+      logActivity(connection);
+      connection = undefined;
+    }
   }
 }

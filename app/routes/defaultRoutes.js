@@ -6,7 +6,7 @@ const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 
 router.route("/").get((req, res) => {
-  res.status(200).json({ message: "Successfully connected to the nu-sci api!" });
+  res.status(200).json({ message: "Successfully connected to the NU Sci API!" });
 });
 
 export default router;
