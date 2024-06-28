@@ -10,10 +10,16 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
-router.route("/login");
-router.route("/signup");
-router.route("/profile/:username").get(UserController.getPublicProfile);
+router.route("/login"); //log in
+router.route("/signup"); //sign up
 
-router.route("/profile/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
+router.route("/filter"); //get users by options: graduation years, statuses, roles
+router.route("username/:username"); //get a single user by username
+
+router.route("/resolve-status"); //approve/deny a given list of users, admin only
+router.route("/update/:username"); //admin update of a user
+
+router.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
+router.route("/me/update"); //update the currently signed in account
 
 export default router;

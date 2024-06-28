@@ -5,6 +5,7 @@ export default class AccountStatus {
   static Pending = new AccountStatus("pending");
   static Deactivated = new AccountStatus("deactivated");
   static Approved = new AccountStatus("approved");
+  static Denied = new AccountStatus("denied");
 
   /**
    * INTERNAL USE ONLY
@@ -39,6 +40,8 @@ export default class AccountStatus {
         return this.Deactivated;
       case this.Approved.toString():
         return this.Approved;
+      case this.Denied.toString():
+        return this.Denied;
       default:
     }
   }

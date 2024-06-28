@@ -1,6 +1,7 @@
 import request from "supertest";
 import app from "../../../app/app.js";
 import Connection from "../../../app/db/connection.js";
+import logTestSuite from "../../util.js";
 
 afterAll(async () => {
   await Connection.close();
@@ -8,6 +9,7 @@ afterAll(async () => {
 
 test("Test default route", async () => {
   const response = await request(app).get("/");
+  logTestSuite.default ? console.log(response.body) : null;
   expect(response.statusCode).toBe(200);
   expect(JSON.stringify(response.body)).toBe(JSON.stringify({ message: "Successfully connected to the NU Sci API!" }));
 });
