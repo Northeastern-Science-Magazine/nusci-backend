@@ -1,4 +1,4 @@
-import app from "./api/app.js";
+import app from "./app/app.js";
 
 /**
  * This file is the project entry point.
