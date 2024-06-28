@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import Connection from "../db/connection";
-import { ErrorDatabaseConnection } from "../error/httpErrors";
+import Connection from "../db/connection.js";
+import { ErrorDatabaseConnection } from "../error/httpErrors.js";
 
 const router = express.Router();
 
