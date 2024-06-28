@@ -1,9 +1,9 @@
-import ArticleSchema from "../api/models/article.js";
-import CalendarEventSchema from "../api/models/calendar_event.js";
-import IssueMapSchema from "../api/models/issue_map.js";
-import PhotoTagSchema from "../api/models/photo_tag.js";
-import PhotoSchema from "../api/models/photo.js";
-import UserSchema from "../api/models/user.js";
+import ArticleSchema from "../app/models/dbModels/article.js";
+import CalendarEventSchema from "../app/models/dbModels/calendarEvent.js";
+import IssueMapSchema from "../app/models/dbModels/issueMap.js";
+import PhotoTagSchema from "../app/models/dbModels/photoTag.js";
+import PhotoSchema from "../app/models/dbModels/photo.js";
+import UserSchema from "../app/models/dbModels/user.js";
 
 import articles_seed from "./seed/articles_seed.js";
 import calendar_event_seed from "./seed/calendar_event_seed.js";

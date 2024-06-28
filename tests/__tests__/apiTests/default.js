@@ -7,9 +7,20 @@ afterAll(async () => {
   await Connection.close();
 });
 
-test("Test default route", async () => {
-  const response = await request(app).get("/");
-  logTestSuite.default ? console.log(response.body) : null;
-  expect(response.statusCode).toBe(200);
-  expect(JSON.stringify(response.body)).toBe(JSON.stringify({ message: "Successfully connected to the NU Sci API!" }));
+describe("Default Router Endpoint Tests", () => {
+  test("Test connecting to the API", async () => {
+    const response = await request(app).get("/");
+    logTestSuite.default ? console.log(response.body) : null;
+    expect(response.statusCode).toBe(200);
+    expect(JSON.stringify(response.body)).toBe(JSON.stringify({ message: "Successfully connected to the NU Sci API!" }));
+  });
+
+  test("Test connecting to the MongoDB instance", async () => {
+    const response = await request(app).get("/db");
+    logTestSuite.default ? console.log(response.body) : null;
+    expect(response.statusCode).toBe(200);
+    expect(JSON.stringify(response.body)).toBe(
+      JSON.stringify({ message: "Successfully connected to the NU Sci Database Instance!" })
+    );
+  });
 });

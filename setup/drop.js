@@ -1,5 +1,5 @@
-import Connection from "../api/db/connection.js";
-import { set } from "../api/util.js";
+import Connection from "../app/db/connection.js";
+import { set } from "../app/util/util.js";
 import schemaData from "./setup.js";
 
 process.stdout.write(

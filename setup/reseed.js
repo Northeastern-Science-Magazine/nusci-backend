@@ -1,6 +1,6 @@
 import schemaData from "./setup.js";
-import Connection from "../api/db/connection.js";
-import { set } from "../api/util.js";
+import Connection from "../app/db/connection.js";
+import { set } from "../app/util/util.js";
 
 process.stdout.write(
   set("\n--------------------------------\n[+] RESEEDING ALL COLLECTIONS...\n--------------------------------\n").blue

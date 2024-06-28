@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import Accounts from "../../api/models/enums/accounts.js";
-import AccountStatus from "../../api/models/enums/account_status.js";
+import Accounts from "../../app/models/enums/accounts.js";
+import AccountStatus from "../../app/models/enums/account_status.js";
 
 export default [
   {

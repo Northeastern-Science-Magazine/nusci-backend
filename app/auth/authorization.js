@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import ProtectedRoutes from "./protected.routes.js";
 import Accounts from "../models/enums/accounts.js";
 import { ErrorIncorrectUser, ErrorToken, ErrorWrongPassword } from "../error/httpErrors.js";
 
@@ -14,6 +13,9 @@ import { ErrorIncorrectUser, ErrorToken, ErrorWrongPassword } from "../error/htt
 export default class Authorize {
   /**
    * allow method
+   *
+   * Generates a callback function that verifies the
+   * currently signed in user has one of the given permissions.
    *
    * @param {List} roles
    * @returns {Function} callback function

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Accounts from "../../api/models/enums/accounts.js";
+import Accounts from "../../app/models/enums/accounts.js";
 
 export default [
   {
