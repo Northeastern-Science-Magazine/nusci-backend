@@ -2,8 +2,6 @@ import request from "supertest";
 import app from "../../../app/app.js";
 import Connection from "../../../app/db/connection.js";
 import logTestSuite from "../../util.js";
-import UsersAccessor from "../../../app/databaseAccessors/userAccessor.js";
-import bcrypt from "bcryptjs";
 import {
   validUserLoginRaisa,
   validUserLoginEthan,
