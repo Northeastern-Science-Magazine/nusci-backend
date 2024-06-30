@@ -1,26 +1,24 @@
-const validUserLoginRaisa = {
+export const validUserLoginRaisa = {
   username: "raisa",
   password: "raisa",
 };
 
-const validUserLoginEthan = {
+export const validUserLoginEthan = {
   username: "ethan",
   password: "123",
 };
 
-const invalidUserLoginEthan = {
+export const invalidUserLoginEthan = {
   username: "ethan",
   password: "321",
 };
 
-const invalidUserLoginRaisa = {
+export const invalidUserLoginRaisa = {
   username: "raisa",
   password: "notraisa",
 };
 
-const pendingUserLoginAce = {
+export const pendingUserLoginAce = {
   username: "ace",
   password: "sparky",
 };
-
-export { validUserLoginRaisa, validUserLoginEthan, invalidUserLoginEthan, invalidUserLoginRaisa, pendingUserLoginAce };

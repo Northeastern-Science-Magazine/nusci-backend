@@ -1,5 +1,8 @@
 import Connection from "../db/connection.js";
 import User from "../models/dbModels/user.js";
+import AccountStatus from "../models/enums/account_status.js";
+import { ErrorDatabaseConnection } from "../error/httpErrors.js";
+import { ErrorInternalUnexpected } from "../error/internalErrors.js";
 
 /**
  * UserAccessor Class
@@ -47,7 +50,15 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -64,14 +75,24 @@ export default class UsersAccessor {
   static async getApprovedByUsername(username) {
     try {
       await Connection.open();
-      const user = await User.findOne({ username: username });
-      if (user && user.status === "approved") {
-        return user;
-      }
-      return null;
+
+      const user = await User.findOne({
+        username: username,
+        status: AccountStatus.Approved.toString(), // Use MongoDB filter for equal to approved status
+      });
+
+      return user;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -88,14 +109,25 @@ export default class UsersAccessor {
   static async getUnapprovedByUsername(username) {
     try {
       await Connection.open();
-      const user = await User.findOne({ username: username });
-      if (user && user.status !== "approved") {
-        return user;
-      }
+
+      const user = await User.findOne({
+        username: username,
+        status: { $ne: AccountStatus.Approved.toString() }, // Use MongoDB filter for not equal to approved status
+      });
+
+      if (user) return user;
       return null;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 

@@ -17,17 +17,6 @@ afterAll(async () => {
 });
 
 describe("User Login Tests", () => {
-  const validUser = {
-    username: "validuser",
-    password: "hashedpassword",
-    roles: ["user"],
-    deactivated: false,
-  };
-
-  const unapprovedUser = {
-    username: "unapproved user",
-  };
-
   test("should login a valid user Raisa", async () => {
     const response = await request(app).post("/user/login").send(validUserLoginRaisa);
 
