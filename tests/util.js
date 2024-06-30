@@ -1,7 +1,7 @@
 // Test suites to log
 export default {
   default: true,
-  user: false,
+  user: true,
   article: false,
   issueMap: false,
   photo: false,

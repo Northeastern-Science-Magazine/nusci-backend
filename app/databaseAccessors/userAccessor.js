@@ -52,6 +52,54 @@ export default class UsersAccessor {
   }
 
   /**
+   * getApprovedByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username
+   *
+   * @param {String} username
+   * @returns the User associated with the given username in
+   * the database.
+   */
+  static async getApprovedByUsername(username) {
+    try {
+      await Connection.open();
+      const user = await User.findOne({ username: username });
+      if (user && user.status === "approved") {
+        return user;
+      }
+      return null;
+    } catch (e) {
+      console.log(e);
+      ErrorInternalAPIModelFieldValidation(e);
+    }
+  }
+
+  /**
+   * getUnapprovedByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username
+   *
+   * @param {String} username
+   * @returns the User associated with the given username in
+   * the database.
+   */
+  static async getUnapprovedByUsername(username) {
+    try {
+      await Connection.open();
+      const user = await User.findOne({ username: username });
+      if (user && user.status !== "approved") {
+        return user;
+      }
+      return null;
+    } catch (e) {
+      console.log(e);
+      ErrorInternalAPIModelFieldValidation(e);
+    }
+  }
+
+  /**
    * getUserByEmail Method
    *
    * This method retrieves the user MongoDB object from the

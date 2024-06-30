@@ -15,7 +15,7 @@ export class ErrorToken extends HttpError {
 
 export class ErrorWrongPassword extends HttpError {
   static throwHttp(req, res) {
-    res.status(404).json({ error: "Wrong Password." });
+    res.status(400).json({ error: "Wrong Password." });
   }
 }
 

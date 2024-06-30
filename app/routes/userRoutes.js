@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
-router.route("/login"); //log in
+router.route("/login").post(UserController.login); //log in
 router.route("/signup"); //sign up
 
 router.route("/filter"); //get users by options: graduation years, statuses, roles
