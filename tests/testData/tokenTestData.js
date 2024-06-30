@@ -4,12 +4,10 @@ import Accounts from "../../app/models/enums/accounts.js";
 
 dotenvConfig();
 
-// Validate environment variables
 if (!process.env.SERVER_TOKEN_KEY) {
   throw new Error("SERVER_TOKEN_KEY is not defined in the environment variables");
 }
 
-// Ensure roles is an array
 const generateToken = (username, roles) => {
   if (!Array.isArray(roles)) {
     roles = [roles];
@@ -25,7 +23,7 @@ const generateToken = (username, roles) => {
   );
 };
 
-// User information with their roles
+// User data (usernames) with roles
 const users = [
   { username: "ethan", roles: Accounts.Admin.role },
   { username: "raisa", roles: Accounts.Admin.role },

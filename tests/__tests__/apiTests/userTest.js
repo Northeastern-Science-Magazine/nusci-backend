@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../../app/app.js";
 import Connection from "../../../app/db/connection.js";
-import logTestSuite from "../../util.js"; // Update the import path as needed
+import logTestSuite from "../../util.js";
 import UsersAccessor from "../../../app/databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs";
 import {
@@ -10,7 +10,7 @@ import {
   invalidUserLoginEthan,
   invalidUserLoginRaisa,
   pendingUserLoginAce,
-} from "../../testData/userTestData.js"; // Update the import path as needed
+} from "../../testData/userTestData.js";
 
 afterAll(async () => {
   await Connection.close();
