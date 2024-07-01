@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import { UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import {
-  ErrorUserDeactivated,
+  ErrorWrongPassword,
   ErrorUserLoggedIn,
   ErrorUserNotFound,
   ErrorUserNotRegistered,
@@ -24,7 +24,7 @@ export default class UserController {
    * apiPostLogin Method
    *
    * This method checks whether or not the request
-   * to sign in is valid. Utilizes the getRegisteredByUsername
+   * to sign in is valid. Utilizes the getApprovedByUsername
    * UserAccessor method to accomplish this.
    *
    * @param {HTTP REQ} req web request object
@@ -35,7 +35,7 @@ export default class UserController {
     try {
       if (!req.cookies.token) {
         // check if the user is registered
-        const user = await UsersAccessor.getRegisteredByUsername(req.body.username);
+        const user = await UsersAccessor.getApprovedByUsername(req.body.username);
         if (user) {
           //check if password matches
           const result = await bcrypt.compare(req.body.password, user.password);
@@ -57,16 +57,16 @@ export default class UserController {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
               });
-              res.redirect("/internal/my-profile");
+              res.status(200).json({ message: "Login successful" })
             } else {
               ErrorValidation.throwHttp(req, res);
             }
           } else {
-            ErrorUserDeactivated.throwHttp(req, res);
+            ErrorWrongPassword.throwHttp(req, res);
           }
         } else {
           //check if the user is unregistered
-          const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
+          const unregistered = await UsersAccessor.getUnapprovedByUsername(req.body.username);
           if (unregistered) {
             ErrorUserNotRegistered.throwHttp(req, res);
           } else {
@@ -110,10 +110,9 @@ export default class UserController {
         image: req.body.image,
       };
 
-      const registered = await UsersAccessor.getRegisteredByUsername(req.body.username);
-      const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
+      const user = await UsersAccessor.getUserByUsername(req.body.username);
 
-      if (!registered && !unregistered) {
+      if (!user) {
         await UsersAccessor.createUser(req.body);
         res.redirect("/login");
       } else {
