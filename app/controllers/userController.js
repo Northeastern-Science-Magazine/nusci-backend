@@ -10,6 +10,7 @@ import {
   ErrorUserLoggedIn,
   ErrorUserNotFound,
   ErrorUserNotRegistered,
+  ErrorUserAlreadyExists,
   ErrorValidation,
 } from "../error/httpErrors.js";
 
@@ -57,7 +58,7 @@ export default class UserController {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
               });
-              res.status(200).json({ message: "Login successful" })
+              res.status(200).json({ message: "Login successful" });
             } else {
               ErrorValidation.throwHttp(req, res);
             }
@@ -110,13 +111,14 @@ export default class UserController {
         image: req.body.image,
       };
 
-      const user = await UsersAccessor.getUserByUsername(req.body.username);
+      const userByUsername = await UsersAccessor.getUserByUsername(req.body.username);
+      const userByEmail = await UsersAccessor.getUserByEmail(req.body.emails[0]);
 
-      if (!user) {
+      if (!userByUsername && !userByEmail) {
         await UsersAccessor.createUser(req.body);
-        res.redirect("/login");
+        res.status(201).json({ message: "Signup successful" });
       } else {
-        ErrorValidation.throwHttp(req, res);
+        ErrorUserAlreadyExists.throwHttp(req, res, "Username or Email already exists");
       }
     } catch (e) {
       console.log(e);

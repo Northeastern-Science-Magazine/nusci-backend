@@ -8,6 +8,9 @@ import {
   invalidUserLoginEthan,
   invalidUserLoginRaisa,
   pendingUserLoginAce,
+  validUserSignup,
+  existingUsernameSignup,
+  existingEmailSignup,
 } from "../../testData/userTestData.js";
 
 afterAll(async () => {
@@ -59,6 +62,30 @@ describe("User Login Tests", () => {
 
   test("should not login if user is unapproved", async () => {
     const response = await request(app).post("/user/login").send(pendingUserLoginAce);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(400);
+  });
+});
+
+describe("User Signup Tests", () => {
+  test("should signup a new user successfully", async () => {
+    const response = await request(app).post("/user/signup").send(validUserSignup);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body.message).toBe("Signup successful");
+  });
+
+  test("should not signup with existing username", async () => {
+    const response = await request(app).post("/user/signup").send(existingUsernameSignup);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(400);
+  });
+
+  test("should not signup with existing email", async () => {
+    const response = await request(app).post("/user/signup").send(existingEmailSignup);
 
     logTestSuite.user && console.log(response.body);
     expect(response.status).toBe(400);
