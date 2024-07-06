@@ -4,7 +4,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import { UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
+import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import {
   ErrorWrongPassword,
   ErrorUserLoggedIn,
@@ -100,22 +100,17 @@ export default class UserController {
    */
   static async signup(req, res, next) {
     try {
+      // validate incoming data using UserCreate model
+      const userData = new UserCreate(req.body);
+
       // hash the password
-      req.body.password = await bcrypt.hash(req.body.password, 10);
+      userData.password = await bcrypt.hash(userData.password, 10);
 
-      // make sure nested data is structured properly
-      req.body.information = {
-        year: req.body.year,
-        major: req.body.major,
-        bio: req.body.bio,
-        image: req.body.image,
-      };
-
-      const userByUsername = await UsersAccessor.getUserByUsername(req.body.username);
-      const userByEmail = await UsersAccessor.getUserByEmail(req.body.emails[0]);
+      const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
 
       if (!userByUsername && !userByEmail) {
-        await UsersAccessor.createUser(req.body);
+        await UsersAccessor.createUser(userData);
         res.status(201).json({ message: "Signup successful" });
       } else {
         ErrorUserAlreadyExists.throwHttp(req, res, "Username or Email already exists");

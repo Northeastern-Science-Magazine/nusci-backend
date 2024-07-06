@@ -32,11 +32,10 @@ export const validUserSignup = {
   username: "newuser",
   password: "newpassword",
   graduationYear: 2025,
+  bio: "New user bio",
   emails: ["newuser@example.com"],
   roles: [Accounts.Author.toString()],
   status: AccountStatus.Pending.toString(),
-  creationTime: new Date("2024-01-01"),
-  modificationTime: new Date("2024-01-01"),
 };
 
 export const existingUsernameSignup = {
@@ -45,22 +44,20 @@ export const existingUsernameSignup = {
   username: "raisa", // existing username
   password: "password",
   graduationYear: 2024,
+  bio: "Existing user bio",
   emails: ["existinguser@example.com"],
   roles: [Accounts.Editor.toString()],
   status: AccountStatus.Pending.toString(),
-  creationTime: new Date("2024-01-01"),
-  modificationTime: new Date("2024-01-01"),
 };
 
 export const existingEmailSignup = {
   firstName: "Existing",
-  lastName: "User",
+  lastName: "Email",
   username: "newusername",
   password: "password",
   graduationYear: 2024,
+  bio: "Existing user bio",
   emails: ["raisa@example.com"], // existing email
   roles: [Accounts.Editor.toString()],
   status: AccountStatus.Pending.toString(),
-  creationTime: new Date("2024-01-01"),
-  modificationTime: new Date("2024-01-01"),
 };
