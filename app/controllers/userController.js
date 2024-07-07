@@ -4,12 +4,13 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import { UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
+import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import {
   ErrorWrongPassword,
   ErrorUserLoggedIn,
   ErrorUserNotFound,
   ErrorUserNotRegistered,
+  ErrorUserAlreadyExists,
   ErrorValidation,
 } from "../error/httpErrors.js";
 
@@ -57,7 +58,7 @@ export default class UserController {
                 httpOnly: true,
                 maxAge: 60 * 60 * 1000,
               });
-              res.status(200).json({ message: "Login successful" })
+              res.status(200).json({ message: "Login successful" });
             } else {
               ErrorValidation.throwHttp(req, res);
             }
@@ -99,24 +100,20 @@ export default class UserController {
    */
   static async signup(req, res, next) {
     try {
+      // validate incoming data using UserCreate model
+      const userData = new UserCreate(req.body);
+
       // hash the password
-      req.body.password = await bcrypt.hash(req.body.password, 10);
+      userData.password = await bcrypt.hash(userData.password, 10);
 
-      // make sure nested data is structured properly
-      req.body.information = {
-        year: req.body.year,
-        major: req.body.major,
-        bio: req.body.bio,
-        image: req.body.image,
-      };
+      const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
 
-      const user = await UsersAccessor.getUserByUsername(req.body.username);
-
-      if (!user) {
-        await UsersAccessor.createUser(req.body);
-        res.redirect("/login");
+      if (!userByUsername && !userByEmail) {
+        await UsersAccessor.createUser(userData);
+        res.status(201).json({ message: "Signup successful" });
       } else {
-        ErrorValidation.throwHttp(req, res);
+        ErrorUserAlreadyExists.throwHttp(req, res, "Username or Email already exists");
       }
     } catch (e) {
       console.log(e);

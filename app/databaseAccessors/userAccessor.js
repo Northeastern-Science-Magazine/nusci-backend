@@ -149,7 +149,14 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -282,6 +289,34 @@ export default class UsersAccessor {
     } catch (e) {
       console.log(e);
       ErrorInternalAPIModelFieldValidation(e);
+    }
+  }
+
+  /**
+   * createUser Method
+   *
+   * This method creates a new user in the database.
+   *
+   * @param {Object} user
+   * @returns the newly created user
+   */
+  static async createUser(user) {
+    try {
+      await Connection.open();
+      const newUser = new User(user);
+      await newUser.save();
+      return newUser;
+    } catch (e) {
+      console.log(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

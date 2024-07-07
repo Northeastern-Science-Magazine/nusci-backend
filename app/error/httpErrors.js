@@ -67,6 +67,12 @@ export class ErrorValidation extends HttpError {
   }
 }
 
+export class ErrorUserAlreadyExists extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Username or email already registered." });
+  }
+}
+
 export class ErrorDatabaseConnection extends HttpError {
   static throwHttp(req, res) {
     res.status(500).json({ error: "Failed to connect to the database." });
