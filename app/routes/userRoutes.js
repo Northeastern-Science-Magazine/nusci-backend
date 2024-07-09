@@ -14,7 +14,7 @@ router.route("/login").post(UserController.login); //log in
 router.route("/signup").post(UserController.signup); //sign up
 
 router.route("/filter"); //get users by options: graduation years, statuses, roles
-router.route("/username/:username"); //get a single user by username
+router.route("/username/:username").get(UserController.getPublicProfile); //get a single user by username
 
 router.route("/resolve-status"); //approve/deny a given list of users, admin only
 router.route("/update/:username"); //admin update of a user including adding + removing roles
