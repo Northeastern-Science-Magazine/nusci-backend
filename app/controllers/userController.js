@@ -191,18 +191,21 @@ export default class UserController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async getPublicProfile(req, res, next) {
+  static async getPublicUserByUsername(req, res, next) {
     try {
       const username = req.params.username;
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        ErrorUserNotFound.throwHttp(req, res);
+        //return the user not found error here: or else ErrorValidation will also be 
+        // thrown due to null response from getUserByUsername when using .toObject() on null.
+       return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());
-      res.json(publicUser);
+      res.status(200).json(publicUser);
     } catch (e) {
+      console.log("error validation: " + e);
       ErrorValidation.throwHttp(req, res);
     }
   }

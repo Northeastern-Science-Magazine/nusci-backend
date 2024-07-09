@@ -61,3 +61,35 @@ export const existingEmailSignup = {
   roles: [Accounts.Editor.toString()],
   status: AccountStatus.Pending.toString(),
 };
+
+export const validUsernameQueryRaisa = {
+  firstName: "Raisa",
+  lastName: "B",
+  username: "raisa",
+  pronouns: [],
+  graduationYear: 2025,
+  majors: ["Computer Science", "Mathematics"],
+  location: "New York",
+  profileImage: "https://example.com/profile.jpg",
+  bannerImage: "https://example.com/banner.jpg",
+  bio: "Co-Head of Web & Software with Ethan",
+  roles: ["admin"],
+  creationTime: "2024-02-27T00:00:00.000Z",
+  modificationTime: "2024-02-27T00:00:00.000Z",
+};
+
+export const validUsernameQueryEthan = {
+  firstName: "Ethan",
+  lastName: "S",
+  username: "ethan",
+  pronouns: [],
+  graduationYear: 2026,
+  majors: ["Computer Science", "Mathematics"],
+  location: "New Jersey",
+  profileImage: "https://example.com/profile.jpg",
+  bannerImage: "https://example.com/banner.jpg",
+  bio: "Co-Head of Web & Software with Raisa",
+  roles: ["admin"],
+  creationTime: "2024-02-27T00:00:00.000Z",
+  modificationTime: "2024-02-27T00:00:00.000Z",
+};
