@@ -87,3 +87,7 @@ export class CalendarEventDelete extends BaseModel {
     super(json, CalendarEventDelete.schema);
   }
 }
+
+/**
+ * @TODO recurrance rule validation (bi weekly, weekly, daily, whatever)
+ */

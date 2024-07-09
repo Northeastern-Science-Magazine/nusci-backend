@@ -167,3 +167,7 @@ export class ArticleDelete extends BaseModel {
     super(json, ArticleDelete.schema);
   }
 }
+
+/**
+ * @TODO filter object validation
+ */
