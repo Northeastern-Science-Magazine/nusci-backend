@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/app
   mongodb:
-    image: mongodb/mongodb-community-server:6.0-ubi8
+    image: mongo
     container_name: nusci-database
     env_file:
       - .env
