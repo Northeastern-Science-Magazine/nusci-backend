@@ -132,6 +132,74 @@ export default class UsersAccessor {
   }
 
   /**
+   * approveUserByUsername Method
+   * 
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username and update the user's status to approved.
+   * 
+   * @param {String} username 
+   * @returns the updated user object with the status set to approved.
+   */
+  static async approveUserByUsername(username) {
+    try {
+      await Connection.open();
+
+      //update the status 
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { status: AccountStatus.Approved },
+        { new: true }
+      );
+
+      return user;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * denyUserByUsername Method
+   * 
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username and update the user's status to denied.
+   * 
+   * @param {String} username 
+   * @returns the updated user object with the status set to denied.
+   */
+  static async denyUserByUsername(username) {
+    try {
+      await Connection.open();
+
+      //update the status
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { status: AccountStatus.Denied },
+        { new: true }
+      );
+      return user;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+
+
+
+  /**
    * getUserByEmail Method
    *
    * This method retrieves the user MongoDB object from the

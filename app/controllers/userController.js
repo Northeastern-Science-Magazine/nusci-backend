@@ -197,9 +197,9 @@ export default class UserController {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        //return the user not found error here: or else ErrorValidation will also be 
+        //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByUsername when using .toObject() on null.
-       return ErrorUserNotFound.throwHttp(req, res);
+        return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());
@@ -207,6 +207,54 @@ export default class UserController {
     } catch (e) {
       console.log("error validation: " + e);
       ErrorValidation.throwHttp(req, res);
+    }
+  }
+
+ /**
+   * resolveUserApprovals Method
+   *
+   * This method updates the status of lists of pending users to deny or approve them.
+   *
+   * @param {HTTP REQ} req web request object, contains 2 lists of usernames to approve or deniy.
+   * @param {HTTP RES} res web response object.
+   * @param {function} next middleware function.
+   */
+  static async resolveUserApprovals(req, res, next) {
+    if (!req.body.approve || !req.body.deny) {
+      ErrorValidation.throwHttp(req, res);
+    } else {
+      try {
+        const approveUsers = req.body.approve;
+        const denyUsers = req.body.deny;
+        const allUsers = approveUsers.concat(denyUsers);
+
+        //check if the users given exists and are pending
+        for (var username in allUsers) {
+          //check if the user exists and is pending
+          try {
+            const user = await UsersAccessor.getPublicUserByUsername(username);
+            if (user.status !== "Pending") {
+              ErrorValidation.throwHttp(req, res);
+            }
+          } catch (e) {
+            ErrorUserNotFound.throwHttp(req, res);
+          }
+        }
+        
+        //approve the users
+        for (var username in approveUsers) {
+          UsersAccessor.approveUserByUsername(username);
+        }
+
+        //deny the users
+        for (var username in denyUsers) {
+          UsersAccessor.denyUserByUsername(username);
+        }
+
+        res.status(201).json({ message: "All users resolved successfully." });
+      } catch (e) {
+        ErrorUserNotFound.throwHttp(req, res);
+      }
     }
   }
 
