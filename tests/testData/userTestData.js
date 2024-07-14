@@ -50,6 +50,8 @@ export const existingUsernameSignup = {
   status: AccountStatus.Pending.toString(),
 };
 
+
+
 export const existingEmailSignup = {
   firstName: "Existing",
   lastName: "Email",
@@ -93,3 +95,101 @@ export const validUsernameQueryEthan = {
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
+
+export const userToApprove1 = {
+  firstName: "approve1",
+  lastName: "User",
+  username: "approve1",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserapprove1@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToApprove2 = {
+  firstName: "approve2",
+  lastName: "User",
+  username: "approve2",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserapprove2@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToApprove3 = {
+  firstName: "approve3",
+  lastName: "User",
+  username: "approve3",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserapprove3@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToApprove4 = {
+  firstName: "approve4",
+  lastName: "User",
+  username: "approve4",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserapprove4@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToDeny1 = {
+  firstName: "deny1",
+  lastName: "User",
+  username: "deny1",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserdeny1@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToDeny2 = {
+  firstName: "deny2",
+  lastName: "User",
+  username: "deny2",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserdeny2@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToDeny3 = {
+  firstName: "deny3",
+  lastName: "User",
+  username: "deny3",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserdeny3@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+export const userToDeny4 = {
+  firstName: "deny4",
+  lastName: "User",
+  username: "deny4",
+  password: "newpassword",
+  graduationYear: 2025,
+  bio: "New user bio",
+  emails: ["newuserdeny4@example.com"],
+  roles: [Accounts.Author.toString()],
+  status: AccountStatus.Pending.toString(),
+};
+
+

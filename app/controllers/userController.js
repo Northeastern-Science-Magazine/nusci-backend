@@ -13,6 +13,7 @@ import {
   ErrorUserAlreadyExists,
   ErrorValidation,
 } from "../error/httpErrors.js";
+import AccountStatus from "../models/enums/account_status.js";
 
 /**
  * UsersCTRL Class
@@ -220,40 +221,47 @@ export default class UserController {
    * @param {function} next middleware function.
    */
   static async resolveUserApprovals(req, res, next) {
+    console.log("entering resolve status method");
     if (!req.body.approve || !req.body.deny) {
       ErrorValidation.throwHttp(req, res);
     } else {
       try {
         const approveUsers = req.body.approve;
         const denyUsers = req.body.deny;
-        const allUsers = approveUsers.concat(denyUsers);
+        const allUsers = [...approveUsers, ...denyUsers];
+        console.log(allUsers);
 
         //check if the users given exists and are pending
-        for (var username in allUsers) {
+        for (const username of allUsers) {
           //check if the user exists and is pending
           try {
-            const user = await UsersAccessor.getPublicUserByUsername(username);
-            if (user.status !== "Pending") {
-              ErrorValidation.throwHttp(req, res);
+            console.log("trying to get: ", username);
+            const user = await UsersAccessor.getUserByUsername(username);
+            console.log("retrieved user: ", user);
+
+            if (user.status !== AccountStatus.Pending.toString()) {
+              return ErrorValidation.throwHttp(req, res);
             }
           } catch (e) {
-            ErrorUserNotFound.throwHttp(req, res);
+            console.log(e);
+            return ErrorUserNotFound.throwHttp(req, res);
           }
         }
-        
+
         //approve the users
-        for (var username in approveUsers) {
+        for (const username of approveUsers) {
           UsersAccessor.approveUserByUsername(username);
         }
 
         //deny the users
-        for (var username in denyUsers) {
+        for (const username of denyUsers) {
           UsersAccessor.denyUserByUsername(username);
         }
 
         res.status(201).json({ message: "All users resolved successfully." });
       } catch (e) {
-        ErrorUserNotFound.throwHttp(req, res);
+        console.log(e);
+        return ErrorUserNotFound.throwHttp(req, res);
       }
     }
   }

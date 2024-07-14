@@ -13,7 +13,16 @@ import {
   existingEmailSignup,
   validUsernameQueryRaisa,
   validUsernameQueryEthan,
+  userToApprove1,
+  userToApprove2,
+  userToApprove3,
+  userToApprove4,
+  userToDeny1,
+  userToDeny2,
+  userToDeny3,
+  userToDeny4,
 } from "../../testData/userTestData.js";
+import tokens from "../../testData/tokenTestData.js";
 
 afterAll(async () => {
   await Connection.close();
@@ -124,28 +133,50 @@ describe("Get User By Username Tests", () => {
 
 describe("Approve or deny given users test", () => {
   test("test only approving users", async () => {
-    const response = await request(app).get("/user/username/raisa");
+    //sign up new users to approve
+    const response0 = await request(app).post("/user/signup").send(userToApprove1);
+    console.log("response signup: ", response0.body);
+    
+
+    const listOfUsers = {
+      approve: ["ace", "approve2"],
+      deny: [],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
 
     logTestSuite.user && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validUsernameQueryRaisa);
-    expect(response.body.username).toBe("raisa");
+    expect(response.status).toBe(201);
+    expect(response.body).toStrictEqual({"message": "All users resolved successfully."});
+
+    //check status of the users to ensure they have been approved
+    const aceUser = await request(app).get("/user/username/ace");
+    const approveUser1 = await request(app).get("/user/username/approve1");
+    console.log(aceUser.body);
+    console.log(approveUser1.body);
+
   });
 
-  test("get a user by a valid/existing username ethan", async () => {
-    const response = await request(app).get("/user/username/ethan");
+  // test("test only denying users", async () => {
+  //   //sign up a new user to deny
+  //   await request(app).post("/user/signup").send(validUserSignup);
 
-    logTestSuite.user && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validUsernameQueryEthan);
-    expect(response.body.username).toBe("ethan");
-  });
+  //   const listOfUsers = {
+  //     approve: [],
+  //     deny: ["newuser"],
+  //   };
 
-  test("attempt getting an invalid username", async () => {
-    const response = await request(app).get("/user/username/nonexistentuser");
+  //   const response = await request(app)
+  //     .put("/user/resolve-status")
+  //     .send(listOfUsers)
+  //     .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
-    expect(response.body).toStrictEqual({ error: "User not found." });
-    expect(response.status).toBe(404);
-  });
+  //   logTestSuite.user && console.log(response.body);
+  //   expect(response.status).toBe(201);
+  //   expect(response.body).toStrictEqual({"message": "All users resolved successfully."});
+  // });
+
 });

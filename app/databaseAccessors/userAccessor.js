@@ -147,12 +147,13 @@ export default class UsersAccessor {
       //update the status 
       const user = await User.findOneAndUpdate(
         { username: username },
-        { status: AccountStatus.Approved },
+        { status: AccountStatus.Approved.toString() },
         { new: true }
       );
 
       return user;
     } catch (e) {
+      console.log(e);
       // Check if it's a DB connection error
       if (e instanceof ErrorDatabaseConnection) {
         // Throw up the stack
@@ -180,7 +181,7 @@ export default class UsersAccessor {
       //update the status
       const user = await User.findOneAndUpdate(
         { username: username },
-        { status: AccountStatus.Denied },
+        { status: AccountStatus.Denied.toString() },
         { new: true }
       );
       return user;
