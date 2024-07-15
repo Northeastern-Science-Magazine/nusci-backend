@@ -5,8 +5,9 @@ This website is a site built by students on the Northeastern Science Magazine We
 <hr>
 
 ### Technologies
-
-- NPM/Node.js
+- Xcode
+- Homebrew
+- Node.js
 - Docker Desktop
 - Github Desktop
 - Microsoft VS Code
@@ -19,29 +20,36 @@ This website is a site built by students on the Northeastern Science Magazine We
 
 2. Open the project directory in Visual Studio Code.
 
-3. Add the ```.env``` file to the root directory.
+3. Add the ```.env``` file to the root directory. This will define our important secret keys we use for authentication, and initialization of the project.
 
-5. Run the following NPM command in the terminal at root directory.
+5. Run the following NPM command in the terminal at root directory. This command installs all the dependencies we use in our project. It utilizes the package-lock.json file to find which packages to install. 
 
 ```properties
 npm i
 ```
 
-5. Run the following Docker Image Commands in the terminal at root directory.
-
-```properties
-docker build -t nusci-image .
-```
-
-```properties
-docker compose build
-```
+5. Run the following Docker Image Command in the terminal at root directory. This command will build the Docker Image defined in your root directory from the Dockerfile, and will pull from the mongo:lastest image from the internet and creates the compose project with the backend API server and the database instance, locally on your machine. It runs detached so you get your terminal back after running the command.
 
 ```properties
 docker compose up -d
 ```
 
-6. To run the project, run the docker container and navigate to ```localhost:9999``` to view the website.
+6. Test your environment, verify your docker compose project is running and navigate to [localhost:9999](http://localhost:9999) to check your connection to the API. Also, navigate to [localhost:9999/db](http://localhost:9999/db) to check your connection to the local database instance.
+
+7. If you cannot successfully connect to the database endpoint, install [mongosh](https://www.mongodb.com/docs/mongodb-shell/install/). After installing, run the following command in the root directory:
+
+```properties
+mongosh
+```
+
+Then, in the Mongo Shell, run these commands:
+
+```properties
+use admin
+```
+```properties
+db.createUser({user: "nusci", pwd:"mongodb", roles:[{role:"readWrite", db:"Admin"}]})
+```
 
 <hr>
 
