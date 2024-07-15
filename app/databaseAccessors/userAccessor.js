@@ -153,7 +153,6 @@ export default class UsersAccessor {
 
       return user;
     } catch (e) {
-      console.log(e);
       // Check if it's a DB connection error
       if (e instanceof ErrorDatabaseConnection) {
         // Throw up the stack
@@ -192,7 +191,6 @@ export default class UsersAccessor {
         throw e;
       } else {
         // Else throw unexpected error
-        console.log(e);
         throw new ErrorInternalUnexpected("Unexpected error occurred");
       }
     }
@@ -373,13 +371,10 @@ export default class UsersAccessor {
   static async createUser(user) {
     try {
       await Connection.open();
-      console.log("creating a new user: ", user);
       const newUser = new User(user);
-      console.log("attempting to save the user ", newUser);
       await newUser.save();
       return newUser;
     } catch (e) {
-      console.log(e);
 
       // Check if it's a DB connection error
       if (e instanceof ErrorDatabaseConnection) {

@@ -222,7 +222,6 @@ export default class UserController {
    * @param {function} next middleware function.
    */
   static async resolveUserApprovals(req, res, next) {
-    console.log("entering resolve status method");
     if (!req.body.approve || !req.body.deny) {
       ErrorValidation.throwHttp(req, res);
     } else {
@@ -230,21 +229,17 @@ export default class UserController {
         const approveUsers = req.body.approve;
         const denyUsers = req.body.deny;
         const allUsers = [...approveUsers, ...denyUsers];
-        console.log(allUsers);
 
         //check if the users given exists and are pending
         for (const username of allUsers) {
           //check if the user exists and is pending
           try {
-            console.log("trying to get: ", username);
             const user = await UsersAccessor.getUserByUsername(username);
-            console.log("retrieved user: ", user);
 
             if (user.status !== AccountStatus.Pending.toString()) {
               return ErrorValidation.throwHttp(req, res);
             }
           } catch (e) {
-            console.log(e);
             return ErrorUserNotFound.throwHttp(req, res);
           }
         }
