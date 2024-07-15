@@ -375,6 +375,7 @@ export default class UsersAccessor {
       await newUser.save();
       return newUser;
     } catch (e) {
+      console.log(e);
 
       // Check if it's a DB connection error
       if (e instanceof ErrorDatabaseConnection) {

@@ -100,7 +100,6 @@ export default class UserController {
    * @param {function} next middleware function
    */
   static async signup(req, res, next) {
-    console.log("entering signup method");
     try {
       // validate incoming data using UserCreate model
       const userData = new UserCreate(req.body);
@@ -207,7 +206,6 @@ export default class UserController {
       const publicUser = new UserPublicResponse(user.toObject());
       res.status(200).json(publicUser);
     } catch (e) {
-      console.log("error validation: " + e);
       ErrorValidation.throwHttp(req, res);
     }
   }
