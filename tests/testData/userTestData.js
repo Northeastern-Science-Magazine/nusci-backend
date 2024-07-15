@@ -97,10 +97,11 @@ export const validUsernameQueryEthan = {
 };
 
 export const userToApprove1 = {
-  firstName: "approve1",
+  firstName: "approve",
   lastName: "User",
   username: "approve1",
   password: "newpassword",
+  phone: '123',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserapprove1@example.com"],
@@ -109,10 +110,11 @@ export const userToApprove1 = {
 };
 
 export const userToApprove2 = {
-  firstName: "approve2",
+  firstName: "approve",
   lastName: "User",
   username: "approve2",
   password: "newpassword",
+  phone: '234',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserapprove2@example.com"],
@@ -121,10 +123,11 @@ export const userToApprove2 = {
 };
 
 export const userToApprove3 = {
-  firstName: "approve3",
+  firstName: "approve",
   lastName: "User",
   username: "approve3",
   password: "newpassword",
+  phone: '345',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserapprove3@example.com"],
@@ -136,6 +139,7 @@ export const userToApprove4 = {
   firstName: "approve4",
   lastName: "User",
   username: "approve4",
+  phone: '456',
   password: "newpassword",
   graduationYear: 2025,
   bio: "New user bio",
@@ -149,6 +153,7 @@ export const userToDeny1 = {
   lastName: "User",
   username: "deny1",
   password: "newpassword",
+  phone: '567',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserdeny1@example.com"],
@@ -161,6 +166,7 @@ export const userToDeny2 = {
   lastName: "User",
   username: "deny2",
   password: "newpassword",
+  phone: '678',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserdeny2@example.com"],
@@ -173,6 +179,7 @@ export const userToDeny3 = {
   lastName: "User",
   username: "deny3",
   password: "newpassword",
+  phone: '1234',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserdeny3@example.com"],
@@ -185,6 +192,7 @@ export const userToDeny4 = {
   lastName: "User",
   username: "deny4",
   password: "newpassword",
+  phone: '12345',
   graduationYear: 2025,
   bio: "New user bio",
   emails: ["newuserdeny4@example.com"],

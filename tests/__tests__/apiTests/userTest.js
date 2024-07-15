@@ -136,10 +136,9 @@ describe("Approve or deny given users test", () => {
     //sign up new users to approve
     const response0 = await request(app).post("/user/signup").send(userToApprove1);
     console.log("response signup: ", response0.body);
-    
 
     const listOfUsers = {
-      approve: ["ace", "approve2"],
+      approve: ["ace", "approve1"],
       deny: [],
     };
 
@@ -150,33 +149,134 @@ describe("Approve or deny given users test", () => {
 
     logTestSuite.user && console.log(response.body);
     expect(response.status).toBe(201);
-    expect(response.body).toStrictEqual({"message": "All users resolved successfully."});
-
-    //check status of the users to ensure they have been approved
-    const aceUser = await request(app).get("/user/username/ace");
-    const approveUser1 = await request(app).get("/user/username/approve1");
-    console.log(aceUser.body);
-    console.log(approveUser1.body);
-
+    expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
   });
 
-  // test("test only denying users", async () => {
-  //   //sign up a new user to deny
-  //   await request(app).post("/user/signup").send(validUserSignup);
+  test("test only denying users", async () => {
+    //signup new users to deny
+    const response0 = await request(app).post("/user/signup").send(userToDeny1);
+    console.log("response signup: ", response0.body);
 
-  //   const listOfUsers = {
-  //     approve: [],
-  //     deny: ["newuser"],
-  //   };
+    const listOfUsers = {
+      approve: [],
+      deny: ["newuser", "deny1"],
+    };
 
-  //   const response = await request(app)
-  //     .put("/user/resolve-status")
-  //     .send(listOfUsers)
-  //     .set("Cookie", [`token=${tokens.ethan}`]);
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
 
-  //   logTestSuite.user && console.log(response.body);
-  //   expect(response.status).toBe(201);
-  //   expect(response.body).toStrictEqual({"message": "All users resolved successfully."});
-  // });
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
+  });
 
+  test("test approving and denying users", async () => {
+    //signup new users to approve and deny
+    await request(app).post("/user/signup").send(userToApprove2);
+    await request(app).post("/user/signup").send(userToApprove3);
+    await request(app).post("/user/signup").send(userToDeny2);
+    await request(app).post("/user/signup").send(userToDeny3);
+
+    const listOfUsers = {
+      approve: ["approve2", "approve3"],
+      deny: ["deny2", "deny3"],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
+  });
+
+  test("test empty lists for approving and denying users", async () => {
+    const listOfUsers = {
+      approve: [],
+      deny: [],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
+  });
+
+  test("test approving users that doesn't exists", async () => {
+    const listOfUsers = {
+      approve: ["nonexistentuser1", "nonexistentuser2"],
+      deny: [],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(404);
+    expect(response.body).toStrictEqual({ error: "User not found." });
+  });
+
+  test("test denying users that doesn't exists", async () => {
+    const listOfUsers = {
+      approve: [],
+      deny: ["nonexistentuser1", "nonexistentuser2"],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(404);
+    expect(response.body).toStrictEqual({ error: "User not found." });
+  });
+
+  test("test approving users where only some exists", async () => {
+    //sign up a valid user to approve
+    await request(app).post("/user/signup").send(userToApprove4);
+
+    const listOfUsers = {
+      approve: ["approve4", "nonexistentuser1", "nonexistentuser2"],
+      deny: [],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(404);
+    expect(response.body).toStrictEqual({ error: "User not found." });
+  });
+
+  test("test denying users where only some exists", async () => {
+    //sign up a valid user to approve
+    await request(app).post("/user/signup").send(userToDeny4);
+
+    const listOfUsers = {
+      approve: [],
+      deny: ["deny4", "nonexistentuser1", "nonexistentuser2"],
+    };
+
+    const response = await request(app)
+      .put("/user/resolve-status")
+      .send(listOfUsers)
+      .set("Cookie", [`token=${tokens.ethan}`]);
+
+    logTestSuite.user && console.log(response.body);
+    expect(response.status).toBe(404);
+    expect(response.body).toStrictEqual({ error: "User not found." });
+  });
 });

@@ -100,6 +100,7 @@ export default class UserController {
    * @param {function} next middleware function
    */
   static async signup(req, res, next) {
+    console.log("entering signup method");
     try {
       // validate incoming data using UserCreate model
       const userData = new UserCreate(req.body);
@@ -250,12 +251,12 @@ export default class UserController {
 
         //approve the users
         for (const username of approveUsers) {
-          UsersAccessor.approveUserByUsername(username);
+          await UsersAccessor.approveUserByUsername(username);
         }
 
         //deny the users
         for (const username of denyUsers) {
-          UsersAccessor.denyUserByUsername(username);
+          await UsersAccessor.denyUserByUsername(username);
         }
 
         res.status(201).json({ message: "All users resolved successfully." });
