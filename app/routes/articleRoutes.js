@@ -25,6 +25,10 @@ router.route("/editors/:slug"); //update the list of editor to this article,
 router.route("/designers/:slug"); //update the list of designer to this article,
 router.route("/photographers/:slug"); //update the list of photographer to this article
 
+router.route("/comments/internal/add/:slug"); //editors and admins should be able to make internal comments
+router.route("/comments/internal/resolve/:id"); //resolve the comment
+router.route("/comments/add"); //anyone with an account should be able to make a public comment
+
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
 router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
 router.route("/delete/:slug"); //delete an article
