@@ -1,6 +1,21 @@
-# Northeastern Science Magazine Website
+# Northeastern Science Magazine Backend API + Database
 
-This website is a site built by students on the Northeastern Science Magazine Webteam. With this website, we intend to give new members valuable and meaningful experience in web development, at whatever skill level they have. 
+This repository acts as the backend API and database setup for a local environment.
+
+```md
+┏━━━━━━━━━━━━━━┓                      ┏━━━━━━━━━━━━━━┓                    ┏━━━━━━━━━━━━━━┓
+┃              ┃ -------------------> ┃              ┃ -----------------> ┃              ┃
+┃              ┃   [HTTP Requests]    ┃              ┃   [DB Requests]    ┃              ┃
+┃   Frontend   ┃                      ┃   Backend    ┃                    ┃   Database   ┃
+┃   Server     ┃                      ┃   Server     ┃                    ┃   Instance   ┃
+┃              ┃   [HTTP Responses]   ┃              ┃   [DB Responses]   ┃              ┃
+┃              ┃ <------------------- ┃              ┃ <----------------- ┃              ┃
+┗━━━━━━━━━━━━━━┛                      ┗━━━━━━━━━━━━━━┛                    ┗━━━━━━━━━━━━━━┛
+
+     React                               Express.js                           MongoDB
+     Tailwind                            Mongoose/MongoDB                     Docker
+     Next.js                             Docker
+```
 
 <hr>
 
