@@ -49,7 +49,7 @@ This repository acts as the backend API and database setup for a local environme
 
 # Contribution Guidelines
 
-1. Find a 'New Ticket' to be assigned a ticket from the Project Board, and ask to be assigned.
+1. Find a 'New Ticket' you find interesting from the Project Board, and ask to be assigned.
 
 2. Once assigned, create a new branch off ```main``` named with the issue number and the ticket name formatted as follows:
 
