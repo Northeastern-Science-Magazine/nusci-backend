@@ -1,6 +1,6 @@
 # Northeastern Science Magazine Backend API + Database
 
-This repository acts as the backend API and database setup for a local environment.
+This repository acts as the backend API and database setup for a local environment. The architecture is as follows:
 
 ```md
 ┏━━━━━━━━━━━━━━┓                      ┏━━━━━━━━━━━━━━┓                    ┏━━━━━━━━━━━━━━┓
@@ -20,16 +20,70 @@ This repository acts as the backend API and database setup for a local environme
 <hr>
 
 ### Technologies
-- Xcode
-- Homebrew
-- Node.js
+- NVM/NPM/Node.js
 - Docker Desktop
-- Github Desktop
+- Git/Github Desktop
+- MongoDB Compass
 - Microsoft VS Code
 
 <hr>
 
-### Running the Project
+# Running the Project
+
+- If you already have some of the above technologies you may skip to the appropriate step. 
+
+## MacOS Setup
+
+### 1. Install Xcode / Git
+
+- Run the following command to install Xcode Command Line Tools, which comes prepackaged with Git:
+```
+xcode-select --install
+```
+- To verify you have Xcode Command Line Tools installed, run the command:
+```
+xcode-select --version
+```
+
+### 2. Install Homebrew
+- Run the following command to install Homebrew, a Linux/MacOS package manager:
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+- To verify you have Homebrew installed, run the command:
+```
+brew -v
+```
+
+### 3. Install NVM / NPM / Node.js
+- Run the following command to install NVM, a version manager for Node Package Manager:
+```
+brew install nvm
+```
+- To verify you have NVM installed, run the command:
+```
+nvm -v
+```
+- Run the following command to install version 22 of NPM, a dependency installer for Javascript:
+```
+nvm install 22
+```
+- To verify you have NPM installed, run the command:
+```
+npm -v
+```
+
+4. Go to the [Cross-Platform Setup](#cross-platform-setup) section, and continue following the steps.
+
+## Windows Setup
+
+### 1. Install Git
+- Follow the steps to install [Git](https://git-scm.com/downloads)
+
+### 2. NPM / Node.js
+- Follow the steps to install version 22.x.x of [Node.js](https://nodejs.org/en/download/package-manager), which comes prepackaged with NPM, a dependency installer for Javascript
+
+## Cross Platform Setup
 
 1. Clone the repository to your computer.
 
