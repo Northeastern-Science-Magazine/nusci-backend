@@ -185,6 +185,8 @@ npm i
 ```
 docker compose up -d
 ```
+
+### 4. Test Your Environment
 - Test your environment, verify your docker compose project is running and navigate to [localhost:9999](http://localhost:9999) to check your connection to the API. Also, navigate to [localhost:9999/db](http://localhost:9999/db) to check your connection to the local database instance.
 
 - Run the command to initialize database data:
@@ -199,7 +201,7 @@ npm run test
 
 - To view the database, launch MongoDB Compass. Go to the `.env` file, and copy the connection string. Paste it into the Compass URI box, and click 'Connect'. You should be able to view all the seeded collections.
 
-### 4. The Project is Running!
+### 5. The Project is Running!
 - Congrats, you have successfully run the project! Feel free to ask for a ticket assignment so you can get started on development!
 - For any futher explanations / help, reach out to the heads of software & web.
 
