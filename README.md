@@ -19,18 +19,25 @@ This repository acts as the backend API and database setup for a local environme
 
 <hr>
 
-# Technologies and Purposes
-- NVM/NPM/Node.js
-- Docker Desktop
-- Git/Github Desktop
-- MongoDB Compass
-- Microsoft VS Code
+# Technologies
+
+### Softwares
+- `Git / Github Desktop` We use Git for version control. We use Github Desktop as a UI to interface with Git
+- `Docker Desktop` We use Docker to containerize our projects, and deploy them in neutral environments that are OS independent.
+- `NVM / NPM / Node.js` We use NVM to manage our NPM versions. We use NPM to manage our dependencies for the project.
+- `MongoDB Compass` We use MongoDB Compass to view our database instance.
+- `Visual Studio Code` We are in favour of using VS Code for web development for its lightweight experience and useful extensions.
+
+### Project Stack
+- `Express.js` We use Express.js to build our web server.
+- `MongoDB / Mongoose` We use MongoDB for our database, and Mongoose in order to validate data going in and out of the database.
+- `Jest + Supertest` We use Jest and Supertest as our testing libraries, to test endpoints on our Express.js server.
 
 <hr>
 
-### Contribution Guidelines
+# Contribution Guidelines
 
-1. Ask for permission to be assigned a ticket.
+1. Find a 'New Ticket' to be assigned a ticket from the Project Board, and ask to be assigned.
 
 2. Once assigned, create a new branch off ```main``` named with the issue number and the ticket name formatted as follows:
 
@@ -39,11 +46,11 @@ This repository acts as the backend API and database setup for a local environme
     
 3. Work on your branch, commit and push when necessary. Be descriptive and clear with your commit messages.
 
-4. Once finished, create a pull request to merge into the ```main``` branch. The pull request should properly describe the changes made.
+4. Once finished, create a pull request to merge into the ```main``` branch. The pull request should properly fill out the PR template.
 
 5. An admin will review your ticket, and either approve your changes, or request changes. If changes requested, checkout to your branch and make requested changes.
 
-***Note***: Code will be scrutinized:
+***Note***: Code will be thoroughly reviewed - we uphold a code quality standard at NU Sci:
 - You will be asked to explain your reasoning to be approved.
 - You must have proper and clear formatting on all changes in the code.
 - You must not have extraneous code / code not relevant to the ticket in the pull request.
