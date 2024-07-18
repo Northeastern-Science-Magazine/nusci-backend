@@ -18,8 +18,9 @@ This repository acts as the backend API and database setup for a local environme
 ```
 
 <hr>
+<hr>
 
-### Technologies
+# Technologies and Purposes
 - NVM/NPM/Node.js
 - Docker Desktop
 - Git/Github Desktop
@@ -27,14 +28,15 @@ This repository acts as the backend API and database setup for a local environme
 - Microsoft VS Code
 
 <hr>
+<hr>
 
-# Running the Project
-
-- If you already have some of the above technologies you may skip to the appropriate step. 
+# Laptop Setup + Application Installations
+- If you're new to web development, please refer to the [MacOS Setup](#macos-setup) or the [Windows Setup](#windows-setup) steps.
+- If your laptop is set up, start at the [Application Installation](#applciation-installation) section.
 
 ## MacOS Setup
 
-### 1. Install Xcode / Git
+### 1. Install Xcode Command Line Tools / Git
 
 - Run the following command to install Xcode Command Line Tools, which comes prepackaged with Git:
 ```
@@ -73,7 +75,10 @@ nvm install 22
 npm -v
 ```
 
-4. Go to the [Cross-Platform Setup](#cross-platform-setup) section, and continue following the steps.
+### 4. Go to the [Application Installation](#applciation-installation) section, and continue following the steps.
+
+<hr>
+<hr>
 
 ## Windows Setup
 
@@ -83,7 +88,39 @@ npm -v
 ### 2. NPM / Node.js
 - Follow the steps to install version 22.x.x of [Node.js](https://nodejs.org/en/download/package-manager), which comes prepackaged with NPM, a dependency installer for Javascript
 
-## Cross Platform Setup
+### 3. Go to the [Application Installation](#application-installation) section, and continue following the steps.
+
+<hr>
+<hr>
+
+## Application Installation
+- This section defines applications you will need to run / develop the project.
+
+### 1. Install Github Desktop
+- Follow the steps to install [Github Desktop](https://desktop.github.com/download/)
+- Launch Github Desktop, and go to 'Settings'.
+- Click the 'Git' tab, and connect to your Github account to the application.
+
+### 2. Install Docker Desktop
+- Follow the steps to install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Launch Docker Desktop, no need to sign in or create an account.
+
+### 3. Install MongoDB Compass
+- Follow the steps to install [MongoDB Compass](https://www.mongodb.com/products/tools/compass)
+- Launch MongoDB Compass.
+
+### 4. You're done installing all the necessary software, congrats!
+- To build and run the project locally, refer to the [Running the Project](#running-the-project) section.
+
+<hr>
+<hr>
+
+# Running the Project
+- This section defines how to start up the project, and run it on your local machine.
+### 1. 
+
+
+# Troubleshooting
 
 1. Clone the repository to your computer.
 
