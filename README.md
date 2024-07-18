@@ -19,6 +19,18 @@ This repository acts as the backend API and database setup for a local environme
 
 <hr>
 
+# Table of Contents
+- [Technologies](#technologies)
+- [Contribution Guidelines](#contribution-guidelines)
+- [Laptop Setup + Application Installations](#laptop-setup--application-installations)
+  - [MacOS Setup](#macos-setup)
+  - [Windows Setup](#windows-setup)
+  - [Application Installation](#application-installation)
+- [Running the Project](#running-the-project)
+- [Troubleshooting](#troubleshooting)
+
+<hr>
+
 # Technologies
 
 ### Softwares
