@@ -307,4 +307,35 @@ export default class ArticlesAccessor {
       ErrorInternalAPIModelFieldValidation(e);
     }
   }
+
+  /**
+   * addCommentBySlug method
+   *
+   * This method finds the article with the given 
+   * slug and adds the given comment to its comments.
+   *
+   * @param {slug}  slug of the article to find
+   * @param {comment} comment to be added to the article
+   * @returns a single updated article
+   */
+  static async addCommentBySlug(slug, comment) {
+    try {
+      await Connection.open();
+      // update the article by adding the new comment to its array
+      const newArticle = await Article.findOneAndUpdate(
+        { slug: slug },
+        {
+          "$push":
+          {
+            "article.$[].comments": comment
+          }
+        },
+        { returnNewDocument: true },
+      );
+      return newArticle;
+    } catch (e) {
+      console.log(e);
+      ErrorInternalAPIModelFieldValidation(e);
+    }
+  }
 }

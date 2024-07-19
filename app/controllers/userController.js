@@ -199,7 +199,7 @@ export default class UserController {
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be 
         // thrown due to null response from getUserByUsername when using .toObject() on null.
-       return ErrorUserNotFound.throwHttp(req, res);
+        return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());

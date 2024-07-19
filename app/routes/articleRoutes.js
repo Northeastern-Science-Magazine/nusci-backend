@@ -1,5 +1,7 @@
 import express from "express";
 import ArticlesController from "../controllers/articleController.js";
+import Authorize from "../auth/authorization.js";
+import Accounts from "../models/enums/accounts.js";
 
 /* Controls Routing for Finished Articles */
 
@@ -31,5 +33,8 @@ router.route("/photographers/:slug"); //update the list of photographer to this 
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
 router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
 router.route("/delete/:slug"); //delete an article
+
+router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
+    .get(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
 
 export default router;
