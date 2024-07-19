@@ -133,12 +133,8 @@ describe("Get User By Username Tests", () => {
 
 describe("Approve or deny given users test", () => {
   test("test only approving users", async () => {
-    //sign up new users to approve
-    const response0 = await request(app).post("/user/signup").send(userToApprove1);
-    console.log("response signup: ", response0.body);
-
     const listOfUsers = {
-      approve: ["ace", "approve1"],
+      approve: ["ace", "dhoward"],
       deny: [],
     };
 
@@ -153,13 +149,9 @@ describe("Approve or deny given users test", () => {
   });
 
   test("test only denying users", async () => {
-    //signup new users to deny
-    const response0 = await request(app).post("/user/signup").send(userToDeny1);
-    console.log("response signup: ", response0.body);
-
     const listOfUsers = {
       approve: [],
-      deny: ["newuser", "deny1"],
+      deny: ["newuser", "fdallis"],
     };
 
     const response = await request(app)
@@ -173,15 +165,9 @@ describe("Approve or deny given users test", () => {
   });
 
   test("test approving and denying users", async () => {
-    //signup new users to approve and deny
-    await request(app).post("/user/signup").send(userToApprove2);
-    await request(app).post("/user/signup").send(userToApprove3);
-    await request(app).post("/user/signup").send(userToDeny2);
-    await request(app).post("/user/signup").send(userToDeny3);
-
     const listOfUsers = {
-      approve: ["approve2", "approve3"],
-      deny: ["deny2", "deny3"],
+      approve: ["ejohnson", "msmith"],
+      deny: ["cbrown", "jdavis"],
     };
 
     const response = await request(app)
@@ -243,11 +229,8 @@ describe("Approve or deny given users test", () => {
   });
 
   test("test approving users where only some exists", async () => {
-    //sign up a valid user to approve
-    await request(app).post("/user/signup").send(userToApprove4);
-
     const listOfUsers = {
-      approve: ["approve4", "nonexistentuser1", "nonexistentuser2"],
+      approve: ["dpatterson", "nonexistentuser1", "nonexistentuser2"],
       deny: [],
     };
 
@@ -262,12 +245,9 @@ describe("Approve or deny given users test", () => {
   });
 
   test("test denying users where only some exists", async () => {
-    //sign up a valid user to approve
-    await request(app).post("/user/signup").send(userToDeny4);
-
     const listOfUsers = {
       approve: [],
-      deny: ["deny4", "nonexistentuser1", "nonexistentuser2"],
+      deny: ["amartinez", "nonexistentuser1", "nonexistentuser2"],
     };
 
     const response = await request(app)

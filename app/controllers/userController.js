@@ -105,7 +105,7 @@ export default class UserController {
       const userData = new UserCreate(req.body);
 
       // hash the password
-      userData.password = await bcrypt.hash(userData.password, 10);
+      userData.password = await bcrypt.hash(userData.password, 10); 
 
       const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
       const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
@@ -220,12 +220,12 @@ export default class UserController {
    * @param {function} next middleware function.
    */
   static async resolveUserApprovals(req, res, next) {
-    if (!req.body.approve || !req.body.deny) {
+    if (req.body.approve && req.body.deny) {
       ErrorValidation.throwHttp(req, res);
     } else {
       try {
-        const approveUsers = req.body.approve;
-        const denyUsers = req.body.deny;
+        const approveUsers = req.body.approve ?? [];
+        const denyUsers = req.body.deny ?? [];
         const allUsers = [...approveUsers, ...denyUsers];
 
         //check if the users given exists and are pending
