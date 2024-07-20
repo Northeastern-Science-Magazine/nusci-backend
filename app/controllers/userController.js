@@ -220,7 +220,7 @@ export default class UserController {
    * @param {function} next middleware function.
    */
   static async resolveUserApprovals(req, res, next) {
-    if (req.body.approve && req.body.deny) {
+    if (!(req.body.approve && req.body.deny)) {
       ErrorValidation.throwHttp(req, res);
     } else {
       try {

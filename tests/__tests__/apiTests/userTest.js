@@ -13,14 +13,6 @@ import {
   existingEmailSignup,
   validUsernameQueryRaisa,
   validUsernameQueryEthan,
-  userToApprove1,
-  userToApprove2,
-  userToApprove3,
-  userToApprove4,
-  userToDeny1,
-  userToDeny2,
-  userToDeny3,
-  userToDeny4,
 } from "../../testData/userTestData.js";
 import tokens from "../../testData/tokenTestData.js";
 
