@@ -27,6 +27,29 @@ export default class ArticlesAccessor {
   }
 
   /**
+   * updateArticle method
+   *
+   * updates the article with the parameter provided
+   *
+   * @param {string} slug
+   * @param {JSON} update
+   * @returns updated article
+   */
+  static async updateArticle(slug, update) {
+    try {
+      await Connection.open();
+      const article = await Article.findOneAndUpdate({ slug }, update, { new: true });
+      if (!article) {
+        throw new ErrorInternalAPIModelFieldValidation("Article not found");
+      }
+      return article;
+    } catch (e) {
+      console.error(e);
+      throw e;
+    }
+  }
+
+  /**
    * getArticleByTitle Method
    *
    * This method retrieves the article MongoDB object from the
