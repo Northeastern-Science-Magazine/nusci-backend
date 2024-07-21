@@ -50,6 +50,8 @@ export const existingUsernameSignup = {
   status: AccountStatus.Pending.toString(),
 };
 
+
+
 export const existingEmailSignup = {
   firstName: "Existing",
   lastName: "Email",
@@ -93,3 +95,5 @@ export const validUsernameQueryEthan = {
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
+
+
