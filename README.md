@@ -81,7 +81,16 @@ It often requires multiple rounds of review in order for a pull request to be me
 ## MacOS Setup
 
 ### 1. Install Xcode Command Line Tools / Git
+- On MacOS you can install [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) two ways: Git Installer or Xcode CLT. If you are a developer working on other projects, we recommend installing Xcode CLT for its utilities, but we only need to have Git.
 
+#### &emsp; a. Git Installer:
+- Required: MacOS v10.9+
+- Run the following command, and follow the prompts to install:
+```
+git --version
+```
+
+#### &emsp; b. Xcode CLT:
 - Run the following command to install Xcode Command Line Tools, which comes prepackaged with Git:
 ```
 xcode-select --install
