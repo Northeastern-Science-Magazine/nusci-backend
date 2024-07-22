@@ -2,15 +2,24 @@ import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
-import logTestSuite from "../../../util.js";
+import { log } from "../../../testConfig.js";
 import tokens from "../../../testData/tokenTestData.js";
 
+const showLog =
+  log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
+    __filename.split("/")[__filename.split("/").length - 1].slice(0, -3)
+  ];
+
+beforeAll(async () => {
+  await Connection.open(true);
+});
+
 afterAll(async () => {
-  await Connection.close(!logTestSuite);
+  await Connection.close(true);
 });
 
 beforeEach(async () => {
-  execSync("npm run reset-s", { stdio: "inherit" });
+  execSync("npm run reset-s", { stdio: "ignore" });
 });
 
 describe("Approve or deny given users test", () => {
@@ -25,15 +34,16 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
   });
 
+  // add second deny user
   test("test only denying users", async () => {
     const listOfUsers = {
       approve: [],
-      deny: ["newuser", "fdallis"],
+      deny: ["fdallis", "amartinez"],
     };
 
     const response = await request(app)
@@ -41,7 +51,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
   });
@@ -57,7 +67,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
   });
@@ -73,7 +83,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body).toStrictEqual({ message: "All users resolved successfully." });
   });
@@ -89,7 +99,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(404);
     expect(response.body).toStrictEqual({ error: "User not found." });
   });
@@ -105,7 +115,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(404);
     expect(response.body).toStrictEqual({ error: "User not found." });
   });
@@ -121,7 +131,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(404);
     expect(response.body).toStrictEqual({ error: "User not found." });
   });
@@ -137,7 +147,7 @@ describe("Approve or deny given users test", () => {
       .send(listOfUsers)
       .set("Cookie", [`token=${tokens.ethan}`]);
 
-    logTestSuite.user && console.log(response.body);
+    showLog && console.log(response.body);
     expect(response.status).toBe(404);
     expect(response.body).toStrictEqual({ error: "User not found." });
   });

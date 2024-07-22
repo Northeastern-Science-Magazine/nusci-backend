@@ -7,15 +7,15 @@
   "scripts": {
     "start": "nodemon index.js",
     "drop": "node --no-deprecation setup/drop.js",
-    "drop-s": "npm run drop -- -s",
-    "drop-silent": "npm run drop -- --silent",
+    "drop-s": "node --no-deprecation setup/drop.js -s",
+    "drop-silent": "node --no-deprecation setup/drop.js --s",
     "reseed": "node --no-deprecation setup/reseed.js",
-    "reseed-s": "npm run reseed -- -s",
-    "reseed-silent": "npm run reseed -- --silent",
-    "reset": "npm run drop && npm run reseed",
-    "reset-s": "npm run drop -- -s && npm run reseed -- -s",
-    "reset-silent": "npm run drop -- --silent && npm run reseed -- --silent",
-    "test": "jest --detectOpenHandles --coverage"
+    "reseed-s": "node --no-deprecation setup/reseed.js -s",
+    "reseed-silent": "node --no-deprecation setup/reseed.js --silent",
+    "reset": "node --no-deprecation setup/drop.js && node --no-deprecation setup/reseed.js",
+    "reset-s": "node --no-deprecation setup/drop.js -s && node --no-deprecation setup/reseed.js -s",
+    "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
+    "test": "jest --detectOpenHandles --coverage --collectCoverageFrom='app/**'"
   },
   "repository": {
     "type": "git",
