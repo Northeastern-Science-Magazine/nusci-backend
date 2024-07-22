@@ -6,12 +6,16 @@
   "type": "module",
   "scripts": {
     "start": "nodemon index.js",
-    "drop": "node setup/drop.js",
-    "reseed": "node setup/reseed.js",
-    "reset": "node setup/drop.js",
-    "postreset": "node setup/reseed.js",
-    "pretest": "npm run reset",
-    "test": "jest --detectOpenHandles"
+    "drop": "node --no-deprecation setup/drop.js",
+    "drop-s": "npm run drop -- -s",
+    "drop-silent": "npm run drop -- --silent",
+    "reseed": "node --no-deprecation setup/reseed.js",
+    "reseed-s": "npm run reseed -- -s",
+    "reseed-silent": "npm run reseed -- --silent",
+    "reset": "npm run drop && npm run reseed",
+    "reset-s": "npm run drop -- -s && npm run reseed -- -s",
+    "reset-silent": "npm run drop -- --silent && npm run reseed -- --silent",
+    "test": "jest --detectOpenHandles --coverage"
   },
   "repository": {
     "type": "git",

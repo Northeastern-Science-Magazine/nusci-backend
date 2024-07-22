@@ -4,7 +4,7 @@ import Connection from "../../../app/db/connection.js";
 import logTestSuite from "../../util.js";
 
 afterAll(async () => {
-  await Connection.close();
+  await Connection.close(!logTestSuite);
 });
 
 describe("Default Router Endpoint Tests", () => {
