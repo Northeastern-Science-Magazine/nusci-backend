@@ -1,9 +1,9 @@
-import ArticleContent from "../../app/models/enums/article_content.js";
-import ArticleStatus from "../../app/models/enums/article_status.js";
-import CommentStatus from "../../app/models/enums/comment_status.js";
-import DesignStatus from "../../app/models/enums/design_status.js";
-import PhotographyStatus from "../../app/models/enums/photography_status.js";
-import WritingStatus from "../../app/models/enums/writing_status.js";
+import ArticleContent from "../../app/models/enums/articleContent.js";
+import ArticleStatus from "../../app/models/enums/articleStatus.js";
+import CommentStatus from "../../app/models/enums/commentStatus.js";
+import DesignStatus from "../../app/models/enums/designStatus.js";
+import PhotographyStatus from "../../app/models/enums/photographyStatus.js";
+import WritingStatus from "../../app/models/enums/writingStatus.js";
 import mongoose from "mongoose";
 
 export default [

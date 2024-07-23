@@ -1,4 +1,4 @@
-import AccountStatus from "../enums/account_status.js";
+import AccountStatus from "../enums/accountStatus.js";
 import Accounts from "../enums/accounts.js";
 import { BaseModel, BaseModelUpdate, number, string, date, empty, now } from "./baseModel.js";
 

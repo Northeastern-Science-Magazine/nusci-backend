@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import ArticleStatus from "../enums/article_status.js";
-import WritingStatus from "../enums/writing_status.js";
-import CommentStatus from "../enums/comment_status.js";
-import DesignStatus from "../enums/design_status.js";
-import PhotographyStatus from "../enums/photography_status.js";
-import ArticleContent from "../enums/article_content.js";
+import ArticleStatus from "../enums/articleStatus.js";
+import WritingStatus from "../enums/writingStatus.js";
+import CommentStatus from "../enums/commentStatus.js";
+import DesignStatus from "../enums/designStatus.js";
+import PhotographyStatus from "../enums/photographyStatus.js";
+import ArticleContent from "../enums/articleContent.js";
 import Categories from "../enums/categories.js";
 
 const Schema = mongoose.Schema;

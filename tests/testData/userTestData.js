@@ -1,5 +1,5 @@
 import Accounts from "../../app/models/enums/accounts.js";
-import AccountStatus from "../../app/models/enums/account_status.js";
+import AccountStatus from "../../app/models/enums/accountStatus.js";
 
 export const validUserLoginRaisa = {
   username: "raisa",

@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 /**
  * Enumerated Class for Account Types
  *
@@ -40,6 +42,8 @@ export default class Accounts {
    */
   static toAccount(str) {
     switch (str.toLowerCase()) {
+      case this.None.toString():
+        return this.None;
       case this.Author.toString():
         return this.Author;
       case this.Editor.toString():
@@ -53,7 +57,7 @@ export default class Accounts {
       case this.Admin.toString():
         return this.Admin;
       default:
-        return this.None;
+        throw new ErrorInternalEnumValidation("Invalid Account given.");
     }
   }
 

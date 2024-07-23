@@ -21,4 +21,17 @@ export const log = {
       userSignUpFlow: false,
     },
   },
+  unit: {
+    enum: {
+      accounts: false,
+      accountStatus: false,
+      articleContent: false,
+      articleStatus: false,
+      category: false,
+      commentStatus: false,
+      designStatus: false,
+      photographyStatus: false,
+      writingStatus: false,
+    },
+  },
 };
