@@ -1,10 +1,11 @@
 dotenvConfig(); // load .env variables
 import { config as dotenvConfig } from "dotenv";
 import ArticleAccessor from "../databaseAccessors/articleAccessor.js";
+import UserAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
+import { ArticleUpdate } from "../models/apiModels/article.js";
 import {
   ErrorWrongPassword,
   ErrorUserLoggedIn,
@@ -30,17 +31,22 @@ export default class ArticleController {
    * @param {Response} res
    */
   static async updateStatus(req, res) {
+    console.log("Works here");
     try {
       const { slug } = req.params;
-      const { status } = req.body;
 
-      if (!status) {
-        throw new ErrorInternalAPIModelFieldValidation("Status is required");
-      }
+      const updates = new ArticleUpdate(req.body);
 
-      const updatedArticle = await ArticleAccessor.updateArticle(slug, { articleStatus: status });
-      res.json(updatedArticle);
+      //const updatesData = JSON.stringify(updates);
+
+      const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
+
+      //console.log(updatedArticle);
+      //console.log("Here2" + updatedArticle.articleStatus);
+      //res.status(200).json(updatedArticle);
+      res.status(200).json(updatedArticle);
     } catch (e) {
+      console.log("error:" + e.message);
       res.status(500).json({ error: e.message });
     }
   }
@@ -56,15 +62,19 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-      const { authors } = req.body;
 
-      if (!Array.isArray(authors) || authors.length === 0) {
-        throw new ErrorInternalAPIModelFieldValidation("Authors list is required and must be a non-empty array");
-      }
+      const updates = new ArticleUpdate(req.body);
 
-      const updatedArticle = await ArticleAccessor.updateArticle(slug, { authors: authors });
-      res.json(updatedArticle);
+      const authorIds = await UserAccessor.getUserIdsByUsernames(updates.authors);
+
+      updates.authors = authorIds;
+
+      const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
+      console.log(updatedArticle);
+      console.log("Here2" + updatedArticle.authors);
+      res.status(200).json(updatedArticle);
     } catch (e) {
+      console.log("error:" + e.message);
       res.status(500).json({ error: e.message });
     }
   }

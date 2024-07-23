@@ -19,13 +19,15 @@ router.route("/slug/:slug"); //get article by its unique slug
 
 router.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
 
-router.patch("/article-status/:slug", Authorize.allow([Accounts.Admin.toString()]), ArticlesController.updateStatus); //update the status of a given article
+router.patch("/article-status/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
+//router.route("/article-status/:slug").patch(Authorize.allow([Accounts.Admin.toString()]), ArticlesController.updateStatus);
 router.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
 router.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
 router.route("/design-status/:slug"); //update the design status of a given article
 router.route("/photography-status/:slug"); //update the photography status of a given article
 
-router.patch("/authors/:slug", Authorize.allow([Accounts.Admin.toString()]), ArticlesController.updateAuthors); //update the list of authors to this article,
+router.patch("/authors/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
+//router.route("/authors/:slug").patch(Authorize.allow([Accounts.Admin.toString()]), ArticlesController.updateAuthors);
 router.route("/editors/:slug"); //update the list of editor to this article,
 router.route("/designers/:slug"); //update the list of designer to this article,
 router.route("/photographers/:slug"); //update the list of photographer to this article

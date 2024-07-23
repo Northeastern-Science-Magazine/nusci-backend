@@ -94,6 +94,7 @@ describe("User Signup Tests", () => {
   });
 });
 
+
 describe("Get User By Username Tests", () => {
   test("get a user by a valid/existing username raisa", async () => {
     const response = await request(app).get("/user/username/raisa");
@@ -120,4 +121,5 @@ describe("Get User By Username Tests", () => {
     expect(response.body).toStrictEqual({ error: "User not found." });
     expect(response.status).toBe(404);
   });
+
 });
