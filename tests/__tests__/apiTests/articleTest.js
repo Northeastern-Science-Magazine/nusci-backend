@@ -44,7 +44,7 @@ describe("Article Controller Tests", () => {
     test("should fail to update article status due to invalid permissions", async () => {
       const response = await request(app)
         .patch(`/articles/article-status/${validArticleSlug}`)
-        .set("Cookie", [`token=${tokens.jasmine}`]) // assuming jasmine does not have admin privileges
+        .set("Cookie", [`token=${tokens.jasmine}`])
         .send(validArticleStatusUpdate);
 
       logTestSuite.article && console.log(response.body);
