@@ -31,7 +31,6 @@ export default class ArticleController {
    * @param {Response} res
    */
   static async updateStatus(req, res) {
-    console.log("Works here");
     try {
       const { slug } = req.params;
 
@@ -46,7 +45,6 @@ export default class ArticleController {
       //res.status(200).json(updatedArticle);
       res.status(200).json(updatedArticle);
     } catch (e) {
-      console.log("error:" + e.message);
       res.status(500).json({ error: e.message });
     }
   }
@@ -70,11 +68,8 @@ export default class ArticleController {
       updates.authors = authorIds;
 
       const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
-      console.log(updatedArticle);
-      console.log("Here2" + updatedArticle.authors);
       res.status(200).json(updatedArticle);
     } catch (e) {
-      console.log("error:" + e.message);
       res.status(500).json({ error: e.message });
     }
   }
