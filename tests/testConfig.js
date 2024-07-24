@@ -8,7 +8,7 @@ export const log = {
       getUsername: false,
       postLogin: false,
       postSignup: false,
-      postResolveUser: false,
+      putResolveUser: false,
     },
     article: {},
     issueMap: {},
