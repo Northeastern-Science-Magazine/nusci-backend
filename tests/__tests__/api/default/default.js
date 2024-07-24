@@ -3,10 +3,11 @@ import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
 
-const showLog =
-  log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
-    __filename.split("/")[__filename.split("/").length - 1].slice(0, -3)
-  ];
+const showLog = __filename
+  .replace(".js", "")
+  .split(/[/\\]/)
+  .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
+  .reduce((acc, key) => acc && acc[key], log);
 
 beforeAll(async () => {
   await Connection.open(!showLog);
