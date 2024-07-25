@@ -17,7 +17,7 @@ export default [
     bio: "Co-Head of Web & Software with Raisa",
     emails: ["ethan@ethan.com"],
     phone: "1234567890",
-    roles: Accounts.Admin.role,
+    roles: [Accounts.Admin.toString() + Accounts.Author.toString()],
     status: AccountStatus.Approved.status,
     creationTime: new Date("2024-02-27"),
     modificationTime: new Date("2024-02-27"),
