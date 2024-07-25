@@ -35,6 +35,6 @@ router.route("/update/:slug"); //update an article -- need to clarify what 'upda
 router.route("/delete/:slug"); //delete an article
 
 router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
-    .get(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+    .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
 
 export default router;

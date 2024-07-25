@@ -1,5 +1,6 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor";
 import UsersAccessor from "../databaseAccessors/userAccessor";
+import Authorize from "../auth/authorization.js";
 
 /**
  * ArticleController Class

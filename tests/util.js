@@ -2,7 +2,7 @@
 export default {
   default: true,
   user: true,
-  article: false,
+  article: true,
   issueMap: false,
   photo: false,
   photoTag: false,
