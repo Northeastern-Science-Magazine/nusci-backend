@@ -1,6 +1,8 @@
-import ArticlesAccessor from "../databaseAccessors/articleAccessor";
-import UsersAccessor from "../databaseAccessors/userAccessor";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
+import { ErrorValidation } from "../error/httpErrors.js";
+import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 
 /**
  * ArticleController Class
@@ -23,11 +25,12 @@ export default class ArticleController {
             //comment validation
             const username = Authorize.getUsername(req);
             const user = await UsersAccessor.getUserByUsername(username);
+            const userID = user._id;
 
-            const comment = new InternalCommentCreate({ user: user, comment: req.body.comment });
+            const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
 
             // modify the article with the new comment
-            const updatedArticle = ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+            const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
 
             //return updated article with new comment
             res.status(201).json(updatedArticle);

@@ -327,7 +327,7 @@ export default class ArticlesAccessor {
         {
           "$push":
           {
-            "article.$[].comments": comment
+            "comments": comment
           }
         },
         { returnNewDocument: true },
