@@ -330,7 +330,7 @@ export default class ArticlesAccessor {
             "comments": comment
           }
         },
-        { returnNewDocument: true },
+        { returnDocument: "after" },
       );
       return newArticle;
     } catch (e) {

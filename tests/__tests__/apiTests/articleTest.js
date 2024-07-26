@@ -16,9 +16,9 @@ describe("Article Internal Comment Tests", () => {
             .send({ comment: "second line should be clearer" })
             .set("Cookie", [`token=${tokens.ethan}`]);
 
-        logTestSuite.article && console.log(response.body); // && console.log(response0.body);
+        logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(201);
-        // expect(response.body.comments[0].comment).toBe("second line should be clearer");
+        expect(response.body.comments[0].comment).toBe("second line should be clearer");
     });
 
     test("valid create comment (editor)", async () => {
@@ -27,9 +27,9 @@ describe("Article Internal Comment Tests", () => {
             .send({ comment: "looks great, will publish soon" })
             .set("Cookie", [`token=${tokens.noah}`]);
 
-        logTestSuite.article && console.log(response.body); // && console.log(response0.body);
+        logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(201);
-        // expect(response.body.comments[2].comment).toBe("looks great, will publish soon");
+        expect(response.body.comments[2].comment).toBe("looks great, will publish soon");
     });
 
     test("invalid create comment (malformed comment object)", async () => {
@@ -38,7 +38,7 @@ describe("Article Internal Comment Tests", () => {
             .send({ note: "this is a note" })
             .set("Cookie", [`token=${tokens.noah}`]);
 
-        logTestSuite.article && console.log(response.body); // && console.log(response0.body);
+        logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(400);
         expect(response.body).toStrictEqual({ error: "Malformed API Model." });
     });
@@ -49,7 +49,7 @@ describe("Article Internal Comment Tests", () => {
             .send({ comment: "this is a comment" })
             .set("Cookie", [`token=${tokens.noah}`]);
 
-        logTestSuite.article && console.log(response.body); // && console.log(response0.body);
+        logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(201);
         expect(response.body).toBe(null);
     });
@@ -60,7 +60,7 @@ describe("Article Internal Comment Tests", () => {
             .send({ comment: "this is a comment" })
             .set("Cookie", [`token=${tokens.arushi}`]);
 
-        logTestSuite.article && console.log(response.body); // && console.log(response0.body);
+        logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(404);
         expect(response.body).toStrictEqual({ error: "User is incorrect." });
     });
