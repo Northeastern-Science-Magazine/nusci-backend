@@ -69,7 +69,7 @@ export class BaseModel {
         throw new ErrorInternalAPIModelSchemaValidation("Override option not boolean.");
       }
 
-      if (enumValues && !Array.isArray(enumValues)) {
+      if (enumValues && type(enumValues) !== array) {
         throw new ErrorInternalAPIModelSchemaValidation("Enum values must be a list.");
       }
 
@@ -103,12 +103,12 @@ export class BaseModel {
 
       // enum values (check complex enum values, like objects or lists)
       if (enumValues) {
-        if (!Array.isArray(value) && !contains(enumValues, value)) {
+        if (type(value) !== array && !contains(enumValues, value)) {
           // single enum
           throw new ErrorInternalAPIModelFieldValidation(
             `Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`
           );
-        } else if (Array.isArray && !value.every((enumValue) => contains(enumValues, enumValue))) {
+        } else if (type(value) === array && !value.every((enumValue) => contains(enumValues, enumValue))) {
           // list of enum
           throw new ErrorInternalAPIModelFieldValidation(
             `Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`

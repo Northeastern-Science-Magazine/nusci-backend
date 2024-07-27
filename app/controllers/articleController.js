@@ -32,12 +32,12 @@ export default class ArticleController {
    */
   static async updateStatus(req, res) {
     try {
+
       const { slug } = req.params;
 
       const updates = new ArticleUpdate(req.body);
 
       //const updatesData = JSON.stringify(updates);
-
       const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
 
       //console.log(updatedArticle);
@@ -45,7 +45,7 @@ export default class ArticleController {
       //res.status(200).json(updatedArticle);
       res.status(200).json(updatedArticle);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      res.status(400).json({ error: e.message });
     }
   }
 

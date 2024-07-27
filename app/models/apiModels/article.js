@@ -6,7 +6,7 @@ import DesignStatus from "../enums/design_status.js";
 import PhotographyStatus from "../enums/photography_status.js";
 import WritingStatus from "../enums/writing_status.js";
 import CommentStatus from "../enums/comment_status.js";
-import { BaseModel, BaseModelUpdate, array, number, string, now } from "./baseModel.js";
+import { BaseModel, BaseModelUpdate, array, number, string, date, now } from "./baseModel.js";
 
 export class ArticleCreate extends BaseModel {
   static schema = {
@@ -56,8 +56,8 @@ export class ArticleResponse extends BaseModel {
           user: { type: UserPublicResponse.schema },
           comment: { type: string, required: true },
           commentStatus: { type: string, enum: CommentStatus.listr(), required: true },
-          creationTime: { type: Date, required: true },
-          modificationTime: { type: Date, required: true },
+          creationTime: { type: date, required: true },
+          modificationTime: { type: date, required: true },
         },
       ],
     },
@@ -70,9 +70,9 @@ export class ArticleResponse extends BaseModel {
     designers: { type: [UserPublicResponse.schema] },
     photographers: { type: [UserPublicResponse.schema] },
     approvingUser: { type: UserPublicResponse.schema },
-    approvalTime: { type: Date },
-    creationTime: { type: Date, required: true },
-    modificationTime: { type: Date, required: true },
+    approvalTime: { type: date },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
   };
   constructor(json) {
     super(json, ArticleResponse.schema);
@@ -111,9 +111,9 @@ export class ArticlePublicResponse extends BaseModel {
     designers: { type: [UserPublicResponse.schema] },
     photographers: { type: [UserPublicResponse.schema] },
     approvingUser: { type: UserPublicResponse.schema },
-    approvalTime: { type: Date },
-    creationTime: { type: Date, required: true },
-    modificationTime: { type: Date, required: true },
+    approvalTime: { type: date },
+    creationTime: { type: date, required: true },
+    modificationTime: { type: date, required: true },
   };
   constructor(json) {
     super(json, ArticlePublicResponse.schema);
@@ -142,8 +142,8 @@ export class ArticleUpdate extends BaseModelUpdate {
           user: { type: UserPublicResponse.schema },
           comment: { type: string },
           commentStatus: { type: string, enum: CommentStatus.listr() },
-          creationTime: { type: Date },
-          modificationTime: { type: Date },
+          creationTime: { type: date },
+          modificationTime: { type: date },
         },
       ],
     },
@@ -153,8 +153,9 @@ export class ArticleUpdate extends BaseModelUpdate {
     designers: { type: [string] },
     photographers: { type: [string] },
     approvingUser: { type: string },
-    approvalTime: { type: Date },
-    modificationTime: { type: Date, default: now, override: true },
+
+    approvalTime: { type: date },
+    modificationTime: { type: date, default: now, override: true },
   };
   constructor(json) {
     super(json, ArticleUpdate.schema);
