@@ -53,7 +53,7 @@ export class BaseModel {
       }
 
       // key exists in schema
-      var value = json[key];
+      let value = json[key];
       const schemaType = schema[key].type;
       const required = schema[key].required;
       const enumValues = schema[key].enum;
@@ -69,7 +69,7 @@ export class BaseModel {
         throw new ErrorInternalAPIModelSchemaValidation("Override option not boolean.");
       }
 
-      if (enumValues && type(enumValues) !== array) {
+      if (enumValues && !Array.isArray(enumValues)) {
         throw new ErrorInternalAPIModelSchemaValidation("Enum values must be a list.");
       }
 
@@ -103,12 +103,12 @@ export class BaseModel {
 
       // enum values (check complex enum values, like objects or lists)
       if (enumValues) {
-        if (type(value) !== array && !contains(enumValues, value)) {
+        if (!Array.isArray(value) && !contains(enumValues, value)) {
           // single enum
           throw new ErrorInternalAPIModelFieldValidation(
             `Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`
           );
-        } else if (type(value) === array && !value.every((enumValue) => contains(enumValues, enumValue))) {
+        } else if (Array.isArray && !value.every((enumValue) => contains(enumValues, enumValue))) {
           // list of enum
           throw new ErrorInternalAPIModelFieldValidation(
             `Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`
@@ -144,7 +144,7 @@ export class BaseModel {
 export class BaseModelUpdate extends BaseModel {
   constructor(json, schema) {
     super(json, schema);
-    this.validate(json);
+    this.validateUpdate(json);
   }
 
   /**
@@ -154,7 +154,7 @@ export class BaseModelUpdate extends BaseModel {
    * @param {JSON} json
    * @param {JSON} schema
    */
-  validate(json) {
+  validateUpdate(json) {
     if (!Object.values(json).some((value) => value !== undefined)) {
       throw new ErrorInternalAPIModelFieldValidation("Invalid update model.");
     }
