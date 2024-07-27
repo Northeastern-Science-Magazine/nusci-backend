@@ -76,10 +76,12 @@ export default class UsersAccessor {
         if (user) {
           userIds.push(user._id);
         }
+        else {
+          throw new Error(`User not found for username: ${username}`);
+        }
       }
       return userIds;
     } catch (e) {
-      console.error("Error fetching user IDs by usernames:", e);
       throw new ErrorInternalAPIModelFieldValidation("Error fetching user IDs by usernames");
     }
   }
