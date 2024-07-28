@@ -320,11 +320,14 @@ export default class ArticlesAccessor {
   static async updateArticle(slug, update) {
     try {
       await Connection.open();
-      const article = await Article.findOneAndUpdate({ slug }, update, { new: true }).populate("authors")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser").exec();
+      const article = await Article.findOneAndUpdate({ slug }, update, { new: true })
+        .populate("authors")
+        .populate("comments.user")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
       if (!article) {
         throw new ErrorInternalAPIModelFieldValidation("Article not found");
       }
