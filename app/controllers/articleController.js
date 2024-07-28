@@ -5,7 +5,7 @@ import UserAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import { ArticleUpdate } from "../models/apiModels/article.js";
+import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import {
   ErrorWrongPassword,
   ErrorUserLoggedIn,
@@ -32,19 +32,20 @@ export default class ArticleController {
    */
   static async updateStatus(req, res) {
     try {
-
       const { slug } = req.params;
 
       const updates = new ArticleUpdate(req.body);
 
       //const updatesData = JSON.stringify(updates);
-      const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
 
-      //console.log(updatedArticle);
-      //console.log("Here2" + updatedArticle.articleStatus);
-      //res.status(200).json(updatedArticle);
-      res.status(200).json(updatedArticle);
+      // Validate and construct an ArticleResponse instance
+      const updatedArticleResponse = new ArticleResponse(updatedArticleData); // Code breaks here :("
+
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse);
     } catch (e) {
+      console.log("ERROR: " + e.message);
       res.status(400).json({ error: e.message });
     }
   }
