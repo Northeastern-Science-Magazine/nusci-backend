@@ -62,7 +62,7 @@ export class ArticleResponse extends BaseModel {
       ],
     },
     articleStatus: { type: string, enum: ArticleStatus.listr(), required: true },
-    //articleStatus: { type: string, enum: WritingStatus.listr(), required: true },
+    writingStatus: { type: string, enum: WritingStatus.listr(), required: true },
     designStatus: { type: string, enum: DesignStatus.listr(), required: true },
     photographyStatus: { type: string, enum: PhotographyStatus.listr(), required: true },
     authors: { type: [UserPublicResponse.schema] },
