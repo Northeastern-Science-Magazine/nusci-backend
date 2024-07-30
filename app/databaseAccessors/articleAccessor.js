@@ -1,6 +1,6 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
-import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
+import { ErrorInternalAPIModelFieldValidation, ErrorDatabaseConnection } from "../error/internalErrors.js";
 
 /**
  * Articles Accessor Class
@@ -331,11 +331,19 @@ export default class ArticlesAccessor {
           }
         },
         { returnDocument: "after" },
-      );
+      )
+      .populate("comments.user")
+      .populate("authors")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
+      //const dbMemory = await Memory.findById(objectId).populate("user").populate("locations").populate("sections.people").exec();
       return newArticle;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      ErrorDatabaseConnection(e);
     }
   }
 }

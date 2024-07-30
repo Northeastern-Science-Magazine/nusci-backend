@@ -40,7 +40,7 @@ describe("Article Internal Comment Tests", () => {
 
         logTestSuite.article && console.log(response.body);
         expect(response.status).toBe(400);
-        expect(response.body).toStrictEqual({ error: "Malformed API Model." });
+        expect(response.body).toStrictEqual({ error: "Field 'comment' is required." });
     });
 
     test("invalid create comment (invalid slug)", async () => {
@@ -50,7 +50,7 @@ describe("Article Internal Comment Tests", () => {
             .set("Cookie", [`token=${tokens.noah}`]);
 
         logTestSuite.article && console.log(response.body);
-        expect(response.status).toBe(201);
+        expect(response.status).toBe(400);
         expect(response.body).toBe(null);
     });
 

@@ -1,8 +1,11 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
-import { ErrorValidation } from "../error/httpErrors.js";
+import { ErrorValidation, ErrorIncorrectUser } from "../error/httpErrors.js";
+import {ErrorInternalAPIModelValidation} from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
+import { ArticleResponse } from "../models/apiModels/article.js";
+
 
 /**
  * ArticleController Class
@@ -31,12 +34,30 @@ export default class ArticleController {
 
             // modify the article with the new comment
             const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+        
+            const finalArticle = new ArticleResponse( updatedArticle.toObject() );
 
             //return updated article with new comment
-            res.status(201).json(updatedArticle);
+            res.status(201).json(finalArticle);
         } catch (e) {
-            console.log("error validation: " + e);
-            ErrorValidation.throwHttp(req, res);
+            console.log(e);
+            //ErrorIncorrectUser.throwHttp(req, res);
+            if (e.error == "User is incorrect.'") {
+                ErrorIncorrectUser.throwHttp(req, res);
+            }
+            else if (e.error == "Malformed API Model.") {
+                ErrorValidation.throwHttp(req,res);
+            }
+            else if (e instanceof ErrorInternalAPIModelValidation) {
+                // throw e;
+                throw new ErrorInternalAPIModelValidation(e);
+            }
+            else if (e instanceof TypeError) {
+                throw new TypeError(e);
+            }
+            else {
+                new throwHttp(req, res);
+            }
         }
     }
 }
