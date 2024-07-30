@@ -5,8 +5,8 @@ import Category from "../enums/categories.js";
 import DesignStatus from "../enums/design_status.js";
 import PhotographyStatus from "../enums/photography_status.js";
 import WritingStatus from "../enums/writing_status.js";
-import { BaseModel, BaseModelUpdate, array, number, string, now, date } from "./baseModel.js";
 import CommentStatus from "../enums/comment_status.js";
+import { BaseModel, BaseModelUpdate, array, number, string, date, now } from "./baseModel.js";
 
 export class ArticleCreate extends BaseModel {
   static schema = {
@@ -20,7 +20,7 @@ export class ArticleCreate extends BaseModel {
     pageLength: { type: number, required: true },
     comments: { type: array, default: [], override: true },
     articleStatus: { type: string, enum: ArticleStatus.listr(), required: true },
-    articleStatus: { type: string, enum: WritingStatus.listr(), required: true },
+    writingStatus: { type: string, enum: WritingStatus.listr(), required: true },
     designStatus: { type: string, enum: DesignStatus.listr(), required: true },
     photographyStatus: { type: string, enum: PhotographyStatus.listr(), required: true },
     authors: { type: [string] },
@@ -101,8 +101,8 @@ export class ArticlePublicResponse extends BaseModel {
           user: { type: UserPublicResponse.schema },
           comment: { type: string, required: true },
           commentStatus: { type: string, enum: CommentStatus.listr(), required: true },
-          creationTime: { type: date, required: true },
-          modificationTime: { type: date, required: true },
+          creationTime: { type: Date, required: true },
+          modificationTime: { type: Date, required: true },
         },
       ],
     },
@@ -147,11 +147,13 @@ export class ArticleUpdate extends BaseModelUpdate {
         },
       ],
     },
-    authors: { type: [UserPublicResponse.schema] },
-    editors: { type: [UserPublicResponse.schema] },
-    designers: { type: [UserPublicResponse.schema] },
-    photographers: { type: [UserPublicResponse.schema] },
-    approvingUser: { type: UserPublicResponse.schema },
+    articleStatus: { type: string, enum: ArticleStatus.listr() },
+    authors: { type: [string] },
+    editors: { type: [string] },
+    designers: { type: [string] },
+    photographers: { type: [string] },
+    approvingUser: { type: string },
+
     approvalTime: { type: date },
     modificationTime: { type: date, default: now, override: true },
   };

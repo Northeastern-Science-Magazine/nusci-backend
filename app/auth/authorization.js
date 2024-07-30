@@ -27,7 +27,6 @@ export default class Authorize {
         const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
         if (payload) {
           const userRoles = payload.roles.map((role) => Accounts.toAccount(role));
-
           if (roles.some((element) => userRoles.includes(element))) {
             next();
           } else {

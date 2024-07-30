@@ -6,7 +6,7 @@ import DesignStatus from "../enums/design_status.js";
 import PhotographyStatus from "../enums/photography_status.js";
 import ArticleContent from "../enums/article_content.js";
 import Categories from "../enums/categories.js";
-import User from "../dbModels/user.js"
+import User from "./user.js";
 
 const Schema = mongoose.Schema;
 
