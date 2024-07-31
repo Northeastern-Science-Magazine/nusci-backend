@@ -1,20 +1,16 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
-import { ErrorValidation, ErrorIncorrectUser } from "../error/httpErrors.js";
 import {ErrorInternalAPIModelValidation} from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleResponse } from "../models/apiModels/article.js";
-
+import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
+import { config as dotenvConfig } from "dotenv";
 
 dotenvConfig(); // load .env variables
-import { config as dotenvConfig } from "dotenv";
-import ArticleAccessor from "../databaseAccessors/articleAccessor.js";
-import UserAccessor from "../databaseAccessors/userAccessor.js";
+
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
-import Authorize from "../auth/authorization.js";
-import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
+
 import {
   ErrorWrongPassword,
   ErrorUserLoggedIn,
@@ -22,6 +18,7 @@ import {
   ErrorUserNotRegistered,
   ErrorUserAlreadyExists,
   ErrorValidation,
+  ErrorIncorrectUser,
 } from "../error/httpErrors.js";
 
 /**
