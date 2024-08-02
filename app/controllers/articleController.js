@@ -46,7 +46,7 @@ export default class ArticleController {
       const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData); // Code breaks here :("
+      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
@@ -74,8 +74,12 @@ export default class ArticleController {
 
       updates.authors = authorIds;
 
-      const updatedArticle = await ArticleAccessor.updateArticle(slug, updates);
-      res.status(200).json(updatedArticle);
+      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+
+      // Validate and construct an ArticleResponse instance
+      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+
+      res.status(200).json(updatedArticleResponse);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }

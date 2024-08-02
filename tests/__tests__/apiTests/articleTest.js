@@ -60,10 +60,10 @@ describe("Article Controller Tests", () => {
                 .set("Cookie", [`token=${tokens.ethan}`])
                 .send(validAuthorsUpdate);
 
-            logTestSuite.article && console.log(response.body);
-            expect(response.status).toBe(200);
-            expect(response.body.authors).toEqual(expect.arrayContaining(validAuthorsUpdate.authorsIDs));
-        });
+      logTestSuite.article && console.log(response.body);
+      expect(response.status).toBe(200);
+      expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
+    });
 
         test("should update article authors to an empty list", async () => {
             const response = await request(app)

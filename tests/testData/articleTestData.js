@@ -10,7 +10,6 @@ export const invalidArticleStatusUpdate = {
 
 export const validAuthorsUpdate = {
   authors: ["anika", "jasmine"],
-  authorsIDs: ["b00000000000000000000012", "b00000000000000000000008"],
 };
 
 export const emptyAuthorsUpdate = {
