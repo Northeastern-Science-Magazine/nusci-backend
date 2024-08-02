@@ -21,7 +21,7 @@ export class ErrorWrongPassword extends HttpError {
 
 export class ErrorIncorrectUser extends HttpError {
   static throwHttp(req, res) {
-    res.status(403).json({ error: "User is incorrect." });
+    res.status(404).json({ error: "User is incorrect." });
   }
 }
 
@@ -64,6 +64,18 @@ export class ErrorIssueMapNotFound extends HttpError {
 export class ErrorValidation extends HttpError {
   static throwHttp(req, res) {
     res.status(400).json({ error: "Malformed API Model." });
+  }
+}
+
+export class ErrorInvalidArticleStatus extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Invalid Article Status sent." });
+  }
+}
+
+export class ErrorInvalidArticleAuthors extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Invalid Author Usernames sent." });
   }
 }
 

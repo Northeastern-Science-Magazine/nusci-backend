@@ -1,6 +1,7 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
+import { ErrorDatabaseConnection } from "../error/httpErrors.js";
 
 /**
  * Articles Accessor Class
@@ -333,8 +334,14 @@ export default class ArticlesAccessor {
       }
       return article;
     } catch (e) {
-      console.error(e);
-      throw e;
+      // Check if it's a DB connection error
+      if (e instanceof ErrorDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

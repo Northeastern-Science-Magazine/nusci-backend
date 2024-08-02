@@ -7,12 +7,8 @@ import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import {
-  ErrorWrongPassword,
-  ErrorUserLoggedIn,
-  ErrorUserNotFound,
-  ErrorUserNotRegistered,
-  ErrorUserAlreadyExists,
-  ErrorValidation,
+  ErrorInvalidArticleStatus,
+  ErrorInvalidArticleAuthors
 } from "../error/httpErrors.js";
 
 /**
@@ -36,7 +32,6 @@ export default class ArticleController {
 
       const updates = new ArticleUpdate(req.body);
 
-      //const updatesData = JSON.stringify(updates);
       const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
 
       // Validate and construct an ArticleResponse instance
@@ -45,8 +40,7 @@ export default class ArticleController {
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      console.log("ERROR: " + e.message);
-      res.status(400).json({ error: e.message });
+      ErrorInvalidArticleStatus.throwHttp(req, res);
     }
   }
 
@@ -75,7 +69,7 @@ export default class ArticleController {
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      res.status(500).json({ error: e.message });
+      ErrorInvalidArticleAuthors.throwHttp(req, res);
     }
   }
 }

@@ -205,7 +205,6 @@ export default class UserController {
       const publicUser = new UserPublicResponse(user.toObject());
       res.status(200).json(publicUser);
     } catch (e) {
-      console.log("error validation: " + e);
       ErrorValidation.throwHttp(req, res);
     }
   }
