@@ -78,3 +78,9 @@ export class ErrorDatabaseConnection extends HttpError {
     res.status(500).json({ error: "Failed to connect to the database." });
   }
 }
+
+export class UnexpectedError extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Encountered an unexpected error." });
+  }
+}

@@ -1,24 +1,18 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
-import {ErrorInternalAPIModelValidation} from "../error/internalErrors.js";
+import { ErrorInternalAPIModelValidation } from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import { config as dotenvConfig } from "dotenv";
 
 dotenvConfig(); // load .env variables
 
-import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
-
 import {
-  ErrorWrongPassword,
-  ErrorUserLoggedIn,
-  ErrorUserNotFound,
-  ErrorUserNotRegistered,
-  ErrorUserAlreadyExists,
-  ErrorValidation,
-  ErrorIncorrectUser,
+    ErrorValidation,
+    ErrorIncorrectUser,
+    ErrorArticleNotFound,
+    UnexpectedError,
 } from "../error/httpErrors.js";
 
 /**
@@ -28,62 +22,62 @@ import {
  * related to Articles.
  */
 export default class ArticleController {
-  /**
-   * updateStatus method
-   *
-   * Handles the request to update the status of an article.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateStatus(req, res) {
-    try {
-      const { slug } = req.params;
+    /**
+     * updateStatus method
+     *
+     * Handles the request to update the status of an article.
+     *
+     * @param {Request} req
+     * @param {Response} res
+     */
+    static async updateStatus(req, res) {
+        try {
+            const { slug } = req.params;
 
-      const updates = new ArticleUpdate(req.body);
+            const updates = new ArticleUpdate(req.body);
 
-      //const updatesData = JSON.stringify(updates);
-      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+            //const updatesData = JSON.stringify(updates);
+            const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
-      // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+            // Validate and construct an ArticleResponse instance
+            const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse);
-    } catch (e) {
-      console.log("ERROR: " + e.message);
-      res.status(400).json({ error: e.message });
+            // Send the validated ArticleResponse
+            res.status(200).json(updatedArticleResponse);
+        } catch (e) {
+            console.log("ERROR: " + e.message);
+            res.status(400).json({ error: e.message });
+        }
     }
-  }
 
-  /**
-   * updateAuthors method
-   *
-   * Handles the request to update the list of authors for an article.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateAuthors(req, res) {
-    try {
-      const { slug } = req.params;
+    /**
+     * updateAuthors method
+     *
+     * Handles the request to update the list of authors for an article.
+     *
+     * @param {Request} req
+     * @param {Response} res
+     */
+    static async updateAuthors(req, res) {
+        try {
+            const { slug } = req.params;
 
-      const updates = new ArticleUpdate(req.body);
+            const updates = new ArticleUpdate(req.body);
 
-      const authorIds = await UserAccessor.getUserIdsByUsernames(updates.authors);
+            const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
 
-      updates.authors = authorIds;
+            updates.authors = authorIds;
 
-      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+            const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
-      // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+            // Validate and construct an ArticleResponse instance
+            const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
-      res.status(200).json(updatedArticleResponse);
-    } catch (e) {
-      res.status(500).json({ error: e.message });
+            res.status(200).json(updatedArticleResponse);
+        } catch (e) {
+            res.status(500).json({ error: e.message });
+        }
     }
-  }
     /**
     * addInternalComment Method
     *
@@ -104,28 +98,31 @@ export default class ArticleController {
 
             // modify the article with the new comment
             const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
-        
-            const finalArticle = new ArticleResponse( updatedArticle.toObject() );
+
+            if (updatedArticle == null) {
+                throw new ErrorArticleNotFound;
+            }
+
+            const finalArticle = new ArticleResponse(updatedArticle.toObject());
 
             //return updated article with new comment
             res.status(201).json(finalArticle);
         } catch (e) {
             console.log(e);
-            //ErrorIncorrectUser.throwHttp(req, res);
-            if (e.error == "User is incorrect.'") {
+            if (e instanceof ErrorIncorrectUser) {
                 ErrorIncorrectUser.throwHttp(req, res);
             }
-            else if (e.error == "Malformed API Model.") {
-                ErrorValidation.throwHttp(req,res);
+            else if (e instanceof ErrorValidation) {
+                ErrorValidation.throwHttp(req, res);
             }
             else if (e instanceof ErrorInternalAPIModelValidation) {
-                throw new ErrorInternalAPIModelValidation(e);
+                ErrorValidation.throwHttp(req, res);
             }
-            else if (e instanceof TypeError) {
-                throw new TypeError(e);
+            else if (e instanceof ErrorArticleNotFound) {
+                ErrorArticleNotFound.throwHttp(req, res);
             }
             else {
-                new throwHttp(req, res);
+                UnexpectedError.throwHttp(req, res);
             }
         }
     }

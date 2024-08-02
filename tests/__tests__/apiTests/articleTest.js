@@ -10,7 +10,6 @@ import {
     emptyAuthorsUpdate,
     invalidAuthorsUpdate,
     validArticleSlug,
-    invalidArticleSlug,
 } from "../../testData/articleTestData.js";
 
 afterAll(async () => {
@@ -60,10 +59,10 @@ describe("Article Controller Tests", () => {
                 .set("Cookie", [`token=${tokens.ethan}`])
                 .send(validAuthorsUpdate);
 
-      logTestSuite.article && console.log(response.body);
-      expect(response.status).toBe(200);
-      expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
-    });
+            logTestSuite.article && console.log(response.body);
+            expect(response.status).toBe(200);
+            expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
+        });
 
         test("should update article authors to an empty list", async () => {
             const response = await request(app)
@@ -119,7 +118,7 @@ describe("Article Controller Tests", () => {
 
             logTestSuite.article && console.log(response.body);
             expect(response.status).toBe(400);
-            expect(response.body).toStrictEqual({ error: "Field 'comment' is required." });
+            expect(response.body).toStrictEqual({ error: "Malformed API Model." });
         });
 
         test("invalid create comment (invalid slug)", async () => {
@@ -129,8 +128,8 @@ describe("Article Controller Tests", () => {
                 .set("Cookie", [`token=${tokens.noah}`]);
 
             logTestSuite.article && console.log(response.body);
-            expect(response.status).toBe(400);
-            expect(response.body).toBe(null);
+            expect(response.status).toBe(404);
+            expect(response.body).toStrictEqual({ error: "Article not found." });
         });
 
         test("invalid create comment (invalid login)", async () => {
