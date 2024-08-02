@@ -369,7 +369,6 @@ export default class ArticlesAccessor {
       .populate("photographers")
       .populate("approvingUser")
       .exec();
-      //const dbMemory = await Memory.findById(objectId).populate("user").populate("locations").populate("sections.people").exec();
       return newArticle;
     } catch (e) {
       console.log(e);

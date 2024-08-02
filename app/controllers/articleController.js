@@ -115,7 +115,6 @@ export default class ArticleController {
                 ErrorValidation.throwHttp(req,res);
             }
             else if (e instanceof ErrorInternalAPIModelValidation) {
-                // throw e;
                 throw new ErrorInternalAPIModelValidation(e);
             }
             else if (e instanceof TypeError) {
