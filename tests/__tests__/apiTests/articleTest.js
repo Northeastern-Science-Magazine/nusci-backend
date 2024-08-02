@@ -62,7 +62,7 @@ describe("Article Controller Tests", () => {
 
       logTestSuite.article && console.log(response.body);
       expect(response.status).toBe(200);
-      expect(response.body.authors).toEqual(expect.arrayContaining(validAuthorsUpdate.authorsIDs));
+      expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
     });
 
     test("should update article authors to an empty list", async () => {

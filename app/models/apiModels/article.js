@@ -6,7 +6,7 @@ import DesignStatus from "../enums/design_status.js";
 import PhotographyStatus from "../enums/photography_status.js";
 import WritingStatus from "../enums/writing_status.js";
 import CommentStatus from "../enums/comment_status.js";
-import { BaseModel, BaseModelUpdate, array, number, string, date, now } from "./baseModel.js";
+import { BaseModel, BaseModelUpdate, array, number, string, date, now, object } from "./baseModel.js";
 
 export class ArticleCreate extends BaseModel {
   static schema = {
