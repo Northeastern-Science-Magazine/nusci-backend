@@ -47,7 +47,7 @@ describe("Article Controller Tests", () => {
         .send(validArticleStatusUpdate);
 
       logTestSuite.article && console.log(response.body);
-      expect(response.status).toBe(404);
+      expect(response.status).toBe(403);
       expect(response.body.error).toBeDefined();
     });
   });

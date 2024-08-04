@@ -4,7 +4,13 @@ import Authorize from "../auth/authorization.js";
 import { ErrorInternalAPIModelValidation } from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorUnexpected, ErrorDatabaseConnection, ErrorArticleNotFound, ErrorUserNotFound } from "../error/httpErrors.js";
+import {
+  ErrorUnexpected,
+  ErrorDatabaseConnection,
+  ErrorArticleNotFound,
+  ErrorUserNotFound,
+  ErrorValidation,
+} from "../error/httpErrors.js";
 import {
   ErrorInternalDatabaseConnection,
   ErrorInternalArticleNotFound,
@@ -32,7 +38,7 @@ export default class ArticleController {
 
       const updates = new ArticleUpdate(req.body);
 
-      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
@@ -123,16 +129,14 @@ export default class ArticleController {
       res.status(201).json(finalArticle);
     } catch (e) {
       console.log(e);
-      if (e instanceof ErrorIncorrectUser) {
-        ErrorIncorrectUser.throwHttp(req, res);
-      } else if (e instanceof ErrorValidation) {
+      if (e instanceof ErrorValidation) {
         ErrorValidation.throwHttp(req, res);
       } else if (e instanceof ErrorInternalAPIModelValidation) {
         ErrorValidation.throwHttp(req, res);
       } else if (e instanceof ErrorArticleNotFound) {
         ErrorArticleNotFound.throwHttp(req, res);
       } else {
-        UnexpectedError.throwHttp(req, res);
+        ErrorUnexpected.throwHttp(req, res);
       }
     }
   }
