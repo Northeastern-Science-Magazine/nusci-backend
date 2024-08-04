@@ -13,7 +13,7 @@ import {
   ErrorUserAlreadyExists,
   ErrorValidation,
 } from "../error/httpErrors.js";
-import AccountStatus from "../models/enums/account_status.js";
+import AccountStatus from "../models/enums/accountStatus.js";
 
 /**
  * UsersCTRL Class
@@ -105,7 +105,7 @@ export default class UserController {
       const userData = new UserCreate(req.body);
 
       // hash the password
-      userData.password = await bcrypt.hash(userData.password, 10); 
+      userData.password = await bcrypt.hash(userData.password, 10);
 
       const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
       const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
@@ -210,7 +210,7 @@ export default class UserController {
     }
   }
 
- /**
+  /**
    * resolveUserApprovals Method
    *
    * This method updates the status of lists of pending users to deny or approve them.

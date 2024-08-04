@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 /**
  * Enumerated Class for Article Categories
  */
@@ -76,6 +78,7 @@ export default class Category {
       case this.Technology.toString():
         return this.Technology;
       default:
+        throw new ErrorInternalEnumValidation("Invalid Category given.");
     }
   }
 

@@ -34,6 +34,12 @@ export class ErrorInternalAPIModelValidation extends InternalError {
   }
 }
 
+export class ErrorInternalValidation extends InternalError {
+  constructor(msg) {
+    super(msg);
+  }
+}
+
 export class ErrorInternalEnumValidation extends InternalError {
   constructor(msg) {
     super(msg);

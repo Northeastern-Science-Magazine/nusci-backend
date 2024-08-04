@@ -128,7 +128,6 @@ export default class ArticleController {
       //return updated article with new comment
       res.status(201).json(finalArticle);
     } catch (e) {
-      console.log(e);
       if (e instanceof ErrorValidation) {
         ErrorValidation.throwHttp(req, res);
       } else if (e instanceof ErrorInternalAPIModelValidation) {

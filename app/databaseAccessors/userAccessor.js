@@ -1,6 +1,6 @@
 import Connection from "../db/connection.js";
 import User from "../models/dbModels/user.js";
-import AccountStatus from "../models/enums/account_status.js";
+import AccountStatus from "../models/enums/accountStatus.js";
 import { ErrorDatabaseConnection } from "../error/httpErrors.js";
 import { ErrorInternalAPIModelFieldValidation, ErrorInternalUnexpected, ErrorInternalUserNotFound, ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
@@ -163,18 +163,18 @@ export default class UsersAccessor {
 
   /**
    * approveUserByUsername Method
-   * 
+   *
    * This method retrieves the user MongoDB object from the
    * database based on a given username and update the user's status to approved.
-   * 
-   * @param {String} username 
+   *
+   * @param {String} username
    * @returns the updated user object with the status set to approved.
    */
   static async approveUserByUsername(username) {
     try {
       await Connection.open();
 
-      //update the status 
+      //update the status
       const user = await User.findOneAndUpdate(
         { username: username },
         { status: AccountStatus.Approved.toString() },
@@ -196,11 +196,11 @@ export default class UsersAccessor {
 
   /**
    * denyUserByUsername Method
-   * 
+   *
    * This method retrieves the user MongoDB object from the
    * database based on a given username and update the user's status to denied.
-   * 
-   * @param {String} username 
+   *
+   * @param {String} username
    * @returns the updated user object with the status set to denied.
    */
   static async denyUserByUsername(username) {
@@ -225,9 +225,6 @@ export default class UsersAccessor {
       }
     }
   }
-
-
-
 
   /**
    * getUserByEmail Method
