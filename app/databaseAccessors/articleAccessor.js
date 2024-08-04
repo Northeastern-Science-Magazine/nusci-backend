@@ -1,7 +1,11 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
-import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
-import { ErrorDatabaseConnection } from "../error/httpErrors.js";
+import {
+  ErrorInternalDatabaseConnection,
+  ErrorInternalAPIModelFieldValidation,
+  ErrorInternalUnexpected,
+  ErrorInternalArticleNotFound,
+} from "../error/internalErrors.js";
 
 /**
  * Articles Accessor Class
@@ -330,12 +334,12 @@ export default class ArticlesAccessor {
         .populate("approvingUser")
         .exec();
       if (!article) {
-        throw new ErrorInternalAPIModelFieldValidation("Article not found");
+        throw new ErrorInternalArticleNotFound("Article not found");
       }
       return article;
     } catch (e) {
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {

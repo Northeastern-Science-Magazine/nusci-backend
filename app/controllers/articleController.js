@@ -2,14 +2,13 @@ dotenvConfig(); // load .env variables
 import { config as dotenvConfig } from "dotenv";
 import ArticleAccessor from "../databaseAccessors/articleAccessor.js";
 import UserAccessor from "../databaseAccessors/userAccessor.js";
-import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
-import Authorize from "../auth/authorization.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
+import { ErrorUnexpected, ErrorDatabaseConnection, ErrorArticleNotFound, ErrorUserNotFound } from "../error/httpErrors.js";
 import {
-  ErrorInvalidArticleStatus,
-  ErrorInvalidArticleAuthors
-} from "../error/httpErrors.js";
+  ErrorInternalDatabaseConnection,
+  ErrorInternalArticleNotFound,
+  ErrorInternalUserNotFound,
+} from "../error/internalErrors.js";
 
 /**
  * ArticleController Class
@@ -40,7 +39,16 @@ export default class ArticleController {
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      ErrorInvalidArticleStatus.throwHttp(req, res);
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        ErrorDatabaseConnection.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
+        // Else throw unexpected error
+        ErrorUnexpected.throwHttp(req, res);
+      }
     }
   }
 
@@ -69,7 +77,18 @@ export default class ArticleController {
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      ErrorInvalidArticleAuthors.throwHttp(req, res);
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        ErrorDatabaseConnection.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalUserNotFound) {
+        ErrorUserNotFound.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
+        // Else throw unexpected error
+        ErrorUnexpected.throwHttp(req, res);
+      }
     }
   }
 }

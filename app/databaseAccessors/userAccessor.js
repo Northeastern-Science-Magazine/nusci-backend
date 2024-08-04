@@ -1,8 +1,8 @@
 import Connection from "../db/connection.js";
 import User from "../models/dbModels/user.js";
 import AccountStatus from "../models/enums/account_status.js";
-import { ErrorUserNotFound, ErrorDatabaseConnection } from "../error/httpErrors.js";
-import { ErrorInternalAPIModelFieldValidation, ErrorInternalUnexpected } from "../error/internalErrors.js";
+import { ErrorDatabaseConnection } from "../error/httpErrors.js";
+import { ErrorInternalAPIModelFieldValidation, ErrorInternalUnexpected, ErrorInternalUserNotFound, ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
 /**
  * UserAccessor Class
@@ -76,13 +76,13 @@ export default class UsersAccessor {
         if (user) {
           userIds.push(user._id);
         } else {
-          throw new ErrorUserNotFound(`User not found for username: ${username}`);
+          throw new ErrorInternalUserNotFound(`User not found for username: ${username}`);
         }
       }
       return userIds;
     } catch (e) {
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection || e instanceof ErrorInternalUserNotFound) {
         // Throw up the stack
         throw e;
       } else {

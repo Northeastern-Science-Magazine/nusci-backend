@@ -10,7 +10,6 @@ import {
   emptyAuthorsUpdate,
   invalidAuthorsUpdate,
   validArticleSlug,
-  invalidArticleSlug,
 } from "../../testData/articleTestData.js";
 
 afterAll(async () => {
@@ -37,7 +36,7 @@ describe("Article Controller Tests", () => {
         .send(invalidArticleStatusUpdate);
 
       logTestSuite.article && console.log(response.body);
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(500);
       expect(response.body.error).toBeDefined();
     });
 
@@ -83,7 +82,7 @@ describe("Article Controller Tests", () => {
         .send(invalidAuthorsUpdate);
 
       logTestSuite.article && console.log(response.body);
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(404);
       expect(response.body.error).toBeDefined();
     });
   });

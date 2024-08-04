@@ -49,6 +49,12 @@ export class ErrorUserLoggedIn extends HttpError {
   }
 }
 
+export class ErrorUnexpected extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Unexpected error." });
+  }
+}
+
 export class ErrorArticleNotFound extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "Article not found." });
