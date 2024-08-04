@@ -1,6 +1,7 @@
 import Photo from "../models/photo.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
 
 /**
  * PhotoAccessor Accessor Class

@@ -1,6 +1,11 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
-import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
+import {
+  ErrorInternalDatabaseConnection,
+  ErrorInternalAPIModelFieldValidation,
+  ErrorInternalUnexpected,
+  ErrorInternalArticleNotFound,
+} from "../error/internalErrors.js";
 
 /**
  * Articles Accessor Class
@@ -305,6 +310,42 @@ export default class ArticlesAccessor {
     } catch (e) {
       console.log(e);
       ErrorInternalAPIModelFieldValidation(e);
+    }
+  }
+
+  /**
+   * updateArticle method
+   *
+   * updates the article with the parameter provided
+   *
+   * @param {string} slug
+   * @param {JSON} update
+   * @returns updated article
+   */
+  static async updateArticle(slug, update) {
+    try {
+      await Connection.open();
+      const article = await Article.findOneAndUpdate({ slug }, update, { new: true })
+        .populate("authors")
+        .populate("comments.user")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
+      if (!article) {
+        throw new ErrorInternalArticleNotFound("Article not found");
+      }
+      return article;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

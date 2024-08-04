@@ -1,6 +1,7 @@
 import PhotoTag from "../models/photo_tag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
 
 /**
  * PhotoTag Accessor Class

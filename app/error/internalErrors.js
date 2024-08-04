@@ -10,6 +10,18 @@ export class ErrorInternalAPIModelFieldValidation extends InternalError {
   }
 }
 
+export class ErrorInternalArticleNotFound extends InternalError {
+  constructor(msg) {
+    super(msg);
+  }
+}
+
+export class ErrorInternalUserNotFound extends InternalError {
+  constructor(msg) {
+    super(msg);
+  }
+}
+
 export class ErrorInternalAPIModelSchemaValidation extends InternalError {
   constructor(msg) {
     super(msg);
@@ -40,7 +52,7 @@ export class ErrorAbstractMethodNotInstantiated extends InternalError {
   }
 }
 
-export class ErrorDatabaseConnection extends InternalError {
+export class ErrorInternalDatabaseConnection extends InternalError {
   constructor(msg) {
     super(msg);
   }
