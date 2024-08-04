@@ -139,4 +139,24 @@ export default class ArticleController {
       }
     }
   }
+
+  /**
+   * resolveInternalComment Method
+   *
+   * This method resolves an internal comment given the mongoID of the comment.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async resolveInternalComment(req, res, next) {
+    try {
+      // modify the comment status
+      await ArticlesAccessor.resolveCommentById(req.params.commentId);
+
+      res.status(201);
+    } catch (e) {
+
+    }
+  }
 }
