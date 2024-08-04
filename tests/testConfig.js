@@ -1,6 +1,11 @@
 // Test suites to log
 export const log = {
   api: {
+    article: {
+      patchAuthors: false,
+      patchStatus: false,
+      postCommentCreate: false,
+    },
     default: {
       default: false,
     },

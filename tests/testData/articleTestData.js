@@ -1,4 +1,4 @@
-import ArticleStatus from "../../app/models/enums/article_status.js";
+import ArticleStatus from "../../app/models/enums/articleStatus.js";
 
 export const validArticleStatusUpdate = {
   articleStatus: ArticleStatus.Print.status,
