@@ -1,9 +1,16 @@
-dotenvConfig(); // load .env variables
-import { config as dotenvConfig } from "dotenv";
-import ArticleAccessor from "../databaseAccessors/articleAccessor.js";
-import UserAccessor from "../databaseAccessors/userAccessor.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import Authorize from "../auth/authorization.js";
+import { ErrorInternalAPIModelValidation } from "../error/internalErrors.js";
+import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorUnexpected, ErrorDatabaseConnection, ErrorArticleNotFound, ErrorUserNotFound } from "../error/httpErrors.js";
+import {
+  ErrorUnexpected,
+  ErrorDatabaseConnection,
+  ErrorArticleNotFound,
+  ErrorUserNotFound,
+  ErrorValidation,
+} from "../error/httpErrors.js";
 import {
   ErrorInternalDatabaseConnection,
   ErrorInternalArticleNotFound,
@@ -31,7 +38,7 @@ export default class ArticleController {
 
       const updates = new ArticleUpdate(req.body);
 
-      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
@@ -66,11 +73,11 @@ export default class ArticleController {
 
       const updates = new ArticleUpdate(req.body);
 
-      const authorIds = await UserAccessor.getUserIdsByUsernames(updates.authors);
+      const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
 
       updates.authors = authorIds;
 
-      const updatedArticleData = await ArticleAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
@@ -87,6 +94,48 @@ export default class ArticleController {
         ErrorArticleNotFound.throwHttp(req, res);
       } else {
         // Else throw unexpected error
+        ErrorUnexpected.throwHttp(req, res);
+      }
+    }
+  }
+  /**
+   * addInternalComment Method
+   *
+   * This method adds an internal, unresolved comment to the given article.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async addInternalComment(req, res, next) {
+    try {
+      //comment validation
+      const username = Authorize.getUsername(req);
+      const user = await UsersAccessor.getUserByUsername(username);
+      const userID = user._id;
+
+      const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
+
+      // modify the article with the new comment
+      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+
+      if (updatedArticle == null) {
+        throw new ErrorArticleNotFound();
+      }
+
+      const finalArticle = new ArticleResponse(updatedArticle.toObject());
+
+      //return updated article with new comment
+      res.status(201).json(finalArticle);
+    } catch (e) {
+      console.log(e);
+      if (e instanceof ErrorValidation) {
+        ErrorValidation.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalAPIModelValidation) {
+        ErrorValidation.throwHttp(req, res);
+      } else if (e instanceof ErrorArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
         ErrorUnexpected.throwHttp(req, res);
       }
     }

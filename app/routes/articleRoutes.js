@@ -34,4 +34,7 @@ router.route("/photographers/:slug"); //update the list of photographer to this 
 router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
 router.route("/delete/:slug"); //delete an article
 
+router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
+    .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+
 export default router;

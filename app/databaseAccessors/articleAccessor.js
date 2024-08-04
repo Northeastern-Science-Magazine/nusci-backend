@@ -3,6 +3,7 @@ import Connection from "../db/connection.js";
 import {
   ErrorInternalDatabaseConnection,
   ErrorInternalAPIModelFieldValidation,
+  ErrorDatabaseConnection,
   ErrorInternalUnexpected,
   ErrorInternalArticleNotFound,
 } from "../error/internalErrors.js";
@@ -346,6 +347,80 @@ export default class ArticlesAccessor {
         // Else throw unexpected error
         throw new ErrorInternalUnexpected("Unexpected error occurred");
       }
+    }
+  }
+
+  /**
+   * addCommentBySlug method
+   *
+   * This method finds the article with the given
+   * slug and adds the given comment to its comments.
+   *
+   * @param {slug}  slug of the article to find
+   * @param {comment} comment to be added to the article
+   * @returns a single updated article
+   */
+  static async addCommentBySlug(slug, comment) {
+    try {
+      await Connection.open();
+      // update the article by adding the new comment to its array
+      const newArticle = await Article.findOneAndUpdate(
+        { slug: slug },
+        {
+          $push: {
+            comments: comment,
+          },
+        },
+        { returnDocument: "after" }
+      )
+        .populate("comments.user")
+        .populate("authors")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
+      return newArticle;
+    } catch (e) {
+      console.log(e);
+      ErrorDatabaseConnection(e);
+    }
+  }
+
+  /**
+   * addCommentBySlug method
+   *
+   * This method finds the article with the given
+   * slug and adds the given comment to its comments.
+   *
+   * @param {slug}  slug of the article to find
+   * @param {comment} comment to be added to the article
+   * @returns a single updated article
+   */
+  static async addCommentBySlug(slug, comment) {
+    try {
+      await Connection.open();
+      // update the article by adding the new comment to its array
+      const newArticle = await Article.findOneAndUpdate(
+        { slug: slug },
+        {
+          $push: {
+            comments: comment,
+          },
+        },
+        { returnDocument: "after" }
+      )
+        .populate("comments.user")
+        .populate("authors")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
+      return newArticle;
+    } catch (e) {
+      console.log(e);
+      ErrorDatabaseConnection(e);
     }
   }
 }

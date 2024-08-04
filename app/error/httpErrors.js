@@ -21,7 +21,7 @@ export class ErrorWrongPassword extends HttpError {
 
 export class ErrorIncorrectUser extends HttpError {
   static throwHttp(req, res) {
-    res.status(404).json({ error: "User is incorrect." });
+    res.status(403).json({ error: "User is incorrect." });
   }
 }
 
@@ -94,5 +94,11 @@ export class ErrorUserAlreadyExists extends HttpError {
 export class ErrorDatabaseConnection extends HttpError {
   static throwHttp(req, res) {
     res.status(500).json({ error: "Failed to connect to the database." });
+  }
+}
+
+export class UnexpectedError extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Encountered an unexpected error." });
   }
 }
