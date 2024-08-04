@@ -112,9 +112,6 @@ export default class ArticleController {
             if (e instanceof ErrorIncorrectUser) {
                 ErrorIncorrectUser.throwHttp(req, res);
             }
-            else if (e instanceof ErrorValidation) {
-                ErrorValidation.throwHttp(req, res);
-            }
             else if (e instanceof ErrorInternalAPIModelValidation) {
                 ErrorValidation.throwHttp(req, res);
             }
