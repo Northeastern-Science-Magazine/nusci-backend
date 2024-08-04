@@ -4,16 +4,18 @@ import Authorize from "../auth/authorization.js";
 import { ErrorInternalAPIModelValidation } from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { config as dotenvConfig } from "dotenv";
-
-dotenvConfig(); // load .env variables
-
 import {
-    ErrorValidation,
-    ErrorIncorrectUser,
-    ErrorArticleNotFound,
-    UnexpectedError,
+  ErrorUnexpected,
+  ErrorDatabaseConnection,
+  ErrorArticleNotFound,
+  ErrorUserNotFound,
+  ErrorValidation,
 } from "../error/httpErrors.js";
+import {
+  ErrorInternalDatabaseConnection,
+  ErrorInternalArticleNotFound,
+  ErrorInternalUserNotFound,
+} from "../error/internalErrors.js";
 
 /**
  * ArticleController Class
@@ -22,105 +24,120 @@ import {
  * related to Articles.
  */
 export default class ArticleController {
-    /**
-     * updateStatus method
-     *
-     * Handles the request to update the status of an article.
-     *
-     * @param {Request} req
-     * @param {Response} res
-     */
-    static async updateStatus(req, res) {
-        try {
-            const { slug } = req.params;
+  /**
+   * updateStatus method
+   *
+   * Handles the request to update the status of an article.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async updateStatus(req, res) {
+    try {
+      const { slug } = req.params;
 
-            const updates = new ArticleUpdate(req.body);
+      const updates = new ArticleUpdate(req.body);
 
-            //const updatesData = JSON.stringify(updates);
-            const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
-            // Validate and construct an ArticleResponse instance
-            const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      // Validate and construct an ArticleResponse instance
+      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
-            // Send the validated ArticleResponse
-            res.status(200).json(updatedArticleResponse);
-        } catch (e) {
-            console.log("ERROR: " + e.message);
-            res.status(400).json({ error: e.message });
-        }
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse);
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        ErrorDatabaseConnection.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
+        // Else throw unexpected error
+        ErrorUnexpected.throwHttp(req, res);
+      }
     }
+  }
 
-    /**
-     * updateAuthors method
-     *
-     * Handles the request to update the list of authors for an article.
-     *
-     * @param {Request} req
-     * @param {Response} res
-     */
-    static async updateAuthors(req, res) {
-        try {
-            const { slug } = req.params;
+  /**
+   * updateAuthors method
+   *
+   * Handles the request to update the list of authors for an article.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async updateAuthors(req, res) {
+    try {
+      const { slug } = req.params;
 
-            const updates = new ArticleUpdate(req.body);
+      const updates = new ArticleUpdate(req.body);
 
-            const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
+      const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
 
-            updates.authors = authorIds;
+      updates.authors = authorIds;
 
-            const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
-            // Validate and construct an ArticleResponse instance
-            const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      // Validate and construct an ArticleResponse instance
+      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
-            res.status(200).json(updatedArticleResponse);
-        } catch (e) {
-            res.status(500).json({ error: e.message });
-        }
+      res.status(200).json(updatedArticleResponse);
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        ErrorDatabaseConnection.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalUserNotFound) {
+        ErrorUserNotFound.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
+        // Else throw unexpected error
+        ErrorUnexpected.throwHttp(req, res);
+      }
     }
-    /**
-    * addInternalComment Method
-    *
-    * This method adds an internal, unresolved comment to the given article.
-    *
-    * @param {HTTP REQ} req web request object
-    * @param {HTTP RES} res web response object
-    * @param {function} next middleware function
-    */
-    static async addInternalComment(req, res, next) {
-        try {
-            //comment validation
-            const username = Authorize.getUsername(req);
-            const user = await UsersAccessor.getUserByUsername(username);
-            const userID = user._id;
+  }
+  /**
+   * addInternalComment Method
+   *
+   * This method adds an internal, unresolved comment to the given article.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async addInternalComment(req, res, next) {
+    try {
+      //comment validation
+      const username = Authorize.getUsername(req);
+      const user = await UsersAccessor.getUserByUsername(username);
+      const userID = user._id;
 
-            const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
+      const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
 
-            // modify the article with the new comment
-            const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+      // modify the article with the new comment
+      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
 
-            if (updatedArticle == null) {
-                throw new ErrorArticleNotFound;
-            }
+      if (updatedArticle == null) {
+        throw new ErrorArticleNotFound();
+      }
 
-            const finalArticle = new ArticleResponse(updatedArticle.toObject());
+      const finalArticle = new ArticleResponse(updatedArticle.toObject());
 
-            //return updated article with new comment
-            res.status(201).json(finalArticle);
-        } catch (e) {
-            console.log(e);
-            if (e instanceof ErrorIncorrectUser) {
-                ErrorIncorrectUser.throwHttp(req, res);
-            }
-            else if (e instanceof ErrorInternalAPIModelValidation) {
-                ErrorValidation.throwHttp(req, res);
-            }
-            else if (e instanceof ErrorArticleNotFound) {
-                ErrorArticleNotFound.throwHttp(req, res);
-            }
-            else {
-                UnexpectedError.throwHttp(req, res);
-            }
-        }
+      //return updated article with new comment
+      res.status(201).json(finalArticle);
+    } catch (e) {
+      console.log(e);
+      if (e instanceof ErrorValidation) {
+        ErrorValidation.throwHttp(req, res);
+      } else if (e instanceof ErrorInternalAPIModelValidation) {
+        ErrorValidation.throwHttp(req, res);
+      } else if (e instanceof ErrorArticleNotFound) {
+        ErrorArticleNotFound.throwHttp(req, res);
+      } else {
+        ErrorUnexpected.throwHttp(req, res);
+      }
     }
+  }
 }

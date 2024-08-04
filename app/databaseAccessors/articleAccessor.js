@@ -1,6 +1,12 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
-import { ErrorInternalAPIModelFieldValidation, ErrorDatabaseConnection } from "../error/internalErrors.js";
+import {
+  ErrorInternalDatabaseConnection,
+  ErrorInternalAPIModelFieldValidation,
+  ErrorDatabaseConnection,
+  ErrorInternalUnexpected,
+  ErrorInternalArticleNotFound,
+} from "../error/internalErrors.js";
 
 /**
  * Articles Accessor Class
@@ -329,19 +335,25 @@ export default class ArticlesAccessor {
         .populate("approvingUser")
         .exec();
       if (!article) {
-        throw new ErrorInternalAPIModelFieldValidation("Article not found");
+        throw new ErrorInternalArticleNotFound("Article not found");
       }
       return article;
     } catch (e) {
-      console.error(e);
-      throw e;
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
   /**
    * addCommentBySlug method
    *
-   * This method finds the article with the given 
+   * This method finds the article with the given
    * slug and adds the given comment to its comments.
    *
    * @param {slug}  slug of the article to find
@@ -355,20 +367,56 @@ export default class ArticlesAccessor {
       const newArticle = await Article.findOneAndUpdate(
         { slug: slug },
         {
-          "$push":
-          {
-            "comments": comment
-          }
+          $push: {
+            comments: comment,
+          },
         },
-        { returnDocument: "after" },
+        { returnDocument: "after" }
       )
-      .populate("comments.user")
-      .populate("authors")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
-      .exec();
+        .populate("comments.user")
+        .populate("authors")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
+      return newArticle;
+    } catch (e) {
+      console.log(e);
+      ErrorDatabaseConnection(e);
+    }
+  }
+
+  /**
+   * addCommentBySlug method
+   *
+   * This method finds the article with the given
+   * slug and adds the given comment to its comments.
+   *
+   * @param {slug}  slug of the article to find
+   * @param {comment} comment to be added to the article
+   * @returns a single updated article
+   */
+  static async addCommentBySlug(slug, comment) {
+    try {
+      await Connection.open();
+      // update the article by adding the new comment to its array
+      const newArticle = await Article.findOneAndUpdate(
+        { slug: slug },
+        {
+          $push: {
+            comments: comment,
+          },
+        },
+        { returnDocument: "after" }
+      )
+        .populate("comments.user")
+        .populate("authors")
+        .populate("editors")
+        .populate("designers")
+        .populate("photographers")
+        .populate("approvingUser")
+        .exec();
       return newArticle;
     } catch (e) {
       console.log(e);
