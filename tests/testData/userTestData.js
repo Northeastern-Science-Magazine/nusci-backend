@@ -1,5 +1,5 @@
 import Accounts from "../../app/models/enums/accounts.js";
-import AccountStatus from "../../app/models/enums/account_status.js";
+import AccountStatus from "../../app/models/enums/accountStatus.js";
 
 export const validUserLoginRaisa = {
   username: "raisa",
@@ -50,8 +50,6 @@ export const existingUsernameSignup = {
   status: AccountStatus.Pending.toString(),
 };
 
-
-
 export const existingEmailSignup = {
   firstName: "Existing",
   lastName: "Email",
@@ -59,7 +57,7 @@ export const existingEmailSignup = {
   password: "password",
   graduationYear: 2024,
   bio: "Existing user bio",
-  emails: ["raisa@example.com"], // existing email
+  emails: ["raisa@raisa.com"], // existing email
   roles: [Accounts.Editor.toString()],
   status: AccountStatus.Pending.toString(),
 };
@@ -95,5 +93,3 @@ export const validUsernameQueryEthan = {
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
-
-

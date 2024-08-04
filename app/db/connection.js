@@ -23,7 +23,10 @@ export default class Connection {
    *
    * @returns the connection object
    */
-  static async open() {
+  static async open(silentLog) {
+    // log if true, undefined/null or false is false
+    silentLog = silentLog ?? false;
+
     if (!connection) {
       //Load Environment variables
       dotenvConfig();
@@ -44,7 +47,7 @@ export default class Connection {
       connection = mongoose.connection;
 
       //Log when open/closed
-      logActivity(mongoose.connection);
+      silentLog || logActivity(mongoose.connection);
 
       return mongoose.connection;
     } else {
@@ -62,10 +65,11 @@ export default class Connection {
    *
    * @param {MongoDB Connection} connection The given connection.
    */
-  static async close() {
+  static async close(silentLog) {
+    silentLog = silentLog ?? false;
     if (connection) {
       await connection.close();
-      logActivity(connection);
+      silentLog || logActivity(connection);
       connection = undefined;
     }
   }

@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 /**
  * Enumerated Class for Comment Statuses
  */
@@ -40,6 +42,7 @@ export default class CommentStatus {
       case this.Public.status:
         return this.Public;
       default:
+        throw new ErrorInternalEnumValidation("Invalid CommentStatus given.");
     }
   }
 

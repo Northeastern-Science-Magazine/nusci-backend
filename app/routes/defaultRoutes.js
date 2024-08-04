@@ -13,8 +13,8 @@ router.route("/").get((req, res) => {
 
 router.route("/db").get(async (req, res) => {
   try {
-    await Connection.open();
-    await Connection.close();
+    await Connection.open(true);
+    await Connection.close(true);
     res.status(200).json({ message: "Successfully connected to the NU Sci Database Instance!" });
   } catch (e) {
     console.log(e);

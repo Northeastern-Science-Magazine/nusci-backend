@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Accounts from "../enums/accounts.js";
-import AccountStatus from "../enums/account_status.js";
+import AccountStatus from "../enums/accountStatus.js";
 
 const Schema = mongoose.Schema;
 
