@@ -119,9 +119,13 @@ brew install nvm
 ```
 nvm -v
 ```
-- Run the following command to install version 22 of NPM, a dependency installer for Javascript:
+- Run the following command to install version 22 of Node.js, a dependency installer for Javascript:
 ```
 nvm install 22
+```
+- Use the installed version of Node.js
+```
+nvm use 22
 ```
 - To verify you have NPM installed, run the command:
 ```
