@@ -2,8 +2,6 @@ import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import {
   ErrorInternalDatabaseConnection,
-  ErrorInternalAPIModelFieldValidation,
-  ErrorDatabaseConnection,
   ErrorInternalUnexpected,
   ErrorInternalArticleNotFound,
 } from "../error/internalErrors.js";
@@ -27,8 +25,13 @@ export default class ArticlesAccessor {
       await Connection.open();
       const article = await Article.findBy({ _id: articleId });
     } catch (e) {
-      console.error(e);
-      throw e;
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -48,8 +51,13 @@ export default class ArticlesAccessor {
       const article = await Article.findOne({ title: title });
       return article;
     } catch (e) {
-      console.log(e);
-      throw e;
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -68,8 +76,13 @@ export default class ArticlesAccessor {
       const article = await Article.findOne({ slug: slug });
       return article;
     } catch (e) {
-      console.log(e);
-      throw e;
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -95,8 +108,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ authors: { $in: [author] } });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -118,8 +136,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ editors: { $in: [editor] } });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -138,8 +161,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ categories: { $in: [category] } });
       return articles;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -181,8 +209,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ issueNumber: issueNumber });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -201,8 +234,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ articleStatus: articleStatus });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -221,8 +259,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ writingStatus: writingStatus });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -241,8 +284,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ photographyStatus: photographyStatus });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -261,8 +309,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ designStatus: designStatus });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -285,8 +338,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ creationTime: date });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -309,8 +367,13 @@ export default class ArticlesAccessor {
       const articles = await Article.find({ modificationTime: date });
       return articles;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -382,8 +445,13 @@ export default class ArticlesAccessor {
         .exec();
       return newArticle;
     } catch (e) {
-      console.log(e);
-      ErrorDatabaseConnection(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -419,8 +487,13 @@ export default class ArticlesAccessor {
         .exec();
       return newArticle;
     } catch (e) {
-      console.log(e);
-      ErrorDatabaseConnection(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

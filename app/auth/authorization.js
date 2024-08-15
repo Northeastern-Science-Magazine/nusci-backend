@@ -1,7 +1,12 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import Accounts from "../models/enums/accounts.js";
-import { ErrorIncorrectUser, ErrorToken, ErrorWrongPassword } from "../error/httpErrors.js";
+import {
+  ErrorNoTokenProvided,
+  ErrorIncorrectPassword,
+  ErrorLoginInformation,
+  ErrorUserPermissions,
+} from "../error/httpErrors.js";
 
 /**
  * Authorize class
@@ -30,13 +35,13 @@ export default class Authorize {
           if (roles.some((element) => userRoles.includes(element))) {
             next();
           } else {
-            ErrorIncorrectUser.throwHttp(req, res);
+            ErrorUserPermissions.throwHttp(req, res);
           }
         } else {
-          ErrorWrongPassword.throwHttp(req, res);
+          ErrorLoginInformation.throwHttp(req, res);
         }
       } else {
-        ErrorToken.throwHttp(req, res);
+        ErrorNoTokenProvided.throwHttp(req, res);
       }
     };
   }
@@ -55,10 +60,10 @@ export default class Authorize {
       if (payload) {
         return payload.username;
       } else {
-        ErrorWrongPassword.throwHttp(req, res);
+        ErrorIncorrectPassword.throwHttp(req, res);
       }
     } else {
-      ErrorToken.throwHttp(req, res);
+      ErrorNoTokenProvided.throwHttp(req, res);
     }
   }
 
@@ -76,10 +81,10 @@ export default class Authorize {
       if (payload) {
         return payload.roles;
       } else {
-        ErrorWrongPassword.throwHttp(req, res);
+        ErrorIncorrectPassword.throwHttp(req, res);
       }
     } else {
-      ErrorToken.throwHttp(req, res);
+      ErrorNoTokenProvided.throwHttp(req, res);
     }
   }
 }

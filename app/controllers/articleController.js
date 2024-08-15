@@ -48,7 +48,6 @@ export default class ArticleController {
     } catch (e) {
       // Check if it's a DB connection error
       if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
         ErrorDatabaseConnection.throwHttp(req, res);
       } else if (e instanceof ErrorInternalArticleNotFound) {
         ErrorArticleNotFound.throwHttp(req, res);

@@ -1,8 +1,11 @@
 import Connection from "../db/connection.js";
 import User from "../models/dbModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
-import { ErrorDatabaseConnection } from "../error/httpErrors.js";
-import { ErrorInternalAPIModelFieldValidation, ErrorInternalUnexpected, ErrorInternalUserNotFound, ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
+import {
+  ErrorInternalUnexpected,
+  ErrorInternalUserNotFound,
+  ErrorInternalDatabaseConnection,
+} from "../error/internalErrors.js";
 
 /**
  * UserAccessor Class
@@ -28,8 +31,13 @@ export default class UsersAccessor {
       const user = await User.findOne({ _id: objectId });
       return user;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -52,7 +60,7 @@ export default class UsersAccessor {
       console.log(e);
 
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -113,10 +121,8 @@ export default class UsersAccessor {
 
       return user;
     } catch (e) {
-      console.log(e);
-
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -151,7 +157,7 @@ export default class UsersAccessor {
       console.log(e);
 
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -184,7 +190,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -216,7 +222,7 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -245,7 +251,7 @@ export default class UsersAccessor {
     } catch (e) {
       console.log(e);
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {
@@ -272,8 +278,13 @@ export default class UsersAccessor {
       const users = await User.find({ roles: { $in: [role] } });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -294,8 +305,13 @@ export default class UsersAccessor {
       const users = await User.find({ status: status });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -316,8 +332,13 @@ export default class UsersAccessor {
       const users = await User.find({ approvingUser: approvingUser });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -338,8 +359,13 @@ export default class UsersAccessor {
       const users = await User.find({ graduationYear: gradYear });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -360,8 +386,13 @@ export default class UsersAccessor {
       const users = await User.find({ majors: { $in: [major] } });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -382,8 +413,13 @@ export default class UsersAccessor {
       const user = await User.findOne({ phone: phone });
       return user;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -405,7 +441,7 @@ export default class UsersAccessor {
       console.log(e);
 
       // Check if it's a DB connection error
-      if (e instanceof ErrorDatabaseConnection) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
         // Throw up the stack
         throw e;
       } else {

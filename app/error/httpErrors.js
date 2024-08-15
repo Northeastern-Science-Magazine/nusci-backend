@@ -7,21 +7,27 @@ class HttpError {
   }
 }
 
-export class ErrorToken extends HttpError {
+export class ErrorNoTokenProvided extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "No Token Provided." });
   }
 }
 
-export class ErrorWrongPassword extends HttpError {
+export class ErrorIncorrectPassword extends HttpError {
   static throwHttp(req, res) {
-    res.status(400).json({ error: "Wrong Password." });
+    res.status(400).json({ error: "Incorrect Password." });
   }
 }
 
-export class ErrorIncorrectUser extends HttpError {
+export class ErrorLoginInformation extends HttpError {
   static throwHttp(req, res) {
-    res.status(403).json({ error: "User is incorrect." });
+    res.status(400).json({ error: "Incorrect login information provided." });
+  }
+}
+
+export class ErrorUserPermissions extends HttpError {
+  static throwHttp(req, res) {
+    res.status(403).json({ error: "User does not have correct permissions." });
   }
 }
 
@@ -37,9 +43,15 @@ export class ErrorUserDeactivated extends HttpError {
   }
 }
 
-export class ErrorUserNotRegistered extends HttpError {
+export class ErrorUserPending extends HttpError {
   static throwHttp(req, res) {
-    res.status(400).json({ error: "User is not registered." });
+    res.status(400).json({ error: "Pending users cannot login." });
+  }
+}
+
+export class ErrorUserDenied extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Denied users cannot login." });
   }
 }
 

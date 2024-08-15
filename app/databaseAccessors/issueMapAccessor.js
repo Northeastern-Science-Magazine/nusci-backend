@@ -1,7 +1,7 @@
 import IssueMap from "../models/issue_map.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
+import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
 /**
  * IssueMap Accessor Class
@@ -20,8 +20,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({});
       return issues;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -37,8 +42,13 @@ export default class IssueMapAccessor {
       const issue = await IssueMap.findById(new mongoose.Types.ObjectId(issueID));
       return issue;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -54,8 +64,13 @@ export default class IssueMapAccessor {
       const issue = await IssueMap.find({ issueNumber: issueNumber });
       return issue;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -71,8 +86,13 @@ export default class IssueMapAccessor {
       const issue = await IssueMap.findOne({ issueName: issueName });
       return issue;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -88,8 +108,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({ articles: { $in: [new mongoose.Types.ObjectId(articleID)] } });
       return issues;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -106,8 +131,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({ pages: { $gte: min, $lte: max } });
       return issues;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -123,8 +153,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({ creatingUser: new mongoose.Types.ObjectId(userID) });
       return issues;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -141,8 +176,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({ creationTime: { $gte: start, $lte: end } });
       return issues;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -159,8 +199,13 @@ export default class IssueMapAccessor {
       const issues = await IssueMap.find({ modificationTime: { $gte: start, $lte: end } });
       return issues;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }
