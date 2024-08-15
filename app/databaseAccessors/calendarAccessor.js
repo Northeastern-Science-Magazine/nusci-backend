@@ -1,7 +1,7 @@
-import CalendarEvent from "../models/calendar_event.js";
+import CalendarEvent from "../models/dbModels/calendarEvent.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorInternalAPIModelFieldValidation } from "../error/internalErrors.js";
+import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
 /**
  * CalendarEvent Accessor Class
@@ -20,8 +20,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({});
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -37,8 +42,13 @@ export default class CalendarEventAccessor {
       const event = await CalendarEvent.findById(new mongoose.Types.ObjectId(eventID));
       return event;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -54,8 +64,13 @@ export default class CalendarEventAccessor {
       const event = await CalendarEvent.findOne({ title: title });
       return event;
     } catch (e) {
-      console.log(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -72,8 +87,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ startTime: { $gte: start, $lte: end } });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -90,8 +110,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ endTime: { $gte: start, $lte: end } });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -107,8 +132,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ location: location });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -123,8 +153,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ public: true });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -139,8 +174,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ public: false });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -156,8 +196,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ visibleToRoles: { $in: [role] } });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -173,8 +218,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ associatedWithRoles: { $in: [role] } });
       return events;
     } catch (e) {
-      console.error(e);
-      throw ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -190,8 +240,13 @@ export default class CalendarEventAccessor {
       const events = await CalendarEvent.find({ creatingUser: new mongoose.Types.ObjectId(userID) });
       return events;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

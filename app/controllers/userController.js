@@ -6,12 +6,15 @@ import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import {
-  ErrorWrongPassword,
   ErrorUserLoggedIn,
   ErrorUserNotFound,
-  ErrorUserNotRegistered,
+  ErrorUserPending,
   ErrorUserAlreadyExists,
   ErrorValidation,
+  ErrorUserDeactivated,
+  ErrorUserDenied,
+  ErrorLoginInformation,
+  ErrorUnexpected,
 } from "../error/httpErrors.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 
@@ -35,55 +38,54 @@ export default class UserController {
    */
   static async login(req, res, next) {
     try {
-      if (!req.cookies.token) {
-        // check if the user is registered
-        const user = await UsersAccessor.getApprovedByUsername(req.body.username);
-        if (user) {
-          //check if password matches
-          const result = await bcrypt.compare(req.body.password, user.password);
-          if (result) {
-            // check if the user has been deactivated
-            const deactive = await user.deactivated;
-            if (!deactive) {
-              // sign token and send it in response
-              const token = jwt.sign(
-                {
-                  username: user.username,
-                  roles: user.roles,
-                },
-                process.env.SERVER_TOKEN_KEY
-              );
-
-              //Users are logged in for 1 hour
-              res.cookie("token", token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-              });
-              res.status(200).json({ message: "Login successful" });
-            } else {
-              ErrorValidation.throwHttp(req, res);
-            }
-          } else {
-            ErrorWrongPassword.throwHttp(req, res);
-          }
-        } else {
-          //check if the user is unregistered
-          const unregistered = await UsersAccessor.getUnapprovedByUsername(req.body.username);
-          if (unregistered) {
-            ErrorUserNotRegistered.throwHttp(req, res);
-          } else {
-            //doesn't exist
-            ErrorUserNotFound.throwHttp(req, res);
-          }
-        }
-      } else {
-        //already logged in
-        ErrorUserLoggedIn.throwHttp(req, res);
+      if (req.cookies.token) {
+        // already logged in
+        return ErrorUserLoggedIn.throwHttp(req, res);
       }
+
+      // check if the user exists and is approved
+      const user = await UsersAccessor.getUserByUsername(req.body.username);
+
+      if (!user) {
+        //doesn't exist
+        return ErrorUserNotFound.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Pending.toString()) {
+        //check if the user is pending
+        return ErrorUserPending.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Deactivated.toString()) {
+        //check if the user is deactivated
+        return ErrorUserDeactivated.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Denied.toString()) {
+        //check if the user is denied
+        return ErrorUserDenied.throwHttp(req, res);
+      }
+
+      //check if password matches
+      const decrypted = await bcrypt.compare(req.body.password, user.password);
+      if (!decrypted) {
+        return ErrorLoginInformation.throwHttp(req, res);
+      }
+
+      // sign token and send it in response
+      const token = jwt.sign(
+        {
+          username: user.username,
+          roles: user.roles,
+        },
+        process.env.SERVER_TOKEN_KEY
+      );
+
+      //Users are logged in for 1 hour
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+      res.status(200).json({ message: "Login successful." });
     } catch (e) {
-      console.log(e);
-      //something else went wrong
-      new throwHttp(req, res);
+      ErrorUnexpected.throwHttp(req, res);
     }
   }
 
@@ -110,15 +112,14 @@ export default class UserController {
       const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
       const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
 
-      if (!userByUsername && !userByEmail) {
-        await UsersAccessor.createUser(userData);
-        res.status(201).json({ message: "Signup successful" });
-      } else {
-        ErrorUserAlreadyExists.throwHttp(req, res, "Username or Email already exists");
+      if (userByUsername || userByEmail) {
+        return ErrorUserAlreadyExists.throwHttp(req, res);
       }
+
+      await UsersAccessor.createUser(userData);
+      res.status(201).json({ message: "Signup successful." });
     } catch (e) {
-      console.log(e);
-      ErrorValidation.throwHttp(req, res);
+      return ErrorUnexpected.throwHttp(req, res);
     }
   }
 
@@ -173,7 +174,7 @@ export default class UserController {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        ErrorUserNotFound.throwHttp(req, res);
+        return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const userProfile = new UserResponse(user.toObject());
@@ -309,7 +310,6 @@ export default class UserController {
 
   static logout(req, res) {
     res.clearCookie("token");
-    res.redirect("/");
-    console.log("Signed out");
+    res.json({ message: "Successfully logged out." });
   }
 }

@@ -29,7 +29,7 @@ describe("User Signup Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
-    expect(response.body.message).toBe("Signup successful");
+    expect(response.body.message).toBe("Signup successful.");
   });
 
   test("should not signup with existing username", async () => {
