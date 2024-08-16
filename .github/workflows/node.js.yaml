@@ -26,13 +26,16 @@ jobs:
       # Step 4: Build and Start Docker Compose with secrets as environment variables
       - name: Create .env File Securely and Start Docker Compose
         run: |
-          printf "SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}\n\
-          SERVER_PORT=${{ vars.SERVER_PORT }}\n\
-          SERVER_TOKEN_KEY=${{ vars.SERVER_TOKEN_KEY }}\n\
-          MONGODB_INITDB_ROOT_USERNAME=${{ vars.MONGODB_INITDB_ROOT_USERNAME }}\n\
-          MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}\n\
-          MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}\n\
-          MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}" > .env
+          cat <<EOF > "$temp_env_file"
+          SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}
+          SERVER_PORT=${{ vars.SERVER_PORT }}
+          SERVER_TOKEN_KEY=${{ vars.SERVER_TOKEN_KEY }}
+          MONGODB_INITDB_ROOT_USERNAME=${{ vars.MONGODB_INITDB_ROOT_USERNAME }}
+          MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}
+          MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}
+          MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
+          EOF
+          mv "$temp_env_file" .env
           docker-compose --env-file .env up --build -d
 
       # Step 5: Run any commands you want (e.g., tests)
