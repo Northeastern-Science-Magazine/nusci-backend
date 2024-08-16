@@ -40,7 +40,7 @@ jobs:
       # Step 5: Run any commands you want (e.g., tests)
       - name: Run Tests
         run: |
-          docker exec nusci-backend npm run test
+          npm run test
 
       # Step 6: Tear down the services after the job is done
       - name: Tear Down Docker Compose
