@@ -41,7 +41,6 @@ jobs:
       - name: Run Tests
         run: |
           npm i
-        run: |
           npm run test
 
       # Step 6: Tear down the services after the job is done
