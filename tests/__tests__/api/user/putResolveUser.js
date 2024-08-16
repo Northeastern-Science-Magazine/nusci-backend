@@ -102,7 +102,7 @@ describe("Approve or deny given users test", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({ error: "User not found." });
+    expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
   });
 
   test("test denying users that doesn't exists", async () => {
@@ -118,7 +118,7 @@ describe("Approve or deny given users test", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({ error: "User not found." });
+    expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
   });
 
   test("test approving users where only some exists", async () => {
@@ -134,7 +134,7 @@ describe("Approve or deny given users test", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({ error: "User not found." });
+    expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
   });
 
   test("test denying users where only some exists", async () => {
@@ -150,6 +150,6 @@ describe("Approve or deny given users test", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({ error: "User not found." });
+    expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
   });
 });

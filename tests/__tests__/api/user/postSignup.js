@@ -36,13 +36,13 @@ describe("User Signup Tests", () => {
     const response = await request(app).post("/user/signup").send(existingUsernameSignup);
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(409);
   });
 
   test("should not signup with existing email", async () => {
     const response = await request(app).post("/user/signup").send(existingEmailSignup);
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(409);
   });
 });

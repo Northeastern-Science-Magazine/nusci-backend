@@ -46,7 +46,7 @@ describe("Get User By Username Tests", () => {
     const response = await request(app).get("/user/username/nonexistentuser");
 
     showLog && console.log(response.body);
-    expect(response.body).toStrictEqual({ error: "User not found." });
+    expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
     expect(response.status).toBe(404);
   });
 });

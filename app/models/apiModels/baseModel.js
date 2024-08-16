@@ -1,8 +1,4 @@
-import {
-  ErrorInternalAPIModelFieldValidation,
-  ErrorInternalAPIModelSchemaValidation,
-  ErrorInternalAPIModelValidation,
-} from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors";
 
 /**
  * BaseModel Abstract Class
@@ -13,13 +9,9 @@ import {
  */
 export class BaseModel {
   constructor(json, schema) {
-    try {
-      this.validate(json, schema);
-      for (const key of Object.keys(json)) {
-        this[key] = json[key];
-      }
-    } catch (e) {
-      throw new ErrorInternalAPIModelValidation(e.message);
+    this.validate(json, schema);
+    for (const key of Object.keys(json)) {
+      this[key] = json[key];
     }
   }
 
@@ -62,15 +54,15 @@ export class BaseModel {
 
       // valid schema creation
       if (required && type(required) !== boolean) {
-        throw new ErrorInternalAPIModelSchemaValidation("Required option not boolean.");
+        throw new ErrorValidation("API Model Validation - Required option not boolean.");
       }
 
       if (override && type(override) !== boolean) {
-        throw new ErrorInternalAPIModelSchemaValidation("Override option not boolean.");
+        throw new ErrorValidation("API Model Validation - Override option not boolean.");
       }
 
       if (enumValues && type(enumValues) !== array) {
-        throw new ErrorInternalAPIModelSchemaValidation("Enum values must be a list.");
+        throw new ErrorValidation("API Model Validation - Enum values must be a list.");
       }
 
       // override set
@@ -81,7 +73,7 @@ export class BaseModel {
 
       // required
       if (required && value === undefined) {
-        throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' is required.`);
+        throw new ErrorValidation(`API Model Validation - Field '${key}' is required.`);
       }
 
       if (!required && value === undefined) {
@@ -91,27 +83,27 @@ export class BaseModel {
       // objectOnly
       if (type(schemaType) === objectOnly) {
         if (type(value) !== object) {
-          throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must have type '${schemaType}'. Given: ${value}`);
+          throw new ErrorValidation(`API Model Validation - Field '${key}' must have type '${schemaType}'. Given: ${value}`);
         }
         continue;
       }
 
       // mismatch type
       if (type(value) !== type(schemaType)) {
-        throw new ErrorInternalAPIModelFieldValidation(`Field '${key}' must have type '${schemaType}'. Given: ${value}`);
+        throw new ErrorValidation(`API Model Validation - Field '${key}' must have type '${schemaType}'. Given: ${value}`);
       }
 
       // enum values (check complex enum values, like objects or lists)
       if (enumValues) {
         if (type(value) !== array && !contains(enumValues, value)) {
           // single enum
-          throw new ErrorInternalAPIModelFieldValidation(
-            `Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`
+          throw new ErrorValidation(
+            `API Model Validation - Invalid value '${value}' for field '${key}'. Must be one of: ${enumValues.join(", ")}`
           );
         } else if (type(value) === array && !value.every((enumValue) => contains(enumValues, enumValue))) {
           // list of enum
-          throw new ErrorInternalAPIModelFieldValidation(
-            `Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`
+          throw new ErrorValidation(
+            `API Model Validation - Invalid value '${value}' for field '${key}'. Must be list of: ${enumValues.join(", ")}`
           );
         }
         // all enum values handled
@@ -130,7 +122,7 @@ export class BaseModel {
         if (type(arrayType) !== object) {
           // basic list
           if (value.some((item) => type(item) !== arrayType)) {
-            throw new ErrorInternalAPIModelFieldValidation(`Invalid element of '${value}' not of type '${arrayType}'`);
+            throw new ErrorValidation(`API Model Validation - Invalid element of '${value}' not of type '${arrayType}'`);
           }
         } else {
           // list of objects
@@ -156,7 +148,7 @@ export class BaseModelUpdate extends BaseModel {
    */
   validateUpdate(json) {
     if (!Object.values(json).some((value) => value !== undefined)) {
-      throw new ErrorInternalAPIModelFieldValidation("Invalid update model.");
+      throw new ErrorValidation("API Model Validation - Invalid update model.");
     }
   }
 }

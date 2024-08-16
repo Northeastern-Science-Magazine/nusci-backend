@@ -1,7 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import Connection from "../db/connection.js";
-import { ErrorDatabaseConnection } from "../error/httpErrors.js";
+import { ErrorDatabaseConnection } from "../error/errors.js";
 
 const router = express.Router();
 
@@ -18,7 +18,7 @@ router.route("/db").get(async (req, res) => {
     res.status(200).json({ message: "Successfully connected to the NU Sci Database Instance!" });
   } catch (e) {
     console.log(e);
-    ErrorDatabaseConnection.throwHttp(req, res);
+    new ErrorDatabaseConnection().throwHttp(req, res);
   }
 });
 

@@ -1,12 +1,7 @@
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import Accounts from "../models/enums/accounts.js";
-import {
-  ErrorNoTokenProvided,
-  ErrorIncorrectPassword,
-  ErrorLoginInformation,
-  ErrorUserPermissions,
-} from "../error/httpErrors.js";
+import { ErrorFailedLogin, ErrorForbidden, ErrorNotLoggedIn } from "../error/errors.js";
 
 /**
  * Authorize class
@@ -35,13 +30,13 @@ export default class Authorize {
           if (roles.some((element) => userRoles.includes(element))) {
             next();
           } else {
-            ErrorUserPermissions.throwHttp(req, res);
+            new ErrorForbidden().throwHttp(req, res);
           }
         } else {
-          ErrorLoginInformation.throwHttp(req, res);
+          new ErrorForbidden().throwHttp(req, res);
         }
       } else {
-        ErrorNoTokenProvided.throwHttp(req, res);
+        new ErrorNotLoggedIn().throwHttp(req, res);
       }
     };
   }
@@ -60,10 +55,10 @@ export default class Authorize {
       if (payload) {
         return payload.username;
       } else {
-        ErrorIncorrectPassword.throwHttp(req, res);
+        new ErrorFailedLogin().throwHttp(req, res);
       }
     } else {
-      ErrorNoTokenProvided.throwHttp(req, res);
+      new ErrorNotLoggedIn().throwHttp(req, res);
     }
   }
 
@@ -81,10 +76,10 @@ export default class Authorize {
       if (payload) {
         return payload.roles;
       } else {
-        ErrorIncorrectPassword.throwHttp(req, res);
+        new ErrorFailedLogin().throwHttp(req, res);
       }
     } else {
-      ErrorNoTokenProvided.throwHttp(req, res);
+      new ErrorNotLoggedIn().throwHttp(req, res);
     }
   }
 }

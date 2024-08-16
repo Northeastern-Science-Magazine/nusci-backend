@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import WritingStatus from "../../../../app/models/enums/writingStatus.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -67,7 +67,7 @@ describe("Tests for enumerated type WritingStatus", () => {
   test("toWritingStatus invalid input", () => {
     expect(() => {
       WritingStatus.toWritingStatus("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list WritingStatus", () => {
