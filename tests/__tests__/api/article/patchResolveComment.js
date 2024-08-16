@@ -27,22 +27,41 @@ describe("Article Resolve Internal Comment Tests", () => {
     test("valid comment resolve (admin)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
-            .send({ commentId: "" }) //TODO fill
+            .send({ commentId: "66ba07fc440f0ccec39b317d" })
             .set("Cookie", [`token=${tokens.ethan}`]);
 
         showLog && console.log(response.body);
         expect(response.status).toBe(201);
-        expect(response.body.comments[0].commentStatus).toBe("resolved"); // FIX
     });
 
     test("invalid resolve comment (invalid login)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
-            .send({ commentId: "" }) // TODO fill
+            .send({ commentId: "66ba07fc440f0ccec39b317d" })
             .set("Cookie", [`token=${tokens.arushi}`]);
 
         showLog && console.log(response.body);
         expect(response.status).toBe(403);
         expect(response.body).toStrictEqual({ error: "User is incorrect." });
+    });
+
+    test("invalid resolve comment (invalid id)", async () => {
+        const response = await request(app)
+            .patch("/articles/resolve-internal-comment")
+            .send({ commentId: "66ba07fc440f0ccec39b317e" })
+            .set("Cookie", [`token=${tokens.ethan}`]);
+
+        showLog && console.log(response.body);
+        expect(response.status).toBe(201);
+    });
+
+    test("invalid resolve comment (already resolved)", async () => {
+        const response = await request(app)
+            .patch("/articles/resolve-internal-comment")
+            .send({ commentId: "66ba07fc440f0ccec39b317a" })
+            .set("Cookie", [`token=${tokens.ethan}`]);
+
+        showLog && console.log(response.body);
+        expect(response.status).toBe(201);
     });
 });

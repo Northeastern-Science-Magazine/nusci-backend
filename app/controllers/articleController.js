@@ -152,11 +152,12 @@ export default class ArticleController {
   static async resolveInternalComment(req, res, next) {
     try {
       // modify the comment status
-      await ArticlesAccessor.resolveCommentById(req.params.commentId);
-
-      res.status(201);
+      const a = await ArticlesAccessor.resolveCommentById(req.body.commentId);
+      res.status(201).json({});
     } catch (e) {
-
+        if (e instanceof HttpError) {
+          e.throwHttp(req, res);
+        }
     }
   }
 }

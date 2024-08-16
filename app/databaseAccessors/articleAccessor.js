@@ -403,10 +403,10 @@ export default class ArticlesAccessor {
         { "comments._id": commentId },
         {
           $set: {
-            "comments.commentStatus": "resolved",
+            "comments.$.commentStatus": "resolved",
           },
         },
-      )
+      );
     } catch (e) {
       console.log(e);
       ErrorDatabaseConnection(e);
