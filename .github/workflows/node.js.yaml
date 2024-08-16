@@ -11,9 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code using git command
-      - name: Check out code
-        run: git clone https://github.com/Northeastern-Science-Magazine/nusci-backend.git .
+      # Step 1: Check out the repository
+      - uses: actions/checkout@v4
 
       # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
       - name: Set up Docker
@@ -22,6 +21,15 @@ jobs:
       # Step 3: Set up Docker Compose
       - name: Set up Docker Compose
         run: sudo apt-get install -y docker-compose
+
+      # debug
+      - name: Print Environment Variables
+        run: |
+          echo "SERVER_PORT=${{ vars.SERVER_PORT }}"
+          echo "MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}"
+        env:
+          SERVER_PORT: ${{ vars.SERVER_PORT }}
+          MONGODB_INITDB_PORT: ${{ vars.MONGODB_INITDB_PORT }}
 
       # Step 4: Build and Start Docker Compose with secrets as environment variables
       - name: Build and Start Docker Compose
