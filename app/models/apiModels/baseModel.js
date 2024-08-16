@@ -1,4 +1,4 @@
-import { ErrorValidation } from "../../error/errors";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * BaseModel Abstract Class
