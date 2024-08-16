@@ -15,16 +15,6 @@ jobs:
       # Step 1: Check out the repository
       - uses: actions/checkout@v4
 
-      - name: Create .env file
-        run: |
-          "SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}" >> .env
-          "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
-          "SERVER_TOKEN_KEY=${{ vars.SERVER_TOKEN_KEY }}" >> .env
-          "MONGODB_INITDB_ROOT_USERNAME=${{ vars.MONGODB_INITDB_ROOT_USERNAME }}" >> .env
-          "MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}" >> .env
-          "MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}" >> .env
-          "MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}" >> .env
-
       # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
       - name: Set up Docker
         run: sudo apt-get update && sudo apt-get install -y docker
@@ -34,9 +24,15 @@ jobs:
         run: sudo apt-get install -y docker-compose
 
       # Step 4: Build and Start Docker Compose with secrets as environment variables
-      - name: Build and Start Docker Compose
+      - name: Create .env File Securely and Start Docker Compose
         run: |
-          docker-compose up --build -d
+          cat <<EOF > .env
+          SERVER_PORT=${{ secrets.SERVER_PORT }}
+          MONGODB_INITDB_ROOT_USERNAME=${{ secrets.MONGODB_INITDB_ROOT_USERNAME }}
+          MONGODB_INITDB_ROOT_PASSWORD=${{ secrets.MONGODB_INITDB_ROOT_PASSWORD }}
+          MONGODB_INITDB_PORT=${{ secrets.MONGODB_INITDB_PORT }}
+          EOF
+          docker-compose --env-file .env up --build -d
 
       # Step 5: Run any commands you want (e.g., tests)
       - name: Run Tests
