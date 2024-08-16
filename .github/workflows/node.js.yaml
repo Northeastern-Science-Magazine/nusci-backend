@@ -1,0 +1,46 @@
+name: Build Project and Run Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code
+      - uses: actions/checkout@v4
+
+      # Step 2: Set up Docker (already available on ubuntu-latest)
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # Step 3: Set up Docker Compose
+      - name: Set up Docker Compose
+        run: sudo apt-get install -y docker-compose
+
+      # Step 4: Build and Start Docker Compose with secrets as environment variables
+      - name: Build and Start Docker Compose
+        run: |
+          docker-compose up --build -d
+        env:
+          SERVER_HOSTNAME: ${{ vars.SERVER_HOSTNAME }}
+          SERVER_PORT: ${{ vars.SERVER_PORT }}
+          SERVER_TOKEN_KEY: ${{ vars.SERVER_TOKEN_KEY }}
+          MONGODB_INITDB_ROOT_USERNAME: ${{ vars.MONGODB_INITDB_ROOT_USERNAME }}
+          MONGODB_INITDB_ROOT_PASSWORD: ${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}
+          MONGODB_INITDB_HOSTNAME: ${{ vars.MONGODB_INITDB_HOSTNAME }}
+          MONGODB_INITDB_PORT: ${{ vars.MONGODB_INITDB_PORT }}
+
+      # Step 5: Run any commands you want (e.g., tests)
+      - name: Run Tests
+        run: |
+          docker exec nusci-backend npm test
+
+      # Step 6: Tear down the services after the job is done
+      - name: Tear Down Docker Compose
+        if: always()
+        run: docker-compose down
