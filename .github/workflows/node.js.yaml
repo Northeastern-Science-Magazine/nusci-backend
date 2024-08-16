@@ -11,12 +11,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository code
-      - uses: actions/checkout@v4
+      # Step 1: Check out the repository code using git command
+      - name: Check out code
+        run: git clone https://github.com/Northeastern-Science-Magazine/nusci-backend.git .
 
-      # Step 2: Set up Docker (already available on ubuntu-latest)
+      # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v2
+        run: sudo apt-get update && sudo apt-get install -y docker
 
       # Step 3: Set up Docker Compose
       - name: Set up Docker Compose
