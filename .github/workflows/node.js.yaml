@@ -27,10 +27,13 @@ jobs:
       - name: Create .env File Securely and Start Docker Compose
         run: |
           cat <<EOF > .env
-          SERVER_PORT=${{ secrets.SERVER_PORT }}
-          MONGODB_INITDB_ROOT_USERNAME=${{ secrets.MONGODB_INITDB_ROOT_USERNAME }}
-          MONGODB_INITDB_ROOT_PASSWORD=${{ secrets.MONGODB_INITDB_ROOT_PASSWORD }}
-          MONGODB_INITDB_PORT=${{ secrets.MONGODB_INITDB_PORT }}
+          SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}
+          SERVER_PORT=${{ vars.SERVER_PORT }}
+          SERVER_TOKEN_KEY=${{ vars.SERVER_TOKEN_KEY }}
+          MONGODB_INITDB_ROOT_USERNAME=${{ vars.MONGODB_INITDB_ROOT_USERNAME }}
+          MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}
+          MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}
+          MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
           EOF
           docker-compose --env-file .env up --build -d
 
