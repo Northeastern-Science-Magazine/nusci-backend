@@ -1,16 +1,10 @@
 #local dev env only
 services:
   app:
-    environment:
-      - SERVER_HOSTNAME=${SERVER_HOSTNAME}
-      - SERVER_PORT=${SERVER_PORT}
-      - SERVER_TOKEN_KEY=${SERVER_TOKEN_KEY}
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
-      - MONGODB_INITDB_HOSTNAME=${MONGODB_INITDB_HOSTNAME}
-      - MONGODB_INITDB_PORT=${MONGODB_INITDB_PORT}
     build: .
     container_name: nusci-backend
+    env_file:
+      - .env
     command: npm start
     depends_on:
       - mongodb
@@ -19,16 +13,10 @@ services:
     volumes:
       - .:/app
   mongodb:
-    environment:
-      - SERVER_HOSTNAME=${SERVER_HOSTNAME}
-      - SERVER_PORT=${SERVER_PORT}
-      - SERVER_TOKEN_KEY=${SERVER_TOKEN_KEY}
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
-      - MONGODB_INITDB_HOSTNAME=${MONGODB_INITDB_HOSTNAME}
-      - MONGODB_INITDB_PORT=${MONGODB_INITDB_PORT}
     image: mongo
     container_name: nusci-database
+    env_file:
+      - .env
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
