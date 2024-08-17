@@ -7,7 +7,7 @@ on:
     branches: ["main"]
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     environment: dev
 
@@ -16,15 +16,14 @@ jobs:
       - uses: actions/checkout@v4
 
       # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
-      - name: Set up Docker
-        run: sudo apt-get update && sudo apt-get install -y docker
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker
+          sudo apt-get install -y docker-compose
 
-      # Step 3: Set up Docker Compose
-      - name: Set up Docker Compose
-        run: sudo apt-get install -y docker-compose
-
-      # Step 4: Build and Start Docker Compose with secrets as environment variables
-      - name: Create .env File Securely and Start Docker Compose
+      # Step 3: Build and Start Docker Compose with secrets as environment variables
+      - name: Build Docker Compose Project
         run: |
           cat <<EOF > .env
           SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}
@@ -37,13 +36,15 @@ jobs:
           EOF
           docker-compose up --build -d
 
-      # Step 5: Run any commands you want (e.g., tests)
+      # Step 4: Install NPM dependencies
+      - name: Install Dependencies
+        run: npm i
+
+      # Step 5: Run testing suite
       - name: Run Tests
-        run: |
-          npm i
-          npm run test
+        run: npm run test
 
       # Step 6: Tear down the services after the job is done
-      - name: Tear Down Docker Compose
+      - name: Tear Down Docker Compose Project
         if: always()
         run: docker-compose down
