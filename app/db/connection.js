@@ -1,8 +1,9 @@
 import { config as dotenvConfig } from "dotenv";
-import mongoose from "mongoose"; // import mongoose
+import mongoose from "mongoose";
 import logActivity from "./logActivity.js";
+import { ErrorDatabaseConnection } from "../error/errors.js";
 
-//Connection to the cluster
+//Connection to the cluster (cache)
 let connection;
 
 /**
@@ -36,14 +37,19 @@ export default class Connection {
         process.env;
       const DATABASE_URL = `mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@${MONGODB_INITDB_HOSTNAME}:${MONGODB_INITDB_PORT}`;
 
-      //Mongoose connect to the cluster.
-      mongoose.connect(DATABASE_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        maxPoolSize: 50,
-        socketTimeoutMS: 2500,
-      });
+      try {
+        //Mongoose connect to the cluster.
+        mongoose.connect(DATABASE_URL, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          maxPoolSize: 50,
+          socketTimeoutMS: 2500,
+        });
+      } catch (e) {
+        throw new ErrorDatabaseConnection();
+      }
 
+      // in-memory cache of the current connection
       connection = mongoose.connection;
 
       //Log when open/closed

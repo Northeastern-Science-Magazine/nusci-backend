@@ -35,7 +35,7 @@ describe("User Login Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe("Login successful");
+    expect(response.body.message).toBe("Login successful.");
     expect(response.headers["set-cookie"]).toBeDefined();
   });
 
@@ -44,7 +44,7 @@ describe("User Login Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.message).toBe("Login successful");
+    expect(response.body.message).toBe("Login successful.");
     expect(response.headers["set-cookie"]).toBeDefined();
   });
 
@@ -69,7 +69,7 @@ describe("User Login Tests", () => {
     });
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(400);
   });
 
   test("should not login if user is unapproved", async () => {

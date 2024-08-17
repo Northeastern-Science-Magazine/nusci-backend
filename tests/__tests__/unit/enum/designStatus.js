@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import DesignStatus from "../../../../app/models/enums/designStatus.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -43,7 +43,7 @@ describe("Tests for enumerated type DesignStatus", () => {
   test("toDesignStatus invalid input", () => {
     expect(() => {
       DesignStatus.toDesignStatus("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list DesignStatus", () => {

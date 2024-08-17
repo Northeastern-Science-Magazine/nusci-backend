@@ -54,7 +54,10 @@ describe("Article Internal Comment Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
-    expect(response.body).toStrictEqual({ error: "Malformed API Model." });
+    expect(response.body).toStrictEqual({
+      error: "A validation error occurred.",
+      message: "API Model Validation - Field 'comment' is required.",
+    });
   });
 
   test("invalid create comment (invalid slug)", async () => {
@@ -65,7 +68,7 @@ describe("Article Internal Comment Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({ error: "Article not found." });
+    expect(response.body).toStrictEqual({ error: "Article not found.", message: "" });
   });
 
   test("invalid create comment (invalid login)", async () => {
@@ -76,6 +79,6 @@ describe("Article Internal Comment Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(403);
-    expect(response.body).toStrictEqual({ error: "User is incorrect." });
+    expect(response.body).toStrictEqual({ error: "Insufficient permissions to access this resource.", message: "" });
   });
 });

@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import Accounts from "../../../../app/models/enums/accounts.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -67,7 +67,7 @@ describe("Tests for enumerated type Accounts", () => {
   test("toAccount invalid input", () => {
     expect(() => {
       Accounts.toAccount("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list Account", () => {

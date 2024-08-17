@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 export default class ArticleContent {
   static BodyParagraph = new ArticleContent("body_paragraph");
@@ -40,7 +40,7 @@ export default class ArticleContent {
       case this.Image.type:
         return this.Image;
       default:
-        throw new ErrorInternalEnumValidation("Invalid ArticleContent given.");
+        throw new ErrorValidation("Invalid ArticleContent enum given.");
     }
   }
 
