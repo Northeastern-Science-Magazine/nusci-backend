@@ -127,7 +127,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -151,7 +151,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -173,7 +173,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -202,7 +202,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -233,7 +233,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -286,7 +286,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -322,7 +322,7 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        new ErrorUnexpected(e.message).throwHttp();
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
