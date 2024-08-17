@@ -306,20 +306,15 @@ export default class ArticlesAccessor {
    * @param {commentId} mongo Id of the comment to be resolved
    */
   static async resolveCommentById(commentId) {
-    try {
-      await Connection.open();
-      // find the comment by ID and then resolve it
-      await Article.findOneAndUpdate(
-        { "comments._id": commentId },
-        {
-          $set: {
-            "comments.$.commentStatus": "resolved",
-          },
+    await Connection.open();
+    // find the comment by ID and then resolve it
+    await Article.findOneAndUpdate(
+      { "comments._id": commentId },
+      {
+        $set: {
+          "comments.$.commentStatus": "resolved",
         },
-      );
-    } catch (e) {
-      console.log(e);
-      ErrorDatabaseConnection(e);
-    }
+      },
+    );
   }
 }

@@ -132,9 +132,11 @@ export default class ArticleController {
       const a = await ArticlesAccessor.resolveCommentById(req.body.commentId);
       res.status(201).json({});
     } catch (e) {
-        if (e instanceof HttpError) {
-          e.throwHttp(req, res);
-        }
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
     }
   }
 }
