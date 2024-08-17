@@ -130,7 +130,7 @@ export default [
         commentStatus: CommentStatus.Unresolved.status,
         creationTime: new Date("2024-03-30"),
         modificationTime: new Date("2024-03-30"),
-        _id: "66ba07fc440f0ccec39b317d",
+        _id: new mongoose.Types.ObjectId("c00000000000000000000001"),
       },
       {
         user: new mongoose.Types.ObjectId("b00000000000000000000004"),
@@ -138,7 +138,7 @@ export default [
         commentStatus: CommentStatus.Resolved.status,
         creationTime: new Date("2024-03-30"),
         modificationTime: new Date("2024-03-30"),
-        _id: "66ba07fc440f0ccec39b317a",
+        _id: new mongoose.Types.ObjectId("c00000000000000000000002"),
       },
     ],
     articleStatus: ArticleStatus.Pending.status,

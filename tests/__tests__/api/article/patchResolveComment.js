@@ -27,7 +27,7 @@ describe("Article Resolve Internal Comment Tests", () => {
     test("valid comment resolve (admin)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
-            .send({ commentId: "66ba07fc440f0ccec39b317d" })
+            .send({ commentId: "c00000000000000000000001" })
             .set("Cookie", [`token=${tokens.ethan}`]);
 
         showLog && console.log(response.body);
@@ -37,7 +37,7 @@ describe("Article Resolve Internal Comment Tests", () => {
     test("invalid resolve comment (invalid login)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
-            .send({ commentId: "66ba07fc440f0ccec39b317d" })
+            .send({ commentId: "c00000000000000000000001" })
             .set("Cookie", [`token=${tokens.arushi}`]);
 
         showLog && console.log(response.body);
@@ -58,7 +58,7 @@ describe("Article Resolve Internal Comment Tests", () => {
     test("invalid resolve comment (already resolved)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
-            .send({ commentId: "66ba07fc440f0ccec39b317a" })
+            .send({ commentId: "c00000000000000000000002" })
             .set("Cookie", [`token=${tokens.ethan}`]);
 
         showLog && console.log(response.body);
