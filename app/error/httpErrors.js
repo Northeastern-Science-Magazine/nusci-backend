@@ -72,3 +72,9 @@ export class ErrorDatabaseConnection extends HttpError {
     res.status(500).json({ error: "Failed to connect to the database." });
   }
 }
+
+export class ErrorRepeatedTagName extends HttpError {
+  static throwHttp(req, res) {
+    res.status(409).json({ error: "Tag name is already used by another tag." });
+  }
+}

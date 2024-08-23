@@ -1,6 +1,7 @@
-import PhotoTag from "../models/photo_tag.js";
+import PhotoTag from "../models/dbModels/photoTag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorInternalDatabaseAccessor } from "../error/internalErrors.js";
 
 /**
  * PhotoTag Accessor Class
@@ -8,6 +9,18 @@ import mongoose from "mongoose";
  * Accesses the photo tags
  */
 export default class PhotoTagAccessor {
+
+  static async createPhotoTag(tag) {
+    try {
+      await Connection.open();
+      const createTag = await PhotoTag.create(tag);
+      return createTag;
+    } catch (e) {
+      console.error(e);
+      throw ErrorInternalDatabaseAccessor(e);
+    }
+  }
+  
   /**
    * Get all tags
    *
