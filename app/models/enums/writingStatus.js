@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 /**
  * Enumerated Class for Writing Statuses
  */
@@ -39,7 +41,7 @@ export default class WritingStatus {
     switch (str.toLowerCase()) {
       case this.Needs_Editor.status:
         return this.Needs_Editor;
-      case this.Has_Editor.stats:
+      case this.Has_Editor.status:
         return this.Has_Editor;
       case this.Rough_Draft_Complete.status:
         return this.Rough_Draft_Complete;
@@ -52,6 +54,7 @@ export default class WritingStatus {
       case this.Dropped.status:
         return this.Dropped;
       default:
+        throw new ErrorInternalEnumValidation("Invalid WritingStatus given.");
     }
   }
 

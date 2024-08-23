@@ -1,7 +1,7 @@
 import PhotoTag from "../models/dbModels/photoTag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorInternalDatabaseAccessor } from "../error/internalErrors.js";
+import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
 /**
  * PhotoTag Accessor Class
@@ -32,8 +32,13 @@ export default class PhotoTagAccessor {
       const tags = await PhotoTag.find({});
       return tags;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -49,8 +54,13 @@ export default class PhotoTagAccessor {
       const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID));
       return tag;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -66,8 +76,13 @@ export default class PhotoTagAccessor {
       const tag = await PhotoTag.findOne({ tagName: tagName });
       return tag;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -83,8 +98,13 @@ export default class PhotoTagAccessor {
       const tags = await PhotoTag.find({ color: color });
       return tags;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -100,8 +120,13 @@ export default class PhotoTagAccessor {
       const tags = await PhotoTag.find({ user: new mongoose.Types.ObjectId(userID) });
       return tags;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -118,8 +143,13 @@ export default class PhotoTagAccessor {
       const tags = await PhotoTag.find({ creationTime: { $gte: start, $lte: end } });
       return tags;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -136,8 +166,13 @@ export default class PhotoTagAccessor {
       const tags = await PhotoTag.find({ modificationTime: { $gte: start, $lte: end } });
       return tags;
     } catch (e) {
-      console.error(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

@@ -13,13 +13,13 @@ services:
     volumes:
       - .:/app
   mongodb:
-    image: mongodb/mongodb-community-server:6.0-ubi8
+    image: mongo
     container_name: nusci-database
     env_file:
       - .env
     environment:
-      - MONGODB_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
-      - MONGODB_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_INITDB_ROOT_PASSWORD}
     ports:
       - ${MONGODB_INITDB_PORT}:${MONGODB_INITDB_PORT}
     volumes:

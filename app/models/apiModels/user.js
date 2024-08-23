@@ -1,4 +1,4 @@
-import AccountStatus from "../enums/account_status.js";
+import AccountStatus from "../enums/accountStatus.js";
 import Accounts from "../enums/accounts.js";
 import { BaseModel, BaseModelUpdate, number, string, date, empty, now } from "./baseModel.js";
 
@@ -11,6 +11,7 @@ export class UserCreate extends BaseModel {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
     username: { type: string, required: true },
+    password: { type: string, required: true },
     pronouns: { type: [string] },
     graduationYear: { type: number, required: true },
     majors: { type: [string] },
@@ -66,6 +67,7 @@ export class UserResponse extends BaseModel {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
     username: { type: string, required: true },
+    password: { type: string, required: true },
     pronouns: { type: [string], required: false },
     graduationYear: { type: number, required: true },
     majors: { type: [string] },

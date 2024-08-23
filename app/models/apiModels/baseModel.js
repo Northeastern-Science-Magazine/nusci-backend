@@ -53,7 +53,7 @@ export class BaseModel {
       }
 
       // key exists in schema
-      var value = json[key];
+      let value = json[key];
       const schemaType = schema[key].type;
       const required = schema[key].required;
       const enumValues = schema[key].enum;
@@ -144,7 +144,7 @@ export class BaseModel {
 export class BaseModelUpdate extends BaseModel {
   constructor(json, schema) {
     super(json, schema);
-    this.validate(json);
+    this.validateUpdate(json);
   }
 
   /**
@@ -154,7 +154,7 @@ export class BaseModelUpdate extends BaseModel {
    * @param {JSON} json
    * @param {JSON} schema
    */
-  validate(json) {
+  validateUpdate(json) {
     if (!Object.values(json).some((value) => value !== undefined)) {
       throw new ErrorInternalAPIModelFieldValidation("Invalid update model.");
     }

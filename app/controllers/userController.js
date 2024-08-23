@@ -4,14 +4,19 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import { UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
+import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import {
-  ErrorUserDeactivated,
   ErrorUserLoggedIn,
   ErrorUserNotFound,
-  ErrorUserNotRegistered,
+  ErrorUserPending,
+  ErrorUserAlreadyExists,
   ErrorValidation,
+  ErrorUserDeactivated,
+  ErrorUserDenied,
+  ErrorLoginInformation,
+  ErrorUnexpected,
 } from "../error/httpErrors.js";
+import AccountStatus from "../models/enums/accountStatus.js";
 
 /**
  * UsersCTRL Class
@@ -24,7 +29,7 @@ export default class UserController {
    * apiPostLogin Method
    *
    * This method checks whether or not the request
-   * to sign in is valid. Utilizes the getRegisteredByUsername
+   * to sign in is valid. Utilizes the getApprovedByUsername
    * UserAccessor method to accomplish this.
    *
    * @param {HTTP REQ} req web request object
@@ -33,55 +38,54 @@ export default class UserController {
    */
   static async login(req, res, next) {
     try {
-      if (!req.cookies.token) {
-        // check if the user is registered
-        const user = await UsersAccessor.getRegisteredByUsername(req.body.username);
-        if (user) {
-          //check if password matches
-          const result = await bcrypt.compare(req.body.password, user.password);
-          if (result) {
-            // check if the user has been deactivated
-            const deactive = await user.deactivated;
-            if (!deactive) {
-              // sign token and send it in response
-              const token = jwt.sign(
-                {
-                  username: user.username,
-                  roles: user.roles,
-                },
-                process.env.SERVER_TOKEN_KEY
-              );
-
-              //Users are logged in for 1 hour
-              res.cookie("token", token, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-              });
-              res.redirect("/internal/my-profile");
-            } else {
-              ErrorValidation.throwHttp(req, res);
-            }
-          } else {
-            ErrorUserDeactivated.throwHttp(req, res);
-          }
-        } else {
-          //check if the user is unregistered
-          const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
-          if (unregistered) {
-            ErrorUserNotRegistered.throwHttp(req, res);
-          } else {
-            //doesn't exist
-            ErrorUserNotFound.throwHttp(req, res);
-          }
-        }
-      } else {
-        //already logged in
-        ErrorUserLoggedIn.throwHttp(req, res);
+      if (req.cookies.token) {
+        // already logged in
+        return ErrorUserLoggedIn.throwHttp(req, res);
       }
+
+      // check if the user exists and is approved
+      const user = await UsersAccessor.getUserByUsername(req.body.username);
+
+      if (!user) {
+        //doesn't exist
+        return ErrorUserNotFound.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Pending.toString()) {
+        //check if the user is pending
+        return ErrorUserPending.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Deactivated.toString()) {
+        //check if the user is deactivated
+        return ErrorUserDeactivated.throwHttp(req, res);
+      }
+
+      if (user.status == AccountStatus.Denied.toString()) {
+        //check if the user is denied
+        return ErrorUserDenied.throwHttp(req, res);
+      }
+
+      //check if password matches
+      const decrypted = await bcrypt.compare(req.body.password, user.password);
+      if (!decrypted) {
+        return ErrorLoginInformation.throwHttp(req, res);
+      }
+
+      // sign token and send it in response
+      const token = jwt.sign(
+        {
+          username: user.username,
+          roles: user.roles,
+        },
+        process.env.SERVER_TOKEN_KEY
+      );
+
+      //Users are logged in for 1 hour
+      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+      res.status(200).json({ message: "Login successful." });
     } catch (e) {
-      console.log(e);
-      //something else went wrong
-      new throwHttp(req, res);
+      ErrorUnexpected.throwHttp(req, res);
     }
   }
 
@@ -99,29 +103,23 @@ export default class UserController {
    */
   static async signup(req, res, next) {
     try {
+      // validate incoming data using UserCreate model
+      const userData = new UserCreate(req.body);
+
       // hash the password
-      req.body.password = await bcrypt.hash(req.body.password, 10);
+      userData.password = await bcrypt.hash(userData.password, 10);
 
-      // make sure nested data is structured properly
-      req.body.information = {
-        year: req.body.year,
-        major: req.body.major,
-        bio: req.body.bio,
-        image: req.body.image,
-      };
+      const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
 
-      const registered = await UsersAccessor.getRegisteredByUsername(req.body.username);
-      const unregistered = await UsersAccessor.getUnregisteredByUsername(req.body.username);
-
-      if (!registered && !unregistered) {
-        await UsersAccessor.createUser(req.body);
-        res.redirect("/login");
-      } else {
-        ErrorValidation.throwHttp(req, res);
+      if (userByUsername || userByEmail) {
+        return ErrorUserAlreadyExists.throwHttp(req, res);
       }
+
+      await UsersAccessor.createUser(userData);
+      res.status(201).json({ message: "Signup successful." });
     } catch (e) {
-      console.log(e);
-      ErrorValidation.throwHttp(req, res);
+      return ErrorUnexpected.throwHttp(req, res);
     }
   }
 
@@ -176,7 +174,7 @@ export default class UserController {
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        ErrorUserNotFound.throwHttp(req, res);
+        return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const userProfile = new UserResponse(user.toObject());
@@ -195,19 +193,71 @@ export default class UserController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async getPublicProfile(req, res, next) {
+  static async getPublicUserByUsername(req, res, next) {
     try {
       const username = req.params.username;
       const user = await UsersAccessor.getUserByUsername(username);
 
       if (!user) {
-        ErrorUserNotFound.throwHttp(req, res);
+        //return the user not found error here: or else ErrorValidation will also be
+        // thrown due to null response from getUserByUsername when using .toObject() on null.
+        return ErrorUserNotFound.throwHttp(req, res);
       }
 
       const publicUser = new UserPublicResponse(user.toObject());
-      res.json(publicUser);
+      res.status(200).json(publicUser);
     } catch (e) {
       ErrorValidation.throwHttp(req, res);
+    }
+  }
+
+  /**
+   * resolveUserApprovals Method
+   *
+   * This method updates the status of lists of pending users to deny or approve them.
+   *
+   * @param {HTTP REQ} req web request object, contains 2 lists of usernames to approve or deniy.
+   * @param {HTTP RES} res web response object.
+   * @param {function} next middleware function.
+   */
+  static async resolveUserApprovals(req, res, next) {
+    if (!(req.body.approve && req.body.deny)) {
+      ErrorValidation.throwHttp(req, res);
+    } else {
+      try {
+        const approveUsers = req.body.approve ?? [];
+        const denyUsers = req.body.deny ?? [];
+        const allUsers = [...approveUsers, ...denyUsers];
+
+        //check if the users given exists and are pending
+        for (const username of allUsers) {
+          //check if the user exists and is pending
+          try {
+            const user = await UsersAccessor.getUserByUsername(username);
+
+            if (user.status !== AccountStatus.Pending.toString()) {
+              return ErrorValidation.throwHttp(req, res);
+            }
+          } catch (e) {
+            return ErrorUserNotFound.throwHttp(req, res);
+          }
+        }
+
+        //approve the users
+        for (const username of approveUsers) {
+          await UsersAccessor.approveUserByUsername(username);
+        }
+
+        //deny the users
+        for (const username of denyUsers) {
+          await UsersAccessor.denyUserByUsername(username);
+        }
+
+        res.status(201).json({ message: "All users resolved successfully." });
+      } catch (e) {
+        console.log(e);
+        return ErrorUserNotFound.throwHttp(req, res);
+      }
     }
   }
 
@@ -260,7 +310,6 @@ export default class UserController {
 
   static logout(req, res) {
     res.clearCookie("token");
-    res.redirect("/");
-    console.log("Signed out");
+    res.json({ message: "Successfully logged out." });
   }
 }

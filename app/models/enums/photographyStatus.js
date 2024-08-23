@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 /**
  * Enumerated Class for Photography Statuses
  */
@@ -43,6 +45,7 @@ export default class PhotographyStatus {
       case this.Photo_Complete.status:
         return this.Photo_Complete;
       default:
+        throw new ErrorInternalEnumValidation("Invalid PhotographyStatus given.");
     }
   }
 

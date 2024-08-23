@@ -1,5 +1,11 @@
 import Connection from "../db/connection.js";
 import User from "../models/dbModels/user.js";
+import AccountStatus from "../models/enums/accountStatus.js";
+import {
+  ErrorInternalUnexpected,
+  ErrorInternalUserNotFound,
+  ErrorInternalDatabaseConnection,
+} from "../error/internalErrors.js";
 
 /**
  * UserAccessor Class
@@ -25,8 +31,13 @@ export default class UsersAccessor {
       const user = await User.findOne({ _id: objectId });
       return user;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -47,7 +58,177 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * Get User IDs by a list of usernames
+   *
+   * @param {Array<string>} usernames - List of usernames
+   * @returns {Array<ObjectId>} - List of user IDs
+   */
+  static async getUserIdsByUsernames(usernames) {
+    try {
+      const userIds = [];
+      for (const username of usernames) {
+        const user = await this.getUserByUsername(username);
+        if (user) {
+          userIds.push(user._id);
+        } else {
+          throw new ErrorInternalUserNotFound(`User not found for username: ${username}`);
+        }
+      }
+      return userIds;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection || e instanceof ErrorInternalUserNotFound) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * getApprovedByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username
+   *
+   * @param {String} username
+   * @returns the User associated with the given username in
+   * the database.
+   */
+  static async getApprovedByUsername(username) {
+    try {
+      await Connection.open();
+
+      const user = await User.findOne({
+        username: username,
+        status: AccountStatus.Approved.toString(), // Use MongoDB filter for equal to approved status
+      });
+
+      return user;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * getUnapprovedByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username
+   *
+   * @param {String} username
+   * @returns the User associated with the given username in
+   * the database.
+   */
+  static async getUnapprovedByUsername(username) {
+    try {
+      await Connection.open();
+
+      const user = await User.findOne({
+        username: username,
+        status: { $ne: AccountStatus.Approved.toString() }, // Use MongoDB filter for not equal to approved status
+      });
+
+      if (user) return user;
+      return null;
+    } catch (e) {
+      console.log(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * approveUserByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username and update the user's status to approved.
+   *
+   * @param {String} username
+   * @returns the updated user object with the status set to approved.
+   */
+  static async approveUserByUsername(username) {
+    try {
+      await Connection.open();
+
+      //update the status
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { status: AccountStatus.Approved.toString() },
+        { new: true }
+      );
+
+      return user;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * denyUserByUsername Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given username and update the user's status to denied.
+   *
+   * @param {String} username
+   * @returns the updated user object with the status set to denied.
+   */
+  static async denyUserByUsername(username) {
+    try {
+      await Connection.open();
+
+      //update the status
+      const user = await User.findOneAndUpdate(
+        { username: username },
+        { status: AccountStatus.Denied.toString() },
+        { new: true }
+      );
+      return user;
+    } catch (e) {
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -69,7 +250,14 @@ export default class UsersAccessor {
       return user;
     } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -90,8 +278,13 @@ export default class UsersAccessor {
       const users = await User.find({ roles: { $in: [role] } });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -112,8 +305,13 @@ export default class UsersAccessor {
       const users = await User.find({ status: status });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -134,8 +332,13 @@ export default class UsersAccessor {
       const users = await User.find({ approvingUser: approvingUser });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -156,8 +359,13 @@ export default class UsersAccessor {
       const users = await User.find({ graduationYear: gradYear });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -178,8 +386,13 @@ export default class UsersAccessor {
       const users = await User.find({ majors: { $in: [major] } });
       return users;
     } catch (e) {
-      console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 
@@ -200,8 +413,41 @@ export default class UsersAccessor {
       const user = await User.findOne({ phone: phone });
       return user;
     } catch (e) {
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
+    }
+  }
+
+  /**
+   * createUser Method
+   *
+   * This method creates a new user in the database.
+   *
+   * @param {Object} user
+   * @returns the newly created user
+   */
+  static async createUser(user) {
+    try {
+      await Connection.open();
+      const newUser = new User(user);
+      await newUser.save();
+      return newUser;
+    } catch (e) {
       console.log(e);
-      ErrorInternalAPIModelFieldValidation(e);
+
+      // Check if it's a DB connection error
+      if (e instanceof ErrorInternalDatabaseConnection) {
+        // Throw up the stack
+        throw e;
+      } else {
+        // Else throw unexpected error
+        throw new ErrorInternalUnexpected("Unexpected error occurred");
+      }
     }
   }
 }

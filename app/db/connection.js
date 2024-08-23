@@ -1,8 +1,9 @@
 import { config as dotenvConfig } from "dotenv";
 import mongoose from "mongoose"; // import mongoose
 import logActivity from "./logActivity.js";
+import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
 
-//Connection to the cluster
+//Connection to the cluster (cache)
 let connection;
 
 /**
@@ -23,7 +24,10 @@ export default class Connection {
    *
    * @returns the connection object
    */
-  static async open() {
+  static async open(silentLog) {
+    // log if true, undefined/null or false is false
+    silentLog = silentLog ?? false;
+
     if (!connection) {
       //Load Environment variables
       dotenvConfig();
@@ -33,18 +37,23 @@ export default class Connection {
         process.env;
       const DATABASE_URL = `mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@${MONGODB_INITDB_HOSTNAME}:${MONGODB_INITDB_PORT}`;
 
-      //Mongoose connect to the cluster.
-      mongoose.connect(DATABASE_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        maxPoolSize: 50,
-        socketTimeoutMS: 2500,
-      });
+      try {
+        //Mongoose connect to the cluster.
+        mongoose.connect(DATABASE_URL, {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+          maxPoolSize: 50,
+          socketTimeoutMS: 2500,
+        });
+      } catch (e) {
+        throw new ErrorInternalDatabaseConnection("Failed to connect to the database.");
+      }
 
+      // in-memory cache of the current connection
       connection = mongoose.connection;
 
       //Log when open/closed
-      logActivity(mongoose.connection);
+      silentLog || logActivity(mongoose.connection);
 
       return mongoose.connection;
     } else {
@@ -62,10 +71,11 @@ export default class Connection {
    *
    * @param {MongoDB Connection} connection The given connection.
    */
-  static async close() {
+  static async close(silentLog) {
+    silentLog = silentLog ?? false;
     if (connection) {
       await connection.close();
-      logActivity(connection);
+      silentLog || logActivity(connection);
       connection = undefined;
     }
   }

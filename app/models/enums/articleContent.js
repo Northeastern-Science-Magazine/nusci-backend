@@ -1,3 +1,5 @@
+import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+
 export default class ArticleContent {
   static BodyParagraph = new ArticleContent("body_paragraph");
   static PullQuote = new ArticleContent("pull_quote");
@@ -38,6 +40,7 @@ export default class ArticleContent {
       case this.Image.type:
         return this.Image;
       default:
+        throw new ErrorInternalEnumValidation("Invalid ArticleContent given.");
     }
   }
 

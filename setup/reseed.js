@@ -2,17 +2,20 @@ import schemaData from "./setup.js";
 import Connection from "../app/db/connection.js";
 import { set } from "../app/util/util.js";
 
-process.stdout.write(
-  set("\n--------------------------------\n[+] RESEEDING ALL COLLECTIONS...\n--------------------------------\n").blue
-);
+const silent = process.argv.includes("--silent") || process.argv.includes("-s");
+
+silent ||
+  process.stdout.write(
+    set("\n--------------------------------\n[+] RESEEDING ALL COLLECTIONS...\n--------------------------------\n").blue
+  );
 
 try {
-  await Connection.open();
+  await Connection.open(silent);
   await reseed(schemaData);
-  await Connection.close();
+  await Connection.close(silent);
   process.exit();
 } catch (error) {
-  process.stdout.write(set(`Error while reseeding database: ${error}\n`).red);
+  silent || process.stdout.write(set(`Error while reseeding database: ${error}\n`).red);
   process.exit(1);
 }
 
@@ -35,5 +38,5 @@ async function createDocuments(schema, documents) {
   for (const doc of documents) {
     await schema.create(doc);
   }
-  process.stdout.write(`${set(`[+] RESEED ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
+  silent || process.stdout.write(`${set(`[+] RESEED ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
 }

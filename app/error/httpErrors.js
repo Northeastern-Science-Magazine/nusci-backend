@@ -7,21 +7,27 @@ class HttpError {
   }
 }
 
-export class ErrorToken extends HttpError {
+export class ErrorNoTokenProvided extends HttpError {
   static throwHttp(req, res) {
     res.status(404).json({ error: "No Token Provided." });
   }
 }
 
-export class ErrorWrongPassword extends HttpError {
+export class ErrorIncorrectPassword extends HttpError {
   static throwHttp(req, res) {
-    res.status(404).json({ error: "Wrong Password." });
+    res.status(400).json({ error: "Incorrect Password." });
   }
 }
 
-export class ErrorIncorrectUser extends HttpError {
+export class ErrorLoginInformation extends HttpError {
   static throwHttp(req, res) {
-    res.status(404).json({ error: "User is incorrect." });
+    res.status(400).json({ error: "Incorrect login information provided." });
+  }
+}
+
+export class ErrorUserPermissions extends HttpError {
+  static throwHttp(req, res) {
+    res.status(403).json({ error: "User does not have correct permissions." });
   }
 }
 
@@ -37,15 +43,27 @@ export class ErrorUserDeactivated extends HttpError {
   }
 }
 
-export class ErrorUserNotRegistered extends HttpError {
+export class ErrorUserPending extends HttpError {
   static throwHttp(req, res) {
-    res.status(400).json({ error: "User is not registered." });
+    res.status(400).json({ error: "Pending users cannot login." });
+  }
+}
+
+export class ErrorUserDenied extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Denied users cannot login." });
   }
 }
 
 export class ErrorUserLoggedIn extends HttpError {
   static throwHttp(req, res) {
     res.status(400).json({ error: "User is logged in." });
+  }
+}
+
+export class ErrorUnexpected extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Unexpected error." });
   }
 }
 
@@ -67,12 +85,47 @@ export class ErrorValidation extends HttpError {
   }
 }
 
+export class ErrorInvalidArticleStatus extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Invalid Article Status sent." });
+  }
+}
+
+export class ErrorInvalidArticleAuthors extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Invalid Author Usernames sent." });
+  }
+}
+
+export class ErrorUserAlreadyExists extends HttpError {
+  static throwHttp(req, res) {
+    res.status(400).json({ error: "Username or email already registered." });
+  }
+}
+
 export class ErrorDatabaseConnection extends HttpError {
   static throwHttp(req, res) {
     res.status(500).json({ error: "Failed to connect to the database." });
   }
 }
 
+export class UnexpectedError extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Encountered an unexpected error." });
+  }
+}
+
+export class UnexpectedError extends HttpError {
+  static throwHttp(req, res) {
+    res.status(500).json({ error: "Encountered an unexpected error." });
+  }
+}
+
+export class ErrorRepeatedTagName extends HttpError {
+  static throwHttp(req, res) {
+    res.status(409).json({ error: "Tag name is already used by another tag." });
+  }
+}
 export class ErrorRepeatedTagName extends HttpError {
   static throwHttp(req, res) {
     res.status(409).json({ error: "Tag name is already used by another tag." });
