@@ -1,0 +1,48 @@
+name: Build Project and Run Tests
+
+on:
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      # Step 1: Check out the repository
+      - uses: actions/checkout@v4
+
+      # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
+      - name: Install Docker
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker
+          sudo apt-get install -y docker-compose
+
+      # Step 3: Build and Start Docker Compose with secrets as environment variables
+      - name: Build Docker Compose Project
+        run: |
+          cat <<EOF > .env
+          SERVER_HOSTNAME=${{ vars.SERVER_HOSTNAME }}
+          SERVER_PORT=${{ vars.SERVER_PORT }}
+          SERVER_TOKEN_KEY=${{ secrets.SERVER_TOKEN_KEY }}
+          MONGODB_INITDB_ROOT_USERNAME=${{ vars.MONGODB_INITDB_ROOT_USERNAME }}
+          MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}
+          MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}
+          MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
+          EOF
+          docker-compose up --build -d
+
+      # Step 4: Install NPM dependencies
+      - name: Install Dependencies
+        run: npm i
+
+      # Step 5: Run testing suite
+      - name: Run Tests
+        run: npm run test
+
+      # Step 6: Tear down the services after the job is done
+      - name: Tear Down Docker Compose Project
+        if: always()
+        run: docker-compose down
