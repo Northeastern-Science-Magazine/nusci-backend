@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import Category from "../../../../app/models/enums/categories.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -131,7 +131,7 @@ describe("Tests for enumerated type Category", () => {
   test("toCategory invalid input", () => {
     expect(() => {
       Category.toCategory("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list Category", () => {

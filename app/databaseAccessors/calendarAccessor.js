@@ -1,8 +1,6 @@
 import CalendarEvent from "../models/dbModels/calendarEvent.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
-
 /**
  * CalendarEvent Accessor Class
  *
@@ -15,19 +13,9 @@ export default class CalendarEventAccessor {
    * @returns all calendar events
    */
   static async getAllEvents() {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({});
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({});
+    return events;
   }
 
   /**
@@ -37,19 +25,9 @@ export default class CalendarEventAccessor {
    * @returns Calendar event
    */
   static async getEventByID(eventID) {
-    try {
-      await Connection.open();
-      const event = await CalendarEvent.findById(new mongoose.Types.ObjectId(eventID));
-      return event;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const event = await CalendarEvent.findById(new mongoose.Types.ObjectId(eventID));
+    return event;
   }
 
   /**
@@ -59,19 +37,9 @@ export default class CalendarEventAccessor {
    * @returns event
    */
   static async getEventByTitle(title) {
-    try {
-      await Connection.open();
-      const event = await CalendarEvent.findOne({ title: title });
-      return event;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const event = await CalendarEvent.findOne({ title: title });
+    return event;
   }
 
   /**
@@ -82,19 +50,9 @@ export default class CalendarEventAccessor {
    * @returns calendar events
    */
   static async getEventsByStartTimeRange(start, end) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ startTime: { $gte: start, $lte: end } });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ startTime: { $gte: start, $lte: end } });
+    return events;
   }
 
   /**
@@ -105,19 +63,9 @@ export default class CalendarEventAccessor {
    * @returns events
    */
   static async getEventsByEndTimeRange(start, end) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ endTime: { $gte: start, $lte: end } });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ endTime: { $gte: start, $lte: end } });
+    return events;
   }
 
   /**
@@ -127,19 +75,9 @@ export default class CalendarEventAccessor {
    * @returns events
    */
   static async getEventsByLocation(location) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ location: location });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ location: location });
+    return events;
   }
 
   /**
@@ -148,19 +86,9 @@ export default class CalendarEventAccessor {
    * @returns public events
    */
   static async getPublicEvents() {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ public: true });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ public: true });
+    return events;
   }
 
   /**
@@ -169,19 +97,9 @@ export default class CalendarEventAccessor {
    * @returns private events
    */
   static async getPrivateEvents() {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ public: false });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ public: false });
+    return events;
   }
 
   /**
@@ -191,19 +109,9 @@ export default class CalendarEventAccessor {
    * @returns events
    */
   static async getEventsByVisibleToRole(role) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ visibleToRoles: { $in: [role] } });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ visibleToRoles: { $in: [role] } });
+    return events;
   }
 
   /**
@@ -213,19 +121,9 @@ export default class CalendarEventAccessor {
    * @returns events
    */
   static async getEventsByAssociatedWithRole(role) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ associatedWithRoles: { $in: [role] } });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ associatedWithRoles: { $in: [role] } });
+    return events;
   }
 
   /**
@@ -235,18 +133,8 @@ export default class CalendarEventAccessor {
    * @returns events
    */
   static async getEventsByCreatingUser(userID) {
-    try {
-      await Connection.open();
-      const events = await CalendarEvent.find({ creatingUser: new mongoose.Types.ObjectId(userID) });
-      return events;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const events = await CalendarEvent.find({ creatingUser: new mongoose.Types.ObjectId(userID) });
+    return events;
   }
 }

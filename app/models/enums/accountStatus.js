@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * Enumerated Class for Account Statuses
@@ -45,7 +45,7 @@ export default class AccountStatus {
       case this.Denied.toString():
         return this.Denied;
       default:
-        throw new ErrorInternalEnumValidation("Invalid AccountStatus given.");
+        throw new ErrorValidation("Invalid AccountStatus enum given.");
     }
   }
 

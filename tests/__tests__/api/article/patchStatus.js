@@ -47,7 +47,7 @@ describe("Update Article Status", () => {
       .send(invalidArticleStatusUpdate);
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(400);
     expect(response.body.error).toBeDefined();
   });
 

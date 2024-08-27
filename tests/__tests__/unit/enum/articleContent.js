@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import ArticleContent from "../../../../app/models/enums/articleContent.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -35,7 +35,7 @@ describe("Tests for enumerated type ArticleContent", () => {
   test("toArticleContent invalid input", () => {
     expect(() => {
       ArticleContent.toArticleContent("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list ArticleContent", () => {

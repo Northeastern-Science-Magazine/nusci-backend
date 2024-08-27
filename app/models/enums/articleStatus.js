@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * Enumerated Class for Article Statuses
@@ -37,7 +37,7 @@ export default class ArticleStatus {
       case this.Online.toString():
         return this.Online;
       default:
-        throw new ErrorInternalEnumValidation("Invalid ArticleStatus given.");
+        throw new ErrorValidation("Invalid ArticleStatus enum given.");
     }
   }
 

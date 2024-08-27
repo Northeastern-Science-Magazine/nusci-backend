@@ -1,10 +1,5 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
-import {
-  ErrorInternalDatabaseConnection,
-  ErrorInternalUnexpected,
-  ErrorInternalArticleNotFound,
-} from "../error/internalErrors.js";
 
 /**
  * Articles Accessor Class
@@ -21,18 +16,9 @@ export default class ArticlesAccessor {
    * @returns article
    */
   static async getArticle(articleId) {
-    try {
-      await Connection.open();
-      const article = await Article.findBy({ _id: articleId });
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const article = await Article.findBy({ _id: articleId });
+    return article;
   }
 
   /**
@@ -46,19 +32,9 @@ export default class ArticlesAccessor {
    *          the database.
    */
   static async getArticleByTitle(title) {
-    try {
-      await Connection.open();
-      const article = await Article.findOne({ title: title });
-      return article;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const article = await Article.findOne({ title: title });
+    return article;
   }
 
   /**
@@ -71,19 +47,9 @@ export default class ArticlesAccessor {
    * @returns article
    */
   static async getArticleBySlug(slug) {
-    try {
-      await Connection.open();
-      const article = await Article.findOne({ slug: slug });
-      return article;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const article = await Article.findOne({ slug: slug });
+    return article;
   }
 
   /**
@@ -103,19 +69,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByAuthorId(author) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ authors: { $in: [author] } });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ authors: { $in: [author] } });
+    return articles;
   }
 
   /**
@@ -131,19 +87,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByEditorId(editor) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ editors: { $in: [editor] } });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ editors: { $in: [editor] } });
+    return articles;
   }
 
   /**
@@ -156,19 +102,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByCategory(category) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ categories: { $in: [category] } });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ categories: { $in: [category] } });
+    return articles;
   }
 
   /**
@@ -204,19 +140,9 @@ export default class ArticlesAccessor {
    * @returns article
    */
   static async getArticleByIssueNumber(issueNumber) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ issueNumber: issueNumber });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ issueNumber: issueNumber });
+    return articles;
   }
 
   /**
@@ -229,19 +155,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByArticleStatus(articleStatus) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ articleStatus: articleStatus });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ articleStatus: articleStatus });
+    return articles;
   }
 
   /**
@@ -254,19 +170,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByWritingStatus(writingStatus) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ writingStatus: writingStatus });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ writingStatus: writingStatus });
+    return articles;
   }
 
   /**
@@ -279,19 +185,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByPhotographyStatus(photographyStatus) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ photographyStatus: photographyStatus });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ photographyStatus: photographyStatus });
+    return articles;
   }
 
   /**
@@ -304,19 +200,9 @@ export default class ArticlesAccessor {
    * @returns array of articles
    */
   static async getArticlesByDesignStatus(designStatus) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ designStatus: designStatus });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ designStatus: designStatus });
+    return articles;
   }
 
   /**
@@ -333,19 +219,9 @@ export default class ArticlesAccessor {
    * @returns an array of articles
    */
   static async getArticlesByCreationDate(date) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ creationTime: date });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ creationTime: date });
+    return articles;
   }
 
   /**
@@ -362,19 +238,9 @@ export default class ArticlesAccessor {
    * @returns an array of articles
    */
   static async getArticlesByModifiedDate(date) {
-    try {
-      await Connection.open();
-      const articles = await Article.find({ modificationTime: date });
-      return articles;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const articles = await Article.find({ modificationTime: date });
+    return articles;
   }
 
   /**
@@ -387,30 +253,16 @@ export default class ArticlesAccessor {
    * @returns updated article
    */
   static async updateArticle(slug, update) {
-    try {
-      await Connection.open();
-      const article = await Article.findOneAndUpdate({ slug }, update, { new: true })
-        .populate("authors")
-        .populate("comments.user")
-        .populate("editors")
-        .populate("designers")
-        .populate("photographers")
-        .populate("approvingUser")
-        .exec();
-      if (!article) {
-        throw new ErrorInternalArticleNotFound("Article not found");
-      }
-      return article;
-    } catch (e) {
-      // Check if it's a DB connection error
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const article = await Article.findOneAndUpdate({ slug }, update, { new: true })
+      .populate("authors")
+      .populate("comments.user")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
+    return article;
   }
 
   /**
@@ -424,35 +276,25 @@ export default class ArticlesAccessor {
    * @returns a single updated article
    */
   static async addCommentBySlug(slug, comment) {
-    try {
-      await Connection.open();
-      // update the article by adding the new comment to its array
-      const newArticle = await Article.findOneAndUpdate(
-        { slug: slug },
-        {
-          $push: {
-            comments: comment,
-          },
+    await Connection.open();
+    // update the article by adding the new comment to its array
+    const newArticle = await Article.findOneAndUpdate(
+      { slug: slug },
+      {
+        $push: {
+          comments: comment,
         },
-        { returnDocument: "after" }
-      )
-        .populate("comments.user")
-        .populate("authors")
-        .populate("editors")
-        .populate("designers")
-        .populate("photographers")
-        .populate("approvingUser")
-        .exec();
-      return newArticle;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+      },
+      { returnDocument: "after" }
+    )
+      .populate("comments.user")
+      .populate("authors")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
+    return newArticle;
   }
 
   /**
@@ -466,34 +308,24 @@ export default class ArticlesAccessor {
    * @returns a single updated article
    */
   static async addCommentBySlug(slug, comment) {
-    try {
-      await Connection.open();
-      // update the article by adding the new comment to its array
-      const newArticle = await Article.findOneAndUpdate(
-        { slug: slug },
-        {
-          $push: {
-            comments: comment,
-          },
+    await Connection.open();
+    // update the article by adding the new comment to its array
+    const newArticle = await Article.findOneAndUpdate(
+      { slug: slug },
+      {
+        $push: {
+          comments: comment,
         },
-        { returnDocument: "after" }
-      )
-        .populate("comments.user")
-        .populate("authors")
-        .populate("editors")
-        .populate("designers")
-        .populate("photographers")
-        .populate("approvingUser")
-        .exec();
-      return newArticle;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+      },
+      { returnDocument: "after" }
+    )
+      .populate("comments.user")
+      .populate("authors")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
+    return newArticle;
   }
 }

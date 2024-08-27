@@ -1,6 +1,6 @@
 import { log } from "../../../testConfig.js";
 import CommentStatus from "../../../../app/models/enums/commentStatus.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
 const showLog =
   log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
@@ -35,7 +35,7 @@ describe("Tests for enumerated type CommentStatus", () => {
   test("toCommentStatus invalid input", () => {
     expect(() => {
       CommentStatus.toCommentStatus("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list CommentStatus", () => {

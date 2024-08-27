@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * Enumerated Class for Writing Statuses
@@ -54,7 +54,7 @@ export default class WritingStatus {
       case this.Dropped.status:
         return this.Dropped;
       default:
-        throw new ErrorInternalEnumValidation("Invalid WritingStatus given.");
+        throw new ErrorValidation("Invalid WritingStatus enum given.");
     }
   }
 
