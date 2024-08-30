@@ -2,11 +2,6 @@ import { log } from "../../../testConfig.js";
 import WritingStatus from "../../../../app/models/enums/writingStatus.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-const showLog =
-  log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
-    __filename.split("/")[__filename.split("/").length - 1].slice(0, -3)
-  ];
-
 describe("Tests for enumerated type WritingStatus", () => {
   test("toString Needs_Editor", () => {
     expect(WritingStatus.Needs_Editor.toString()).toStrictEqual("needs_editor");
