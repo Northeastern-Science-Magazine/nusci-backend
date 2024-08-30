@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * Enumerated Class for Design Statuses
@@ -45,7 +45,7 @@ export default class DesignStatus {
       case this.Completed.status:
         return this.Completed;
       default:
-        throw new ErrorInternalEnumValidation("Invalid DesignStatus given.");
+        throw new ErrorValidation("Invalid DesignStatus enum given.");
     }
   }
 

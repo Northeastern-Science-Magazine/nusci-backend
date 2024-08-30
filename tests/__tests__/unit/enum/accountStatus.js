@@ -1,11 +1,7 @@
 import { log } from "../../../testConfig.js";
 import AccountStatus from "../../../../app/models/enums/accountStatus.js";
-import { ErrorInternalEnumValidation } from "../../../../app/error/internalErrors.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 
-const showLog =
-  log[__filename.split("/")[__filename.split("/").length - 3]][__filename.split("/")[__filename.split("/").length - 2]][
-    __filename.split("/")[__filename.split("/").length - 1].slice(0, -3)
-  ];
 
 describe("Tests for enumerated type AccountStatus", () => {
   test("toString Pending", () => {
@@ -43,7 +39,7 @@ describe("Tests for enumerated type AccountStatus", () => {
   test("toAccountStatus invalid input", () => {
     expect(() => {
       AccountStatus.toAccountStatus("invalid");
-    }).toThrow(ErrorInternalEnumValidation);
+    }).toThrow(ErrorValidation);
   });
 
   test("list AccountStatus", () => {

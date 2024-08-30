@@ -1,4 +1,4 @@
-import { ErrorInternalEnumValidation } from "../../error/internalErrors.js";
+import { ErrorValidation } from "../../error/errors.js";
 
 /**
  * Enumerated Class for Account Types
@@ -57,7 +57,7 @@ export default class Accounts {
       case this.Admin.toString():
         return this.Admin;
       default:
-        throw new ErrorInternalEnumValidation("Invalid Account given.");
+        throw new ErrorValidation("Invalid Account enum given.");
     }
   }
 

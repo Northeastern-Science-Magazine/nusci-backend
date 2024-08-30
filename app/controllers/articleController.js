@@ -1,21 +1,9 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
-import { ErrorInternalAPIModelValidation } from "../error/internalErrors.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import {
-  ErrorUnexpected,
-  ErrorDatabaseConnection,
-  ErrorArticleNotFound,
-  ErrorUserNotFound,
-  ErrorValidation,
-} from "../error/httpErrors.js";
-import {
-  ErrorInternalDatabaseConnection,
-  ErrorInternalArticleNotFound,
-  ErrorInternalUserNotFound,
-} from "../error/internalErrors.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError } from "../error/errors.js";
 
 /**
  * ArticleController Class
@@ -40,20 +28,20 @@ export default class ArticleController {
 
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
+
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      // Check if it's a DB connection error
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        ErrorDatabaseConnection.throwHttp(req, res);
-      } else if (e instanceof ErrorInternalArticleNotFound) {
-        ErrorArticleNotFound.throwHttp(req, res);
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
       } else {
-        // Else throw unexpected error
-        ErrorUnexpected.throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -71,29 +59,23 @@ export default class ArticleController {
       const { slug } = req.params;
 
       const updates = new ArticleUpdate(req.body);
-
       const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
-
       updates.authors = authorIds;
-
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
 
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
-      // Check if it's a DB connection error
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        ErrorDatabaseConnection.throwHttp(req, res);
-      } else if (e instanceof ErrorInternalUserNotFound) {
-        ErrorUserNotFound.throwHttp(req, res);
-      } else if (e instanceof ErrorInternalArticleNotFound) {
-        ErrorArticleNotFound.throwHttp(req, res);
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
       } else {
-        // Else throw unexpected error
-        ErrorUnexpected.throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }
@@ -118,7 +100,7 @@ export default class ArticleController {
       // modify the article with the new comment
       const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
 
-      if (updatedArticle == null) {
+      if (!updatedArticle) {
         throw new ErrorArticleNotFound();
       }
 
@@ -127,14 +109,10 @@ export default class ArticleController {
       //return updated article with new comment
       res.status(201).json(finalArticle);
     } catch (e) {
-      if (e instanceof ErrorValidation) {
-        ErrorValidation.throwHttp(req, res);
-      } else if (e instanceof ErrorInternalAPIModelValidation) {
-        ErrorValidation.throwHttp(req, res);
-      } else if (e instanceof ErrorArticleNotFound) {
-        ErrorArticleNotFound.throwHttp(req, res);
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
       } else {
-        ErrorUnexpected.throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
   }

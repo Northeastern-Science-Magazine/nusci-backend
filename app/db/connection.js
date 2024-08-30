@@ -1,7 +1,7 @@
 import { config as dotenvConfig } from "dotenv";
-import mongoose from "mongoose"; // import mongoose
+import mongoose from "mongoose";
 import logActivity from "./logActivity.js";
-import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
+import { ErrorDatabaseConnection } from "../error/errors.js";
 
 //Connection to the cluster (cache)
 let connection;
@@ -46,7 +46,7 @@ export default class Connection {
           socketTimeoutMS: 2500,
         });
       } catch (e) {
-        throw new ErrorInternalDatabaseConnection("Failed to connect to the database.");
+        throw new ErrorDatabaseConnection();
       }
 
       // in-memory cache of the current connection

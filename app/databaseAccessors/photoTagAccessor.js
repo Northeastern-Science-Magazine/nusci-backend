@@ -1,8 +1,6 @@
 import PhotoTag from "../models/dbModels/photoTag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorInternalDatabaseConnection } from "../error/internalErrors.js";
-
 /**
  * PhotoTag Accessor Class
  *
@@ -27,19 +25,9 @@ export default class PhotoTagAccessor {
    * @returns all tags
    */
   static async getAllTags() {
-    try {
-      await Connection.open();
-      const tags = await PhotoTag.find({});
-      return tags;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tags = await PhotoTag.find({});
+    return tags;
   }
 
   /**
@@ -49,19 +37,9 @@ export default class PhotoTagAccessor {
    * @returns Tag
    */
   static async getTagByID(tagID) {
-    try {
-      await Connection.open();
-      const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID));
-      return tag;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID));
+    return tag;
   }
 
   /**
@@ -71,19 +49,9 @@ export default class PhotoTagAccessor {
    * @returns Tag
    */
   static async getTagByName(tagName) {
-    try {
-      await Connection.open();
-      const tag = await PhotoTag.findOne({ tagName: tagName });
-      return tag;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tag = await PhotoTag.findOne({ tagName: tagName });
+    return tag;
   }
 
   /**
@@ -93,19 +61,9 @@ export default class PhotoTagAccessor {
    * @returns tags
    */
   static async getTagsByColor(color) {
-    try {
-      await Connection.open();
-      const tags = await PhotoTag.find({ color: color });
-      return tags;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tags = await PhotoTag.find({ color: color });
+    return tags;
   }
 
   /**
@@ -115,19 +73,9 @@ export default class PhotoTagAccessor {
    * @returns tags
    */
   static async getTagsByUser(userID) {
-    try {
-      await Connection.open();
-      const tags = await PhotoTag.find({ user: new mongoose.Types.ObjectId(userID) });
-      return tags;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tags = await PhotoTag.find({ user: new mongoose.Types.ObjectId(userID) });
+    return tags;
   }
 
   /**
@@ -138,19 +86,9 @@ export default class PhotoTagAccessor {
    * @returns tags
    */
   static async getTagsByCreationTimeRange(start, end) {
-    try {
-      await Connection.open();
-      const tags = await PhotoTag.find({ creationTime: { $gte: start, $lte: end } });
-      return tags;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tags = await PhotoTag.find({ creationTime: { $gte: start, $lte: end } });
+    return tags;
   }
 
   /**
@@ -161,18 +99,8 @@ export default class PhotoTagAccessor {
    * @returns tags
    */
   static async getTagsByModificationTimeRange(start, end) {
-    try {
-      await Connection.open();
-      const tags = await PhotoTag.find({ modificationTime: { $gte: start, $lte: end } });
-      return tags;
-    } catch (e) {
-      if (e instanceof ErrorInternalDatabaseConnection) {
-        // Throw up the stack
-        throw e;
-      } else {
-        // Else throw unexpected error
-        throw new ErrorInternalUnexpected("Unexpected error occurred");
-      }
-    }
+    await Connection.open();
+    const tags = await PhotoTag.find({ modificationTime: { $gte: start, $lte: end } });
+    return tags;
   }
 }
