@@ -10,6 +10,7 @@ afterAll(async () => {
 describe("Create PhotoTags Test", () => {
     test("Same tag names", async () => {
         const response = await request(app).get("/create");
+        
         //expect(response.statusCode).toBe(201);
 
     })
