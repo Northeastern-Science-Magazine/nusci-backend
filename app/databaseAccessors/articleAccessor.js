@@ -328,4 +328,37 @@ export default class ArticlesAccessor {
       .exec();
     return newArticle;
   }
+
+  /**
+   *
+   * Search for articles with the given query and path
+   *
+   * @param {*} query the term(s) to search for
+   * @param {*} path the field to search for
+   */
+  static async searchArticles(query, path) {
+    try {
+      console.log("Hi test2");
+      await Connection.open();
+      console.log("Hi test3");
+      const results = await Article.aggregate([
+        {
+          $search: {
+            index: "article_text_index",
+            text: {
+              query: "AI",
+              path: ["title", "articleContent.content"],
+              fuzzy: {},
+            },
+          },
+        },
+      ]);
+
+      console.log("results:" + results);
+      console.log("Results are empty:", results.length === 0);
+      return results;
+    } catch (e) {
+      console.log("He error:" + e);
+    }
+  }
 }

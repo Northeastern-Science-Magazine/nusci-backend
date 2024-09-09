@@ -37,4 +37,7 @@ router.route("/delete/:slug"); //delete an article
 router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
     .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
 
+router.get("/search/title", ArticlesController.searchByTitle); //fuzzy search an article's title
+router.get("/search/title-and-content", ArticlesController.searchByTitleAndContent); //fuzzy search both an article's title and content
+
 export default router;

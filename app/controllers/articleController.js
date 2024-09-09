@@ -79,6 +79,7 @@ export default class ArticleController {
       }
     }
   }
+
   /**
    * addInternalComment Method
    *
@@ -108,6 +109,78 @@ export default class ArticleController {
 
       //return updated article with new comment
       res.status(201).json(finalArticle);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitle(req, res) {
+    try {
+      console.log("Query1: " + req.query.search);
+      const query = { query: req.query.search };
+
+      console.log("Query: " + query.query);
+
+      const results = await ArticlesAccessor.searchArticles(req.query.search, "title");
+
+      res.status(200).json(results);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title and content
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitleAndContent(req, res) {
+    try {
+      const { query } = req.query.search || "";
+      const titleResults = await ArticlesAccessor.searchArticles(query, "title");
+      const contentResults = await ArticlesAccessor.searchArticles(query, "content");
+
+      // merge the two lists
+      const combinedResults = [...titleResults, ...contentResults];
+
+      // Use a Map to remove duplicates, and retain the max score for that article
+      const resultMap = new Map();
+
+      combinedResults.forEach((result) => {
+        // use _id for key
+        const id = result._id.toString();
+
+        // if article is already in map
+        if (resultMap.has(id)) {
+          // compare scores, keep higher one
+          const existingResult = resultMap.get(id);
+          if (result.score > existingResult.score) {
+            resultMap.set(id, result);
+          }
+        } else {
+          // add article for the first time
+          resultMap.set(id, result);
+        }
+      });
+
+      const finalResults = Array.from(resultMap.values());
+
+      res.status(200).json(finalResults);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
