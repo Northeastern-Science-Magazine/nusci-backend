@@ -67,7 +67,7 @@ export default class Authorize {
    * using the token as auth
    *
    * @param {HTTP REQ} req
-   * @returns {String} String role
+   * @returns {[String]} List of String role
    */
   static getRoles(req) {
     dotenv.config();

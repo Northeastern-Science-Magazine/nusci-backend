@@ -51,6 +51,10 @@ export default class CalendarEventAccessor {
    */
   static async getEventsByStartTimeRange(start, end) {
     await Connection.open();
+    if (start.getTime == 0) {
+      start = await CalendarEvent.find().sort({startTime: 1});
+    }
+    
     const events = await CalendarEvent.find({ startTime: { $gte: start, $lte: end } });
     return events;
   }

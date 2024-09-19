@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
-router.get("/calendar", CalendarController.getCalendarEvent);
+router.get("/", CalendarController.getCalendarEvent);
 
 export default router;

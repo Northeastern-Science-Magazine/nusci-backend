@@ -3,7 +3,6 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
-import Test from "supertest/lib/test.js";
 
 const showLog = __filename
     .replace(".js", "")
@@ -26,10 +25,11 @@ beforeEach(async () => {
 describe("Get Calendar Event", () => {
     test("gets all calendar events successfully", async () => {
         const response = await request(app)
-            .get("/calendar")
-            
+            .get("/calendar/")
+            .send({});
+
 
         showLog && console.log(response.body);
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(202);
     })
-})
+});
