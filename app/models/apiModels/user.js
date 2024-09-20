@@ -10,7 +10,7 @@ export class UserCreate extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
+    email: { type: string, required: true },
     password: { type: string, required: true },
     pronouns: { type: [string] },
     graduationYear: { type: number, required: true },
@@ -41,7 +41,7 @@ export class UserPublicResponse extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
+    email: { type: string, required: true },
     pronouns: { type: [string] },
     graduationYear: { type: number, required: true },
     majors: { type: [string] },
@@ -66,7 +66,7 @@ export class UserResponse extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
+    email: { type: string, required: true },
     password: { type: string, required: true },
     pronouns: { type: [string], required: false },
     graduationYear: { type: number, required: true },
@@ -98,7 +98,7 @@ export class UserUpdate extends BaseModelUpdate {
   static schema = {
     firstName: { type: string },
     lastName: { type: string },
-    username: { type: string },
+    email: { type: string },
     pronouns: { type: [string] },
     graduationYear: { type: number },
     majors: { type: [string] },
@@ -125,7 +125,7 @@ export class UserUpdate extends BaseModelUpdate {
  */
 export class UserDelete extends BaseModel {
   static schema = {
-    username: { type: string, required: true },
+    email: { type: string, required: true },
   };
 
   constructor(json) {

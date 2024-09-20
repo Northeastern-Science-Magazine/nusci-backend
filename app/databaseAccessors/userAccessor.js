@@ -37,7 +37,7 @@ export default class UsersAccessor {
    * @returns the User associated with the given email in
    * the database.
    */
-  static async getUserByEmail(emaEmailil) {
+  static async getUserByEmail(email) {
     await Connection.open();
     const user = await User.findOne({ email: email });
     return email;
