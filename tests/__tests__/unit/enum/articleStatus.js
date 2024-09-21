@@ -15,6 +15,10 @@ describe("Tests for enumerated type ArticleStatus", () => {
     expect(ArticleStatus.Online.toString()).toStrictEqual("online");
   });
 
+  test("toString Cancelled", () => {
+    expect(ArticleStatus.Cancelled.toString()).toStrictEqual("cancelled");
+  });
+
   test("toArticleStatus Pending", () => {
     expect(ArticleStatus.toArticleStatus("pending")).toStrictEqual(ArticleStatus.Pending);
   });
@@ -27,6 +31,10 @@ describe("Tests for enumerated type ArticleStatus", () => {
     expect(ArticleStatus.toArticleStatus("online")).toStrictEqual(ArticleStatus.Online);
   });
 
+  test("toArticleStatus Cancelled", () => {
+    expect(ArticleStatus.toArticleStatus("cancelled")).toStrictEqual(ArticleStatus.Cancelled);
+  });
+
   test("toArticleStatus invalid input", () => {
     expect(() => {
       ArticleStatus.toArticleStatus("invalid");
@@ -34,10 +42,10 @@ describe("Tests for enumerated type ArticleStatus", () => {
   });
 
   test("list ArticleStatus", () => {
-    expect(ArticleStatus.list()).toStrictEqual([ArticleStatus.Pending, ArticleStatus.Print, ArticleStatus.Online]);
+    expect(ArticleStatus.list()).toStrictEqual([ArticleStatus.Pending, ArticleStatus.Print, ArticleStatus.Online, ArticleStatus.Cancelled]);
   });
 
   test("listr ArticleStatus", () => {
-    expect(ArticleStatus.listr()).toStrictEqual(["pending", "print", "online"]);
+    expect(ArticleStatus.listr()).toStrictEqual(["pending", "print", "online", "cancelled"]);
   });
 });
