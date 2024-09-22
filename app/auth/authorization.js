@@ -53,7 +53,7 @@ export default class Authorize {
     if (req.cookies.token) {
       const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
-        return payload.email;
+        return payload.emails;
       } else {
         new ErrorFailedLogin().throwHttp(req, res);
       }

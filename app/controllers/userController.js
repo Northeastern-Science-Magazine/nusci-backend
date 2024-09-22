@@ -76,7 +76,7 @@ export default class UserController {
       // sign token and send it in response
       const token = jwt.sign(
         {
-          email: user.email,
+          email: user.emails,
           roles: user.roles,
         },
         process.env.SERVER_TOKEN_KEY

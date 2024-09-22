@@ -28,22 +28,6 @@ export default class UsersAccessor {
   }
 
   /**
-   * getUserByEmail Method
-   *
-   * This method retrieves the user MongoDB object from the
-   * database based on a given email
-   *
-   * @param {String} email
-   * @returns the User associated with the given email in
-   * the database.
-   */
-  static async getUserByEmail(email) {
-    await Connection.open();
-    const user = await User.findOne({ email: email });
-    return email;
-  }
-
-  /**
    * Get User IDs by a list of emails
    *
    * @param {Array<string>} emails - List of emails
@@ -51,7 +35,7 @@ export default class UsersAccessor {
    */
   static async getUserIdsByEmails(emails) {
     const userIds = [];
-    for (const emails of emails) {
+    for (const email of emails) {
       const user = await this.getUserByEmail(email);
       if (user) {
         userIds.push(user._id);
@@ -75,7 +59,7 @@ export default class UsersAccessor {
   static async getApprovedByEmail(email) {
     await Connection.open();
     const user = await User.findOne({
-      email: email,
+      emails: { $in: [email] },
       status: AccountStatus.Approved.toString(), // Use MongoDB filter for equal to approved status
     });
     return user;
@@ -94,7 +78,7 @@ export default class UsersAccessor {
   static async getUnapprovedByemail(email) {
     await Connection.open();
     const user = await User.findOne({
-      email: email,
+      emails: { $in: [email] },
       status: { $ne: AccountStatus.Approved.toString() }, // Use MongoDB filter for not equal to approved status
     });
     return user;
@@ -113,7 +97,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { email: email },
+      { emails: { $in: [email] } },
       { status: AccountStatus.Approved.toString() },
       { new: true }
     );
@@ -133,7 +117,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { email: email },
+      { emails: { $in: [email] } },
       { status: AccountStatus.Denied.toString() },
       { new: true }
     );
