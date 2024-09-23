@@ -10,7 +10,7 @@ export const log = {
       default: false,
     },
     user: {
-      getUsername: false,
+      getEmail: false,
       postLogin: false,
       postSignup: false,
       putResolveUser: false,

@@ -17,7 +17,7 @@ export const emptyAuthorsUpdate = {
 };
 
 export const invalidAuthorsUpdate = {
-  authors: ["invalidUsername"],
+  authors: ["invalidEmail"],
 };
 
 export const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";

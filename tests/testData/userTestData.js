@@ -2,34 +2,33 @@ import Accounts from "../../app/models/enums/accounts.js";
 import AccountStatus from "../../app/models/enums/accountStatus.js";
 
 export const validUserLoginRaisa = {
-  username: "raisa",
+  emails: "[raisa@raisa.com]",
   password: "raisa",
 };
 
 export const validUserLoginEthan = {
-  username: "ethan",
+  emails: "[ethan@ethan.com]",
   password: "123",
 };
 
 export const invalidUserLoginEthan = {
-  username: "ethan",
+  emails: "[ethan@ethan.com]",
   password: "321",
 };
 
 export const invalidUserLoginRaisa = {
-  username: "raisa",
+  emails: "[raisa@raisa.com]",
   password: "notraisa",
 };
 
 export const pendingUserLoginAce = {
-  username: "ace",
+  emails: "[ace@ace.com]",
   password: "sparky",
 };
 
-export const validUserSignup = {
+export const validEmailSignup = {
   firstName: "New",
   lastName: "User",
-  username: "newuser",
   password: "newpassword",
   graduationYear: 2025,
   bio: "New user bio",
@@ -38,22 +37,9 @@ export const validUserSignup = {
   status: AccountStatus.Pending.toString(),
 };
 
-export const existingUsernameSignup = {
-  firstName: "Existing",
-  lastName: "User",
-  username: "raisa", // existing username
-  password: "password",
-  graduationYear: 2024,
-  bio: "Existing user bio",
-  emails: ["existinguser@example.com"],
-  roles: [Accounts.Editor.toString()],
-  status: AccountStatus.Pending.toString(),
-};
-
 export const existingEmailSignup = {
   firstName: "Existing",
   lastName: "Email",
-  username: "newusername",
   password: "password",
   graduationYear: 2024,
   bio: "Existing user bio",
@@ -62,10 +48,9 @@ export const existingEmailSignup = {
   status: AccountStatus.Pending.toString(),
 };
 
-export const validUsernameQueryRaisa = {
+export const validEmailQueryRaisa = {
   firstName: "Raisa",
   lastName: "B",
-  username: "raisa",
   pronouns: [],
   graduationYear: 2025,
   majors: ["Computer Science", "Mathematics"],
@@ -73,15 +58,15 @@ export const validUsernameQueryRaisa = {
   profileImage: "https://example.com/profile.jpg",
   bannerImage: "https://example.com/banner.jpg",
   bio: "Co-Head of Web & Software with Ethan",
+  emails: ["raisa@raisa.com"] ,
   roles: ["admin"],
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
 
-export const validUsernameQueryEthan = {
+export const validEmailQueryEthan = {
   firstName: "Ethan",
   lastName: "S",
-  username: "ethan",
   pronouns: [],
   graduationYear: 2026,
   majors: ["Computer Science", "Mathematics"],
@@ -89,6 +74,7 @@ export const validUsernameQueryEthan = {
   profileImage: "https://example.com/profile.jpg",
   bannerImage: "https://example.com/banner.jpg",
   bio: "Co-Head of Web & Software with Raisa",
+  emails: ["ethan@ethan.com"],
   roles: ["admin"],
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",

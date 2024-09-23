@@ -7,7 +7,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000000"),
     firstName: "Ethan",
     lastName: "S",
-    username: "ethan",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
     majors: ["Computer Science", "Mathematics"],
@@ -26,7 +25,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000001"),
     firstName: "Raisa",
     lastName: "B",
-    username: "raisa",
     password: "$2a$10$eNQFIiJpW0gBdsAimJqM0epCC6MueAlaujx/NEO.5tO1S1iqTQs.y", // raisa
     graduationYear: 2025,
     majors: ["Computer Science", "Mathematics"],
@@ -45,7 +43,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000002"),
     firstName: "Sutton",
     lastName: "S",
-    username: "sutton",
     password: "$2a$10$W0scuYJIQPaHhqgU4z.hWuuLYYyg7fqH156BJPIQITpV6oClheGNq", // atnaris
     graduationYear: 2026,
     majors: ["Computer Science"],
@@ -65,7 +62,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000003"),
     firstName: "Arushi",
     lastName: "A",
-    username: "arushi",
     password: "$2a$10$Hqwbxn2u3iYHFbGTamAbnOyGJf0WL4p2VocQpmnteweyBy3XKF.5u", // 12345
     graduationYear: 2027,
     majors: ["Computer Science"],
@@ -85,7 +81,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000004"),
     firstName: "Jiajia",
     lastName: "J",
-    username: "jiajia",
     password: "$2a$10$l9dcpC3PT1poWDEn9KOr.OjwBSSJ8YJb0DcpOFGnqkRPngROGfx7O", // azi
     graduationYear: 2026,
     majors: ["Bioengineering"],
@@ -105,7 +100,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000005"),
     firstName: "Noah",
     lastName: "H",
-    username: "noah",
     password: "$2a$10$WkjXpemM3V4ZQv77RrJp2.b1AEHnPxTH47umftgIl0JTF7vvIByTC", // editorial
     graduationYear: 2024,
     majors: ["Applied Physics"],
@@ -125,7 +119,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000006"),
     firstName: "Nethra",
     lastName: "P",
-    username: "nethra",
     password: "$2a$10$hs9TUiQSldQ46.1NJrfOHO1i705hF8DjZjsipiaNgVh8CPtgWHIyy", // treasurer
     graduationYear: 2024,
     majors: ["Chemical Engineering"],
@@ -145,7 +138,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000007"),
     firstName: "Vianna",
     lastName: "W",
-    username: "vianna",
     password: "$2a$10$FYx.oMLNXKW.gsjZA62fWO9iiuoux7X4MHtPsZYKHw1QOMhNp8hSO", // designer
     graduationYear: 2025,
     majors: ["Pharmaceutical Science"],
@@ -165,7 +157,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000008"),
     firstName: "Jasmine",
     lastName: "N",
-    username: "jasmine",
     password: "$2a$10$pxCrSe3i7f/xSFZMF/0tPOqSKdvpgOIKfFcDXJGJtocqFE09SV6MO", // sndfhqwdakjqfqlnwkjjd
     graduationYear: 2025,
     majors: ["Behavioral Neuroscience"],
@@ -185,7 +176,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000009"),
     firstName: "Johnny",
     lastName: "Appleseed",
-    username: "johnnyappleseed",
     password: "$2a$10$jf5.dNQ1lZH3FUpy34tfnuP.nhvwKzk5082iTFtUCLq9vGFCKj/TK", // apple
     graduationYear: 2027,
     majors: ["Computer Science"],
@@ -204,7 +194,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000010"),
     firstName: "Jane",
     lastName: "Doe",
-    username: "janedoe",
     password: "$2a$10$9rWqiUAM1PaXmXlbjq6tG.5oaBePrwm1JZ3rU8S7eBq1wIOyCnv2O", // doe
     graduationYear: 2026,
     majors: ["Mathematics"],
@@ -223,7 +212,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000011"),
     firstName: "Kayla",
     lastName: "Lastname",
-    username: "kayla",
     password: "$2a$10$MC3/HinwhJvrjEAH4rl4fOEpJoxPjDrfnHiu9g/tJxRgTE5Q3hJD.", // valentine
     graduationYear: 2028,
     majors: ["English"],
@@ -242,7 +230,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000012"),
     firstName: "Anika",
     lastName: "Lastname",
-    username: "anika",
     password: "$2a$10$DT0gTy0kwXhq48EPy8YE1.MfkdFJIE7IgRGO1rnhdizxx0oKUlPQq", // modernart
     graduationYear: 2026,
     majors: ["Data Science & Biology"],
@@ -261,7 +248,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000013"),
     firstName: "Ace",
     lastName: "Lastname",
-    username: "ace",
     password: "$2a$10$KbepyE8BTV26ZupNDLzgHuJM4qAAH1ccZaC1c1r0qqS6jzEaK29p6", // sparky
     graduationYear: 2026,
     majors: ["Entrepreneurship"],
@@ -281,7 +267,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000014"),
     firstName: "Dylan",
     lastName: "Howard",
-    username: "dhoward",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2025,
     majors: ["Computer Science"],
@@ -302,7 +287,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000015"),
     firstName: "fon",
     lastName: "dallis",
-    username: "fdallis",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2027,
     majors: ["Business Administration"],
@@ -322,7 +306,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000016"),
     firstName: "daniel",
     lastName: "patterson",
-    username: "dpatterson",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2028,
     majors: ["Digital Design"],
@@ -341,7 +324,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000017"),
     firstName: "Emily",
     lastName: "Johnson",
-    username: "ejohnson",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
     majors: ["Environmental Science"],
@@ -360,7 +342,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000018"),
     firstName: "Michael",
     lastName: "Smith",
-    username: "msmith",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2029,
     majors: ["Mathematics"],
@@ -379,7 +360,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000020"),
     firstName: "Chris",
     lastName: "Brown",
-    username: "cbrown",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2025,
     majors: ["Political Science"],
@@ -398,7 +378,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000021"),
     firstName: "Jessica",
     lastName: "Davis",
-    username: "jdavis",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2023,
     majors: ["Sociology"],
@@ -417,7 +396,6 @@ export default [
     _id: new mongoose.Types.ObjectId("b00000000000000000000022"),
     firstName: "Aaron",
     lastName: "Martinez",
-    username: "amartinez",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
     majors: ["Engineering"],

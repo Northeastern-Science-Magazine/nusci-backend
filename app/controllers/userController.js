@@ -45,7 +45,7 @@ export default class UserController {
       }
 
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByEmail(req.body.email);
+      const user = await UsersAccessor.getUserByEmail(req.body.emails);
 
       if (!user) {
         //doesn't exist (use generic message)
