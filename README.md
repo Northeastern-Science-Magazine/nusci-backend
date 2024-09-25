@@ -48,6 +48,7 @@ This repository acts as the backend API and database setup for a local environme
 <hr>
 
 # Contribution Guidelines
+<img width="100" alt="Screenshot 2024-09-16 at 9 02 35 AM" src="https://github.com/user-attachments/assets/391662cb-4c4d-46a9-a1da-5258a1cfa002">: We are not accepting issues or PRs made from outside collaborators at the moment. If you wish to report a bug, or become a collaborator, please send an email to northeasternsciencemagazine@gmail.com
 
 1. Find a 'New Ticket' you find interesting from the Project Board, and ask to be assigned.
 

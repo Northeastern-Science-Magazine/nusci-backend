@@ -7,6 +7,7 @@ export default class ArticleStatus {
   static Pending = new ArticleStatus("pending");
   static Print = new ArticleStatus("print");
   static Online = new ArticleStatus("online");
+  static Cancelled = new ArticleStatus("cancelled")
 
   /**
    * INTERNAL USE ONLY
@@ -36,6 +37,8 @@ export default class ArticleStatus {
         return this.Print;
       case this.Online.toString():
         return this.Online;
+      case this.Cancelled.toString():
+        return this.Cancelled
       default:
         throw new ErrorValidation("Invalid ArticleStatus enum given.");
     }
