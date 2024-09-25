@@ -130,14 +130,15 @@ export default class UsersAccessor {
    * This method retrieves the user MongoDB object from the
    * database based on a given email
    *
-   * @param {String}  email
+   * @param {[String]}  Array of email
    * @returns the User associated with the given email in
    *          the database.
    *
    */
   static async getUserByEmail(email) {
     await Connection.open();
-    const user = await User.findOne({ emails: { $in: [email] } });
+    const user = await User.findOne({ emails: { $in: email } });
+    console.log(email);
     return user;
   }
 

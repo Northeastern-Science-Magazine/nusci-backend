@@ -45,10 +45,11 @@ export default class UserController {
       }
 
       // check if the user exists and is approved
+      console.log(req.body.emails);
       const user = await UsersAccessor.getUserByEmail(req.body.emails);
-
       if (!user) {
         //doesn't exist (use generic message)
+        console.log("1");
         throw new ErrorFailedLogin();
       }
 
