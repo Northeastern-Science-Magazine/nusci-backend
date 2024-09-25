@@ -7,6 +7,7 @@ export default class ArticleStatus {
   static Pending = new ArticleStatus("pending");
   static Print = new ArticleStatus("print");
   static Online = new ArticleStatus("online");
+  static Cancelled = new ArticleStatus("cancelled")
 
   /**
    * INTERNAL USE ONLY
