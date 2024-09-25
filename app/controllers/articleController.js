@@ -116,4 +116,48 @@ export default class ArticleController {
       }
     }
   }
+  /**
+   * search Method
+   *
+   * This method searches and returns all articles matching the given params
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async search(req, res, next){
+    try {
+      console.log(req.params.query);
+      const allSearches = req.params.query.split("&");
+      console.log(allSearches);
+
+      const query = {}
+      query.issueNumber = "3";
+    /*
+    if (issue) {
+        query.issue = issue
+    }
+    if (role_id) {
+        query.role_id = role_id
+    }
+    if (search) {
+        query.username = {'$regex' : search, '$options' : 'i'}
+        delete query.email
+        query['$and'] = [
+            { email: {'$regex' : search, '$options' : 'i'}},
+            { email: { $ne: 'xxxxx@gmail.com' } }
+        ]
+  }
+*/
+
+      const matchingArticles = await ArticlesAccessor.searchArticles(query);
+      res.status(200).json(matchingArticles);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
 }
