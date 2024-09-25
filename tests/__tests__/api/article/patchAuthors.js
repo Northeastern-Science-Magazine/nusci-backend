@@ -38,6 +38,8 @@ describe("Update Article Authors", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
+    console.log(response.body.authors);
+    console.log(validAuthorsUpdate);
     expect({ authors: response.body.authors.map((author) => author.emails) }).toEqual(validAuthorsUpdate);
   });
 
@@ -52,7 +54,7 @@ describe("Update Article Authors", () => {
     expect(response.body.authors).toEqual([]);
   });
 
-  test("should fail to update article authors due to invalid author email", async () => {
+  test("should fail to update article authors due to invalid author username", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
       .set("Cookie", [`token=${tokens.ethan}`])

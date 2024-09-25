@@ -9,7 +9,7 @@ export const invalidArticleStatusUpdate = {
 };
 
 export const validAuthorsUpdate = {
-  authors: ["anika", "jasmine"],
+  authors: [["anika@anika.com"], ["jasmine@jasmine.com"]],
 };
 
 export const emptyAuthorsUpdate = {
@@ -17,7 +17,7 @@ export const emptyAuthorsUpdate = {
 };
 
 export const invalidAuthorsUpdate = {
-  authors: ["invalidEmail"],
+  authors: ["invalidUsername"],
 };
 
 export const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";

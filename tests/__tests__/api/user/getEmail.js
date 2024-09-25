@@ -25,22 +25,25 @@ beforeEach(async () => {
 
 describe("Get User By Email Tests", () => {
   test("get a user by a valid/existing email (Raisa)", async () => {
-    const response = await request(app).get("/user/email/raisa");
+    const response = await request(app).get("/user/email/raisa@raisa.com");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(validEmailQueryRaisa);
-    expect(response.body.emails).toBe("[raisa@raisa.com]");
+    validEmailQueryRaisa.emails.forEach((email) => {
+      expect(response.body.emails).toContain(email)
+    });
   });
 
   test("get a user by a valid/existing email (Ethan)", async () => {
-    const response = await request(app).get("/user/email/ethan");
+    const response = await request(app).get("/user/email/ethan@ethan.com");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(validEmailQueryEthan);
-    expect(response.body.emails).toBe("[ethan.ethan.com]");
-  });
+    validEmailQueryEthan.emails.forEach((email) => {
+      expect(response.body.emails).toContain(email)
+    });  });
 
   test("attempt getting an invalid email", async () => {
     const response = await request(app).get("/user/email/nonexistentuser");

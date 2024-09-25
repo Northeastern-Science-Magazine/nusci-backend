@@ -96,7 +96,8 @@ export default class ArticleController {
       const userID = user._id;
 
       const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
-
+        console.log(user);
+        
       // modify the article with the new comment
       const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
 
@@ -112,6 +113,7 @@ export default class ArticleController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
+        console.log(e);
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }

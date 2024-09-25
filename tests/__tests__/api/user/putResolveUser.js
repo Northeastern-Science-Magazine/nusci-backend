@@ -26,7 +26,7 @@ beforeEach(async () => {
 describe("Approve or deny given users test", () => {
   test("test only approving users", async () => {
     const listOfUsers = {
-      approve: ["ace", "dhoward"],
+      approve: ["ace@ace.com", "dhoward@dhoward.com"],
       deny: [],
     };
 

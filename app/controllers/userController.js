@@ -113,7 +113,7 @@ export default class UserController {
 
       // hash the password
       userData.password = await bcrypt.hash(userData.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
@@ -218,7 +218,6 @@ export default class UserController {
     try {
       const email = req.params.email;
       const user = await UsersAccessor.getUserByEmail(email);
-
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByEmail when using .toObject() on null.
@@ -260,18 +259,19 @@ export default class UserController {
         //check if the user exists and is pending
         try {
           const user = await UsersAccessor.getUserByEmail(email);
-
+          console.log(user);
           if (user.status !== AccountStatus.Pending.toString()) {
             throw new ErrorUserStatusAlreadyResolved();
           }
         } catch (e) {
+          console.log("2");
           throw new ErrorUserNotFound();
         }
       }
 
       //approve the users
       for (const email of approveUsers) {
-        await UsersAccessor.approveUserByEmail(emil);
+        await UsersAccessor.approveUserByEmail(email);
       }
 
       //deny the users

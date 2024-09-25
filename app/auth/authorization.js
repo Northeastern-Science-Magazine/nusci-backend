@@ -46,7 +46,7 @@ export default class Authorize {
    * using the token as auth
    *
    * @param {HTTP REQ} req
-   * @returns {String} String email
+   * @returns {{String}} Array of email
    */
   static getEmail(req) {
     dotenv.config();

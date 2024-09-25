@@ -97,7 +97,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { emails: { $in: [email] } },
+      { emails: { $in: email } },
       { status: AccountStatus.Approved.toString() },
       { new: true }
     );
@@ -130,7 +130,7 @@ export default class UsersAccessor {
    * This method retrieves the user MongoDB object from the
    * database based on a given email
    *
-   * @param {String} email
+   * @param {String}  email
    * @returns the User associated with the given email in
    *          the database.
    *
