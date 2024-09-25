@@ -31,6 +31,7 @@ describe("Article Internal Comment Tests", () => {
       .set("Cookie", [`token=${tokens.ethan}`]);
 
     showLog && console.log(response.body);
+    
     expect(response.status).toBe(201);
     expect(response.body.comments[0].comment).toBe("second line should be clearer");
   });

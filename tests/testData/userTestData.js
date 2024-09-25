@@ -2,27 +2,27 @@ import Accounts from "../../app/models/enums/accounts.js";
 import AccountStatus from "../../app/models/enums/accountStatus.js";
 
 export const validUserLoginRaisa = {
-  emails: "[raisa@raisa.com]",
+  emails: ["raisa@raisa.com"],
   password: "raisa",
 };
 
 export const validUserLoginEthan = {
-  emails: "[ethan@ethan.com]",
+  emails: ["ethan@ethan.com"],
   password: "123",
 };
 
 export const invalidUserLoginEthan = {
-  emails: "[ethan@ethan.com]",
+  emails: ["ethan@ethan.com"],
   password: "321",
 };
 
 export const invalidUserLoginRaisa = {
-  emails: "[raisa@raisa.com]",
+  emails: ["raisa@raisa.com"],
   password: "notraisa",
 };
 
 export const pendingUserLoginAce = {
-  emails: "[ace@ace.com]",
+  emails: ["ace@ace.com"],
   password: "sparky",
 };
 
@@ -58,7 +58,7 @@ export const validEmailQueryRaisa = {
   profileImage: "https://example.com/profile.jpg",
   bannerImage: "https://example.com/banner.jpg",
   bio: "Co-Head of Web & Software with Ethan",
-  emails: ["raisa@raisa.com"] ,
+  emails: ["raisa@raisa.com"],
   roles: ["admin"],
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",

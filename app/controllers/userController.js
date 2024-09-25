@@ -45,11 +45,9 @@ export default class UserController {
       }
 
       // check if the user exists and is approved
-      console.log(req.body.emails);
       const user = await UsersAccessor.getUserByEmail(req.body.emails);
       if (!user) {
         //doesn't exist (use generic message)
-        console.log("1");
         throw new ErrorFailedLogin();
       }
 
@@ -259,13 +257,12 @@ export default class UserController {
       for (const email of allUsers) {
         //check if the user exists and is pending
         try {
-          const user = await UsersAccessor.getUserByEmail(email);
-          console.log(user);
+          const user = await UsersAccessor.getUserByEmail([email]);
           if (user.status !== AccountStatus.Pending.toString()) {
+            console.log("1");
             throw new ErrorUserStatusAlreadyResolved();
           }
         } catch (e) {
-          console.log("2");
           throw new ErrorUserNotFound();
         }
       }

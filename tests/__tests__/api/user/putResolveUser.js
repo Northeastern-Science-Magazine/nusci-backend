@@ -26,7 +26,7 @@ beforeEach(async () => {
 describe("Approve or deny given users test", () => {
   test("test only approving users", async () => {
     const listOfUsers = {
-      approve: ["ace@ace.com", "dhoward@dhoward.com"],
+      approve: ["ace@ace.com", "dylan@howard.com"],
       deny: [],
     };
 
@@ -44,7 +44,7 @@ describe("Approve or deny given users test", () => {
   test("test only denying users", async () => {
     const listOfUsers = {
       approve: [],
-      deny: ["fdallis", "amartinez"],
+      deny: ["anika@anika.com", "michael@smith.com"],
     };
 
     const response = await request(app)
@@ -59,8 +59,8 @@ describe("Approve or deny given users test", () => {
 
   test("test approving and denying users", async () => {
     const listOfUsers = {
-      approve: ["ejohnson", "msmith"],
-      deny: ["cbrown", "jdavis"],
+      approve: ["ace@ace.com", "dylan@howard.com"],
+      deny: ["anika@anika.com", "michael@smith.com"],
     };
 
     const response = await request(app)

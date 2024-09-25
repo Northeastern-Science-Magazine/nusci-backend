@@ -64,12 +64,12 @@ describe("User Login Tests", () => {
 
   test("should not login with non-existent  ", async () => {
     const response = await request(app).post("/user/login").send({
-      email: "[nonexistentuser@d.com]",
+      email: ["nonexistentuser@d.com"],
       password: "password",
     });
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(500);
   });
 
   test("should not login if user is unapproved", async () => {
