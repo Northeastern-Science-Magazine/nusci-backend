@@ -132,8 +132,46 @@ export default class ArticleController {
       console.log(allSearches);
 
       const query = {}
-      query.issueNumber = "3";
-    /*
+      // query.issueNumber = "3";
+      
+      for (const element of allSearches) {
+        // ...use `element`...
+        const keyVal = element.split("=");
+        console.log(keyVal);
+        switch (keyVal[0]) {
+          case "issueNumber":
+            query.issueNumber = keyVal[1];
+            break;
+          case "authors":
+            query.authors = keyVal[1];
+            break;
+          case "editors":
+            query.editors = keyVal[1];
+            break;
+          case "designers":
+            query.designers = keyVal[1];
+            break;
+          case "photographers":
+            query.photographers = keyVal[1];
+            break;
+          case "slug":
+            query.slug = keyVal[1];
+            break;
+          case "categories":
+            query.categories = keyVal[1];
+            break;
+          case "before":
+            query.before = keyVal[1];
+            break;
+          case "after":
+            query.after = keyVal[1];
+            break;
+        }
+
+
+      }
+      console.log(query);
+      /*
     if (issue) {
         query.issue = issue
     }
