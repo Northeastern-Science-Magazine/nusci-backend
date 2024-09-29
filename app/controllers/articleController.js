@@ -129,13 +129,10 @@ export default class ArticleController {
     try {
       console.log(req.params.query);
       const allSearches = req.params.query.split("&");
-      console.log(allSearches);
 
       const query = {}
-      // query.issueNumber = "3";
       
       for (const element of allSearches) {
-        // ...use `element`...
         const keyVal = element.split("=");
         console.log(keyVal);
         switch (keyVal[0]) {
@@ -167,27 +164,8 @@ export default class ArticleController {
             query.after = keyVal[1];
             break;
         }
-
-
       }
       console.log(query);
-      /*
-    if (issue) {
-        query.issue = issue
-    }
-    if (role_id) {
-        query.role_id = role_id
-    }
-    if (search) {
-        query.username = {'$regex' : search, '$options' : 'i'}
-        delete query.email
-        query['$and'] = [
-            { email: {'$regex' : search, '$options' : 'i'}},
-            { email: { $ne: 'xxxxx@gmail.com' } }
-        ]
-  }
-*/
-
       const matchingArticles = await ArticlesAccessor.searchArticles(query);
       res.status(200).json(matchingArticles);
     } catch (e) {
