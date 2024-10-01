@@ -57,8 +57,11 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-
-      const updates = new ArticleUpdate(req.body);
+      try {
+        const updates = new ArticleUpdate(req.body);
+      } catch(e) {
+        console.log(e);
+      }
       const authorIds = await UsersAccessor.getUserIdsByEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
@@ -96,8 +99,7 @@ export default class ArticleController {
       const userID = user._id;
 
       const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
-        console.log(user);
-        
+
       // modify the article with the new comment
       const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
 
@@ -113,7 +115,6 @@ export default class ArticleController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        console.log(e);
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }

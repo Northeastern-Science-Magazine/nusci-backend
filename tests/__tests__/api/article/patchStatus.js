@@ -32,7 +32,7 @@ describe("Update Article Status", () => {
   test("should update article status successfully", async () => {
     const response = await request(app)
       .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens.ethanethan}`])
       .send(validArticleStatusUpdate);
 
     showLog && console.log(response.body);
@@ -43,7 +43,7 @@ describe("Update Article Status", () => {
   test("should fail to update article status due to invalid status type", async () => {
     const response = await request(app)
       .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens.ethanethan}`])
       .send(invalidArticleStatusUpdate);
 
     showLog && console.log(response.body);
@@ -54,7 +54,7 @@ describe("Update Article Status", () => {
   test("should fail to update article status due to invalid permissions", async () => {
     const response = await request(app)
       .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.jasmine}`])
+      .set("Cookie", [`token=${tokens.jasminejasmine}`])
       .send(validArticleStatusUpdate);
 
     showLog && console.log(response.body);

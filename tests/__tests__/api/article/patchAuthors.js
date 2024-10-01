@@ -33,9 +33,9 @@ describe("Update Article Authors", () => {
   test("should update article authors successfully", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens.ethanethan}`])
       .send(validAuthorsUpdate);
-
+      
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     console.log(response.body.authors);
@@ -46,7 +46,7 @@ describe("Update Article Authors", () => {
   test("should update article authors to an empty list", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens.ethanethan}`])
       .send(emptyAuthorsUpdate);
 
     showLog && console.log(response.body);
@@ -57,7 +57,7 @@ describe("Update Article Authors", () => {
   test("should fail to update article authors due to invalid author username", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens.ethanethan}`])
       .send(invalidAuthorsUpdate);
 
     showLog && console.log(response.body);
