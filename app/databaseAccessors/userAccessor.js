@@ -35,10 +35,29 @@ export default class UsersAccessor {
    */
   static async getUserIdByEmail(email) {
     const user = await this.getUserByEmail(email);
-    if (user) {
+    if (!user) {
       throw new ErrorUserNotFound(`User not found for email: ${email}`);
     }
     return user;
+  }
+
+  /**
+ * Get a list of User IDs by a list emails
+ *
+ * @param {[String]} email - Array of email
+ * @returns {{[ObjectId]}} - Array of user ID
+ */
+  static async getUserIdsByMultipleEmails(emails) {
+    const userIds = [];
+    for (const email of emails) {
+      const user = await this.getUserByEmail(email);
+      if (user) {
+        userIds.push(user._id);
+      } else {
+        throw new ErrorUserNotFound(`User not found for email: ${email}`);
+      }
+    }
+    return userIds;
   }
 
   /**

@@ -58,7 +58,7 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
       const updates = new ArticleUpdate(req.body);
-      const authorIds = await UsersAccessor.getUserIdByEmail(updates.authors);
+      const authorIds = await UsersAccessor.getUserIdsByMultipleEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 

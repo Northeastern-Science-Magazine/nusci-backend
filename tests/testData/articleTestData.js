@@ -9,7 +9,7 @@ export const invalidArticleStatusUpdate = {
 };
 
 export const validAuthorsUpdate = {
-  authors: [["anika@anika.com"], ["jasmine@jasmine.com"]],
+  authors: ["anika@anika.com", "jasmine@jasmine.com"],
 };
 
 export const emptyAuthorsUpdate = {

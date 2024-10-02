@@ -30,9 +30,6 @@ describe("Get User By Email Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(validEmailQueryRaisa);
-    validEmailQueryRaisa.emails.forEach((email) => {
-      expect(response.body.emails).toContain(email)
-    });
   });
 
   test("get a user by a valid/existing email (Ethan)", async () => {
@@ -41,9 +38,7 @@ describe("Get User By Email Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(validEmailQueryEthan);
-    validEmailQueryEthan.emails.forEach((email) => {
-      expect(response.body.emails).toContain(email)
-    });  });
+  });
 
   test("attempt getting an invalid email", async () => {
     const response = await request(app).get("/user/email/nonexistentuser");

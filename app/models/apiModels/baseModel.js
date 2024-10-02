@@ -122,20 +122,12 @@ export class BaseModel {
         if (type(arrayType) !== object) {
           // basic list
           if (value.some((item) => type(item) !== arrayType)) {
-            // Array of Arrays
-            if (value.every((item) => type(item) === array)) {
-              for (let i = 0; i < value.length; i++) {
-                value[i] = { [key]: value[i] };
-                this.validate(value[i], arrayType);
-              }
-            }
-          } else {
             throw new ErrorValidation(`API Model Validation - Invalid element of '${value}' not of type '${arrayType}'`);
           }
+        } else {
+          // list of objects
+          value.forEach((item) => this.validate(item, arrayType));
         }
-      } else {
-        // list of objects
-        value.forEach((item) => this.validate(item, arrayType));
       }
     }
   }
