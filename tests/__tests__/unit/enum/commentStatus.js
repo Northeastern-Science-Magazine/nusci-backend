@@ -32,7 +32,7 @@ describe("Tests for enumerated type CommentStatus", () => {
     expect(CommentStatus.toCommentStatus("public")).toStrictEqual(CommentStatus.Public);
   });
 
-  test("toCommentStatus Reason", ()=> {
+  test("toCommentStatus Reason", () => {
     expect(CommentStatus.toCommentStatus("reason")).toStrictEqual(CommentStatus.Reason);
   });
 
