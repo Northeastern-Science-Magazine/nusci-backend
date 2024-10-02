@@ -1,3 +1,4 @@
+import ArticlesAccessor from "../../app/databaseAccessors/articleAccessor.js";
 import ArticleStatus from "../../app/models/enums/articleStatus.js";
 
 export const validArticleStatusUpdate = {

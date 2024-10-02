@@ -132,29 +132,32 @@ export default class ArticleController {
       if (req.body.hasOwnProperty('issueNumber')===true) {
         query.issueNumber = req.body.issueNumber;
       }
-      console.log("print 8:", query);
       if (req.body.hasOwnProperty('authors')===true) {
         query.authors = [];
         for (let i = 0; i < req.body.authors.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.authors[i]);
+          query.authors[i] = user._id;
         }
       }
       if(req.body.hasOwnProperty('editors')) {
         query.editors = [];
         for (let i = 0; i < req.body.editors.length; i++) {
-          query.editors[i] = await UsersAccessor.getUserByEmail(req.body.editors[i]);
+          const user = await UsersAccessor.getUserByEmail(req.body.editors[i]);
+          query.editors[i] = user._id;
         }
       }
       if (req.body.hasOwnProperty('designers')) {
         query.designers = [];
         for (let i = 0; i < req.body.designers.length; i++) {
-          query.designers[i] = await UsersAccessor.getUserByEmail(req.body.designers[i]);
+          const user = await UsersAccessor.getUserByEmail(req.body.designers[i]);
+          query.designers[i] = user._id;
         }
       }
       if (req.body.hasOwnProperty('photographers')) {
         query.photographers = [];
         for (let i = 0; i < req.body.photographers.length; i++) {
-          query.photographers[i] = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
+          const user = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
+          query.photographers[i] = user._id;
         }
       }
       if (req.body.hasOwnProperty('slug')) {
@@ -169,8 +172,7 @@ export default class ArticleController {
       if (req.body.hasOwnProperty('after')) {
         query.after = req.body.after;
       }
-
-      console.log(query);
+      
       const matchingArticles = await ArticlesAccessor.searchArticles(query); 
       res.status(200).json(matchingArticles);
     } catch (e) {

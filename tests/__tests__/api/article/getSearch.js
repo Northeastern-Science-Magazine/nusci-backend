@@ -1,14 +1,7 @@
 import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
-import {
-  validArticleSlug,
-  validAuthorsUpdate,
-  invalidAuthorsUpdate,
-  emptyAuthorsUpdate,
-} from "../../../testData/articleTestData.js";
 import Connection from "../../../../app/db/connection.js";
-import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
 
 const showLog = __filename
@@ -30,14 +23,185 @@ beforeEach(async () => {
 });
 
 describe("Get Article Search", () => {
-    test("", async () => {
-      const response = await request(app)
-        .get(`/articles/search`)
-        .send({issueNumber: "3", authors: ["jasmine@jasmine.com"]})
-        .set("Cookie", [`token=${tokens.ethan}`]);
-  
-      showLog && console.log(response.body);
-      expect(response.status).toBe(200);
-      //expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
-    });
+  test("no options", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(6);
+  });
+
+  test("valid issue number", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({issueNumber: "3"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body[0].slug).toEqual("world-death-rate-holding-steady-at-100-percent-2");
+  });
+
+  test("valid authors", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({authors: ["jasmine@jasmine.com"]});      
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(6);
+  });
+
+  test("valid editors", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({editors: ["noah@noah.com", "nethra@nethra.com"]});      
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(3);
+  });
+
+  test("valid designers", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({designers: ["vianna@vianna.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(6);
+  });
+
+  test("valid photographers", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({photographers: ["jiajia@jiajia.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(6);
+  });
+
+  test("valid slug", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({slug: "exploring-the-future-ai-integration-in-everyday-life"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].title).toEqual("Exploring the Future: AI Integration in Everyday Life");
+  });
+
+  test("valid categories", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({categories: ["technology"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(2);
+  });
+/*
+  test("valid before date", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({beforeDate: });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual();
+  });
+*/
+  //afterDate
+
+  //limit??
+
+  test("resulting query returns []", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({issueNumber: "3", editors: ["nethra@nethra.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  //Test search providing 3-5 compounding options (2+)
+
+  //Test search providing every single search option.
+
+  test("invalid issue number", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({issueNumber: "8"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid authors", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({authors: ["arushi@arushi.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid editors", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({editors: ["arushi@arushi.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid designers", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({designers: ["arushi@arushi.com", "raisa@raisa.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid photographers", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({photographers: ["arushi@arushi.com", "raisa@raisa.com"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid slug", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({slug: "this-is-not-a-slug"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  test("invalid categories", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({categories: ["coolness", "craziness"]});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+
+  //invalid limit
+
 });  
