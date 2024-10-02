@@ -45,7 +45,7 @@ export default class UserController {
       }
 
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByEmail(req.body.emails);
+      const user = await UsersAccessor.getUserByEmail(req.body.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
@@ -75,7 +75,7 @@ export default class UserController {
       // sign token and send it in response
       const token = jwt.sign(
         {
-          email: user.emails,
+          email: user.email,
           roles: user.roles,
         },
         process.env.SERVER_TOKEN_KEY
@@ -112,7 +112,7 @@ export default class UserController {
 
       // hash the password
       userData.password = await bcrypt.hash(userData.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
@@ -239,7 +239,7 @@ export default class UserController {
    *
    * This method updates the status of lists of pending users to deny or approve them.
    *
-   * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deniy.
+   * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
    * @param {function} next middleware function.
    */
@@ -257,9 +257,8 @@ export default class UserController {
       for (const email of allUsers) {
         //check if the user exists and is pending
         try {
-          const user = await UsersAccessor.getUserByEmail([email]);
+          const user = await UsersAccessor.getUserByEmail(email);
           if (user.status !== AccountStatus.Pending.toString()) {
-            console.log("1");
             throw new ErrorUserStatusAlreadyResolved();
           }
         } catch (e) {

@@ -2,27 +2,27 @@ import Accounts from "../../app/models/enums/accounts.js";
 import AccountStatus from "../../app/models/enums/accountStatus.js";
 
 export const validUserLoginRaisa = {
-  emails: ["raisa@raisa.com"],
+  email: "raisa@raisa.com",
   password: "raisa",
 };
 
 export const validUserLoginEthan = {
-  emails: ["ethan@ethan.com"],
+  email: "ethan@ethan.com",
   password: "123",
 };
 
 export const invalidUserLoginEthan = {
-  emails: ["ethan@ethan.com"],
+  email: "ethan@ethan.com",
   password: "321",
 };
 
 export const invalidUserLoginRaisa = {
-  emails: ["raisa@raisa.com"],
+  email: "raisa@raisa.com",
   password: "notraisa",
 };
 
 export const pendingUserLoginAce = {
-  emails: ["ace@ace.com"],
+  email: "ace@ace.com",
   password: "sparky",
 };
 
@@ -32,7 +32,7 @@ export const validEmailSignup = {
   password: "newpassword",
   graduationYear: 2025,
   bio: "New user bio",
-  emails: ["newuser@example.com"],
+  email: "newuser@example.com",
   roles: [Accounts.Author.toString()],
   status: AccountStatus.Pending.toString(),
 };
@@ -43,7 +43,7 @@ export const existingEmailSignup = {
   password: "password",
   graduationYear: 2024,
   bio: "Existing user bio",
-  emails: ["raisa@raisa.com"], // existing email
+  email: "raisa@raisa.com", // existing email
   roles: [Accounts.Editor.toString()],
   status: AccountStatus.Pending.toString(),
 };
@@ -58,7 +58,7 @@ export const validEmailQueryRaisa = {
   profileImage: "https://example.com/profile.jpg",
   bannerImage: "https://example.com/banner.jpg",
   bio: "Co-Head of Web & Software with Ethan",
-  emails: ["raisa@raisa.com"],
+  email: "raisa@raisa.com",
   roles: ["admin"],
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
@@ -74,7 +74,7 @@ export const validEmailQueryEthan = {
   profileImage: "https://example.com/profile.jpg",
   bannerImage: "https://example.com/banner.jpg",
   bio: "Co-Head of Web & Software with Raisa",
-  emails: ["ethan@ethan.com"],
+  email: "ethan@ethan.com",
   roles: ["admin"],
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",

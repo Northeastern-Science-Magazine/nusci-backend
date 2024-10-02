@@ -57,12 +57,8 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-      try {
-        const updates = new ArticleUpdate(req.body);
-      } catch(e) {
-        console.log(e);
-      }
-      const authorIds = await UsersAccessor.getUserIdsByEmails(updates.authors);
+      const updates = new ArticleUpdate(req.body);
+      const authorIds = await UsersAccessor.getUserIdByEmail(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 

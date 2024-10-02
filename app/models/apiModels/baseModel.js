@@ -43,7 +43,7 @@ export class BaseModel {
         delete json[key];
         continue;
       }
-      console.log(json);
+      // console.log(json);
       // key exists in schema
       let value = json[key];
       const schemaType = schema[key].type;
@@ -125,7 +125,7 @@ export class BaseModel {
             // Array of Arrays
             if (value.every((item) => type(item) === array)) {
               for (let i = 0; i < value.length; i++) {
-                value[i] = JSON.parse(JSON.stringify({ [key]: value[i] }));
+                value[i] = { [key]: value[i] };
                 this.validate(value[i], arrayType);
               }
             }

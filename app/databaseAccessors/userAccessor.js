@@ -28,26 +28,21 @@ export default class UsersAccessor {
   }
 
   /**
-   * Get User IDs by a list of emails
+   * Get User IDs by a email
    *
-   * @param {Array<string>} emails - List of emails
-   * @returns {Array<ObjectId>} - List of user IDs
+   * @param {String} email - Email
+   * @returns {ObjectId} - user's ID
    */
-  static async getUserIdsByEmails(emails) {
-    const userIds = [];
-    for (const email of emails) {
-      const user = await this.getUserByEmail(email);
-      if (user) {
-        userIds.push(user._id);
-      } else {
-        throw new ErrorUserNotFound(`User not found for email: ${email}`);
-      }
+  static async getUserIdByEmail(email) {
+    const user = await this.getUserByEmail(email);
+    if (user) {
+      throw new ErrorUserNotFound(`User not found for email: ${email}`);
     }
-    return userIds;
+    return user;
   }
 
   /**
-   * getApprovedByEmails Method
+   * getApprovedByEmail Method
    *
    * This method retrieves the user MongoDB object from the
    * database based on a given email
@@ -59,7 +54,7 @@ export default class UsersAccessor {
   static async getApprovedByEmail(email) {
     await Connection.open();
     const user = await User.findOne({
-      emails: { $in: [email] },
+      email: email,
       status: AccountStatus.Approved.toString(), // Use MongoDB filter for equal to approved status
     });
     return user;
@@ -78,7 +73,7 @@ export default class UsersAccessor {
   static async getUnapprovedByemail(email) {
     await Connection.open();
     const user = await User.findOne({
-      emails: { $in: [email] },
+      email: email,
       status: { $ne: AccountStatus.Approved.toString() }, // Use MongoDB filter for not equal to approved status
     });
     return user;
@@ -97,7 +92,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { emails: { $in: email } },
+      { emails: email },
       { status: AccountStatus.Approved.toString() },
       { new: true }
     );
@@ -117,7 +112,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { emails: { $in: [email] } },
+      { emails: email },
       { status: AccountStatus.Denied.toString() },
       { new: true }
     );
@@ -130,14 +125,14 @@ export default class UsersAccessor {
    * This method retrieves the user MongoDB object from the
    * database based on a given email
    *
-   * @param {[String]}  Array of email
+   * @param {String}  email
    * @returns the User associated with the given email in
    *          the database.
    *
    */
   static async getUserByEmail(email) {
     await Connection.open();
-    const user = await User.findOne({ emails : {$elemMatch:{$in : email}}});
+    const user = await User.findOne({ email: email });
     return user;
   }
 

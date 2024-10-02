@@ -28,7 +28,7 @@ describe("Article Internal Comment Tests", () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/world-death-rate-holding-steady-at-100-percent-2")
       .send({ comment: "second line should be clearer" })
-      .set("Cookie", [`token=${tokens.ethanethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     
@@ -40,7 +40,7 @@ describe("Article Internal Comment Tests", () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/exploring-the-future-ai-integration-in-everyday-life")
       .send({ comment: "looks great, will publish soon" })
-      .set("Cookie", [`token=${tokens.noahnoah}`]);
+      .set("Cookie", [`token=${tokens["noah@noah.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
@@ -51,7 +51,7 @@ describe("Article Internal Comment Tests", () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/exploring-the-future-ai-integration-in-everyday-life")
       .send({ note: "this is a note" })
-      .set("Cookie", [`token=${tokens.noahnoah}`]);
+      .set("Cookie", [`token=${tokens["noah@noah.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
@@ -65,7 +65,7 @@ describe("Article Internal Comment Tests", () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/this-is-a-fake-slug")
       .send({ comment: "this is a comment" })
-      .set("Cookie", [`token=${tokens.noahnoah}`]);
+      .set("Cookie", [`token=${tokens["noah@noah.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
@@ -76,7 +76,7 @@ describe("Article Internal Comment Tests", () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/this-is-a-fake-slug")
       .send({ comment: "this is a comment" })
-      .set("Cookie", [`token=${tokens.arushiarushi}`]);
+      .set("Cookie", [`token=${tokens["arushi@arushi.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(403);

@@ -46,14 +46,14 @@ export default class Authorize {
    * using the token as auth
    *
    * @param {HTTP REQ} req
-   * @returns {{String}} Array of email
+   * @returns {String} Email
    */
   static getEmail(req) {
     dotenv.config();
     if (req.cookies.token) {
       const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
-        return payload.emails;
+        return payload.email;
       } else {
         new ErrorFailedLogin().throwHttp(req, res);
       }
