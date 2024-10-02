@@ -5,6 +5,7 @@ export const log = {
       patchAuthors: false,
       patchStatus: false,
       postCommentCreate: false,
+      getSearch: true,
     },
     default: {
       default: false,

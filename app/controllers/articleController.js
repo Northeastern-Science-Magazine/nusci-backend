@@ -127,46 +127,51 @@ export default class ArticleController {
    */
   static async search(req, res, next){
     try {
-      console.log(req.params.query);
-      const allSearches = req.params.query.split("&");
-
-      const query = {}
+      const query = {};
       
-      for (const element of allSearches) {
-        const keyVal = element.split("=");
-        console.log(keyVal);
-        switch (keyVal[0]) {
-          case "issueNumber":
-            query.issueNumber = keyVal[1];
-            break;
-          case "authors":
-            query.authors = keyVal[1];
-            break;
-          case "editors":
-            query.editors = keyVal[1];
-            break;
-          case "designers":
-            query.designers = keyVal[1];
-            break;
-          case "photographers":
-            query.photographers = keyVal[1];
-            break;
-          case "slug":
-            query.slug = keyVal[1];
-            break;
-          case "categories":
-            query.categories = keyVal[1];
-            break;
-          case "before":
-            query.before = keyVal[1];
-            break;
-          case "after":
-            query.after = keyVal[1];
-            break;
+      if (req.body.hasOwnProperty('issueNumber')===true) {
+        query.issueNumber = req.body.issueNumber;
+      }
+      console.log("print 8:", query);
+      if (req.body.hasOwnProperty('authors')===true) {
+        query.authors = [];
+        for (let i = 0; i < req.body.authors.length; i++) {
+          const user = await UsersAccessor.getUserByEmail(req.body.authors[i]);
         }
       }
+      if(req.body.hasOwnProperty('editors')) {
+        query.editors = [];
+        for (let i = 0; i < req.body.editors.length; i++) {
+          query.editors[i] = await UsersAccessor.getUserByEmail(req.body.editors[i]);
+        }
+      }
+      if (req.body.hasOwnProperty('designers')) {
+        query.designers = [];
+        for (let i = 0; i < req.body.designers.length; i++) {
+          query.designers[i] = await UsersAccessor.getUserByEmail(req.body.designers[i]);
+        }
+      }
+      if (req.body.hasOwnProperty('photographers')) {
+        query.photographers = [];
+        for (let i = 0; i < req.body.photographers.length; i++) {
+          query.photographers[i] = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
+        }
+      }
+      if (req.body.hasOwnProperty('slug')) {
+        query.slug = req.body.slug;
+      }
+      if (req.body.hasOwnProperty('categories')) {
+        query.categories = req.body.categories;
+      }
+      if (req.body.hasOwnProperty('before')) {
+        query.before = req.body.before;
+      }
+      if (req.body.hasOwnProperty('after')) {
+        query.after = req.body.after;
+      }
+
       console.log(query);
-      const matchingArticles = await ArticlesAccessor.searchArticles(query);
+      const matchingArticles = await ArticlesAccessor.searchArticles(query); 
       res.status(200).json(matchingArticles);
     } catch (e) {
       if (e instanceof HttpError) {

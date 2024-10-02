@@ -32,7 +32,8 @@ beforeEach(async () => {
 describe("Get Article Search", () => {
     test("", async () => {
       const response = await request(app)
-        .get(`/articles/search/issueNumber=3&authors=jasmine@jasmine.com`)
+        .get(`/articles/search`)
+        .send({issueNumber: "3", authors: ["jasmine@jasmine.com"]})
         .set("Cookie", [`token=${tokens.ethan}`]);
   
       showLog && console.log(response.body);
