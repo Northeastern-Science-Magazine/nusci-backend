@@ -131,7 +131,7 @@ export default class UsersAccessor {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { emails: email },
+      { email: email },
       { status: AccountStatus.Denied.toString() },
       { new: true }
     );
