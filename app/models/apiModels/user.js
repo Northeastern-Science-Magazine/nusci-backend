@@ -122,7 +122,7 @@ export class UserUpdate extends BaseModelUpdate {
  */
 export class UserDelete extends BaseModel {
   static schema = {
-    email: { type: string },
+    email: { type: string, required: true },
   };
 
   constructor(json) {
