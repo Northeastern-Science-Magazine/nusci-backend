@@ -25,7 +25,7 @@ beforeEach(async () => {
 
 describe("Get User By Email Tests", () => {
   test("get a user by a valid/existing email (Raisa)", async () => {
-    const response = await request(app).get("/user/email/raisa@raisa.com");
+    const response = await request(app).get("/user/email/raisa%40raisa.com");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
