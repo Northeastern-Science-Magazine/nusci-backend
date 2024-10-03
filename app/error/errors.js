@@ -19,6 +19,11 @@ export class HttpError extends Error {
  * Bad request
  */
 
+export class GenericFailedLogin extends HttpError {
+  throwHttp(req, res) {res.status(400).json({error: "Login failed.", message: "Invalid username or password. Please try again.",});
+  }
+}
+
 export class ErrorFailedLogin extends HttpError {
   throwHttp(req, res) {
     res.status(400).json({ error: "Login failed.", message: this.message });

@@ -1,0 +1,12 @@
+# Server
+SERVER_HOSTNAME=localhost
+SERVER_PORT=9999
+SERVER_TOKEN_KEY=8a7c1f6e9d5b0a3c4d2e7f1b8e9a0d6f3c1b5e7d0a8f9b2c3e4d1f6a7c9b8e0d4f0a5e1b2c3d4f6e7a8b9c0d1f5e2b3c4a7d6f8e9a0b1c2d3f4e5a7b6c8d9e0f
+
+# MongoDB
+MONGODB_INITDB_ROOT_USERNAME=nusci
+MONGODB_INITDB_ROOT_PASSWORD=mongodb
+MONGODB_INITDB_HOSTNAME=localhost
+MONGODB_INITDB_PORT=27017
+
+# Connection String: mongodb://nusci:mongodb@localhost:27017/

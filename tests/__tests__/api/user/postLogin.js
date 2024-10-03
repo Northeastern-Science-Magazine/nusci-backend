@@ -78,4 +78,27 @@ describe("User Login Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
+
+  test('should return generic login failure message on invalid username', async () => {
+    const response = await request(app)
+      .post('/user/login')
+      .send({ username: 'invalidUsername', password: 'validPassword' });
+  
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Login failed.');
+    expect(response.body.message).toBe('Invalid username or password. Please try again.');
+  });
+  
+  test('should return generic login failure message on incorrect password', async () => {
+    const response = await request(app)
+      .post('/user/login')
+      .send({ username: 'validUser', password: 'wrongPassword' });
+  
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBe('Login failed.');
+    expect(response.body.message).toBe('Invalid username or password. Please try again.');
+  });
+
 });
+
+

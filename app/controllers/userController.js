@@ -16,6 +16,7 @@ import {
   ErrorUserNotFound,
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
+  GenericFailedLogin,
   HttpError,
 } from "../error/errors.js";
 
@@ -49,7 +50,7 @@ export default class UserController {
 
       if (!user) {
         //doesn't exist (use generic message)
-        throw new ErrorFailedLogin();
+        throw new GenericFailedLogin();
       }
 
       if (user.status == AccountStatus.Pending.toString()) {
@@ -70,7 +71,7 @@ export default class UserController {
       //check if password matches
       const decrypted = await bcrypt.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin();
+        throw new GenericFailedLogin();
       }
 
       // sign token and send it in response
