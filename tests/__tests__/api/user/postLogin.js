@@ -62,7 +62,7 @@ describe("User Login Tests", () => {
     expect(response.status).toBe(400);
   });
 
-  test("should not login with non-existent  ", async () => {
+  test("should not login with non-existent", async () => {
     const response = await request(app).post("/user/login").send({
       email: ["nonexistentuser@d.com"],
       password: "password",
