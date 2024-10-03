@@ -41,7 +41,7 @@ describe("Get User By Email Tests", () => {
   });
 
   test("attempt getting an invalid email", async () => {
-    const response = await request(app).get("/user/email/nonexistentuser");
+    const response = await request(app).get("/user/email/nonexistentuser%40nonexistent.com");
 
     showLog && console.log(response.body);
     expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
