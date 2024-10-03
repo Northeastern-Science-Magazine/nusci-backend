@@ -33,9 +33,8 @@ export default class Connection {
       dotenvConfig();
 
       //Destructure env variables
-      const { MONGODB_INITDB_ROOT_USERNAME, MONGODB_INITDB_ROOT_PASSWORD, MONGODB_INITDB_HOSTNAME, MONGODB_INITDB_PORT } =
-        process.env;
-      const DATABASE_URL = `mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@${MONGODB_INITDB_HOSTNAME}:${MONGODB_INITDB_PORT}`;
+      const { MONGODB_CONNECTION_STRING } = process.env;
+      const DATABASE_URL = MONGODB_CONNECTION_STRING;
 
       try {
         //Mongoose connect to the cluster.
