@@ -46,40 +46,11 @@ export default class Category {
    * @returns {Cateogory}
    */
   static toCategory(str) {
-    switch (str.toLowerCase()) {
-      case this.ArtificialIntelligence.toString():
-        return this.ArtificialIntelligence;
-      case this.Biology.toString():
-        return this.Biology;
-      case this.Chemistry.toString():
-        return this.Chemistry;
-      case this.ComputerScience.toString():
-        return this.ComputerScience;
-      case this.Culture.toString():
-        return this.Culture;
-      case this.Health.toString():
-        return this.Health;
-      case this.Environment.toString():
-        return this.Environment;
-      case this.Medicine.toString():
-        return this.Medicine;
-      case this.Newsletter.toString():
-        return this.Newsletter;
-      case this.Opinion.toString():
-        return this.Opinion;
-      case this.Physics.toString():
-        return this.Physics;
-      case this.Psychology.toString():
-        return this.Psychology;
-      case this.Science.toString():
-        return this.Science;
-      case this.Space.toString():
-        return this.Space;
-      case this.Technology.toString():
-        return this.Technology;
-      default:
-        throw new ErrorValidation("Invalid Category enum given.");
+    const category = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!category) {
+      throw new ErrorValidation("Invalid Category enum given.");
     }
+    return category;
   }
 
   /**

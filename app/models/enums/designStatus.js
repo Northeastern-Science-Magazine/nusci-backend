@@ -35,18 +35,11 @@ export default class DesignStatus {
    * @returns {DesignStatus}
    */
   static toDesignStatus(str) {
-    switch (str.toLowerCase()) {
-      case this.Needs_Designer.status:
-        return this.Needs_Designer;
-      case this.Has_Designer.status:
-        return this.Has_Designer;
-      case this.In_Progress.status:
-        return this.In_Progress;
-      case this.Completed.status:
-        return this.Completed;
-      default:
-        throw new ErrorValidation("Invalid DesignStatus enum given.");
+    const designStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!designStatus) {
+      throw new ErrorValidation("Invalid Design Status enum given.");
     }
+    return designStatus;
   }
 
   /**
