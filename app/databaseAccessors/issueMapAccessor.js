@@ -133,7 +133,6 @@ export default class IssueMapAccessor {
 
     //get article needed to remove
     const article = await Article.findOne({ slug: articleSlug });
-    console.log("removing article: ", article);
     if (!article) {
       throw new ErrorArticleNotFound();
     }
@@ -154,8 +153,7 @@ export default class IssueMapAccessor {
       { $pull: { articles: article._id } }, 
       { new: true } 
     );
-
-    console.log("updatedIssue", updatedIssue);
+    
     return updatedIssue;
   }
 }

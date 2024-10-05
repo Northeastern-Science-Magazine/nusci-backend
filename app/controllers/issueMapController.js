@@ -21,7 +21,6 @@ export default class IssueMapController {
     try {
       const issueNumber = req.body.issueNumber;
       const articleSlug = req.body.articleSlug;
-      console.log(issueNumber, articleSlug);
 
       if (!issueNumber || !articleSlug) {
         throw new ErrorInvalidRequestBody();
@@ -29,14 +28,11 @@ export default class IssueMapController {
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
 
-      console.log("final res",updatedIssue);
-
       res.status(200).json(updatedIssue);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        console.log(e);
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
