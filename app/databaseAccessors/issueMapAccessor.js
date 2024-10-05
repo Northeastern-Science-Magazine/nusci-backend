@@ -117,4 +117,17 @@ export default class IssueMapAccessor {
     const issues = await IssueMap.find({ modificationTime: { $gte: start, $lte: end } });
     return issues;
   }
+
+  /**
+   * Find and remove article from given issue
+   *
+   * @param {Number} issueNumber - Issue number to remove from
+   * @param {String} articleSlug - Article slug to remove
+   * @returns the updated issues
+   */
+  static async removeArticleFromIssue(issueNumber, articleSlug) {
+    await Connection.open();
+    const issues = await IssueMap.findOneAndUpdate({ issueNumber: issueNumber }, { $pull: { articles: articleSlug } });
+    return issues;
+  }
 }
