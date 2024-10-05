@@ -1,6 +1,9 @@
-import IssueMap from "../models/issue_map.js";
+import IssueMap from "../models/dbModels/issueMap.js";
+import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorArticleNotFound, HttpError } from "../error/errors.js";
+
 
 /**
  * IssueMap Accessor Class
@@ -127,7 +130,22 @@ export default class IssueMapAccessor {
    */
   static async removeArticleFromIssue(issueNumber, articleSlug) {
     await Connection.open();
-    const issues = await IssueMap.findOneAndUpdate({ issueNumber: issueNumber }, { $pull: { articles: articleSlug } });
-    return issues;
+
+    //get article needed to remove
+    const article = await Article.findOne({ slug: articleSlug });
+    console.log("removing article: ", article);
+    if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    //remove the article from the issue using object id
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { issueNumber: issueNumber },
+      { $pull: { articles: article._id } }, 
+      { new: true } 
+    );
+
+    console.log("updatedIssue", updatedIssue);
+    return updatedIssue;
   }
 }

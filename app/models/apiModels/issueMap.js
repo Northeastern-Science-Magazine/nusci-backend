@@ -49,7 +49,7 @@ export class IssueMapResponse extends BaseModel {
     modificationTime: { type: date, required: true },
   };
 
-  constructor() {
+  constructor(json) {
     super(json, IssueMapResponse.schema);
   }
 }
