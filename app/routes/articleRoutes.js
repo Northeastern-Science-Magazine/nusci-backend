@@ -36,5 +36,7 @@ router.route("/delete/:slug"); //delete an article
 
 router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
     .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+router.route("/resolve-internal-comment") // editor or admin can resolve an internal comment
+    .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
 
 export default router;

@@ -16,6 +16,10 @@ describe("Tests for enumerated type CommentStatus", () => {
     expect(CommentStatus.Public.toString()).toStrictEqual("public");
   });
 
+  test("toString Reason", () => {
+    expect(CommentStatus.Reason.toString()).toStrictEqual("reason");
+  });
+
   test("toCommentStatus Resolved", () => {
     expect(CommentStatus.toCommentStatus("resolved")).toStrictEqual(CommentStatus.Resolved);
   });
@@ -28,6 +32,10 @@ describe("Tests for enumerated type CommentStatus", () => {
     expect(CommentStatus.toCommentStatus("public")).toStrictEqual(CommentStatus.Public);
   });
 
+  test("toCommentStatus Reason", () => {
+    expect(CommentStatus.toCommentStatus("reason")).toStrictEqual(CommentStatus.Reason);
+  });
+
   test("toCommentStatus invalid input", () => {
     expect(() => {
       CommentStatus.toCommentStatus("invalid");
@@ -35,10 +43,10 @@ describe("Tests for enumerated type CommentStatus", () => {
   });
 
   test("list CommentStatus", () => {
-    expect(CommentStatus.list()).toStrictEqual([CommentStatus.Resolved, CommentStatus.Unresolved, CommentStatus.Public]);
+    expect(CommentStatus.list()).toStrictEqual([CommentStatus.Resolved, CommentStatus.Unresolved, CommentStatus.Public, CommentStatus.Reason]);
   });
 
   test("listr CommentStatus", () => {
-    expect(CommentStatus.listr()).toStrictEqual(["resolved", "unresolved", "public"]);
+    expect(CommentStatus.listr()).toStrictEqual(["resolved", "unresolved", "public", "reason"]);
   });
 });

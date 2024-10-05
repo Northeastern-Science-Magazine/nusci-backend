@@ -13,7 +13,7 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     pronouns: { type: [String] },
     graduationYear: { type: Number, required: true },
-    majors: { type: [String] },
+    major: { type: String },
     location: { type: String },
     profileImage: { type: String },
     bannerImage: { type: String },

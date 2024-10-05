@@ -7,6 +7,7 @@ export default class CommentStatus {
   static Resolved = new CommentStatus("resolved");
   static Unresolved = new CommentStatus("unresolved");
   static Public = new CommentStatus("public");
+  static Reason = new CommentStatus("reason");
 
   /**
    * INTERNAL USE ONLY
@@ -37,7 +38,6 @@ export default class CommentStatus {
     const commentStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
     if (!commentStatus) {
       throw new ErrorValidation("Invalid Comment Status enum given.");
-    }
     return commentStatus;
   }
 
