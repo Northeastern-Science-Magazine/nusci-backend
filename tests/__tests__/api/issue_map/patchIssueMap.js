@@ -113,4 +113,51 @@ describe("Remove article from issue map", () => {
     expect(response.status).toBe(200);
     expect(response.body.articles).toStrictEqual(articleObjectIdAfterIssue2Removal);
   });
+
+  test("Invalid removal of article due to empty request body", async () => {
+    const requestBody = {
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-article`)
+      .set("Cookie", [`token=${tokens.ethan}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(404);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Invalid request body.");
+  });
+
+  test("Invalid removal of article due to empty request body", async () => {
+    const requestBody = {
+      issueNumber: 1,
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-article`)
+      .set("Cookie", [`token=${tokens.ethan}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(404);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Invalid request body.");
+  });
+
+  test("Invalid removal of article due to empty request body", async () => {
+    const requestBody = {
+      articleSlug: validArticleSlugFromIssue1,
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-article`)
+      .set("Cookie", [`token=${tokens.ethan}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(404);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Invalid request body.");
+  });
 });
