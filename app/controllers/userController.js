@@ -7,7 +7,6 @@ import Authorize from "../auth/authorization.js";
 import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import {
-  ErrorFailedLogin,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
   ErrorUserAlreadyLoggedIn,
@@ -16,7 +15,7 @@ import {
   ErrorUserNotFound,
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
-  GenericLoginFailed,
+  ErrorGenericLoginFailed,
   HttpError,
 } from "../error/errors.js";
 
@@ -50,7 +49,7 @@ export default class UserController {
 
       if (!user) {
         //doesn't exist (use generic message)
-        throw new GenericLoginFailed();
+        throw new ErrorGenericLoginFailed();
       }
 
       if (user.status == AccountStatus.Pending.toString()) {
@@ -71,7 +70,7 @@ export default class UserController {
       //check if password matches
       const decrypted = await bcrypt.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new GenericLoginFailed();
+        throw new ErrorGenericLoginFailed();
       }
 
       // sign token and send it in response
