@@ -11,10 +11,10 @@ router.route("/create"); //create an article
 
 // filter + get articles by -- maybe find better ways
 // router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
-// router.route("/filter-by-user-and-role"); //get articles by username and role, by query
+// router.route("/filter-by-user-and-role"); //get articles by email and role, by query
 // //etc
 
-router.route("/approved-by/:username"); //get articles approved by the given user
+router.route("/approved-by/:email"); //get articles approved by the given user
 router.route("/slug/:slug"); //get article by its unique slug
 
 router.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
