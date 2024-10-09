@@ -80,6 +80,12 @@ export default class IssueMapAccessor {
     return issues;
   }
 
+  static async getIssueMapByIssueNumber(issueNumber) {
+    await Connection.open();
+    const issueMap = await IssueMap.findOne({ issueNumber });
+    return issueMap;
+  }
+
   /**
    * Find issues by user
    *
