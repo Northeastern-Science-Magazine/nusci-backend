@@ -1,24 +1,40 @@
 import PhotoTag from "../models/dbModels/photoTag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+
 /**
  * PhotoTag Accessor Class
  *
  * Accesses the photo tags
  */
 export default class PhotoTagAccessor {
-
+  /**
+   * creates a new photo tag
+   *
+   * @param {Object} tag - an instance of a PhotoTag model
+   * @return a new photo tag
+   */
   static async createPhotoTag(tag) {
-    try {
-      await Connection.open();
-      const createTag = await PhotoTag.create(tag);
-      return createTag;
-    } catch (e) {
-      console.error(e);
-      throw ErrorInternalDatabaseAccessor(e);
-    }
+    await Connection.open();
+    const createTag = await PhotoTag.create(tag);
+    return createTag;
   }
-  
+
+  /**
+   * Updates photo tag with the given id by populating the creatingUser
+   *
+   * @param {Object} tagID - the photo tag id to update
+   * @param {} update - an object of the field to update
+   * @return a PhotoTag model with populated creatingUser field
+   */
+  static async updatePhotoTag(tagID, update) {
+    await Connection.open();
+    const populateTag = await PhotoTag.findOneAndUpdate(tagID, update, { new: true })
+    .populate("creatingUser")
+    .exec();
+    return populateTag;
+  }
+
   /**
    * Get all tags
    *
