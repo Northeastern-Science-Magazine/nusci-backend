@@ -93,6 +93,7 @@ export class ErrorIssueMapNotFound extends HttpError {
   }
 }
 
+
 /**
  * 409 Errors
  *
@@ -114,6 +115,12 @@ export class ErrorUserAlreadyExists extends HttpError {
 export class ErrorUserStatusAlreadyResolved extends HttpError {
   throwHttp(req, res) {
     res.status(409).json({ error: "User's status is already resolved.", message: this.message });
+  }
+}
+
+export class ErrorRepeatedTagName extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Photo tag already exists."})
   }
 }
 
