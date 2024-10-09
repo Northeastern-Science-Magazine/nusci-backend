@@ -133,47 +133,54 @@ export default class ArticleController {
         query.issueNumber = req.body.issueNumber;
       }
       if (req.body.hasOwnProperty('authors')===true) {
-        query.authors = [];
+        const allAuthors = [];
         for (let i = 0; i < req.body.authors.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.authors[i]);
-          query.authors[i] = user._id;
+          allAuthors[i] = (user._id);
         }
+        query.authors = {"$in": allAuthors};
       }
       if(req.body.hasOwnProperty('editors')) {
-        query.editors = [];
+        const allEditors = [];
+        console.log(allEditors);
         for (let i = 0; i < req.body.editors.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.editors[i]);
-          query.editors[i] = user._id;
+          allEditors[i] = user._id;
         }
+        query.editors = {"$in": allEditors};
       }
       if (req.body.hasOwnProperty('designers')) {
-        query.designers = [];
+        const allDesigners = [];
         for (let i = 0; i < req.body.designers.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.designers[i]);
-          query.designers[i] = user._id;
+          allDesigners[i] = user._id;
         }
+        query.designers = {"$in": allDesigners};
       }
       if (req.body.hasOwnProperty('photographers')) {
-        query.photographers = [];
+        const allPhotographers = [];
         for (let i = 0; i < req.body.photographers.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
-          query.photographers[i] = user._id;
+          allPhotographers[i] = user._id;
         }
+        query.photographers = {"$in": allPhotographers};
       }
       if (req.body.hasOwnProperty('slug')) {
         query.slug = req.body.slug;
       }
       if (req.body.hasOwnProperty('categories')) {
-        query.categories = req.body.categories;
+        query.categories = {"$in": req.body.categories};
       }
       if (req.body.hasOwnProperty('before')) {
-        query.before = req.body.before;
+        query.before = {"$lte": req.body.before};
       }
       if (req.body.hasOwnProperty('after')) {
         query.after = req.body.after;
       }
-      
+
+      console.log(query);
       const matchingArticles = await ArticlesAccessor.searchArticles(query); 
+      console.log(matchingArticles);
       res.status(200).json(matchingArticles);
     } catch (e) {
       if (e instanceof HttpError) {

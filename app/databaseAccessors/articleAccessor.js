@@ -332,7 +332,6 @@ export default class ArticlesAccessor {
   static async searchArticles(query) {
     await Connection.open();
     const articles = await Article.find(query);
-    console.log(articles);
     return articles;
   }
 }

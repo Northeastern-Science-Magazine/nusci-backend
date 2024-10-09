@@ -3,6 +3,7 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
+import { deserialize } from "v8";
 
 const showLog = __filename
   .replace(".js", "")
@@ -60,7 +61,7 @@ describe("Get Article Search", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.length).toEqual(3);
+    expect(response.body.length).toEqual(6);
   });
 
   test("valid designers", async () => {
@@ -103,17 +104,17 @@ describe("Get Article Search", () => {
     expect(response.status).toBe(200);
     expect(response.body.length).toEqual(2);
   });
-/*
+
   test("valid before date", async () => {
     const response = await request(app)
       .get(`/articles/search`)
-      .send({beforeDate: });
+      .send({before: '2024-04-02T04:00:00.000Z'});
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.length).toEqual();
+    expect(response.body.length).toEqual(1);
   });
-*/
+
   //afterDate
 
   //limit??
@@ -128,10 +129,28 @@ describe("Get Article Search", () => {
     expect(response.body).toEqual([]);
   });
 
-  //Test search providing 3-5 compounding options (2+)
+  test("providing 3-5 compounding options", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({editors: ["noah@noah.com"], categories: ["technology"], photographers: ["jiajia@jiajia.com"]});
 
-  //Test search providing every single search option.
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(2);
+    expect(response.body[0].title).toEqual('Exploring the Future: AI Integration in Everyday Life');
+    expect(response.body[1].title).toEqual('Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern');
+  });
+  /*
+  test("providing every single search option", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({issueNumber: "1", authors: [""], editors: [""], designers: [""], photographers: [""], slug: "", categories: [""], before: "", after: ""});
 
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
+  });
+  */
   test("invalid issue number", async () => {
     const response = await request(app)
       .get(`/articles/search`)
