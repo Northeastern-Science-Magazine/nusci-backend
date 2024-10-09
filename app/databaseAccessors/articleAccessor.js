@@ -329,9 +329,9 @@ export default class ArticlesAccessor {
     return newArticle;
   }
 
-  static async searchArticles(query) {
+  static async searchArticles(query, limit) {
     await Connection.open();
-    const articles = await Article.find(query);
+    const articles = await Article.find(query).limit(limit);
     return articles;
   }
 }

@@ -108,16 +108,44 @@ describe("Get Article Search", () => {
   test("valid before date", async () => {
     const response = await request(app)
       .get(`/articles/search`)
-      .send({before: '2024-04-02T04:00:00.000Z'});
+      .send({before: new Date("2024-03-27")});
+      //.send({before: '2024-04-02T04:00:00.000Z'});
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.length).toEqual(1);
+    expect(response.body.length).toEqual(2);
   });
 
-  //afterDate
+  test("valid after date", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({after: new Date("2024-03-29")});
 
-  //limit??
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(4);
+  });
+
+  test("valid both dates", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({before: new Date("2024-04-2")})
+      .send({after: new Date("2024-03-30")});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(2);
+  });
+
+  test("valid limit", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({limit: "3"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(3);
+  });
 
   test("resulting query returns []", async () => {
     const response = await request(app)
@@ -221,6 +249,15 @@ describe("Get Article Search", () => {
     expect(response.body).toEqual([]);
   });
 
-  //invalid limit
+  test("valid invalid both dates", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({after: new Date("2024-04-2")})
+      .send({before: new Date("2024-03-31")});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(0);
+  });
 
 });  
