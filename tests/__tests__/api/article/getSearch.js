@@ -260,4 +260,14 @@ describe("Get Article Search", () => {
     expect(response.body.length).toEqual(0);
   });
 
+  test("valid invalid limit", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({limit: -10});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toEqual(0);
+  });
+
 });  

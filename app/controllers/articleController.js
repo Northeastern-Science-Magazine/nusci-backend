@@ -128,7 +128,7 @@ export default class ArticleController {
   static async search(req, res, next){
     try {
       const query = {};
-      const limit = 10;
+      var limit;
       
       // construct a query json based on the queries that are in the passed json
       if (req.body.hasOwnProperty('issueNumber')===true) {
@@ -174,7 +174,6 @@ export default class ArticleController {
         query.categories = {"$in": req.body.categories};
       }
       if (req.body.hasOwnProperty('before') && req.body.hasOwnProperty('after')) {
-        //query.approvalTime = {"$and": [{approvalTime: {"$gte": req.body.after}}, {approvalTime: {"$lte": req.body.before}}]};
         query.$and = [{approvalTime: {"$gte": req.body.after}}, {approvalTime: {"$lte": req.body.before}}];
       }
       else if (req.body.hasOwnProperty('before')) {
@@ -184,13 +183,11 @@ export default class ArticleController {
         query.approvalTime = {"$gte": req.body.after};
       }
       if (req.body.hasOwnProperty('limit')) {
-        limit = req.body.limit;
+        limit = Number(req.body.limit);
       }
       
       // access the database and retrieve the matching articles
-      console.log(query);
       const matchingArticles = await ArticlesAccessor.searchArticles(query, limit); 
-      console.log(matchingArticles);
       res.status(200).json(matchingArticles);
     } catch (e) {
       if (e instanceof HttpError) {
