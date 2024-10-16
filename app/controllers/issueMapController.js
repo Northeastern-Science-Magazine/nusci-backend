@@ -1,12 +1,9 @@
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import { ErrorInvalidRequestBody, ErrorUnexpected, HttpError, ErrorSectionNotFound, ErrorIssueMapNotFound } from "../error/errors.js";
-import { IssueMapUpdate } from "../models/apiModels/issueMap.js";
-import { ArticleCreate } from "../models/apiModels/article.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
-import ArticleContent from "../models/enums/articleContent.js";
 import Article from "../models/dbModels/article.js";
 import IssueMap from "../models/dbModels/article.js";
 
@@ -39,7 +36,7 @@ export default class IssueMapController {
         editors = [],
         designers = [],
         photographers = [],
-        section = null,
+        section = '',
         categories = []
       } = req.body
 
@@ -73,7 +70,7 @@ export default class IssueMapController {
         modificationTime: new Date(),
     };
 
-      const createdArticle = await Article.create(new Article);
+      const createdArticle = await Article.create(newArticle);
 
       const issueMap = IssueMapAccessor.getIssueMapByIssueNumber(issueNumber);
 

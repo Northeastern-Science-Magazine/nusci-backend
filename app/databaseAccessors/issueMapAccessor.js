@@ -1,4 +1,4 @@
-import IssueMap from "../models/issue_map.js";
+import IssueMap from "../models/dbModels/issueMap.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
