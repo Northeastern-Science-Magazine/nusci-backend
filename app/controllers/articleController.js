@@ -159,23 +159,16 @@ export default class ArticleController {
         return {"$in": allUsers};
     }
 
-    function idempotent(value) {
-      return value;
-    }
-    
-    function categoryQuery(categories) {
-      return {"$in": categories};
-    }
-
     const mapping = {
-      issueNumber: idempotent,
+      issueNumber: (issueNumber) => issueNumber,
       authors: getUserIdsByEmailsQuery,
       editors: getUserIdsByEmailsQuery,
       designers: getUserIdsByEmailsQuery,
       photographers: getUserIdsByEmailsQuery,
-      slug: idempotent,
-      categories: categoryQuery,
+      slug: (slug) => slug,
+      categories: (categories) => ({"$in": categories}),
     };
+    
     try {
       const query = {};
       var limit;
