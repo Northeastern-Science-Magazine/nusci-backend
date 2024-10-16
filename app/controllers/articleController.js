@@ -125,70 +125,91 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async search(req, res, next){
+  static async search(req, res, next) {
     try {
       const query = {};
       var limit;
-      
+
       // construct a query json based on the queries that are in the passed json
-      if (req.body.hasOwnProperty('issueNumber')===true) {
+      if (req.body.hasOwnProperty("issueNumber") === true) {
         query.issueNumber = req.body.issueNumber;
       }
-      if (req.body.hasOwnProperty('authors')===true) {
+      if (req.body.hasOwnProperty("authors") === true) {
         const allAuthors = [];
         for (let i = 0; i < req.body.authors.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.authors[i]);
-          allAuthors[i] = (user._id);
+          allAuthors[i] = user._id;
         }
-        query.authors = {"$in": allAuthors};
+        query.authors = { $in: allAuthors };
       }
-      if(req.body.hasOwnProperty('editors')) {
+      if (req.body.hasOwnProperty("editors")) {
         const allEditors = [];
         console.log(allEditors);
         for (let i = 0; i < req.body.editors.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.editors[i]);
           allEditors[i] = user._id;
         }
-        query.editors = {"$in": allEditors};
+        query.editors = { $in: allEditors };
       }
-      if (req.body.hasOwnProperty('designers')) {
+      if (req.body.hasOwnProperty("designers")) {
         const allDesigners = [];
         for (let i = 0; i < req.body.designers.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.designers[i]);
           allDesigners[i] = user._id;
         }
-        query.designers = {"$in": allDesigners};
+        query.designers = { $in: allDesigners };
       }
-      if (req.body.hasOwnProperty('photographers')) {
+      if (req.body.hasOwnProperty("photographers")) {
         const allPhotographers = [];
         for (let i = 0; i < req.body.photographers.length; i++) {
           const user = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
           allPhotographers[i] = user._id;
         }
-        query.photographers = {"$in": allPhotographers};
+        query.photographers = { $in: allPhotographers };
       }
-      if (req.body.hasOwnProperty('slug')) {
+      if (req.body.hasOwnProperty("slug")) {
         query.slug = req.body.slug;
       }
-      if (req.body.hasOwnProperty('categories')) {
-        query.categories = {"$in": req.body.categories};
+      if (req.body.hasOwnProperty("categories")) {
+        query.categories = { $in: req.body.categories };
       }
-      if (req.body.hasOwnProperty('before') && req.body.hasOwnProperty('after')) {
-        query.$and = [{approvalTime: {"$gte": req.body.after}}, {approvalTime: {"$lte": req.body.before}}];
+      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
+        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
+      } else if (req.body.hasOwnProperty("before")) {
+        query.approvalTime = { $lte: req.body.before };
+      } else if (req.body.hasOwnProperty("after")) {
+        query.approvalTime = { $gte: req.body.after };
       }
-      else if (req.body.hasOwnProperty('before')) {
-        query.approvalTime = {"$lte": req.body.before};
-      }
-      else if (req.body.hasOwnProperty('after')) {
-        query.approvalTime = {"$gte": req.body.after};
-      }
-      if (req.body.hasOwnProperty('limit')) {
+      if (req.body.hasOwnProperty("limit")) {
         limit = Number(req.body.limit);
       }
-      
+
       // access the database and retrieve the matching articles
-      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit); 
+      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
       res.status(200).json(matchingArticles);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * resolveInternalComment Method
+   *
+   * This method resolves an internal comment given the mongoID of the comment.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async resolveInternalComment(req, res, next) {
+    try {
+      // modify the comment status
+      const a = await ArticlesAccessor.resolveCommentById(req.body.commentId);
+      res.status(201).json({});
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

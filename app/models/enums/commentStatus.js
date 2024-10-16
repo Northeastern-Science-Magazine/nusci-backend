@@ -7,6 +7,7 @@ export default class CommentStatus {
   static Resolved = new CommentStatus("resolved");
   static Unresolved = new CommentStatus("unresolved");
   static Public = new CommentStatus("public");
+  static Reason = new CommentStatus("reason");
 
   /**
    * INTERNAL USE ONLY
@@ -41,6 +42,8 @@ export default class CommentStatus {
         return this.Unresolved;
       case this.Public.status:
         return this.Public;
+      case this.Reason.status:
+        return this.Reason;
       default:
         throw new ErrorValidation("Invalid CommentStatus enum given.");
     }
