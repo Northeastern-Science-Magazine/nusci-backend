@@ -43,7 +43,6 @@ export class BaseModel {
         delete json[key];
         continue;
       }
-      // console.log(json);
       // key exists in schema
       let value = json[key];
       const schemaType = schema[key].type;

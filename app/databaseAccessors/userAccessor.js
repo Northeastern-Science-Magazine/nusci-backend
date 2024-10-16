@@ -144,7 +144,7 @@ export default class UsersAccessor {
    * This method retrieves the user MongoDB object from the
    * database based on a given email
    *
-   * @param {String}  email
+   * @param {String} email
    * @returns the User associated with the given email in
    *          the database.
    *
