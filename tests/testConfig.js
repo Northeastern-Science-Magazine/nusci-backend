@@ -3,6 +3,7 @@ export const log = {
   api: {
     article: {
       patchAuthors: false,
+      patchResolveComment: false,
       patchStatus: false,
       postCommentCreate: false,
       getSearch: false,
