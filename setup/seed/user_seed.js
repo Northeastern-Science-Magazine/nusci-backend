@@ -9,7 +9,7 @@ export default [
     lastName: "S",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
-    majors: ["Computer Science", "Mathematics"],
+    major: "Computer Science and Mathematics",
     location: "New Jersey",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -27,7 +27,7 @@ export default [
     lastName: "B",
     password: "$2a$10$eNQFIiJpW0gBdsAimJqM0epCC6MueAlaujx/NEO.5tO1S1iqTQs.y", // raisa
     graduationYear: 2025,
-    majors: ["Computer Science", "Mathematics"],
+    major: "Computer Science and Mathematics",
     location: "New York",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -45,7 +45,7 @@ export default [
     lastName: "S",
     password: "$2a$10$W0scuYJIQPaHhqgU4z.hWuuLYYyg7fqH156BJPIQITpV6oClheGNq", // atnaris
     graduationYear: 2026,
-    majors: ["Computer Science"],
+    major: "Computer Science",
     location: "California",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -64,7 +64,7 @@ export default [
     lastName: "A",
     password: "$2a$10$Hqwbxn2u3iYHFbGTamAbnOyGJf0WL4p2VocQpmnteweyBy3XKF.5u", // 12345
     graduationYear: 2027,
-    majors: ["Computer Science"],
+    major: "Computer Science",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -83,7 +83,7 @@ export default [
     lastName: "J",
     password: "$2a$10$l9dcpC3PT1poWDEn9KOr.OjwBSSJ8YJb0DcpOFGnqkRPngROGfx7O", // azi
     graduationYear: 2026,
-    majors: ["Bioengineering"],
+    major: "Bioengineering",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -102,7 +102,7 @@ export default [
     lastName: "H",
     password: "$2a$10$WkjXpemM3V4ZQv77RrJp2.b1AEHnPxTH47umftgIl0JTF7vvIByTC", // editorial
     graduationYear: 2024,
-    majors: ["Applied Physics"],
+    major: "Applied Physics",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -121,7 +121,7 @@ export default [
     lastName: "P",
     password: "$2a$10$hs9TUiQSldQ46.1NJrfOHO1i705hF8DjZjsipiaNgVh8CPtgWHIyy", // treasurer
     graduationYear: 2024,
-    majors: ["Chemical Engineering"],
+    major: "Chemical Engineering",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -140,7 +140,7 @@ export default [
     lastName: "W",
     password: "$2a$10$FYx.oMLNXKW.gsjZA62fWO9iiuoux7X4MHtPsZYKHw1QOMhNp8hSO", // designer
     graduationYear: 2025,
-    majors: ["Pharmaceutical Science"],
+    major: "Pharmaceutical Science",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -159,7 +159,7 @@ export default [
     lastName: "N",
     password: "$2a$10$pxCrSe3i7f/xSFZMF/0tPOqSKdvpgOIKfFcDXJGJtocqFE09SV6MO", // sndfhqwdakjqfqlnwkjjd
     graduationYear: 2025,
-    majors: ["Behavioral Neuroscience"],
+    major: "Behavioral Neuroscience",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -178,7 +178,7 @@ export default [
     lastName: "Appleseed",
     password: "$2a$10$jf5.dNQ1lZH3FUpy34tfnuP.nhvwKzk5082iTFtUCLq9vGFCKj/TK", // apple
     graduationYear: 2027,
-    majors: ["Computer Science"],
+    major: "Computer Science",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -196,7 +196,7 @@ export default [
     lastName: "Doe",
     password: "$2a$10$9rWqiUAM1PaXmXlbjq6tG.5oaBePrwm1JZ3rU8S7eBq1wIOyCnv2O", // doe
     graduationYear: 2026,
-    majors: ["Mathematics"],
+    major: "Mathematics",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -214,7 +214,7 @@ export default [
     lastName: "Lastname",
     password: "$2a$10$MC3/HinwhJvrjEAH4rl4fOEpJoxPjDrfnHiu9g/tJxRgTE5Q3hJD.", // valentine
     graduationYear: 2028,
-    majors: ["English"],
+    major: "English",
     location: "104576102",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -232,7 +232,7 @@ export default [
     lastName: "Lastname",
     password: "$2a$10$DT0gTy0kwXhq48EPy8YE1.MfkdFJIE7IgRGO1rnhdizxx0oKUlPQq", // modernart
     graduationYear: 2026,
-    majors: ["Data Science & Biology"],
+    major: "Data Science and Biology",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -250,7 +250,7 @@ export default [
     lastName: "Lastname",
     password: "$2a$10$KbepyE8BTV26ZupNDLzgHuJM4qAAH1ccZaC1c1r0qqS6jzEaK29p6", // sparky
     graduationYear: 2026,
-    majors: ["Entrepreneurship"],
+    major: "Entrepreneurship",
     location: "Boston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -269,7 +269,7 @@ export default [
     lastName: "Howard",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2025,
-    majors: ["Computer Science"],
+    major: "Computer Science",
     location: "New Jersey",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -289,7 +289,7 @@ export default [
     lastName: "dallis",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2027,
-    majors: ["Business Administration"],
+    major: "Business Administration",
     location: "San Francisco",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -308,7 +308,7 @@ export default [
     lastName: "patterson",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2028,
-    majors: ["Digital Design"],
+    major: "Digital Design",
     location: "Cleveland",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -326,7 +326,7 @@ export default [
     lastName: "Johnson",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
-    majors: ["Environmental Science"],
+    major: "Environmental Science",
     location: "New York",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -344,7 +344,7 @@ export default [
     lastName: "Smith",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2029,
-    majors: ["Mathematics"],
+    major: "Mathematics",
     location: "Chicago",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -362,7 +362,7 @@ export default [
     lastName: "Brown",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2025,
-    majors: ["Political Science"],
+    major: "Political Science",
     location: "Miami",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -380,7 +380,7 @@ export default [
     lastName: "Davis",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2023,
-    majors: ["Sociology"],
+    major: "Sociology",
     location: "Seattle",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -398,7 +398,7 @@ export default [
     lastName: "Martinez",
     password: "$2a$10$uGBwE6TueKCxxttZxDxfouENs5FM/coJ.XaBwrqff79nVZzdwk.wu", // 123
     graduationYear: 2026,
-    majors: ["Engineering"],
+    major: "Engineering",
     location: "Houston",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
