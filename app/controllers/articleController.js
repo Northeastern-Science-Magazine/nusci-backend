@@ -148,54 +148,44 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async search(req, res, next){
+  static async search(req, res){
+    async function getUserIdsByEmailsQuery(listOfEmails) {
+      // returns ids of the user objects given as a list of emails
+      const allUsers = [];
+        for (let i = 0; i < listOfEmails.length; i++) {
+          const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
+          allUsers[i] = user._id;
+        }
+        return {"$in": allUsers};
+    }
+
+    function idempotent(value) {
+      return value;
+    }
+    
+    function categoryQuery(categories) {
+      return {"$in": categories};
+    }
+
+    const mapping = {
+      issueNumber: idempotent,
+      authors: getUserIdsByEmailsQuery,
+      editors: getUserIdsByEmailsQuery,
+      designers: getUserIdsByEmailsQuery,
+      photographers: getUserIdsByEmailsQuery,
+      slug: idempotent,
+      categories: categoryQuery,
+    };
     try {
       const query = {};
       var limit;
       
-      // construct a query json based on the queries that are in the passed json
-      if (req.body.hasOwnProperty('issueNumber')===true) {
-        query.issueNumber = req.body.issueNumber;
-      }
-      if (req.body.hasOwnProperty('authors')===true) {
-        const allAuthors = [];
-        for (let i = 0; i < req.body.authors.length; i++) {
-          const user = await UsersAccessor.getUserByEmail(req.body.authors[i]);
-          allAuthors[i] = (user._id);
+      for (const searchOption of Object.keys(mapping)) {
+        if (req.body.hasOwnProperty(searchOption)) {
+          query[searchOption] = await mapping[searchOption](req.body[searchOption]);
         }
-        query.authors = {"$in": allAuthors};
       }
-      if(req.body.hasOwnProperty('editors')) {
-        const allEditors = [];
-        console.log(allEditors);
-        for (let i = 0; i < req.body.editors.length; i++) {
-          const user = await UsersAccessor.getUserByEmail(req.body.editors[i]);
-          allEditors[i] = user._id;
-        }
-        query.editors = {"$in": allEditors};
-      }
-      if (req.body.hasOwnProperty('designers')) {
-        const allDesigners = [];
-        for (let i = 0; i < req.body.designers.length; i++) {
-          const user = await UsersAccessor.getUserByEmail(req.body.designers[i]);
-          allDesigners[i] = user._id;
-        }
-        query.designers = {"$in": allDesigners};
-      }
-      if (req.body.hasOwnProperty('photographers')) {
-        const allPhotographers = [];
-        for (let i = 0; i < req.body.photographers.length; i++) {
-          const user = await UsersAccessor.getUserByEmail(req.body.photographers[i]);
-          allPhotographers[i] = user._id;
-        }
-        query.photographers = {"$in": allPhotographers};
-      }
-      if (req.body.hasOwnProperty('slug')) {
-        query.slug = req.body.slug;
-      }
-      if (req.body.hasOwnProperty('categories')) {
-        query.categories = {"$in": req.body.categories};
-      }
+
       if (req.body.hasOwnProperty('before') && req.body.hasOwnProperty('after')) {
         query.$and = [{approvalTime: {"$gte": req.body.after}}, {approvalTime: {"$lte": req.body.before}}];
       }
@@ -205,6 +195,8 @@ export default class ArticleController {
       else if (req.body.hasOwnProperty('after')) {
         query.approvalTime = {"$gte": req.body.after};
       }
+
+      // limits are not a part of query, thus handled separately      
       if (req.body.hasOwnProperty('limit')) {
         limit = Number(req.body.limit);
       }

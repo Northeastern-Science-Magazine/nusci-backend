@@ -3,7 +3,6 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
-import { deserialize } from "v8";
 
 const showLog = __filename
   .replace(".js", "")
@@ -168,17 +167,28 @@ describe("Get Article Search", () => {
     expect(response.body[0].title).toEqual('Exploring the Future: AI Integration in Everyday Life');
     expect(response.body[1].title).toEqual('Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern');
   });
-  /*
+  
   test("providing every single search option", async () => {
     const response = await request(app)
       .get(`/articles/search`)
-      .send({issueNumber: "1", authors: [""], editors: [""], designers: [""], photographers: [""], slug: "", categories: [""], before: "", after: ""});
+      .send({issueNumber: "1", 
+        authors: ["jasmine@jasmine.com"], 
+        editors: ["noah@noah.com"], 
+        designers: ["vianna@vianna.com"], 
+        photographers: ["jiajia@jiajia.com"], 
+        slug: "exploring-the-future-ai-integration-in-everyday-life", 
+        categories: ["science"], 
+        before: new Date("2024-04-4"), 
+        after: new Date("2024-04-1"),
+        limit: "2",
+      });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([]);
+    expect(response.body.length).toEqual(1);
+    expect(response.body[0].title).toEqual("Exploring the Future: AI Integration in Everyday Life");
   });
-  */
+  
   test("invalid issue number", async () => {
     const response = await request(app)
       .get(`/articles/search`)
