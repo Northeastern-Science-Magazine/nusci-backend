@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 //issue map schema
 const IssueMapSchema = new Schema(
   {
-    issueNumber: { type: Number, required: true },
+    issueNumber: { type: Number, required: true, unique: true },
     issueName: { type: String, required: true, unique: true },
     sections: [
       {
