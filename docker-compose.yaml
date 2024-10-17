@@ -13,7 +13,7 @@ services:
     volumes:
       - .:/app
   mongodb:
-    image: mongo
+    image: mongo:latest
     container_name: nusci-database
     env_file:
       - .env

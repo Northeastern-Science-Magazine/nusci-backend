@@ -317,4 +317,15 @@ export default class ArticlesAccessor {
       },
     );
   }
+
+  static async searchArticles(query, limit) {
+    await Connection.open();
+    if (limit <= 0) {
+      return [];
+    }
+    else {
+      return await Article.find(query).limit(limit);
+    }
+
+  }
 }
