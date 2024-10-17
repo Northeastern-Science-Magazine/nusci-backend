@@ -35,18 +35,11 @@ export default class CommentStatus {
    * @returns {CommentStatus}
    */
   static toCommentStatus(str) {
-    switch (str.toLowerCase()) {
-      case this.Resolved.status:
-        return this.Resolved;
-      case this.Unresolved.status:
-        return this.Unresolved;
-      case this.Public.status:
-        return this.Public;
-      case this.Reason.status:
-        return this.Reason;
-      default:
-        throw new ErrorValidation("Invalid CommentStatus enum given.");
+    const commentStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
+    if (!commentStatus) {
+      throw new ErrorValidation("Invalid Comment Status enum given.");
     }
+    return commentStatus;
   }
 
   /**
