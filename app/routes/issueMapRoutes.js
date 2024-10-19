@@ -1,10 +1,15 @@
-import express from "express";
-import bodyParser from "body-parser";
+async function router(fastify, options) {
+  // Define a POST route for creating an item
+  fastify.route({
+    method: 'POST', // Specify the HTTP method
+    url: '/create', // Define the route URL
+    handler: async (request, reply) => {
 
-const router = express.Router();
+      const data = request.body;
 
-router.use(bodyParser.urlencoded({ extended: false }));
-
-router.route("/create"); //create an issue map
+      reply.send({ message: 'Item created successfully', data });
+    },
+  });
+}
 
 export default router;

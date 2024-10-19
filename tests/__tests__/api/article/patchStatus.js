@@ -1,6 +1,5 @@
 import { execSync } from "child_process";
-import request from "supertest";
-import app from "../../../../app/app.js";
+import fastify from "../../../../app/app.js";
 import {
   validArticleSlug,
   validArticleStatusUpdate,
@@ -18,10 +17,12 @@ const showLog = __filename
 
 beforeAll(async () => {
   await Connection.open(true);
+  await fastify.ready(); // Ensure Fastify is fully ready
 });
 
 afterAll(async () => {
   await Connection.close(true);
+  await fastify.close(); // Ensure Fastify instance is closed
 });
 
 beforeEach(async () => {
@@ -30,35 +31,47 @@ beforeEach(async () => {
 
 describe("Update Article Status", () => {
   test("should update article status successfully", async () => {
-    const response = await request(app)
-      .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
-      .send(validArticleStatusUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/article-status/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.ethan}`
+      },
+      payload: validArticleStatusUpdate
+    })
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect(response.body.articleStatus).toBe(validArticleStatusUpdate.articleStatus);
+    expect(response.statusCode).toBe(200);
+    expect(response.json().articleStatus).toBe(validArticleStatusUpdate.articleStatus);
   });
 
   test("should fail to update article status due to invalid status type", async () => {
-    const response = await request(app)
-      .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
-      .send(invalidArticleStatusUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/article-status/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.ethan}`
+      },
+      payload: invalidArticleStatusUpdate
+    })
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(400);
-    expect(response.body.error).toBeDefined();
+    expect(response.statusCode).toBe(400);
+    expect(response.json().error).toBeDefined();
   });
 
   test("should fail to update article status due to invalid permissions", async () => {
-    const response = await request(app)
-      .patch(`/articles/article-status/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.jasmine}`])
-      .send(validArticleStatusUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/article-status/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.jasmine}`
+      },
+      payload: validArticleStatusUpdate
+    })
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(403);
-    expect(response.body.error).toBeDefined();
+    expect(response.statusCode).toBe(403);
+    expect(response.json().error).toBeDefined();
   });
 });

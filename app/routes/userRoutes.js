@@ -1,25 +1,78 @@
-import express from "express";
-import bodyParser from "body-parser";
 import UserController from "../controllers/userController.js";
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 
 /* Controls Routing for Users */
 
-const router = express.Router();
+// Create a function to register user routes
+async function userRoutes(fastify, options) {
+  // Route for logging in
+  fastify.route({
+    method: "POST",
+    url: "/login",
+    handler: UserController.login,
+  });
 
-router.use(bodyParser.urlencoded({ extended: false }));
+  // Route for signing up
+  fastify.route({
+    method: "POST",
+    url: "/signup",
+    handler: UserController.signup,
+  });
 
-router.route("/login").post(UserController.login); //log in
-router.route("/signup").post(UserController.signup); //sign up
+  // Route for filtering users by options: graduation years, statuses, roles
+  fastify.route({
+    method: "GET",
+    url: "/filter",
+    handler: async (request, reply) => {
+      // Implement logic for filtering users
+    },
+  });
 
-router.route("/filter"); //get users by options: graduation years, statuses, roles
-router.route("/username/:username").get(UserController.getPublicUserByUsername); //get a single user by username
+  // Route for getting a single user by username
+  fastify.route({
+    method: "GET",
+    url: "/username/:username",
+    handler: UserController.getPublicUserByUsername,
+  });
 
-router.route("/resolve-status").put(Authorize.allow([Accounts.Admin]), UserController.resolveUserApprovals); //approve/deny a given list of users, admin only
-router.route("/update/:username"); //admin update of a user including adding + removing roles
+  // Admin route for approving/denying a list of users
+  fastify.route({
+    method: "PUT",
+    url: "/resolve-status",
+    preHandler: Authorize.allow([Accounts.Admin]),
+    handler: UserController.resolveUserApprovals,
+  });
 
-router.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
-router.route("/me/update"); //update the currently signed in account
+  // Admin route for updating a user, including adding/removing roles
+  fastify.route({
+    method: "PUT",
+    url: "/update/:username",
+    preHandler: Authorize.allow([Accounts.Admin]),
+    handler: async (request, reply) => {
+      const { username } = request.params;
+      // Implement user update logic
+    },
+  });
 
-export default router;
+  // Route for getting the current user's profile
+  fastify.route({
+    method: "GET",
+    url: "/me",
+    preHandler: Authorize.allow(Accounts.list()),
+    handler: UserController.getMyProfile,
+  });
+
+  // Route for updating the currently signed-in account
+  fastify.route({
+    method: "PUT",
+    url: "/me/update",
+    preHandler: Authorize.allow(Accounts.list()),
+    handler: async (request, reply) => {
+      // Implement profile update logic
+    },
+  });
+}
+
+// Export the function that registers the routes
+export default userRoutes;

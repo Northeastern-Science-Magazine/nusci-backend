@@ -1,40 +1,130 @@
-import express from "express";
 import ArticlesController from "../controllers/articleController.js";
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 
 /* Controls Routing for Finished Articles */
+async function router(fastify, options) {
+  /*
+  // Create an article (you need to define the method and controller here)
+  fastify.route({
+    method: "POST",
+    url: "/create",
+    // implement handler
+  });
 
-const router = express.Router();
+  // Get articles approved by the given user
+  fastify.route({
+    method: "GET",
+    url: "/approved-by/:username",
+    // implement handler
+  });
 
-router.route("/create"); //create an article
+  // Get article by its unique slug
+  fastify.route({
+    method: "GET",
+    url: "/slug/:slug",
+    // implement handler
+  });
 
-// filter + get articles by -- maybe find better ways
-// router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
-// router.route("/filter-by-user-and-role"); //get articles by username and role, by query
-// //etc
+  // Update the issue number of this article (admin only)
+  fastify.route({
+    method: "PATCH",
+    url: "/set-issue-number/:slug",
+    preHandler: Authorize.allow([Accounts.Admin]),
+    // implement handler
+  });
+  */
 
-router.route("/approved-by/:username"); //get articles approved by the given user
-router.route("/slug/:slug"); //get article by its unique slug
+  // Update the article status (admin only)
+  fastify.route({
+    method: "PATCH",
+    url: "/article-status/:slug",
+    preHandler: Authorize.allow([Accounts.Admin]),
+    handler: ArticlesController.updateStatus,
+  });
 
-router.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
+  /*
+  // Update writing status (you need to define the handler in ArticlesController)
+  fastify.route({
+    method: "PATCH",
+    url: "/writing-status/:slug",
+    // implement handler
+  });
 
-router.patch("/article-status/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
-router.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
-router.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
-router.route("/design-status/:slug"); //update the design status of a given article
-router.route("/photography-status/:slug"); //update the photography status of a given article
+  // Admin/EIC approve article to go live on the site
+  fastify.route({
+    method: "PATCH",
+    url: "/admin-approve/:slug",
+    // implement handler
+  });
 
-router.patch("/authors/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
-router.route("/editors/:slug"); //update the list of editor to this article,
-router.route("/designers/:slug"); //update the list of designer to this article,
-router.route("/photographers/:slug"); //update the list of photographer to this article
+  // Update design status
+  fastify.route({
+    method: "PATCH",
+    url: "/design-status/:slug",
+    // implement handler
+  });
 
-// idea: update is when updating article content, categories, sources, etc, but not metadata about an article
-router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
-router.route("/delete/:slug"); //delete an article
+  // Update photography status
+  fastify.route({
+    method: "PATCH",
+    url: "/photography-status/:slug",
+    // implement handler
+  });
+  */
 
-router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
-    .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+  // Update authors (admin only)
+  fastify.route({
+    method: "PATCH",
+    url: "/authors/:slug",
+    preHandler: Authorize.allow([Accounts.Admin]),
+    handler: ArticlesController.updateAuthors,
+  });
+
+  /*
+  // Update editors for an article
+  fastify.route({
+    method: "PATCH",
+    url: "/editors/:slug",
+    // implement handler
+  });
+
+  // Update designers for an article
+  fastify.route({
+    method: "PATCH",
+    url: "/designers/:slug",
+    // implement handler
+  });
+
+  // Update photographers for an article
+  fastify.route({
+    method: "PATCH",
+    url: "/photographers/:slug",
+    // implement handler
+  });
+
+  // Update article content (you need to clarify who can update)
+  fastify.route({
+    method: "PATCH",
+    url: "/update/:slug",
+    // implement handler
+  });
+
+  // Delete an article
+  fastify.route({
+    method: "DELETE",
+    url: "/delete/:slug",
+    // implement handler
+  });
+  */
+
+  // Add internal comment to an article (editor or admin only)
+  fastify.route({
+    method: "POST",
+    url: "/add-internal-comment/:slug",
+    preHandler: Authorize.allow([Accounts.Admin, Accounts.Editor]),
+    handler: ArticlesController.addInternalComment,
+  });
+}
 
 export default router;

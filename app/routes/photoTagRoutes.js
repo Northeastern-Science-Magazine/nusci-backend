@@ -1,14 +1,59 @@
-import express from "express";
-import bodyParser from "body-parser";
+// Function to register photo tag routes
+async function photoTagRoutes(fastify, options) {
 
-const router = express.Router();
+  // Route for creating a photo tag
+  fastify.route({
+    method: "POST",
+    url: "/create",
+    handler: async (request, reply) => {
+      // Handle photo tag creation logic
+      reply.send({ message: "Photo tag created!" });
+    },
+  });
 
-router.use(bodyParser.urlencoded({ extended: false }));
+  // Route for getting a tag by its name
+  fastify.route({
+    method: "GET",
+    url: "/tag-name/:tagName",
+    handler: async (request, reply) => {
+      const { tagName } = request.params;
+      // Handle logic to get tag by name
+      reply.send({ tagName });
+    },
+  });
 
-router.route("/create"); //create a phototag
-router.route("/tag-name/:tagName"); //get a tag by its name
-router.route("/filter"); //get photo tags by colors, creating users
-router.route("/update/:tagName"); //update a photo tag
-router.route("/delete/:tagName"); //delete a photo tag
+  // Route for getting photo tags filtered by colors, creating users, etc.
+  fastify.route({
+    method: "GET",
+    url: "/filter",
+    handler: async (request, reply) => {
+      // Handle filtering logic for photo tags
+      reply.send({ message: "Filtered photo tags" });
+    },
+  });
 
-export default router;
+  // Route for updating a photo tag by its name
+  fastify.route({
+    method: "PUT",
+    url: "/update/:tagName",
+    handler: async (request, reply) => {
+      const { tagName } = request.params;
+      // Handle logic to update the photo tag
+      reply.send({ message: `Photo tag ${tagName} updated!` });
+    },
+  });
+
+  // Route for deleting a photo tag by its name
+  fastify.route({
+    method: "DELETE",
+    url: "/delete/:tagName",
+    handler: async (request, reply) => {
+      const { tagName } = request.params;
+      // Handle logic to delete the photo tag
+      reply.send({ message: `Photo tag ${tagName} deleted!` });
+    },
+  });
+}
+
+// Export the function to register the photo tag routes
+export default photoTagRoutes;

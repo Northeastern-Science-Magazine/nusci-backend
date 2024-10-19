@@ -18,12 +18,11 @@ export default class ArticleController {
    * Handles the request to update the status of an article.
    *
    * @param {Request} req
-   * @param {Response} res
+   * @param {Response} reply
    */
-  static async updateStatus(req, res) {
+  static async updateStatus(req, reply) {
     try {
       const { slug } = req.params;
-
       const updates = new ArticleUpdate(req.body);
 
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
@@ -36,12 +35,12 @@ export default class ArticleController {
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
       // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse);
+      reply.status(200).send(updatedArticleResponse);
     } catch (e) {
       if (e instanceof HttpError) {
-        e.throwHttp(req, res);
+        e.throwHttp(req, reply);
       } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, reply);
       }
     }
   }
@@ -52,15 +51,16 @@ export default class ArticleController {
    * Handles the request to update the list of authors for an article.
    *
    * @param {Request} req
-   * @param {Response} res
+   * @param {Response} reply
    */
-  static async updateAuthors(req, res) {
+  static async updateAuthors(req, reply) {
     try {
       const { slug } = req.params;
-
       const updates = new ArticleUpdate(req.body);
+
       const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
       updates.authors = authorIds;
+
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
       if (!updatedArticleData) {
@@ -70,15 +70,16 @@ export default class ArticleController {
       // Validate and construct an ArticleResponse instance
       const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
 
-      res.status(200).json(updatedArticleResponse);
+      reply.status(200).send(updatedArticleResponse);
     } catch (e) {
       if (e instanceof HttpError) {
-        e.throwHttp(req, res);
+        e.throwHttp(req, reply);
       } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, reply);
       }
     }
   }
+
   /**
    * addInternalComment Method
    *
@@ -107,12 +108,12 @@ export default class ArticleController {
       const finalArticle = new ArticleResponse(updatedArticle.toObject());
 
       //return updated article with new comment
-      res.status(201).json(finalArticle);
+      res.status(201).send(finalArticle);
     } catch (e) {
       if (e instanceof HttpError) {
-        e.throwHttp(req, res);
+        e.throwHttp(req, reply);
       } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, reply);
       }
     }
   }

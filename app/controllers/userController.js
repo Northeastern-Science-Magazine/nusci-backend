@@ -34,10 +34,10 @@ export default class UserController {
    * UserAccessor method to accomplish this.
    *
    * @param {HTTP REQ} req web request object
-   * @param {HTTP RES} res web response
+   * @param {HTTP RES} reply web response
    * @param {function} next middleware function
    */
-  static async login(req, res, next) {
+  static async login(req, reply, next) {
     try {
       if (req.cookies.token) {
         // already logged in
@@ -83,13 +83,13 @@ export default class UserController {
       );
 
       //Users are logged in for 1 hour
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
-      res.status(200).json({ message: "Login successful." });
+      reply.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+      reply.status(200).send({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {
-        e.throwHttp(req, res);
+        e.throwHttp(req, reply);
       } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
+        new ErrorUnexpected(e.message).throwHttp(req, reply);
       }
     }
   }

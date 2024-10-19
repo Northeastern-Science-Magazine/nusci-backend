@@ -1,8 +1,23 @@
-import express from "express";
-import bodyParser from "body-parser";
+import Fastify from 'fastify';
 
-const router = express.Router();
+// Create a Fastify instance
+const fastify = Fastify(); 
 
-router.use(bodyParser.urlencoded({ extended: false }));
+// Function to define routes
+async function routes(fastifyInstance, options) {
 
-export default router;
+    // Define your routes here
+    fastifyInstance.route({
+        method: "GET",
+        url: "/example",
+        handler: async (request, reply) => {
+            reply.send({ message: "This is an example route!" });
+        },
+    });
+
+}
+
+// Register the routes
+fastify.register(routes);
+
+export default routes;

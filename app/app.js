@@ -1,36 +1,39 @@
-import express from "express";
-import cors from "cors";
-import helmet from "helmet";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
-import articleRouter from "./routes/articleRoutes.js";
-import calendarRouter from "./routes/calendarRoutes.js";
-import defaultRouter from "./routes/defaultRoutes.js";
-import issueMapRouter from "./routes/issueMapRoutes.js";
-import photoRouter from "./routes/photoRoutes.js";
-import photoTagRouter from "./routes/photoTagRoutes.js";
-import userRouter from "./routes/userRoutes.js";
+import Fastify from 'fastify';
+import fastifyCors from '@fastify/cors';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyCookie from '@fastify/cookie';
+import fastifyFormbody from '@fastify/formbody';
+import articleRouter from './routes/articleRoutes.js';
+import calendarRouter from './routes/calendarRoutes.js';
+import defaultRouter from './routes/defaultRoutes.js';
+import issueMapRouter from './routes/issueMapRoutes.js';
+import photoRouter from './routes/photoRoutes.js';
+import photoTagRouter from './routes/photoTagRoutes.js';
+import userRouter from './routes/userRoutes.js';
 
 /**
- * This file controls the express server and
- * lets the server use everything it needs to
- * in order to function.
+ * This file controls the Fastify server and
+ * sets up the necessary plugins and routes
+ * for the server to function.
  */
 
-const app = express();
+const fastify = Fastify();
 
-app.use(cors());
-app.use(helmet());
-app.use(express.json());
-app.use(cookieParser());
-app.use(bodyParser.json());
 
-app.use("/", defaultRouter);
-app.use("/articles", articleRouter);
-app.use("/calendar", calendarRouter);
-app.use("/issue-map", issueMapRouter);
-app.use("/photo", photoRouter);
-app.use("/photo-tag", photoTagRouter);
-app.use("/user", userRouter);
+// Register middleware plugins
+fastify.register(fastifyCors);
+fastify.register(fastifyHelmet);
+fastify.register(fastifyCookie);
+fastify.register(fastifyFormbody); // Handles form body parsing
 
-export default app;
+
+// Register routes
+fastify.register(defaultRouter, { prefix: '/' });
+fastify.register(articleRouter, { prefix: '/articles' });
+fastify.register(calendarRouter, { prefix: '/calendar' });
+fastify.register(issueMapRouter, { prefix: '/issue-map' });
+fastify.register(photoRouter, { prefix: '/photo' });
+fastify.register(photoTagRouter, { prefix: '/photo-tag' });
+fastify.register(userRouter, { prefix: '/user' });
+
+export default fastify;

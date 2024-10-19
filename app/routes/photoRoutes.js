@@ -1,16 +1,58 @@
-import express from "express";
-import bodyParser from "body-parser";
+// Function to register photo routes
+async function photoRoutes(fastify, options) {
 
-const router = express.Router();
+  // Route for uploading a photo
+  fastify.route({
+    method: "POST",
+    url: "/upload",
+    handler: async (request, reply) => {
+      // Handle photo upload logic
+      reply.send({ message: "Photo uploaded!" });
+    },
+  });
 
-router.use(bodyParser.urlencoded({ extended: false }));
+  // Route for adding a tag to a photo by URL
+  fastify.route({
+    method: "POST",
+    url: "/add-tag/:url",
+    handler: async (request, reply) => {
+      const { url } = request.params;
+      // Handle logic for adding a tag to the photo
+      reply.send({ message: `Tag added to photo with URL: ${url}` });
+    },
+  });
 
-router.route("/upload"); //upload a photo
+  // Route for filtering photos by tags, photographer, etc.
+  fastify.route({
+    method: "GET",
+    url: "/filter",
+    handler: async (request, reply) => {
+      // Handle filtering logic
+      reply.send({ message: "Filtered photos" });
+    },
+  });
 
-router.route("/add-tag/:url"); //add a tag to this photo (maybe do it by id?)
-router.route("/filter"); //filter by tags, photographer etc
-router.route("/:url"); //get a photo by its url
+  // Route for getting a photo by its URL
+  fastify.route({
+    method: "GET",
+    url: "/:url",
+    handler: async (request, reply) => {
+      const { url } = request.params;
+      // Handle logic to retrieve a photo by URL
+      reply.send({ message: `Retrieved photo with URL: ${url}` });
+    },
+  });
 
-router.route("/photographers/:url"); //update the list of photographers for the photo
+  // Route for updating the list of photographers for the photo
+  fastify.route({
+    method: "PUT",
+    url: "/photographers/:url",
+    handler: async (request, reply) => {
+      const { url } = request.params;
+      // Handle logic for updating photographers
+      reply.send({ message: `Updated photographers for photo with URL: ${url}` });
+    },
+  });
+}
 
-export default router;
+export default photoRoutes;

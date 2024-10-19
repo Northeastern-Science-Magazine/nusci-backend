@@ -1,6 +1,5 @@
 import { execSync } from "child_process";
-import request from "supertest";
-import app from "../../../../app/app.js";
+import fastify from "../../../../app/app.js";
 import {
   validArticleSlug,
   validAuthorsUpdate,
@@ -17,49 +16,68 @@ const showLog = __filename
   .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
   .reduce((acc, key) => acc && acc[key], log);
 
+// Open the database connection before all tests
 beforeAll(async () => {
   await Connection.open(true);
+  await fastify.ready(); // Ensure Fastify is fully ready
 });
 
+// Close the database connection after all tests
 afterAll(async () => {
   await Connection.close(true);
+  await fastify.close(); // Ensure Fastify instance is closed
 });
 
+// Reset the database state before each test
 beforeEach(async () => {
   execSync("npm run reset-s", { stdio: "ignore" });
 });
 
 describe("Update Article Authors", () => {
   test("should update article authors successfully", async () => {
-    const response = await request(app)
-      .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
-      .send(validAuthorsUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/authors/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.ethan}`,
+      },
+      payload: validAuthorsUpdate,
+    });
 
-    showLog && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
+    showLog && console.log(response.json());
+    expect(response.statusCode).toBe(200);
+    expect({
+      authors: response.json().authors.map((author) => author.username),
+    }).toEqual(validAuthorsUpdate);
   });
 
   test("should update article authors to an empty list", async () => {
-    const response = await request(app)
-      .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
-      .send(emptyAuthorsUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/authors/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.ethan}`,
+      },
+      payload: emptyAuthorsUpdate,
+    });
 
-    showLog && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect(response.body.authors).toEqual([]);
+    showLog && console.log(response.json());
+    expect(response.statusCode).toBe(200);
+    expect(response.json().authors).toEqual([]);
   });
 
   test("should fail to update article authors due to invalid author username", async () => {
-    const response = await request(app)
-      .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
-      .send(invalidAuthorsUpdate);
+    const response = await fastify.inject({
+      method: "PATCH",
+      url: `/articles/authors/${validArticleSlug}`,
+      headers: {
+        Cookie: `token=${tokens.ethan}`,
+      },
+      payload: invalidAuthorsUpdate,
+    });
 
-    showLog && console.log(response.body);
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBeDefined();
+    showLog && console.log(response.json());
+    expect(response.statusCode).toBe(404);
+    expect(response.json().error).toBeDefined();
   });
 });

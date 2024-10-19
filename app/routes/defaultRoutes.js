@@ -1,25 +1,25 @@
-import express from "express";
-import bodyParser from "body-parser";
-import Connection from "../db/connection.js";
-import { ErrorDatabaseConnection } from "../error/errors.js";
+import Connection from '../db/connection.js';
+import { ErrorDatabaseConnection } from '../error/errors.js';
 
-const router = express.Router();
+async function router(fastify, options) {
+  // Route: Basic API connection test
+  fastify.get('/', async (request, reply) => {
+    reply.status(200).send({ message: 'Successfully connected to the NU Sci API!' });
+  });
 
-router.use(bodyParser.urlencoded({ extended: false }));
-
-router.route("/").get((req, res) => {
-  res.status(200).json({ message: "Successfully connected to the NU Sci API!" });
-});
-
-router.route("/db").get(async (req, res) => {
-  try {
-    await Connection.open(true);
-    await Connection.close(true);
-    res.status(200).json({ message: "Successfully connected to the NU Sci Database Instance!" });
-  } catch (e) {
-    console.log(e);
-    new ErrorDatabaseConnection().throwHttp(req, res);
-  }
-});
+  // Route: Test database connection
+  fastify.get('/db', async (request, reply) => {
+    try {
+      await Connection.open();  // Assuming this function connects to the DB
+      reply.status(200).send({ message: 'Successfully connected to the NU Sci Database Instance!' });
+    } catch (error) {
+      console.error(error);
+      // Handle the error through your custom error handler
+      new ErrorDatabaseConnection().throwHttp(request, reply);
+    } finally {
+      await Connection.close(); // Ensure the connection is closed after handling
+    }
+  });
+}
 
 export default router;
