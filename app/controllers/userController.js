@@ -30,7 +30,7 @@ export default class UserController {
    * apiPostLogin Method
    *
    * This method checks whether or not the request
-   * to sign in is valid. Utilizes the getApprovedByUsername
+   * to sign in is valid. Utilizes the getApprovedByEmail
    * UserAccessor method to accomplish this.
    *
    * @param {HTTP REQ} req web request object
@@ -45,8 +45,7 @@ export default class UserController {
       }
 
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByUsername(req.body.username);
-
+      const user = await UsersAccessor.getUserByEmail(req.body.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
@@ -76,7 +75,7 @@ export default class UserController {
       // sign token and send it in response
       const token = jwt.sign(
         {
-          username: user.username,
+          email: user.email,
           roles: user.roles,
         },
         process.env.SERVER_TOKEN_KEY
@@ -113,11 +112,9 @@ export default class UserController {
 
       // hash the password
       userData.password = await bcrypt.hash(userData.password, 10);
+      const userByEmail = await UsersAccessor.getUserByEmail(userData.email);
 
-      const userByUsername = await UsersAccessor.getUserByUsername(userData.username);
-      const userByEmail = await UsersAccessor.getUserByEmail(userData.emails[0]);
-
-      if (userByUsername || userByEmail) {
+      if (userByEmail) {
         throw new ErrorUserAlreadyExists();
       }
 
@@ -137,15 +134,15 @@ export default class UserController {
    *
    * postDeactivateProfile Method
    *
-   * This method dispatches to the user accessor where the username passed
-   * from the Auth getUsername() method is then deactivated.
+   * This method dispatches to the user accessor where the email passed
+   * from the Auth getEmail() method is then deactivated.
    *
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
   static async deactivateUser(req, res) {
     try {
-      await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
+      await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
       res.redirect("/logout");
     } catch (e) {
       if (e instanceof HttpError) {
@@ -159,15 +156,15 @@ export default class UserController {
   /**
    * postDeleteProfile Method
    *
-   * This method dispatches to the user accessor where the username passed
-   * from the Auth getUsername() method is then deleted and so is all associated work.
+   * This method dispatches to the user accessor where the email passed
+   * from the Auth getEmail() method is then deleted and so is all associated work.
    *
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
   static async deleteUser(req, res) {
     try {
-      await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
+      await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
       res.redirect("/logout");
     } catch (e) {
       if (e instanceof HttpError) {
@@ -189,8 +186,8 @@ export default class UserController {
    */
   static async getMyProfile(req, res, next) {
     try {
-      const username = Authorize.getUsername(req);
-      const user = await UsersAccessor.getUserByUsername(username);
+      const email = Authorize.getEmail(req);
+      const user = await UsersAccessor.getUserByEmail(email);
 
       if (!user) {
         throw new ErrorUserNotFound();
@@ -210,20 +207,19 @@ export default class UserController {
   /**
    * getPublicProfile Method
    *
-   * This method retrieves the public profile of a user by their username.
+   * This method retrieves the public profile of a user by their email.
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async getPublicUserByUsername(req, res, next) {
+  static async getPublicUserByEmail(req, res, next) {
     try {
-      const username = req.params.username;
-      const user = await UsersAccessor.getUserByUsername(username);
-
+      const email = req.params.email;
+      const user = await UsersAccessor.getUserByEmail(email);
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
-        // thrown due to null response from getUserByUsername when using .toObject() on null.
+        // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
 
@@ -243,7 +239,7 @@ export default class UserController {
    *
    * This method updates the status of lists of pending users to deny or approve them.
    *
-   * @param {HTTP REQ} req web request object, contains 2 lists of usernames to approve or deniy.
+   * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
    * @param {function} next middleware function.
    */
@@ -258,11 +254,10 @@ export default class UserController {
       const allUsers = [...approveUsers, ...denyUsers];
 
       //check if the users given exists and are pending
-      for (const username of allUsers) {
+      for (const email of allUsers) {
         //check if the user exists and is pending
         try {
-          const user = await UsersAccessor.getUserByUsername(username);
-
+          const user = await UsersAccessor.getUserByEmail(email);
           if (user.status !== AccountStatus.Pending.toString()) {
             throw new ErrorUserStatusAlreadyResolved();
           }
@@ -272,13 +267,13 @@ export default class UserController {
       }
 
       //approve the users
-      for (const username of approveUsers) {
-        await UsersAccessor.approveUserByUsername(username);
+      for (const email of approveUsers) {
+        await UsersAccessor.approveUserByEmail(email);
       }
 
       //deny the users
-      for (const username of denyUsers) {
-        await UsersAccessor.denyUserByUsername(username);
+      for (const email of denyUsers) {
+        await UsersAccessor.denyUserByEmail(email);
       }
 
       res.status(201).json({ message: "All users resolved successfully." });
@@ -295,7 +290,7 @@ export default class UserController {
     try {
       // Update the user information
       const updatedUser = {
-        username: req.body.name,
+        email: req.body.email,
         role: req.body.role,
         information: {
           year: req.body.year,
