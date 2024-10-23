@@ -21,21 +21,6 @@ export default class PhotoTagAccessor {
   }
 
   /**
-   * Updates photo tag with the given id by populating the creatingUser
-   *
-   * @param {Object} tagID - the photo tag id to update
-   * @param {} update - an object of the field to update
-   * @return a PhotoTag model with populated creatingUser field
-   */
-  static async updatePhotoTag(tagID, update) {
-    await Connection.open();
-    const populateTag = await PhotoTag.findOneAndUpdate(tagID, update, { new: true })
-    .populate("creatingUser")
-    .exec();
-    return populateTag;
-  }
-
-  /**
    * Get all tags
    *
    * @returns all tags
@@ -47,14 +32,14 @@ export default class PhotoTagAccessor {
   }
 
   /**
-   * Find tag by its ID
+   * Find and returns populated tag by its ID
    *
    * @param {ObjectID} tagID - The ID of the tag
-   * @returns Tag
+   * @returns Tag with populated field
    */
   static async getTagByID(tagID) {
     await Connection.open();
-    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID));
+    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID)).populate("creatingUser");
     return tag;
   }
 

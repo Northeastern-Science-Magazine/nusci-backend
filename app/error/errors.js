@@ -93,7 +93,6 @@ export class ErrorIssueMapNotFound extends HttpError {
   }
 }
 
-
 /**
  * 409 Errors
  *
@@ -118,12 +117,6 @@ export class ErrorUserStatusAlreadyResolved extends HttpError {
   }
 }
 
-export class ErrorRepeatedTagName extends HttpError {
-  throwHttp(req, res) {
-    res.status(409).json({ error: "Photo tag already exists."})
-  }
-}
-
 /**
  * 500 Errors
  *
@@ -139,5 +132,11 @@ export class ErrorDatabaseConnection extends HttpError {
 export class ErrorUnexpected extends HttpError {
   throwHttp(req, res) {
     res.status(500).json({ error: "An unexpected error occurred.", message: this.message });
+  }
+}
+
+export class ErrorUniqueType extends HttpError {
+  throwHttp(req, res) {
+    res.status(500).json({ error: "Entry has duplicated unique entry."})
   }
 }

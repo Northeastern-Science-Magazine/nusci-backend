@@ -2,7 +2,7 @@ export const validTag = {
   tagName: "Clouds",
   color: "#4CAF51",
   creatingUser: "b00000000000000000000001",
-  creationTime: new Date("2024-04-06"), // placeholder date as it will be autoupdated to current date
+  creationTime: new Date("2024-04-06"), 
   modificationTime: new Date("2024-04-07"),
 };
 
@@ -15,7 +15,7 @@ export const expectedValidTag = {
     username: "raisa",
     pronouns: [],
     graduationYear: 2025,
-    majors: ["Computer Science", "Mathematics"],
+    major: "Computer Science and Mathematics",
     location: "New York",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
@@ -45,7 +45,7 @@ export const expectedValidTag2 = {
     username: "ethan",
     pronouns: [],
     graduationYear: 2026,
-    majors: ["Computer Science", "Mathematics"],
+    major: "Computer Science and Mathematics",
     location: "New Jersey",
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",

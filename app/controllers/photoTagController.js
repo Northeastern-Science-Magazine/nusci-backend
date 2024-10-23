@@ -18,16 +18,9 @@ export default class PhotoTagController {
    */
   static async create(req, res) {
     try {
-      const body = new PhotoTagCreate(req.body);
-      
-      // if creating a tag that already exists
-      const listOfTags = await PhotoTagAccessor.getAllTags();
-      if (listOfTags.map((tag) => tag.tagName).includes(body.tagName)) {
-        throw new ErrorRepeatedTagName();
-      } 
-      const creator = body.creatingUser; // assuming creatingUser is the userID
-      const newTag = await PhotoTagAccessor.createPhotoTag(body);
-      const updateNewTag = await PhotoTagAccessor.updatePhotoTag(newTag._id, creator);
+      const createdTag = new PhotoTagCreate(req.body);
+      const newTag = await PhotoTagAccessor.createPhotoTag(createdTag);
+      const updateNewTag = await PhotoTagAccessor.getTagByID(newTag._id);
       const newTagResponse = new PhotoTagResponse(updateNewTag.toObject());
       
       res.status(201).json(newTagResponse); 
