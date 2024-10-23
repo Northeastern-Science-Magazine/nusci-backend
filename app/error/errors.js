@@ -134,3 +134,9 @@ export class ErrorUnexpected extends HttpError {
     res.status(500).json({ error: "An unexpected error occurred.", message: this.message });
   }
 }
+
+export class ErrorUniqueType extends HttpError {
+  throwHttp(req, res) {
+    res.status(500).json({ error: "Entry has duplicated unique entry."})
+  }
+}
