@@ -27,7 +27,6 @@ describe("Create PhotoTags Test", () => {
   test("Tag created successfully", async () => {
     const response = await request(app).post("/photo-tag/create").send(validTag);
     showLog && console.log(response.body);
-    console.log(response.body);
     expect(response.statusCode).toBe(201);
     expect(response.body.tagName).toBe(expectedValidTag.tagName);
     expect(response.body.color).toBe(expectedValidTag.color);
