@@ -1,6 +1,7 @@
 import ArticlesController from "../controllers/articleController.js";
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
+import { articleUpdateSchema, articleResponseSchema } from "../models/apiModels/articleValidation.js";
 
 /* Controls Routing for Finished Articles */
 async function router(fastify, options) {
@@ -40,6 +41,14 @@ async function router(fastify, options) {
     method: "PATCH",
     url: "/article-status/:slug",
     preHandler: Authorize.allow([Accounts.Admin]),
+    /*
+    schema: {
+      body: articleUpdateSchema,
+      response: {
+        200: articleResponseSchema,
+      },
+    },
+    */
     handler: ArticlesController.updateStatus,
   });
 
