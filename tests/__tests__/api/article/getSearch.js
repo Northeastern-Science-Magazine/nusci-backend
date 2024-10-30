@@ -286,7 +286,27 @@ describe("Get Article Search", () => {
       .send({authors: "2"});
 
     showLog && console.log(response.body);
-    expect(response.status).toBe(500);
-    expect(response.body.error).toEqual("An unexpected error occurred.");
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual("Invalid query type.");
+  });
+
+  test("valid invalid limit - object", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({issueNumber: "five"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual("Invalid query type.");
+  });
+
+  test("valid invalid limit - object", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({categories: "five"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual("Invalid query type.");
   });
 });  
