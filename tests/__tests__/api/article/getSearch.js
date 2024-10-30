@@ -280,4 +280,13 @@ describe("Get Article Search", () => {
     expect(response.body.length).toEqual(0);
   });
 
+  test("valid invalid limit - object", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({authors: "2"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(500);
+    expect(response.body.error).toEqual("An unexpected error occurred.");
+  });
 });  
