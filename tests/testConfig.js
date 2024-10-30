@@ -20,7 +20,6 @@ export const log = {
     issueMap: {},
     photo: {},
     photoTag: {},
-    calendarEvent: {},
   },
   integration: {
     user: {
