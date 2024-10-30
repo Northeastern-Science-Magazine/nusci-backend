@@ -117,4 +117,9 @@ export default class IssueMapAccessor {
     const issues = await IssueMap.find({ modificationTime: { $gte: start, $lte: end } });
     return issues;
   }
+
+  static async updateName(name, update) {
+    await Connection.open();
+    const issueMap = await IssueMap.findOneAndUpdate({name}, update, ) // This might be wrong 
+  }
 }
