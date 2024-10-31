@@ -18,6 +18,8 @@ import {
   ErrorUserStatusAlreadyResolved,
   HttpError,
 } from "../error/errors.js";
+import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
+import { validate } from "jsonschema";
 
 /**
  * UsersCTRL Class
@@ -37,7 +39,16 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
+    const reqBodyValidator = {
+      type: object,
+      properties: {
+        email: { type: string, required: true },
+        password: { type: string, required: true },
+      },
+    };
     try {
+      validate(req.body, reqBodyValidator);
+
       if (req.cookies.token) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();

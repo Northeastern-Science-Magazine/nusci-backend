@@ -34,11 +34,10 @@ export default class Connection {
 
       //Destructure env variables
       const { MONGODB_CONNECTION_STRING } = process.env;
-      const DATABASE_URL = MONGODB_CONNECTION_STRING;
 
       try {
         //Mongoose connect to the cluster.
-        mongoose.connect(DATABASE_URL, {
+        mongoose.connect(MONGODB_CONNECTION_STRING, {
           useNewUrlParser: true,
           useUnifiedTopology: true,
           maxPoolSize: 50,

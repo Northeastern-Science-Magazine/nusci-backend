@@ -1,11 +1,6 @@
 import AccountStatus from "../enums/accountStatus.js";
 import Accounts from "../enums/accounts.js";
-
-const object = "object",
-  string = "string",
-  array = "array",
-  integer = "integer",
-  date = "date";
+import { string, date, array, integer } from "./schemaTypes.js";
 
 export const userCreate = {
   id: "/user/create",
