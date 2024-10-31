@@ -53,6 +53,18 @@ const ArticleSchema = new Schema(
     collection: "articles",
   }
 );
+
+ArticleSchema.pre('deleteOne', { document: true, query: false }, async function() {
+  try {
+    await mongoose.model('IssueMap').updateMany(
+      { articles: this._id },
+      { $pull: { articles: this._id } }
+    );
+  } catch (e) {
+    console.error('Error in pre-deleteOne hook:', e);
+  }
+});
+
 const db = mongoose.connection.useDb("articles");
 const Article = db.model("Articles", ArticleSchema);
 

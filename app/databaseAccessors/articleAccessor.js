@@ -328,4 +328,36 @@ export default class ArticlesAccessor {
       .exec();
     return newArticle;
   }
-}
+
+
+
+  static async deleteArticle(slug) {
+    await Connection.open();
+
+    
+
+    const article = await Article.findOne( {slug: slug} );
+    if (article) {
+
+      try {
+      console.log("we found the article");
+
+      //console.log(article);
+
+      const resp = await Article.deleteOne({ _id: article._id });
+      
+      console.log("ok");
+      console.log(resp);
+     
+      return article;
+      }
+
+      catch(e) {
+        console.error("Error in cascading deletion", e);
+        throw e;
+      }
+
+    }
+    
+    }
+  }

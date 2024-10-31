@@ -116,4 +116,42 @@ export default class ArticleController {
       }
     }
   }
+
+  /** 
+   * 
+   * @param {HTTP REQ} req
+   * @param {HHTP RES} res
+   * 
+   * 
+   /** */
+  static async deleteArticle(req, res) {
+    try {
+      const { slug } = req.params;
+      
+
+      // make ArticleAccessor in articleAccessor.js 
+      const deletedArticle = await ArticlesAccessor.deleteArticle(slug);
+      console.log(deletedArticle);
+
+      res.status(204).json(deletedArticle);
+
+      if (!deleteArticle) {
+        console.log("throwing error");
+        throw new ErrorArticleNotFound();
+      }
+
+      console.log("success!");
+
+    // res.status(204).json(deletedArticle);
+    } catch (e) {
+      console.log("hello")
+      if (e instanceof HttpError) {
+        
+        e.throwHttp(req, res);
+      } else {
+        
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+  }
+  }
 }

@@ -32,7 +32,7 @@ router.route("/photographers/:slug"); //update the list of photographer to this 
 
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
 router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
-router.route("/delete/:slug"); //delete an article
+router.route("/delete/:slug").delete(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.deleteArticle); //delete an article
 
 router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
     .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);

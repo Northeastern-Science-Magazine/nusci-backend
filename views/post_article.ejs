@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Your Article</title>
+  <link href="/public/css/draggable.css" rel="stylesheet" type="text/css" />
+  <link href="/public/css/panel.css" rel="stylesheet" type="text/css" />
+  <link href="/public/css/articlepost.css" rel="stylesheet" type="text/css" />
+  <script defer src="/public/js/draggable.js"></script>
+  <script defer src="/public/js/submitarticle.js"></script>
+</head>
+
+<body>
+  <h1>Submit an Article!</h1>
+  <form method="POST">
+    <div id="container">
+      <div id="article-content">
+        <div id="article-header">
+          <div class="panel">
+            <h3>Article Header</h3>
+            <div id="header-panel">
+              <div class="header-col">
+                <label for="title">Title</label>
+                <br />
+                <input type="text" name="title" />
+                <br />
+                <br />
+                <label for="author">Author</label>
+                <br />
+                <input type="text" name="author" />
+                <br />
+                <br />
+                <label for="year">Year</label>
+                <br />
+                <input type="number" name="year" />
+                <br />
+                <br />
+                <label for="major">Major</label>
+                <br />
+                <input type="text" name="major" />
+              </div>
+              <div class="header-col">
+                <input type="checkbox" name="biology" />
+                <label for="biology">Biology</label>
+                <br />
+                <input type="checkbox" name="chemistry" />
+                <label for="chemistry">Chemistry</label>
+                <br />
+                <input type="checkbox" name="environment" />
+                <label for="environment">Environment</label>
+                <br />
+                <input type="checkbox" name="health" />
+                <label for="health">Health</label>
+                <br />
+                <input type="checkbox" name="newsletter" />
+                <label for="newsletter">Newsletter</label>
+                <br />
+                <input type="checkbox" name="opinion" />
+                <label for="opinion">Opinion</label>
+                <br />
+                <input type="checkbox" name="physics" />
+                <label for="physics">Physics</label>
+                <br />
+                <input type="checkbox" name="psychology" />
+                <label for="psychology">Psychology</label>
+                <br />
+                <input type="checkbox" name="space" />
+                <label for="space">Space</label>
+                <br />
+                <input type="checkbox" name="technology" />
+                <label for="technology">Technology</label>
+                <br />
+                <input type="checkbox" name="world" />
+                <label for="world">World</label>
+                <!-- Hidden input to Hold Select Categories -->
+                <input type="hidden" id="selectedCategories" name="selectedCategories" />
+              </div>
+              <div class="header-col">
+                <label for="coverimage">Cover Image URL</label>
+                <br />
+                <input type="text" name="coverimage" />
+                <br />
+                <br />
+                <label for="date">Date</label>
+                <br />
+                <input type="date" name="date" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="article-body">
+          <div class="panel">
+            <div id="body-panel">
+              <h3>Article Body</h3>
+              <ul id="element-list" class="body-elements">
+                <li class="item" draggable="true">
+                  <div class="details">
+                    <textarea class="input-text body" placeholder="body"></textarea>
+                  </div>
+                  <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
+                  <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+                </li>
+                <li class="item" draggable="true">
+                  <div class="details">
+                    <textarea class="input-text pull" placeholder="pull"></textarea>
+                  </div>
+                  <img id="delete-item" class="ui-delete-element" src="/public/assets/trashcan.webp" />
+                  <img class="ui-draggable-dots" src="/public/assets/draggabledots.webp" />
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <input id="body-list" type="hidden" name="body" />
+        <input id="pull-list" type="hidden" name="pull" />
+        <input id="order" type="hidden" name="order" />
+      </div>
+      <div id="add-element-container">
+        <div class="panel-container">
+          <div id="add-panel" class="panel">
+            <h3>Add an element:</h3>
+            <button type="button" class="btn" id="add-body-pg">Add body paragraph</button>
+            <br />
+            <br />
+            <button type="button" class="btn" id="add-pull-quote">Add pull quote</button>
+            <br />
+            <br />
+            <hr />
+            <input type="submit" class="btn" id="submit" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</body>
+
+</html>
