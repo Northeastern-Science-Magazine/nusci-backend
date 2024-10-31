@@ -28,7 +28,7 @@ describe("Article Resolve Internal Comment Tests", () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
             .send({ commentId: "c00000000000000000000001" })
-            .set("Cookie", [`token=${tokens.ethan}`]);
+            .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
 
         showLog && console.log(response.body);
         expect(response.status).toBe(201);
@@ -38,18 +38,18 @@ describe("Article Resolve Internal Comment Tests", () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
             .send({ commentId: "c00000000000000000000001" })
-            .set("Cookie", [`token=${tokens.arushi}`]);
+            .set("Cookie", [`token=${tokens["arushi@arushi.com"]}`])
 
         showLog && console.log(response.body);
         expect(response.status).toBe(403);
-        expect(response.body).toStrictEqual({ error: "Insufficient permissions to access this resource." , message: "",});
+        expect(response.body).toStrictEqual({ error: "Insufficient permissions to access this resource.", message: "", });
     });
 
     test("invalid resolve comment (invalid id)", async () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
             .send({ commentId: "66ba07fc440f0ccec39b317e" })
-            .set("Cookie", [`token=${tokens.ethan}`]);
+            .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
 
         showLog && console.log(response.body);
         expect(response.status).toBe(201);
@@ -59,7 +59,7 @@ describe("Article Resolve Internal Comment Tests", () => {
         const response = await request(app)
             .patch("/articles/resolve-internal-comment")
             .send({ commentId: "c00000000000000000000002" })
-            .set("Cookie", [`token=${tokens.ethan}`]);
+            .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
 
         showLog && console.log(response.body);
         expect(response.status).toBe(201);
