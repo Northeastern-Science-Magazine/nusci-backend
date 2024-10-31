@@ -35,9 +35,8 @@ export default class UserController {
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response
-   * @param {function} next middleware function
    */
-  static async login(req, res, next) {
+  static async login(req, res) {
     try {
       if (req.cookies.token) {
         // already logged in
@@ -104,9 +103,8 @@ export default class UserController {
    *
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
-  static async signup(req, res, next) {
+  static async signup(req, res) {
     try {
       // validate incoming data using UserCreate model
       const userData = new UserCreate(req.body);
@@ -143,18 +141,18 @@ export default class UserController {
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
-  static async deactivateUser(req, res) {
-    try {
-      await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
-      res.redirect("/logout");
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async deactivateUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deactivateUserByUsername(Authorize.getUsername(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * postDeleteProfile Method
@@ -165,18 +163,18 @@ export default class UserController {
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
-  static async deleteUser(req, res) {
-    try {
-      await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
-      res.redirect("/logout");
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async deleteUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deleteUserByUsername(Authorize.getUsername(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * getMyProfile Method
