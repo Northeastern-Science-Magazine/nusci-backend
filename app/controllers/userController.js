@@ -4,6 +4,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
+import Accounts from "../models/enums/accounts.js";
 import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import {
@@ -19,7 +20,8 @@ import {
   HttpError,
 } from "../error/errors.js";
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
-import { validate } from "jsonschema";
+import validateJSON from "../models/validationSchemas/validateJSON.js";
+import { userResponse } from "../models/validationSchemas/user.js";
 
 /**
  * UsersCTRL Class
@@ -39,15 +41,12 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
-    const reqBodyValidator = {
-      type: object,
-      properties: {
+    try {
+      console.log("pre-validation");
+      const validation = validateJSON(req.body, {
         email: { type: string, required: true },
         password: { type: string, required: true },
-      },
-    };
-    try {
-      validate(req.body, reqBodyValidator);
+      });
 
       if (req.cookies.token) {
         // already logged in
@@ -95,6 +94,7 @@ export default class UserController {
       res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
+      console.log(e);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -116,23 +116,46 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
-      // validate incoming data using UserCreate model
-      const userData = new UserCreate(req.body);
+      validateJSON(
+        req.body,
+        {
+          firstName: { type: string, required: true },
+          lastName: { type: string, required: true },
+          password: { type: string, required: true },
+          pronouns: { type: array, items: { type: string } },
+          graduationYear: { type: integer, required: true },
+          major: { type: string },
+          location: { type: string },
+          profileImage: { type: string },
+          bannerImage: { type: string },
+          bio: { type: string, required: true },
+          email: { type: string, required: true },
+          phone: { type: string },
+          roles: { type: array, items: { enum: Accounts.listr(), required: true } },
+          status: { enum: AccountStatus.listr(), required: true },
+          approvingUser: { const: undefined },
+          gameData: { const: undefined },
+          creationTime: { type: date, required: true },
+          modificationTime: { type: date, required: true },
+        },
+        { override: ["creationTime", "modificationTime"] }
+      );
 
       // hash the password
-      userData.password = await bcrypt.hash(userData.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(userData.email);
+      req.body.password = await bcrypt.hash(req.body.password, 10);
+      const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
       }
 
-      await UsersAccessor.createUser(userData);
+      await UsersAccessor.createUser(req.body);
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
+        console.log(e);
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
@@ -171,18 +194,18 @@ export default class UserController {
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
-  static async deleteUser(req, res) {
-    try {
-      await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
-      res.redirect("/logout");
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async deleteUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * getMyProfile Method
@@ -196,14 +219,14 @@ export default class UserController {
   static async getMyProfile(req, res, next) {
     try {
       const email = Authorize.getEmail(req);
-      const user = await UsersAccessor.getUserByEmail(email);
+      const user = await UsersAccessor.getUserByEmail(email).toObject();
 
       if (!user) {
         throw new ErrorUserNotFound();
       }
 
-      const userProfile = new UserResponse(user.toObject());
-      res.json(userProfile);
+      validate(user, userResponse);
+      res.status(200).json(user);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
