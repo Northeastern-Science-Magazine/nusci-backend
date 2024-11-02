@@ -17,7 +17,7 @@ const baseUserResponse = {
     profileImage: { type: string },
     bannerImage: { type: string },
     bio: { type: string, required: true },
-    email: { type: string, required: true }, // Now part of the base
+    email: { type: string, required: true },
     roles: { type: array, items: { enum: Accounts.listr(), required: true } },
     gameData: { const: undefined },
     creationTime: { type: date, required: true },
@@ -32,14 +32,13 @@ export const userResponse = {
   properties: {
     ...baseUserResponse.properties,
     password: { type: string, required: true },
-    emails: { type: array, items: { type: string }, required: true },
     phone: { type: string },
     status: { enum: AccountStatus.listr(), required: true },
     approvingUser: { const: undefined },
   },
 };
 
-/* public user response; just the publicaly accesible data from the base model */
+/* public user response; just the publicaly accesible data from the base */
 export const userPublicResponse = {
   ...baseUserResponse,
   id: "/user/public/response",
