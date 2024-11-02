@@ -42,11 +42,11 @@ export default class UsersAccessor {
   }
 
   /**
- * Get a list of User IDs by a list emails
- *
- * @param {[String]} email - Array of email
- * @returns {{[ObjectId]}} - Array of user ID
- */
+   * Get a list of User IDs by a list emails
+   *
+   * @param {[String]} email - Array of email
+   * @returns {{[ObjectId]}} - Array of user ID
+   */
   static async getUserIdsByMultipleEmails(emails) {
     const userIds = [];
     for (const email of emails) {
@@ -110,11 +110,7 @@ export default class UsersAccessor {
   static async approveUserByEmail(email) {
     await Connection.open();
     //update the status
-    const user = await User.findOneAndUpdate(
-      { email: email },
-      { status: AccountStatus.Approved.toString() },
-      { new: true }
-    );
+    const user = await User.findOneAndUpdate({ email: email }, { status: AccountStatus.Approved.toString() }, { new: true });
     return user;
   }
 
@@ -130,11 +126,7 @@ export default class UsersAccessor {
   static async denyUserByEmail(email) {
     await Connection.open();
     //update the status
-    const user = await User.findOneAndUpdate(
-      { email: email },
-      { status: AccountStatus.Denied.toString() },
-      { new: true }
-    );
+    const user = await User.findOneAndUpdate({ email: email }, { status: AccountStatus.Denied.toString() }, { new: true });
     return user;
   }
 

@@ -96,7 +96,7 @@ export default class Validate {
    */
   static outgoing(instance, schema, options) {
     try {
-      !options.preserve && this._removeExtraneousFields(instance, schema);
+      !options?.preserve && this._removeExtraneousFields(instance, schema);
       return validate(instance, schema);
     } catch (e) {
       throw new ErrorValidation(e);

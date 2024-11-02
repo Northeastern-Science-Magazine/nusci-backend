@@ -97,7 +97,6 @@ export default class UserController {
       res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
-      console.log(e);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -227,7 +226,7 @@ export default class UserController {
   static async getMyProfile(req, res) {
     try {
       const email = Authorize.getEmail(req);
-      const user = await UsersAccessor.getUserByEmail(email).toObject();
+      const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
 
       if (!user) {
         throw new ErrorUserNotFound();
@@ -255,7 +254,7 @@ export default class UserController {
   static async getPublicUserByEmail(req, res) {
     try {
       const email = req.params.email;
-      const user = await UsersAccessor.getUserByEmail(email).toObject();
+      const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByEmail when using .toObject() on null.
