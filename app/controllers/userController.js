@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
-import { UserCreate, UserPublicResponse, UserResponse } from "../models/apiModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import {
   ErrorFailedLogin,
@@ -19,12 +18,12 @@ import {
   ErrorUserStatusAlreadyResolved,
   HttpError,
 } from "../error/errors.js";
-import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
-import validateJSON from "../models/validationSchemas/validateJSON.js";
-import { userResponse } from "../models/validationSchemas/user.js";
+import { string, date, array, integer, object } from "../models/validationSchemas/schemaTypes.js";
+import Validate from "../models/validationSchemas/validateSchema.js";
+import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
 
 /**
- * UsersCTRL Class
+ * UsersController Class
  *
  * This class controls the behaviour of any web request
  * related to Users.
@@ -42,8 +41,7 @@ export default class UserController {
    */
   static async login(req, res) {
     try {
-      console.log("pre-validation");
-      const validation = validateJSON(req.body, {
+      Validate.incoming(req.body, {
         email: { type: string, required: true },
         password: { type: string, required: true },
       });
@@ -76,6 +74,11 @@ export default class UserController {
       }
 
       //check if password matches
+      /**
+       * @TODO unhashed passwords should not be sent over HTTP
+       * We need to change the login flow to accept a hashed PW from FE,
+       * and decrypt both here to verify using same key.
+       */
       const decrypted = await bcrypt.compare(req.body.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin();
@@ -116,7 +119,7 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
-      validateJSON(
+      Validate.incoming(
         req.body,
         {
           firstName: { type: string, required: true },
@@ -142,6 +145,10 @@ export default class UserController {
       );
 
       // hash the password
+      /**
+       * @TODO Password hashing should actually be deferred to FE. It is
+       * generally unsafe to send unhashed passwords over HTTP
+       */
       req.body.password = await bcrypt.hash(req.body.password, 10);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
@@ -172,20 +179,22 @@ export default class UserController {
    * @param {HTTP REQ} req web request information for signup
    * @param {HTTP RES} res web response object
    */
-  static async deactivateUser(req, res) {
-    try {
-      await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
-      res.redirect("/logout");
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async deactivateUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
+   * @TODO FIX
+   *
    * postDeleteProfile Method
    *
    * This method dispatches to the user accessor where the email passed
@@ -214,9 +223,8 @@ export default class UserController {
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
-  static async getMyProfile(req, res, next) {
+  static async getMyProfile(req, res) {
     try {
       const email = Authorize.getEmail(req);
       const user = await UsersAccessor.getUserByEmail(email).toObject();
@@ -225,7 +233,7 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      validate(user, userResponse);
+      Validate.outgoing(user, userResponse);
       res.status(200).json(user);
     } catch (e) {
       if (e instanceof HttpError) {
@@ -243,20 +251,19 @@ export default class UserController {
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
-  static async getPublicUserByEmail(req, res, next) {
+  static async getPublicUserByEmail(req, res) {
     try {
       const email = req.params.email;
-      const user = await UsersAccessor.getUserByEmail(email);
+      const user = await UsersAccessor.getUserByEmail(email).toObject();
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
 
-      const publicUser = new UserPublicResponse(user.toObject());
-      res.status(200).json(publicUser);
+      Validate.outgoing(user, userPublicResponse);
+      res.status(200).json(user);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -273,10 +280,14 @@ export default class UserController {
    *
    * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
-   * @param {function} next middleware function.
    */
-  static async resolveUserApprovals(req, res, next) {
+  static async resolveUserApprovals(req, res) {
     try {
+      Validate.incoming(req.body, {
+        approve: { type: array, items: { type: string } },
+        deny: { type: array, items: { type: string } },
+      });
+
       if (!(req.body.approve && req.body.deny)) {
         throw new ErrorValidation("No users given to resolve status for.");
       }
@@ -318,44 +329,58 @@ export default class UserController {
     }
   }
 
-  static async updateUser(req, res, next) {
-    try {
-      // Update the user information
-      const updatedUser = {
-        email: req.body.email,
-        role: req.body.role,
-        information: {
-          year: req.body.year,
-          major: req.body.major,
-          bio: req.body.bio,
-          image: req.body.image,
-        },
-      };
+  /**
+   * @TODO FIX
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  // static async updateUser(req, res) {
+  //   try {
+  //     Validate.incoming(req.body, {
+  //       email: { type: string, required: true },
+  //       role: { type: string, required: true },
+  //       information: {
+  //         type: object,
+  //         properties: {
+  //           year: { type: integer },
+  //           major: { type: string },
+  //           bio: { type: string },
+  //           image: { type: string },
+  //         },
+  //       },
+  //     });
 
-      // Update the password if provided (might be a nifty feature for the future)
-      if (req.body.password) {
-        updatedUser.password = await bcrypt.hash(req.body.password, 10);
-      }
+  //     // Update the password if provided (might be a nifty feature for the future)
+  //     if (req.body.password) {
+  //       req.body.password = await bcrypt.hash(req.body.password, 10);
+  //     }
 
-      // Update the user in the database
-      const updatedUserData = await UsersAccessor.updateUser(updatedUser);
-      if (!updatedUserData) {
-        // Handle case where the user is not found
-        throw new ErrorUserNotFound();
-      }
+  //     // Update the user in the database
+  //     const updatedUserData = await UsersAccessor.updateUser(updatedUser);
+  //     if (!updatedUserData) {
+  //       // Handle case where the user is not found
+  //       throw new ErrorUserNotFound();
+  //     }
 
-      res.json(updatedUserData);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  //     res.status(200).json(updatedUserData);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
+  /**
+   * Removes the user's login cookie from browser.
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
   static logout(req, res) {
     res.clearCookie("token");
-    res.json({ message: "Successfully logged out." });
+    res.status(200).json({ message: "Successfully logged out." });
   }
 }
