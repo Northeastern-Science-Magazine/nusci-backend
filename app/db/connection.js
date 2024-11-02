@@ -33,11 +33,13 @@ export default class Connection {
       dotenvConfig();
 
       //Destructure env variables
-      const { MONGODB_CONNECTION_STRING } = process.env;
+      const { MONGODB_INITDB_ROOT_USERNAME, MONGODB_INITDB_ROOT_PASSWORD, MONGODB_INITDB_HOSTNAME, MONGODB_INITDB_PORT } =
+        process.env;
+      const DATABASE_URL = `mongodb://${MONGODB_INITDB_ROOT_USERNAME}:${MONGODB_INITDB_ROOT_PASSWORD}@${MONGODB_INITDB_HOSTNAME}:${MONGODB_INITDB_PORT}`;
 
       try {
         //Mongoose connect to the cluster.
-        mongoose.connect(MONGODB_CONNECTION_STRING, {
+        mongoose.connect(DATABASE_URL, {
           useNewUrlParser: true,
           useUnifiedTopology: true,
           maxPoolSize: 50,
