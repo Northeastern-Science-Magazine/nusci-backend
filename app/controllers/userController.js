@@ -18,7 +18,7 @@ import {
   ErrorUserStatusAlreadyResolved,
   HttpError,
 } from "../error/errors.js";
-import { string, date, array, integer, object } from "../models/validationSchemas/schemaTypes.js";
+import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
 
@@ -161,7 +161,6 @@ export default class UserController {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
-        console.log(e);
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
     }
