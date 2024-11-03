@@ -1,4 +1,3 @@
-dotenvConfig(); // load .env variables
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
@@ -45,34 +44,28 @@ export default class UserController {
         email: { type: string, required: true },
         password: { type: string, required: true },
       });
-
       if (req.cookies.token) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();
       }
-
       // check if the user exists and is approved
       const user = await UsersAccessor.getUserByEmail(req.body.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
       }
-
+      //check if the user is pending
       if (user.status == AccountStatus.Pending.toString()) {
-        //check if the user is pending
         throw new ErrorUserPendingLogin();
       }
-
+      //check if the user is deactivated
       if (user.status == AccountStatus.Deactivated.toString()) {
-        //check if the user is deactivated
         throw new ErrorUserDeactivatedLogin();
       }
-
+      //check if the user is denied
       if (user.status == AccountStatus.Denied.toString()) {
-        //check if the user is denied
         throw new ErrorUserDeniedLogin();
       }
-
       //check if password matches
       /**
        * @TODO unhashed passwords should not be sent over HTTP
@@ -83,7 +76,7 @@ export default class UserController {
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
-
+      dotenvConfig(); // load .env variables
       // sign token and send it in response
       const token = jwt.sign(
         {

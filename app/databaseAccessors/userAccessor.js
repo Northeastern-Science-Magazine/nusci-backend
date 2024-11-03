@@ -30,11 +30,17 @@ export default class UsersAccessor {
   /**
    * Get User IDs by a email
    *
+   * This method throws because semantically, you should only want
+   * to access the ID of a user that does exist -- and it expect it
+   * to be a problem if not.
+   *
    * @param {String} email - Email
+   * @throws When no user by the given email is found
    * @returns {ObjectId} - user's ID
    */
   static async getUserIdByEmail(email) {
-    const user = await this.getUserByEmail(email);
+    await Connection.open();
+    const user = await User.findOne({ email: email }, "_id");
     if (!user) {
       throw new ErrorUserNotFound(`User not found for email: ${email}`);
     }
@@ -44,20 +50,20 @@ export default class UsersAccessor {
   /**
    * Get a list of User IDs by a list emails
    *
-   * @param {[String]} email - Array of email
-   * @returns {{[ObjectId]}} - Array of user ID
+   * @param {[String]} email Array of emails
+   * @returns {{[ObjectId]}} Array of user IDs
    */
-  static async getUserIdsByMultipleEmails(emails) {
-    const userIds = [];
-    for (const email of emails) {
-      const user = await this.getUserByEmail(email);
-      if (user) {
-        userIds.push(user._id);
-      } else {
-        throw new ErrorUserNotFound(`User not found for email: ${email}`);
+  static async getUserIdsByEmails(emails) {
+    try {
+      const userIds = [];
+      for (const email of emails) {
+        const userId = await this.getUserIdByEmail(email);
+        userIds.push(userId);
       }
+      return userIds;
+    } catch (e) {
+      throw e;
     }
-    return userIds;
   }
 
   /**
