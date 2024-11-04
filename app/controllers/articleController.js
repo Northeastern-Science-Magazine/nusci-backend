@@ -4,6 +4,7 @@ import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError } from "../error/errors.js";
+import Utils from "./utils.js";
 
 /**
  * ArticleController Class
@@ -58,7 +59,7 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
       const updates = new ArticleUpdate(req.body);
-      const authorIds = await UsersAccessor.getUserIdsByMultipleEmails(updates.authors);
+      const authorIds = await Utils.getUserIdsByEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 

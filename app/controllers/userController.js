@@ -20,6 +20,7 @@ import {
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
+import Utils from "./utils.js";
 
 /**
  * UsersController Class

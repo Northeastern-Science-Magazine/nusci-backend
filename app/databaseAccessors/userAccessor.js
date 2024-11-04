@@ -1,5 +1,4 @@
 import Connection from "../db/connection.js";
-import { ErrorUserNotFound } from "../error/errors.js";
 import User from "../models/dbModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 
@@ -30,40 +29,13 @@ export default class UsersAccessor {
   /**
    * Get User IDs by a email
    *
-   * This method throws because semantically, you should only want
-   * to access the ID of a user that does exist -- and it expect it
-   * to be a problem if not.
-   *
    * @param {String} email - Email
-   * @throws When no user by the given email is found
    * @returns {ObjectId} - user's ID
    */
   static async getUserIdByEmail(email) {
     await Connection.open();
-    const user = await User.findOne({ email: email }, "_id");
-    if (!user) {
-      throw new ErrorUserNotFound(`User not found for email: ${email}`);
-    }
-    return user;
-  }
-
-  /**
-   * Get a list of User IDs by a list emails
-   *
-   * @param {[String]} email Array of emails
-   * @returns {{[ObjectId]}} Array of user IDs
-   */
-  static async getUserIdsByEmails(emails) {
-    try {
-      const userIds = [];
-      for (const email of emails) {
-        const userId = await this.getUserIdByEmail(email);
-        userIds.push(userId);
-      }
-      return userIds;
-    } catch (e) {
-      throw e;
-    }
+    const userId = await User.findOne({ email: email }, "_id");
+    return userId;
   }
 
   /**
