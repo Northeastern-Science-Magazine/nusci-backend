@@ -1,10 +1,7 @@
 import express from "express";
-import bodyParser from "body-parser";
 
-const router = express.Router();
+const issueMap = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
+issueMap.route("/create"); //create an issue map
 
-router.route("/create"); //create an issue map
-
-export default router;
+export default issueMap;
