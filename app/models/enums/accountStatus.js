@@ -35,18 +35,11 @@ export default class AccountStatus {
    * @returns {AccountStatus}
    */
   static toAccountStatus(str) {
-    switch (str.toLowerCase()) {
-      case this.Pending.toString():
-        return this.Pending;
-      case this.Deactivated.toString():
-        return this.Deactivated;
-      case this.Approved.toString():
-        return this.Approved;
-      case this.Denied.toString():
-        return this.Denied;
-      default:
-        throw new ErrorValidation("Invalid AccountStatus enum given.");
+    const accountStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!accountStatus) {
+      throw new ErrorValidation("Invalid Article Status enum given.");
     }
+    return accountStatus;
   }
 
   /**

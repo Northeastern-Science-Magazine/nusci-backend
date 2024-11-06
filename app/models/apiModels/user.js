@@ -10,7 +10,6 @@ export class UserCreate extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
     password: { type: string, required: true },
     pronouns: { type: [string] },
     graduationYear: { type: number, required: true },
@@ -19,7 +18,7 @@ export class UserCreate extends BaseModel {
     profileImage: { type: string },
     bannerImage: { type: string },
     bio: { type: string, required: true },
-    emails: { type: [string], required: true },
+    email: { type: string, required: true },
     phone: { type: string },
     roles: { type: [string], enum: Accounts.allStr, required: true },
     status: { type: string, enum: AccountStatus.allStr, default: AccountStatus.Pending.status, override: true },
@@ -41,7 +40,6 @@ export class UserPublicResponse extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
     pronouns: { type: [string] },
     graduationYear: { type: number, required: true },
     major: { type: string },
@@ -49,6 +47,7 @@ export class UserPublicResponse extends BaseModel {
     profileImage: { type: string },
     bannerImage: { type: string },
     bio: { type: string, required: true },
+    email: { type: string, required: true },
     roles: { type: [string], enum: Accounts.allStr, required: true },
     gameData: { type: empty },
     creationTime: { type: date, required: true },
@@ -66,7 +65,6 @@ export class UserResponse extends BaseModel {
   static schema = {
     firstName: { type: string, required: true },
     lastName: { type: string, required: true },
-    username: { type: string, required: true },
     password: { type: string, required: true },
     pronouns: { type: [string], required: false },
     graduationYear: { type: number, required: true },
@@ -75,7 +73,7 @@ export class UserResponse extends BaseModel {
     profileImage: { type: string },
     bannerImage: { type: string },
     bio: { type: string, required: true },
-    emails: { type: [string], required: true },
+    email: { type: string, required: true },
     phone: { type: string },
     roles: { type: [string], enum: Accounts.allStr, required: true },
     status: { type: string, enum: AccountStatus.allStr, required: true },
@@ -98,7 +96,6 @@ export class UserUpdate extends BaseModelUpdate {
   static schema = {
     firstName: { type: string },
     lastName: { type: string },
-    username: { type: string },
     pronouns: { type: [string] },
     graduationYear: { type: number },
     major: { type: string },
@@ -106,7 +103,7 @@ export class UserUpdate extends BaseModelUpdate {
     profileImage: { type: string },
     bannerImage: { type: string },
     bio: { type: string },
-    emails: { type: [string] },
+    email: { type: string },
     phone: { type: string },
     roles: { type: [string], enum: Accounts.allStr },
     status: { type: string, enum: AccountStatus.allStr },
@@ -125,7 +122,7 @@ export class UserUpdate extends BaseModelUpdate {
  */
 export class UserDelete extends BaseModel {
   static schema = {
-    username: { type: string, required: true },
+    email: { type: string, required: true },
   };
 
   constructor(json) {

@@ -28,92 +28,90 @@ export default class UsersAccessor {
   }
 
   /**
-   * getUserByUsername Method
+   * Get User IDs by a email
    *
-   * This method retrieves the user MongoDB object from the
-   * database based on a given username
-   *
-   * @param {String} username
-   * @returns the User associated with the given username in
-   * the database.
+   * @param {String} email - Email
+   * @returns {ObjectId} - user's ID
    */
-  static async getUserByUsername(username) {
-    await Connection.open();
-    const user = await User.findOne({ username: username });
+  static async getUserIdByEmail(email) {
+    const user = await this.getUserByEmail(email);
+    if (!user) {
+      throw new ErrorUserNotFound(`User not found for email: ${email}`);
+    }
     return user;
   }
 
   /**
-   * Get User IDs by a list of usernames
-   *
-   * @param {Array<string>} usernames - List of usernames
-   * @returns {Array<ObjectId>} - List of user IDs
-   */
-  static async getUserIdsByUsernames(usernames) {
+ * Get a list of User IDs by a list emails
+ *
+ * @param {[String]} email - Array of email
+ * @returns {{[ObjectId]}} - Array of user ID
+ */
+  static async getUserIdsByMultipleEmails(emails) {
     const userIds = [];
-    for (const username of usernames) {
-      const user = await this.getUserByUsername(username);
+    for (const email of emails) {
+      const user = await this.getUserByEmail(email);
       if (user) {
         userIds.push(user._id);
       } else {
-        throw new ErrorUserNotFound(`User not found for username: ${username}`);
+        throw new ErrorUserNotFound(`User not found for email: ${email}`);
       }
     }
     return userIds;
   }
 
   /**
-   * getApprovedByUsername Method
+   * getApprovedByEmail Method
    *
    * This method retrieves the user MongoDB object from the
-   * database based on a given username
+   * database based on a given email
    *
-   * @param {String} username
-   * @returns the User associated with the given username in
+   * @param {String} email
+   * @returns the User associated with the given email in
    * the database.
    */
-  static async getApprovedByUsername(username) {
+  static async getApprovedByEmail(email) {
     await Connection.open();
     const user = await User.findOne({
-      username: username,
+      email: email,
       status: AccountStatus.Approved.toString(), // Use MongoDB filter for equal to approved status
     });
     return user;
   }
 
   /**
-   * getUnapprovedByUsername Method
+   * getUnapprovedByEmail Method
    *
    * This method retrieves the user MongoDB object from the
-   * database based on a given username
+   * database based on a given email
    *
-   * @param {String} username
-   * @returns the User associated with the given username in
+   * @param {String} email
+   * @returns the User associated with the given email in
    * the database.
    */
-  static async getUnapprovedByUsername(username) {
+  static async getUnapprovedByemail(email) {
     await Connection.open();
     const user = await User.findOne({
-      username: username,
+      email: email,
       status: { $ne: AccountStatus.Approved.toString() }, // Use MongoDB filter for not equal to approved status
     });
     return user;
   }
 
   /**
-   * approveUserByUsername Method
+   * approveUserByEmail Method
    *
    * This method retrieves the user MongoDB object from the
-   * database based on a given username and update the user's status to approved.
+   * database based on a given email and update the user's status to approved.
    *
-   * @param {String} username
+   * @param {String} email
    * @returns the updated user object with the status set to approved.
    */
-  static async approveUserByUsername(username) {
+  static async approveUserByEmail(email) {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { username: username },
+      { email: email },
       { status: AccountStatus.Approved.toString() },
       { new: true }
     );
@@ -121,19 +119,19 @@ export default class UsersAccessor {
   }
 
   /**
-   * denyUserByUsername Method
+   * denyUserByEmail Method
    *
    * This method retrieves the user MongoDB object from the
-   * database based on a given username and update the user's status to denied.
+   * database based on a given email and update the user's status to denied.
    *
-   * @param {String} username
+   * @param {String} email
    * @returns the updated user object with the status set to denied.
    */
-  static async denyUserByUsername(username) {
+  static async denyUserByEmail(email) {
     await Connection.open();
     //update the status
     const user = await User.findOneAndUpdate(
-      { username: username },
+      { email: email },
       { status: AccountStatus.Denied.toString() },
       { new: true }
     );
@@ -153,7 +151,7 @@ export default class UsersAccessor {
    */
   static async getUserByEmail(email) {
     await Connection.open();
-    const user = await User.findOne({ emails: { $in: [email] } });
+    const user = await User.findOne({ email: email });
     return user;
   }
 

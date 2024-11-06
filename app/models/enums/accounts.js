@@ -41,24 +41,11 @@ export default class Accounts {
    * @returns {Accounts}
    */
   static toAccount(str) {
-    switch (str.toLowerCase()) {
-      case this.None.toString():
-        return this.None;
-      case this.Author.toString():
-        return this.Author;
-      case this.Editor.toString():
-        return this.Editor;
-      case this.Photographer.toString():
-        return this.Photographer;
-      case this.Developer.toString():
-        return this.Developer;
-      case this.Designer.toString():
-        return this.Designer;
-      case this.Admin.toString():
-        return this.Admin;
-      default:
-        throw new ErrorValidation("Invalid Account enum given.");
+    const account = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!account) {
+      throw new ErrorValidation("Invalid Accounts enum given.");
     }
+    return account;
   }
 
   /**
