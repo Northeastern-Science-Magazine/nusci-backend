@@ -4,7 +4,6 @@ import app from "../../../../app/app.js";
 import Category from "../../../../app/models/enums/categories.js";
 import {
     validArticleSlug,
-    invalidArticleSlug,
     validSectionName,
   } from "../../../testData/issueMapTestData.js";
 import Connection from "../../../../app/db/connection.js";
@@ -68,7 +67,7 @@ describe("create and add article to issue map", () => {
     showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid Invalid request body.");
+    expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
   test("Invalid article creation due to invalid editors email", async () => {
@@ -90,7 +89,7 @@ describe("create and add article to issue map", () => {
     showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid Invalid request body.");
+    expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
   test("Invalid article creation due to invalid designers email", async () => {
@@ -112,7 +111,7 @@ describe("create and add article to issue map", () => {
     showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid Invalid request body.");
+    expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
   test("Invalid article removal due to invalid photographers email", async () => {
@@ -134,7 +133,7 @@ describe("create and add article to issue map", () => {
     showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid Invalid request body.");
+    expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
   test("Invalid article addition due to article slug already existed", async () => {
@@ -156,16 +155,14 @@ describe("create and add article to issue map", () => {
     showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid Invalid request body.");
+    expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
   test("should create and add article to issue map successfully with missing authors/editors/designers/photographers", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        section: validSectionName,
-        categories: Category.Biology
+        articleSlug: "New article",
+        issueNumber: 2,
+        pageLength: 5,
     };
 
     const response = await request(app)
@@ -173,7 +170,7 @@ describe("create and add article to issue map", () => {
       .set("Cookie", [`token=${tokens.ethan}`])
       .send(requestBody);
 
-    showLog && console.log(response.body);
+    console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body.articles).toContain(createdArticleID);
   });
@@ -198,6 +195,7 @@ describe("create and add article to issue map", () => {
       .send(requestBody);
 
     showLog && console.log(response.body);
+    console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body.articles).toContain(createdArticleID);
   });

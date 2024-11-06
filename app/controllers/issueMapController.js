@@ -6,6 +6,7 @@ import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
 import Article from "../models/dbModels/article.js";
 import IssueMap from "../models/dbModels/article.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 
 
 /**
@@ -40,7 +41,8 @@ export default class IssueMapController {
         categories = []
       } = req.body
 
-      if (!issueNumber || !articleSlug || !pageLength) {
+      if (issueNumber < 0 || !articleSlug || pageLength<0 || !Array.isArray(authors) || !Array.isArray(editors)
+        || !Array.isArray(designers) || !Array.isArray(photographers) || ArticlesAccessor.getArticleBySlug(articleSlug)) {
         throw new ErrorInvalidRequestBody();
       }
       
@@ -77,6 +79,7 @@ export default class IssueMapController {
     if (!issueMap) {
       throw new ErrorIssueMapNotFound();
     }
+
 
     if (section) {
       const sectionIndex = issueMap.sections.findIndex(sec => sec.sectionName === section);
