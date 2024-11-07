@@ -38,24 +38,11 @@ export default class WritingStatus {
    * @returns {WritingStatus}
    */
   static toWritingStatus(str) {
-    switch (str.toLowerCase()) {
-      case this.Needs_Editor.status:
-        return this.Needs_Editor;
-      case this.Has_Editor.status:
-        return this.Has_Editor;
-      case this.Rough_Draft_Complete.status:
-        return this.Rough_Draft_Complete;
-      case this.Edits_Complete.status:
-        return this.Edits_Complete;
-      case this.Copy_Edits_Complete.status:
-        return this.Copy_Edits_Complete;
-      case this.EIC_Approved.status:
-        return this.EIC_Approved;
-      case this.Dropped.status:
-        return this.Dropped;
-      default:
-        throw new ErrorValidation("Invalid WritingStatus enum given.");
+    const writingStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!writingStatus) {
+      throw new ErrorValidation("Invalid Writing Status enum given.");
     }
+    return writingStatus;
   }
 
   /**

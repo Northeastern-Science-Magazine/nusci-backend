@@ -114,7 +114,7 @@ export class ErrorUserAlreadyLoggedIn extends HttpError {
 
 export class ErrorUserAlreadyExists extends HttpError {
   throwHttp(req, res) {
-    res.status(409).json({ error: "Username or email already registered with an account.", message: this.message });
+    res.status(409).json({ error: "Email already registered with an account.", message: this.message });
   }
 }
 

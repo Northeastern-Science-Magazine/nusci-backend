@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
-import { validUsernameQueryRaisa, validUsernameQueryEthan } from "../../../testData/userTestData.js";
+import { validEmailQueryRaisa, validEmailQueryEthan } from "../../../testData/userTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -23,27 +23,25 @@ beforeEach(async () => {
   execSync("npm run reset-s", { stdio: "ignore" });
 });
 
-describe("Get User By Username Tests", () => {
-  test("get a user by a valid/existing username raisa", async () => {
-    const response = await request(app).get("/user/username/raisa");
+describe("Get User By Email Tests", () => {
+  test("get a user by a valid/existing email (Raisa)", async () => {
+    const response = await request(app).get("/user/email/raisa%40raisa.com");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validUsernameQueryRaisa);
-    expect(response.body.username).toBe("raisa");
+    expect(response.body).toStrictEqual(validEmailQueryRaisa);
   });
 
-  test("get a user by a valid/existing username ethan", async () => {
-    const response = await request(app).get("/user/username/ethan");
+  test("get a user by a valid/existing email (Ethan)", async () => {
+    const response = await request(app).get("/user/email/ethan%40ethan.com");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validUsernameQueryEthan);
-    expect(response.body.username).toBe("ethan");
+    expect(response.body).toStrictEqual(validEmailQueryEthan);
   });
 
-  test("attempt getting an invalid username", async () => {
-    const response = await request(app).get("/user/username/nonexistentuser");
+  test("attempt getting an invalid email", async () => {
+    const response = await request(app).get("/user/email/nonexistentuser%40nonexistent.com");
 
     showLog && console.log(response.body);
     expect(response.body).toStrictEqual({ error: "User not found.", message: "" });

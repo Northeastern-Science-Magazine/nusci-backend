@@ -12,7 +12,7 @@ export const log = {
       default: false,
     },
     user: {
-      getUsername: false,
+      getEmail: false,
       postLogin: false,
       postSignup: false,
       putResolveUser: false,
@@ -21,7 +21,6 @@ export const log = {
     issueMap: {},
     photo: {},
     photoTag: {},
-    calendarEvent: {},
   },
   integration: {
     user: {

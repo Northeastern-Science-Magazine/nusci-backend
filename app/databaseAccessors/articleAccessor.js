@@ -53,11 +53,11 @@ export default class ArticlesAccessor {
   }
 
   /**
-   * @TODO getArticlesByAuthorUsername
+   * @TODO getArticlesByAuthorEmail
    */
 
   /**
-   * @TODO getArticlesByEditorUsername
+   * @TODO getArticlesByEditorEmail
    */
 
   /**
@@ -73,10 +73,6 @@ export default class ArticlesAccessor {
     const articles = await Article.find({ authors: { $in: [author] } });
     return articles;
   }
-
-  /**
-   * @TODO getArticlesByEditorUsername
-   */
 
   /**
    * getArticlesByEditorID method

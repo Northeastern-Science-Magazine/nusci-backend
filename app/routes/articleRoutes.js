@@ -5,39 +5,41 @@ import Accounts from "../models/enums/accounts.js";
 
 /* Controls Routing for Finished Articles */
 
-const router = express.Router();
+const articles = express.Router();
 
-router.route("/create"); //create an article
+articles.route("/create"); //create an article
 
 // filter + get articles by -- maybe find better ways
 // router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
-// router.route("/filter-by-user-and-role"); //get articles by username and role, by query
+// router.route("/filter-by-user-and-role"); //get articles by email and role, by query
 // //etc
 router.route("/search").get(ArticlesController.search);
 
-router.route("/approved-by/:username"); //get articles approved by the given user
-router.route("/slug/:slug"); //get article by its unique slug
+articles.route("/approved-by/:email"); //get articles approved by the given user
+articles.route("/slug/:slug"); //get article by its unique slug
 
-router.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
+articles.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
 
-router.patch("/article-status/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
-router.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
-router.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
-router.route("/design-status/:slug"); //update the design status of a given article
-router.route("/photography-status/:slug"); //update the photography status of a given article
+articles.patch("/article-status/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
+articles.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
+articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
+articles.route("/design-status/:slug"); //update the design status of a given article
+articles.route("/photography-status/:slug"); //update the photography status of a given article
 
-router.patch("/authors/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
-router.route("/editors/:slug"); //update the list of editor to this article,
-router.route("/designers/:slug"); //update the list of designer to this article,
-router.route("/photographers/:slug"); //update the list of photographer to this article
+articles.patch("/authors/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
+articles.route("/editors/:slug"); //update the list of editor to this article,
+articles.route("/designers/:slug"); //update the list of designer to this article,
+articles.route("/photographers/:slug"); //update the list of photographer to this article
 
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
-router.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
-router.route("/delete/:slug"); //delete an article
+articles.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
+articles.route("/delete/:slug"); //delete an article
 
-router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
-    .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
-router.route("/resolve-internal-comment") // editor or admin can resolve an internal comment
-    .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
+articles
+  .route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
+  .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+articles
+  .route("/resolve-internal-comment") // editor or admin can resolve an internal comment
+  .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
 
-export default router;
+export default articles;
