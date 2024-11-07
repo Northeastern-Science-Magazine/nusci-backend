@@ -3,7 +3,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorWrongQueryType } from "../error/errors.js";
 import { date } from "../models/apiModels/baseModel.js";
 
 /**
@@ -151,6 +151,9 @@ export default class ArticleController {
    */
   static async search(req, res){
     async function getUserIdsByEmailsQuery(listOfEmails) {
+      if(!Array.isArray(listOfEmails)) {
+        throw new ErrorWrongQueryType();
+      }
       // returns ids of the user objects given as a list of emails
       const allUsers = [];
         for (let i = 0; i < listOfEmails.length; i++) {
@@ -160,14 +163,41 @@ export default class ArticleController {
         return {"$in": allUsers};
     }
 
+    async function equalNumber(num) {
+      if (!Number.isNaN((Number(num)))) {
+        return num;
+      }
+      else {
+        throw new ErrorWrongQueryType();
+      }
+    }
+
+    async function equalString(str) {
+      if(typeof(str) === "string") {
+        return str;
+      }
+      else {
+        throw new ErrorWrongQueryType();
+      }
+    }
+
+    async function inQuery(cats) {
+      if(Array.isArray(cats)) {
+        return {"$in": cats};
+      }
+      else {
+        throw new ErrorWrongQueryType();
+      }
+    }
+
     const mapping = {
-      issueNumber: (issueNumber) => issueNumber,
+      issueNumber: equalNumber,
       authors: getUserIdsByEmailsQuery,
       editors: getUserIdsByEmailsQuery,
       designers: getUserIdsByEmailsQuery,
       photographers: getUserIdsByEmailsQuery,
-      slug: (slug) => slug,
-      categories: (categories) => ({"$in": categories}),
+      slug: equalString,
+      categories: inQuery,
     };
 
     try {

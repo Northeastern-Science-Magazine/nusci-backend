@@ -280,7 +280,7 @@ describe("Get Article Search", () => {
     expect(response.body.length).toEqual(0);
   });
 
-  test("valid invalid limit - object", async () => {
+  test("invalid authors type", async () => {
     const response = await request(app)
       .get(`/articles/search`)
       .send({authors: "2"});
@@ -290,7 +290,7 @@ describe("Get Article Search", () => {
     expect(response.body.error).toEqual("Invalid query type.");
   });
 
-  test("valid invalid limit - object", async () => {
+  test("invalid number type", async () => {
     const response = await request(app)
       .get(`/articles/search`)
       .send({issueNumber: "five"});
@@ -300,10 +300,20 @@ describe("Get Article Search", () => {
     expect(response.body.error).toEqual("Invalid query type.");
   });
 
-  test("valid invalid limit - object", async () => {
+  test("invalid categories type", async () => {
     const response = await request(app)
       .get(`/articles/search`)
       .send({categories: "five"});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toEqual("Invalid query type.");
+  });
+
+  test("invalid slug type", async () => {
+    const response = await request(app)
+      .get(`/articles/search`)
+      .send({slug: []});
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
