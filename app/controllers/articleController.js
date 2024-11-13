@@ -131,15 +131,17 @@ export default class ArticleController {
 
       // make ArticleAccessor in articleAccessor.js 
       const deletedArticle = await ArticlesAccessor.deleteArticle(slug);
-      console.log(deletedArticle);
+    //  console.log(deletedArticle);
 
-      res.status(204).json(deletedArticle);
+      
 
-      if (!deleteArticle) {
+      // naming of variable was incorrect, causing errors --> FIXED 
+      if (!deletedArticle) {
         console.log("throwing error");
         throw new ErrorArticleNotFound();
       }
 
+      res.status(204).json(deletedArticle);
       console.log("success!");
 
     // res.status(204).json(deletedArticle);

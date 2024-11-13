@@ -1,5 +1,6 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
+import IssueMap from "../models/dbModels/issueMap.js";
 
 /**
  * Articles Accessor Class
@@ -347,8 +348,9 @@ export default class ArticlesAccessor {
       const resp = await Article.deleteOne({ _id: article._id });
       
       console.log("ok");
-      console.log(resp);
+    //  console.log(resp);
      
+     // console.log(article);
       return article;
       }
 

@@ -56,6 +56,7 @@ const ArticleSchema = new Schema(
 
 ArticleSchema.pre('deleteOne', { document: true, query: false }, async function() {
   try {
+    // changed name to IssueMapSchema 
     await mongoose.model('IssueMap').updateMany(
       { articles: this._id },
       { $pull: { articles: this._id } }
