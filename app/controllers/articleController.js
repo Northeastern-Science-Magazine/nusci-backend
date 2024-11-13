@@ -3,7 +3,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorWrongQueryType } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
 import { date } from "../models/apiModels/baseModel.js";
 
 /**
@@ -151,7 +151,7 @@ export default class ArticleController {
   static async search(req, res){
     async function getUserIdsByEmailsQuery(listOfEmails) {
       if(!Array.isArray(listOfEmails)) {
-        throw new ErrorWrongQueryType();
+        throw new ErrorTypeOfQuery();
       }
       // returns ids of the user objects given as a list of emails
       const allUsers = [];
@@ -162,40 +162,40 @@ export default class ArticleController {
         return {"$in": allUsers};
     }
 
-    async function equalNumber(num) {
+    function numberTypeCheck(num) {
       if (!Number.isNaN((Number(num)))) {
         return num;
       }
       else {
-        throw new ErrorWrongQueryType();
+        throw new ErrorTypeOfQuery();
       }
     }
 
-    async function equalString(str) {
+    function stringTypeCheck(str) {
       if(typeof(str) === "string") {
         return str;
       }
       else {
-        throw new ErrorWrongQueryType();
+        throw new ErrorTypeOfQuery();
       }
     }
 
-    async function inQuery(cats) {
+    function inQuery(cats) {
       if(Array.isArray(cats)) {
         return {"$in": cats};
       }
       else {
-        throw new ErrorWrongQueryType();
+        throw new ErrorTypeOfQuery();
       }
     }
 
     const mapping = {
-      issueNumber: equalNumber,
+      issueNumber: numberTypeCheck,
       authors: getUserIdsByEmailsQuery,
       editors: getUserIdsByEmailsQuery,
       designers: getUserIdsByEmailsQuery,
       photographers: getUserIdsByEmailsQuery,
-      slug: equalString,
+      slug: stringTypeCheck,
       categories: inQuery,
     };
 
