@@ -57,9 +57,8 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-
       const updates = new ArticleUpdate(req.body);
-      const authorIds = await UsersAccessor.getUserIdsByUsernames(updates.authors);
+      const authorIds = await UsersAccessor.getUserIdsByMultipleEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
@@ -91,8 +90,8 @@ export default class ArticleController {
   static async addInternalComment(req, res, next) {
     try {
       //comment validation
-      const username = Authorize.getUsername(req);
-      const user = await UsersAccessor.getUserByUsername(username);
+      const email = Authorize.getEmail(req);
+      const user = await UsersAccessor.getUserByEmail(email);
       const userID = user._id;
 
       const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });

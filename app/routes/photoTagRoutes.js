@@ -2,9 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import PhotoTagController from "../controllers/photoTagController.js";
 
-const router = express.Router();
-
-router.use(bodyParser.urlencoded({ extended: false }));
+const photoTag = express.Router();
 
 router.route("/create").post(PhotoTagController.create); //create a phototag
 router.route("/tag-name/:tagName"); //get a tag by its name
