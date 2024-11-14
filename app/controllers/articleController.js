@@ -94,7 +94,7 @@ export default class ArticleController {
       const user = await UsersAccessor.getUserByEmail(email);
       const userID = user._id;
 
-      const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
+      const comment = new InternalCommentCreate({ user: userID, comment:  req.body.comment });
 
       // modify the article with the new comment
       const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);

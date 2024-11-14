@@ -20,6 +20,12 @@ export default class PhotoTagAccessor {
     return createTag;
   }
 
+  static async deletePhotoTag(tag) {
+    await Connection.open();
+    const deletedTag = await PhotoTag.findOneAndDelete(tag).select('-__v').populate("creatingUser");
+    return deletedTag;
+  }
+
   /**
    * Get all tags
    *
