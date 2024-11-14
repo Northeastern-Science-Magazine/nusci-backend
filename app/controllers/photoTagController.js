@@ -1,6 +1,6 @@
 import { PhotoTagCreate, PhotoTagResponse } from "../models/apiModels/photoTag.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
-import { ErrorUnexpected, HttpError } from "../error/errors.js";
+import { ErrorDuplicateKey, ErrorUnexpected, HttpError } from "../error/errors.js";
 
 
 /**
@@ -18,9 +18,15 @@ export default class PhotoTagController {
    */
   static async create(req, res) {
     try {
-      const tagBody = new PhotoTagCreate(req.body);
-      const newTag = await PhotoTagAccessor.createPhotoTag(tagBody);
-      const populatedNewTag = await PhotoTagAccessor.getTagByID(newTag._id);
+      const tagCreate = new PhotoTagCreate(req.body);
+      const tagByName = await PhotoTagAccessor.getTagByName(tagCreate.tagName);
+
+      if (tagByName) {
+        throw new ErrorDuplicateKey();
+      }
+
+      const newTag = await PhotoTagAccessor.createPhotoTag(tagCreate);
+      const populatedNewTag = await PhotoTagAccessor.getTagById(newTag._id);
       const newTagResponse = new PhotoTagResponse(populatedNewTag.toObject());
       
       res.status(201).json(newTagResponse); 

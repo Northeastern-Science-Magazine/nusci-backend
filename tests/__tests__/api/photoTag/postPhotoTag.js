@@ -3,7 +3,14 @@ import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
 import { execSync } from "child_process";
-import { validTag2, validTag, expectedValidTag, expectedValidTag2 } from "../../../testData/photoTagTestData.js";
+import {
+  validTag2,
+  validTag,
+  expectedValidTag,
+  expectedValidTag2,
+  validTag3,
+  expectedValidTag3,
+} from "../../../testData/photoTagTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -50,6 +57,15 @@ describe("Create PhotoTags Test", () => {
     const response = await request(app).post("/photo-tag/create").send(validTag);
     const sameTagName = await request(app).post("/photo-tag/create").send(validTag2);
     showLog && console.log(sameTagName.body);
-    expect(sameTagName.statusCode).toBe(500);
+    expect(sameTagName.statusCode).toBe(409);
+    expect(sameTagName.body).toStrictEqual({ error: "Entry has duplicate key in entry." , message: ""});
+  });
+
+  test("Two tags created successfully by same user", async () => {
+    const tag1 = await request(app).post("/photo-tag/create").send(validTag);
+    const tag2 = await request(app).post("/photo-tag/create").send(validTag3);
+    showLog && console.log(tag1.body) && console.log(tag2.body);
+    expect(tag1.statusCode).toBe(201);
+    expect(tag2.statusCode).toBe(201);
   });
 });

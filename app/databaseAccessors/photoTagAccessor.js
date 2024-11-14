@@ -32,15 +32,14 @@ export default class PhotoTagAccessor {
   }
 
   /**
-   * Find and returns populated tag by its ID
+   * Find and returns populated tag by its Id
    *
    * @param {ObjectID} tagId - The ID of the tag
    * @returns Tag with populated field
    */
-  static async getTagByID(tagId) {
+  static async getTagById(tagId) {
     await Connection.open();
-    const tag = await PhotoTag.getTagByID(tagId).populate("creatingUser");
-    //const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagID)).populate("creatingUser");
+    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagId)).populate("creatingUser");
     return tag;
   }
 
