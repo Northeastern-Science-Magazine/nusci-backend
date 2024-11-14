@@ -117,6 +117,12 @@ export class ErrorUserStatusAlreadyResolved extends HttpError {
   }
 }
 
+export class ErrorDuplicateKey extends HttpError {
+  throwHttp(req, res) {
+    res.status(500).json({ error: "Entry has duplicated unique entry."})
+  }
+}
+
 /**
  * 500 Errors
  *
@@ -132,11 +138,5 @@ export class ErrorDatabaseConnection extends HttpError {
 export class ErrorUnexpected extends HttpError {
   throwHttp(req, res) {
     res.status(500).json({ error: "An unexpected error occurred.", message: this.message });
-  }
-}
-
-export class ErrorUniqueType extends HttpError {
-  throwHttp(req, res) {
-    res.status(500).json({ error: "Entry has duplicated unique entry."})
   }
 }
