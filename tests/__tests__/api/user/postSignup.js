@@ -3,7 +3,7 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
-import { validUserSignup, existingUsernameSignup, existingEmailSignup } from "../../../testData/userTestData.js";
+import { validEmailSignup, existingEmailSignup } from "../../../testData/userTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -25,18 +25,11 @@ beforeEach(async () => {
 
 describe("User Signup Tests", () => {
   test("should signup a new user successfully", async () => {
-    const response = await request(app).post("/user/signup").send(validUserSignup);
+    const response = await request(app).post("/user/signup").send(validEmailSignup);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
     expect(response.body.message).toBe("Signup successful.");
-  });
-
-  test("should not signup with existing username", async () => {
-    const response = await request(app).post("/user/signup").send(existingUsernameSignup);
-
-    showLog && console.log(response.body);
-    expect(response.status).toBe(409);
   });
 
   test("should not signup with existing email", async () => {

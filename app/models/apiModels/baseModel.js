@@ -43,7 +43,6 @@ export class BaseModel {
         delete json[key];
         continue;
       }
-
       // key exists in schema
       let value = json[key];
       const schemaType = schema[key].type;
@@ -132,6 +131,7 @@ export class BaseModel {
     }
   }
 }
+
 
 export class BaseModelUpdate extends BaseModel {
   constructor(json, schema) {
