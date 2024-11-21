@@ -1,5 +1,6 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
+import IssueMap from "../models/dbModels/issueMap.js";
 
 /**
  * Articles Accessor Class
@@ -313,4 +314,37 @@ export default class ArticlesAccessor {
       },
     );
   }
-}
+
+
+
+  static async deleteArticle(slug) {
+    await Connection.open();
+
+    
+
+    const article = await Article.findOne( {slug: slug} );
+    if (article) {
+
+      try {
+      console.log("we found the article");
+
+      //console.log(article);
+
+      const resp = await Article.deleteOne({ _id: article._id });
+      
+      console.log("ok");
+    //  console.log(resp);
+     
+     // console.log(article);
+      return article;
+      }
+
+      catch(e) {
+        console.error("Error in cascading deletion", e);
+        throw e;
+      }
+
+    }
+    
+    }
+  }
