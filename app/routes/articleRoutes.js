@@ -11,10 +11,10 @@ router.route("/create"); //create an article
 
 // filter + get articles by -- maybe find better ways
 // router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
-// router.route("/filter-by-user-and-role"); //get articles by username and role, by query
+// router.route("/filter-by-user-and-role"); //get articles by email and role, by query
 // //etc
 
-router.route("/approved-by/:username"); //get articles approved by the given user
+router.route("/approved-by/:email"); //get articles approved by the given user
 router.route("/slug/:slug"); //get article by its unique slug
 
 router.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
@@ -36,6 +36,8 @@ router.route("/delete/:slug"); //delete an article
 
 router.route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
     .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.addInternalComment);
+router.route("/resolve-internal-comment") // editor or admin can resolve an internal comment
+    .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
 
 router.get("/search/title", ArticlesController.searchByTitle); //fuzzy search an article's title
 router.get("/search/title-and-content", ArticlesController.searchByTitleAndContent); //fuzzy search both an article's title and content

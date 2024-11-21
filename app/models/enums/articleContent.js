@@ -32,16 +32,11 @@ export default class ArticleContent {
    * @returns {ArticleContent}
    */
   static toArticleContent(str) {
-    switch (str.toLowerCase()) {
-      case this.BodyParagraph.type:
-        return this.BodyParagraph;
-      case this.PullQuote.type:
-        return this.PullQuote;
-      case this.Image.type:
-        return this.Image;
-      default:
-        throw new ErrorValidation("Invalid ArticleContent enum given.");
+    const articleContent = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!articleContent) {
+      throw new ErrorValidation("Invalid Article Content enum given.");
     }
+    return articleContent;
   }
 
   /**

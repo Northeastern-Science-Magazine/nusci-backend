@@ -42,18 +42,18 @@ export default class Authorize {
   }
 
   /**
-   * getUsername of the currently logged in user
+   * getEmail of the currently logged in user
    * using the token as auth
    *
    * @param {HTTP REQ} req
-   * @returns {String} String username
+   * @returns {String} Email
    */
-  static getUsername(req) {
+  static getEmail(req) {
     dotenv.config();
     if (req.cookies.token) {
       const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
-        return payload.username;
+        return payload.email;
       } else {
         new ErrorFailedLogin().throwHttp(req, res);
       }
