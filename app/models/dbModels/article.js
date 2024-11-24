@@ -11,7 +11,7 @@ import User from "./user.js";
 const Schema = mongoose.Schema;
 
 //article schema
-const ArticleSchema = new Schema(
+export const ArticleSchema = new Schema(
   {
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },

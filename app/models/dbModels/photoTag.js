@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 //photo tag schema
-const PhotoTagSchema = new Schema(
+export const PhotoTagSchema = new Schema(
   {
     tagName: { type: String, unique: true, required: true },
     color: { type: String, required: true },

@@ -1,6 +1,6 @@
-import schemaData from "./setup.js";
 import Connection from "../app/db/connection.js";
 import { set } from "../app/util/util.js";
+import changed from "./dryRun.js"
 
 const silent = process.argv.includes("--silent") || process.argv.includes("-s");
 
@@ -11,7 +11,7 @@ silent ||
 
 try {
   await Connection.open(silent);
-  await reseed(schemaData);
+  await reseed(changed);
   await Connection.close(silent);
   process.exit();
 } catch (error) {
@@ -21,11 +21,11 @@ try {
 
 /**
  *
- * @param {JSON} setupData
+ * @param {list[JSON]} setupData
  */
 async function reseed(setupData) {
   for (const data of setupData) {
-    await createDocuments(data.schema, data.seed);
+    await createDocuments(data.model, data.seed);
   }
 }
 
@@ -37,6 +37,6 @@ async function reseed(setupData) {
 async function createDocuments(schema, documents) {
   for (const doc of documents) {
     await schema.create(doc);
+    silent || process.stdout.write(`${set(`[+] RESEED ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
   }
-  silent || process.stdout.write(`${set(`[+] RESEED ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
 }

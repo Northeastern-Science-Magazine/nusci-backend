@@ -1,6 +1,6 @@
 import Connection from "../app/db/connection.js";
 import { set } from "../app/util/util.js";
-import schemaData from "./setup.js";
+import changed from "./dryRun.js";
 
 const silent = process.argv.includes("--silent") || process.argv.includes("-s");
 
@@ -13,7 +13,7 @@ const schemas = schemaData.map((data) => data.schema);
 
 try {
   await Connection.open(silent);
-  await dropIfExists(schemas);
+  await dropIfExists(changed);
   await Connection.close(silent);
   process.exit();
 } catch (error) {

@@ -15,6 +15,7 @@
     "reset": "node --no-deprecation setup/drop.js && node --no-deprecation setup/reseed.js",
     "reset-s": "node --no-deprecation setup/drop.js -s && node --no-deprecation setup/reseed.js -s",
     "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
+    "dry-run": "node --no-deprecation setup/dryRun.js",
     "test": "jest"
   },
   "repository": {

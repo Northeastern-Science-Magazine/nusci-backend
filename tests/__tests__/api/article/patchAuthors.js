@@ -26,6 +26,7 @@ afterAll(async () => {
 });
 
 beforeEach(async () => {
+  execSync("npm run dry-run", { stdio: "ignore" });
   execSync("npm run reset-s", { stdio: "ignore" });
 });
 
