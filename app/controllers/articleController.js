@@ -125,12 +125,11 @@ export default class ArticleController {
    */
   static async searchByTitle(req, res) {
     try {
-      console.log("Query1: " + req.query.search);
-      const query = { query: req.query.search };
+      const search = req.query.search;
 
-      console.log("Query: " + query.query);
+      const fields = ["title"];
 
-      const results = await ArticlesAccessor.searchArticles(req.query.search, "title");
+      var results = await ArticlesAccessor.searchArticles(search, fields);
 
       res.status(200).json(results);
     } catch (e) {
@@ -150,36 +149,13 @@ export default class ArticleController {
    */
   static async searchByTitleAndContent(req, res) {
     try {
-      const { query } = req.query.search || "";
-      const titleResults = await ArticlesAccessor.searchArticles(query, "title");
-      const contentResults = await ArticlesAccessor.searchArticles(query, "content");
+      const search = req.query.search;
+      
+      const fields = ["title", "articleContent.content"];
 
-      // merge the two lists
-      const combinedResults = [...titleResults, ...contentResults];
+      var results = await ArticlesAccessor.searchArticles(search, fields);
 
-      // Use a Map to remove duplicates, and retain the max score for that article
-      const resultMap = new Map();
-
-      combinedResults.forEach((result) => {
-        // use _id for key
-        const id = result._id.toString();
-
-        // if article is already in map
-        if (resultMap.has(id)) {
-          // compare scores, keep higher one
-          const existingResult = resultMap.get(id);
-          if (result.score > existingResult.score) {
-            resultMap.set(id, result);
-          }
-        } else {
-          // add article for the first time
-          resultMap.set(id, result);
-        }
-      });
-
-      const finalResults = Array.from(resultMap.values());
-
-      res.status(200).json(finalResults);
+      res.status(200).json(results);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

@@ -310,7 +310,7 @@ export default class ArticlesAccessor {
         $set: {
           "comments.$.commentStatus": "resolved",
         },
-      },
+      }
     );
   }
 
@@ -318,32 +318,25 @@ export default class ArticlesAccessor {
    *
    * Search for articles with the given query and path
    *
-   * @param {*} query the term(s) to search for
-   * @param {*} path the field to search for
+   * @param {*} search the term(s) to search for
+   * @param {*} fields the field to search for
    */
-  static async searchArticles(query, path) {
-    try {
-      console.log("Hi test2");
-      await Connection.open();
-      console.log("Hi test3");
-      const results = await Article.aggregate([
-        {
-          $search: {
-            index: "article_text_index",
-            text: {
-              query: "AI",
-              path: ["title", "articleContent.content"],
-              fuzzy: {},
-            },
+  static async searchArticles(search, fields) {
+    await Connection.open();
+
+    const results = await Article.aggregate([
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: search,
+            path: fields,
+            fuzzy: {},
           },
         },
-      ]);
+      },
+    ]);
 
-      console.log("results:" + results);
-      console.log("Results are empty:", results.length === 0);
-      return results;
-    } catch (e) {
-      console.log("He error:" + e);
-    }
+    return results;
   }
 }
