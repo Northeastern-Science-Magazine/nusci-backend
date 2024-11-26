@@ -22,3 +22,9 @@ export const invalidAuthorsUpdate = {
 
 export const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";
 export const invalidArticleSlug = "invalid-article-slug";
+
+export const validSearchQuery = "AI integration";
+export const validSearchQuery2 = "Sweess";
+export const validSearchQuery3 = "World";
+export const InvalidSearchQuery = "NonexistentTopic";
+export const InvalidSearchQuery2 = "ab23uyrbfvawoiu4grtREf982";
