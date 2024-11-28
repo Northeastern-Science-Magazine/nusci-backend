@@ -1,6 +1,5 @@
 import schemaData from "./setup.js";
-import Connection from "../app/db/connection.js";
-import { set } from "../app/util/util.js";
+import { set } from "../util/util.js";
 
 const silent = process.argv.includes("--silent") || process.argv.includes("-s");
 
@@ -10,9 +9,7 @@ silent ||
   );
 
 try {
-  await Connection.open(silent);
   await reseed(schemaData);
-  await Connection.close(silent);
   process.exit();
 } catch (error) {
   silent || process.stdout.write(set(`Error while reseeding database: ${error}\n`).red);

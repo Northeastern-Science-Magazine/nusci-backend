@@ -1,5 +1,4 @@
-import Connection from "../app/db/connection.js";
-import { set } from "../app/util/util.js";
+import { set } from "../util/util.js";
 import schemaData from "./setup.js";
 
 const silent = process.argv.includes("--silent") || process.argv.includes("-s");
@@ -30,7 +29,8 @@ async function dropIfExists(schemas) {
   for (const schema of schemas) {
     try {
       await schema.collection.deleteMany({});
-      silent || process.stdout.write(`${set(`[-] DELETING RECORDS FROM ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
+      silent ||
+        process.stdout.write(`${set(`[-] DELETING RECORDS FROM ${schema.collection.name}: `).blue}${set("SUCCESSFUL\n").green}`);
     } catch (error) {
       if (error.code === 26) {
         silent ||
