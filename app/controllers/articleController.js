@@ -4,7 +4,6 @@ import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
-import { date } from "../models/apiModels/baseModel.js";
 
 /**
  * ArticleController Class
@@ -148,43 +147,40 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async search(req, res){
+  static async search(req, res) {
     async function getUserIdsByEmailsQuery(listOfEmails) {
-      if(!Array.isArray(listOfEmails)) {
+      if (!Array.isArray(listOfEmails)) {
         throw new ErrorTypeOfQuery();
       }
       // returns ids of the user objects given as a list of emails
       const allUsers = [];
-        for (let i = 0; i < listOfEmails.length; i++) {
-          const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
-          allUsers[i] = user._id;
-        }
-        return {"$in": allUsers};
+      for (let i = 0; i < listOfEmails.length; i++) {
+        const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
+        allUsers[i] = user._id;
+      }
+      return { $in: allUsers };
     }
 
     function numberTypeCheck(num) {
-      if (!Number.isNaN((Number(num)))) {
+      if (!Number.isNaN(Number(num))) {
         return num;
-      }
-      else {
+      } else {
         throw new ErrorTypeOfQuery();
       }
     }
 
     function stringTypeCheck(str) {
-      if(typeof(str) === "string") {
+      if (typeof str === "string") {
         return str;
-      }
-      else {
+      } else {
         throw new ErrorTypeOfQuery();
       }
     }
 
     function inQuery(cats) {
-      if(Array.isArray(cats)) {
-        return {"$in": cats};
-      }
-      else {
+      if (Array.isArray(cats)) {
+        return { $in: cats };
+      } else {
         throw new ErrorTypeOfQuery();
       }
     }
@@ -202,30 +198,28 @@ export default class ArticleController {
     try {
       const query = {};
       var limit;
-      
+
       for (const searchOption of Object.keys(mapping)) {
         if (req.body.hasOwnProperty(searchOption)) {
           query[searchOption] = await mapping[searchOption](req.body[searchOption]);
         }
       }
 
-      if (req.body.hasOwnProperty('before') && req.body.hasOwnProperty('after')) {
-        query.$and = [{approvalTime: {"$gte": req.body.after}}, {approvalTime: {"$lte": req.body.before}}];
-      }
-      else if (req.body.hasOwnProperty('before')) {
-        query.approvalTime = {"$lte": req.body.before};
-      }
-      else if (req.body.hasOwnProperty('after')) {
-        query.approvalTime = {"$gte": req.body.after};
+      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
+        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
+      } else if (req.body.hasOwnProperty("before")) {
+        query.approvalTime = { $lte: req.body.before };
+      } else if (req.body.hasOwnProperty("after")) {
+        query.approvalTime = { $gte: req.body.after };
       }
 
-      // limits are not a part of query, thus handled separately      
-      if (req.body.hasOwnProperty('limit')) {
+      // limits are not a part of query, thus handled separately
+      if (req.body.hasOwnProperty("limit")) {
         limit = Number(req.body.limit);
       }
-      
+
       // access the database and retrieve the matching articles
-      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit); 
+      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
       res.status(200).json(matchingArticles);
     } catch (e) {
       if (e instanceof HttpError) {
