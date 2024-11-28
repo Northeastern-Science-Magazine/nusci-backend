@@ -1,14 +1,11 @@
 import express from "express";
-import bodyParser from "body-parser";
 
-const router = express.Router();
+const photoTag = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
+photoTag.route("/create"); //create a phototag
+photoTag.route("/tag-name/:tagName"); //get a tag by its name
+photoTag.route("/filter"); //get photo tags by colors, creating users
+photoTag.route("/update/:tagName"); //update a photo tag
+photoTag.route("/delete/:tagName"); //delete a photo tag
 
-router.route("/create"); //create a phototag
-router.route("/tag-name/:tagName"); //get a tag by its name
-router.route("/filter"); //get photo tags by colors, creating users
-router.route("/update/:tagName"); //update a photo tag
-router.route("/delete/:tagName"); //delete a photo tag
-
-export default router;
+export default photoTag;

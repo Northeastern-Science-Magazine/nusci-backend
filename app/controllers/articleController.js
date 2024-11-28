@@ -139,4 +139,95 @@ export default class ArticleController {
       }
     }
   }
+  /**
+   * search Method
+   *
+   * This method searches and returns all articles matching the given params
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async search(req, res) {
+    async function getUserIdsByEmailsQuery(listOfEmails) {
+      if (!Array.isArray(listOfEmails)) {
+        throw new ErrorTypeOfQuery();
+      }
+      // returns ids of the user objects given as a list of emails
+      const allUsers = [];
+      for (let i = 0; i < listOfEmails.length; i++) {
+        const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
+        allUsers[i] = user._id;
+      }
+      return { $in: allUsers };
+    }
+
+    function numberTypeCheck(num) {
+      if (!Number.isNaN(Number(num))) {
+        return num;
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    function stringTypeCheck(str) {
+      if (typeof str === "string") {
+        return str;
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    function inQuery(cats) {
+      if (Array.isArray(cats)) {
+        return { $in: cats };
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    const mapping = {
+      issueNumber: numberTypeCheck,
+      authors: getUserIdsByEmailsQuery,
+      editors: getUserIdsByEmailsQuery,
+      designers: getUserIdsByEmailsQuery,
+      photographers: getUserIdsByEmailsQuery,
+      slug: stringTypeCheck,
+      categories: inQuery,
+    };
+
+    try {
+      const query = {};
+      var limit;
+
+      for (const searchOption of Object.keys(mapping)) {
+        if (req.body.hasOwnProperty(searchOption)) {
+          query[searchOption] = await mapping[searchOption](req.body[searchOption]);
+        }
+      }
+
+      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
+        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
+      } else if (req.body.hasOwnProperty("before")) {
+        query.approvalTime = { $lte: req.body.before };
+      } else if (req.body.hasOwnProperty("after")) {
+        query.approvalTime = { $gte: req.body.after };
+      }
+
+      // limits are not a part of query, thus handled separately
+      if (req.body.hasOwnProperty("limit")) {
+        limit = Number(req.body.limit);
+      }
+
+      // access the database and retrieve the matching articles
+      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
+      res.status(200).json(matchingArticles);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
 }

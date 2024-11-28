@@ -313,4 +313,23 @@ export default class ArticlesAccessor {
       },
     );
   }
+
+  /**
+   * searchArticles method
+   *
+   * This method finds all articles that match the search query
+   *
+   * @param {query} json object of query we want
+   * @param {limit} numerical limit to the number of elements to return
+   */
+  static async searchArticles(query, limit) {
+    await Connection.open();
+    if (limit <= 0) {
+      return [];
+    }
+    else {
+      return await Article.find(query).limit(limit);
+    }
+
+  }
 }
