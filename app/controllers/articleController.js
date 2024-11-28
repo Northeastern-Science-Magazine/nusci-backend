@@ -3,7 +3,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
