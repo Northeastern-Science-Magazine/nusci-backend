@@ -1,0 +1,16 @@
+{
+  "name": "testing",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Ethan Szeto & Raisa Bhuiyan",
+  "license": "MIT",
+  "description": "",
+  "dependencies": {
+    "jest": "^29.7.0",
+    "mongoose": "^8.8.3"
+  }
+}
