@@ -3,7 +3,7 @@ import app from "../../../../app/app.js";
 import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
 import { execSync } from "child_process";
-import { validTag2, validTag, expectedValidTag, expectedValidTag2 } from "../../../testData/photoTagTestData.js";
+import { validTag } from "../../../testData/photoTagTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -29,9 +29,19 @@ describe("Delete PhotoTags Test", () => {
     showLog && console.log(existingTag.body);
     expect(existingTag.statusCode).toBe(201);
     const deleteTag = await request(app).delete("/photo-tag/delete/Clouds");
-    console.log(deleteTag.body);
+    showLog && console.log(deleteTag.body);
+    expect(existingTag.body).toStrictEqual(deleteTag.body);
     expect(deleteTag.statusCode).toBe(200);
+    //create same tag as before and should work without problem
+    const newTag = await request(app).post("/photo-tag/create").send(validTag);
+    expect(newTag.statusCode).toBe(201);
   });
 
-  test("Nonexistent tag cannot be deleted", async () => {});
+  test("Nonexistent tag cannot be deleted", async () => {
+    const deleteNonexistentTag = await request(app).delete("/photo-tag/delete/Clouds");
+    showLog && console.log(deleteNonexistentTag.body);
+    expect(deleteNonexistentTag.statusCode).toBe(404);
+    expect(deleteNonexistentTag.body).toStrictEqual({  error: 'Photo Tag with the specified tag name is not found.',
+      message: "" });
+  });
 });
