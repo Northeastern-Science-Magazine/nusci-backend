@@ -39,7 +39,13 @@ export default class PhotoTagController {
     }
   }
 
-  static async delete(req, res) {
+/**
+ * Deletes a PhotoTag given the tagName within the url param
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+static async delete(req, res) {
     try {
       const tagName = req.params.tagName;
       const tag = await PhotoTagAccessor.getTagByName(tagName);

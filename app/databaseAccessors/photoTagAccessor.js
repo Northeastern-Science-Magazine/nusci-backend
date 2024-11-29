@@ -19,10 +19,16 @@ export default class PhotoTagAccessor {
     const createTag = await PhotoTag.create(tag);
     return createTag;
   }
-
-  static async deletePhotoTag(tag) {
+  
+/**
+ * finds and deletes a photo tag
+ *
+ * @param {Object} tag - a PhotoTag object
+ * @return the deleted PhotoTag object
+ */
+static async deletePhotoTag(tag) {
     await Connection.open();
-    const deletedTag = await PhotoTag.findOneAndDelete(tag).select('-__v').populate("creatingUser");
+    const deletedTag = await PhotoTag.findOneAndDelete(tag).populate("creatingUser");
     return deletedTag;
   }
 
