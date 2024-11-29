@@ -11,6 +11,10 @@ const config = {
       functions: 50.49,
     },
   },
+  moduleNameMapper: {
+    "^../db/connection.js$": "<rootDir>/tests/util/mockConnection.js",
+  },
+  rootDir: "./",
 };
 
 module.exports = config;
