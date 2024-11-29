@@ -99,6 +99,12 @@ export class ErrorIssueMapNotFound extends HttpError {
   }
 }
 
+export class ErrorTagNameNotFound extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Photo Tag with the specified tag name is not found.", message: this.message });
+  }
+}
+
 /**
  * 409 Errors
  *
@@ -120,6 +126,12 @@ export class ErrorUserAlreadyExists extends HttpError {
 export class ErrorUserStatusAlreadyResolved extends HttpError {
   throwHttp(req, res) {
     res.status(409).json({ error: "User's status is already resolved.", message: this.message });
+  }
+}
+
+export class ErrorDuplicateKey extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Entry has duplicate key in entry.", message: this.message });
   }
 }
 
