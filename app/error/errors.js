@@ -51,6 +51,12 @@ export class ErrorValidation extends HttpError {
   }
 }
 
+export class ErrorTypeOfQuery extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({error: "Invalid query type.", message: this.message});
+  }
+}
+
 /**
  * 403 Errors
  *
