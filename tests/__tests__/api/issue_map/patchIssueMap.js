@@ -2,13 +2,11 @@ import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
 import Category from "../../../../app/models/enums/categories.js";
-import {
-    validArticleSlug,
-    validSectionName,
-  } from "../../../testData/issueMapTestData.js";
+import { validArticleSlug, validSectionName, validEmail } from "../../../testData/issueMapTestData.js";
 import Connection from "../../../../app/db/connection.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
+import ArticlesAccessor from "../../../../app/databaseAccessors/articleAccessor.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -28,21 +26,21 @@ beforeEach(async () => {
 describe("create and add article to issue map", () => {
   test("Invalid article creation due to invalid issue number", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: -1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: ["existinguser@example.com"],
-        designers: ["existinguser@example.com"],
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: "Article 1",
+      issueNumber: -1,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
-    showLog && console.log(response);
+    console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
     expect(errorMessage).toStrictEqual("Invalid request body.");
@@ -50,21 +48,21 @@ describe("create and add article to issue map", () => {
 
   test("Invalid article creation due to invalid authors email", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: -1,
-        editors: ["existinguser@example.com"],
-        designers: ["existinguser@example.com"],
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: validArticleSlug,
+      issueNumber: 1,
+      pageLength: 3,
+      authors: ["invalid@email.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
-    showLog && console.log(response);
+    console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
     expect(errorMessage).toStrictEqual("Invalid request body.");
@@ -72,19 +70,19 @@ describe("create and add article to issue map", () => {
 
   test("Invalid article creation due to invalid editors email", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: -1,
-        designers: ["existinguser@example.com"],
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: validArticleSlug,
+      issueNumber: 1,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com", "invalid@email.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
     showLog && console.log(response);
     expect(response.status).toBe(404);
@@ -94,19 +92,19 @@ describe("create and add article to issue map", () => {
 
   test("Invalid article creation due to invalid designers email", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: ["existinguser@example.com"],
-        designers: -1,
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: validArticleSlug,
+      issueNumber: 1,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["invalid@email.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
     showLog && console.log(response);
     expect(response.status).toBe(404);
@@ -114,21 +112,21 @@ describe("create and add article to issue map", () => {
     expect(errorMessage).toStrictEqual("Invalid request body.");
   });
 
-  test("Invalid article removal due to invalid photographers email", async () => {
+  test("Invalid article addition due to invalid photographers email", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: ["existinguser@example.com"],
-        designers: ["existinguser@example.com"],
-        photographers: -1,
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: validArticleSlug,
+      issueNumber: 1,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["invalid@email.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
     showLog && console.log(response);
     expect(response.status).toBe(404);
@@ -138,19 +136,19 @@ describe("create and add article to issue map", () => {
 
   test("Invalid article addition due to article slug already existed", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: ["existinguser@example.com"],
-        designers: ["existinguser@example.com"],
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: validArticleSlug,
+      issueNumber: 1,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
     showLog && console.log(response);
     expect(response.status).toBe(404);
@@ -160,45 +158,55 @@ describe("create and add article to issue map", () => {
 
   test("should create and add article to issue map successfully with missing authors/editors/designers/photographers", async () => {
     const requestBody = {
-        articleSlug: "New article",
-        issueNumber: 2,
-        pageLength: 5,
+      articleSlug: "New article",
+      issueNumber: 2,
+      pageLength: 5,
     };
 
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.articles).toContain(createdArticleID);
+    const createdArticleID = response.body.articles.at(-1);
+    const article = await ArticlesAccessor.getArticle(createdArticleID);
+    console.log(article);
+    expect(article.issueNumber).toStrictEqual(requestBody.issueNumber);
+    expect(article.slug).toStrictEqual(requestBody.articleSlug);
   });
 
-  test("should create and add article to issue map successfully", async () => {
-
+  test("should create and add article to issue map successfully with authos/editors/designers/photographers given", async () => {
     const requestBody = {
-        articleSlug: validArticleSlug,
-        issueNumber: 1,
-        pageLength: 3,
-        authors: ["existinguser@example.com"],
-        editors: ["existinguser@example.com"],
-        designers: ["existinguser@example.com"],
-        photographers: ["existinguser@example.com"],
-        section: validSectionName,
-        categories: Category.Biology
+      articleSlug: "Another new article",
+      issueNumber: 2,
+      pageLength: 3,
+      authors: ["ethan@ethan.com"],
+      editors: ["ethan@ethan.com"],
+      designers: ["ethan@ethan.com"],
+      photographers: ["ethan@ethan.com"],
+      section: validSectionName,
+      categories: "biology",
     };
 
     const response = await request(app)
       .patch(`/issue-map/add-and-create-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
-    showLog && console.log(response.body);
     console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.articles).toContain(createdArticleID);
+
+    const sectionIndex = response.body.sections.findIndex((sec) => sec.sectionName === validSectionName);
+
+    const createdArticleID = response.body.sections[sectionIndex].articles.at(-1);
+    console.log(response.body.sections[sectionIndex]);
+
+    const article = await ArticlesAccessor.getArticle(createdArticleID);
+    console.log(article);
+
+    expect(article.issueNumber).toStrictEqual(requestBody.issueNumber);
+    expect(article.slug).toStrictEqual(requestBody.articleSlug);
   });
 });
-
-
