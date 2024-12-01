@@ -11,7 +11,6 @@ import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
 import Article from "../models/dbModels/article.js";
-import IssueMap from "../models/dbModels/article.js";
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 
@@ -33,7 +32,6 @@ export default class IssueMapController {
    */
   static async addAndCreateArticle(req, res) {
     try {
-      console.log("Request Body:", req.body);
       const {
         articleSlug,
         issueNumber,
@@ -92,16 +90,11 @@ export default class IssueMapController {
       };
 
       const createdArticle = await Article.create(newArticle);
-      console.log("Article Created:", createdArticle);
-
       const issueMap = await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber);
 
       if (!issueMap) {
-        console.error(`Issue Map for issueNumber ${issueNumber} not found.`);
         throw new ErrorIssueMapNotFound();
       }
-
-      console.log("Fetched Issue Map:", issueMap);
 
       if (section) {
         const sectionIndex = issueMap.sections.findIndex((sec) => sec.sectionName === section);
@@ -109,7 +102,6 @@ export default class IssueMapController {
         if (sectionIndex >= 0) {
           issueMap.sections[sectionIndex].articles.push(createdArticle._id);
         } else {
-          console.error("Section Not Found");
           throw new ErrorSectionNotFound();
         }
       } else {
@@ -119,10 +111,8 @@ export default class IssueMapController {
       issueMap.modificationTime = new Date();
       await issueMap.save();
 
-      console.log("Issue Map Updated and Saved");
       return res.status(200).json(issueMap);
     } catch (e) {
-      console.error("Error Occurred:", e.message);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {

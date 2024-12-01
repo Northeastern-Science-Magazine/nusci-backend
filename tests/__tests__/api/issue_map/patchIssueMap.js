@@ -1,8 +1,7 @@
 import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
-import Category from "../../../../app/models/enums/categories.js";
-import { validArticleSlug, validSectionName, validEmail } from "../../../testData/issueMapTestData.js";
+import { validArticleSlug, validSectionName} from "../../../testData/issueMapTestData.js";
 import Connection from "../../../../app/db/connection.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
@@ -170,11 +169,16 @@ describe("create and add article to issue map", () => {
 
     console.log(response.body);
     expect(response.status).toBe(200);
+
     const createdArticleID = response.body.articles.at(-1);
     const article = await ArticlesAccessor.getArticle(createdArticleID);
-    console.log(article);
+
     expect(article.issueNumber).toStrictEqual(requestBody.issueNumber);
     expect(article.slug).toStrictEqual(requestBody.articleSlug);
+    expect(article.articleStatus).toStrictEqual("print");
+    expect(article.designStatus).toStrictEqual("needs_designer");
+    expect(article.photographyStatus).toStrictEqual("needs_photographer");
+    expect(article.writingStatus).toStrictEqual("needs_editor");
   });
 
   test("should create and add article to issue map successfully with authos/editors/designers/photographers given", async () => {
@@ -199,14 +203,13 @@ describe("create and add article to issue map", () => {
     expect(response.status).toBe(200);
 
     const sectionIndex = response.body.sections.findIndex((sec) => sec.sectionName === validSectionName);
-
     const createdArticleID = response.body.sections[sectionIndex].articles.at(-1);
-    console.log(response.body.sections[sectionIndex]);
-
     const article = await ArticlesAccessor.getArticle(createdArticleID);
-    console.log(article);
 
     expect(article.issueNumber).toStrictEqual(requestBody.issueNumber);
     expect(article.slug).toStrictEqual(requestBody.articleSlug);
+    expect(article.designStatus).toStrictEqual("has_designer");
+    expect(article.photographyStatus).toStrictEqual("photographer_assigned");
+    expect(article.writingStatus).toStrictEqual("has_editor");
   });
 });
