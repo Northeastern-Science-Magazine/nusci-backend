@@ -1,4 +1,4 @@
-import IssueMap from "../models/issue_map.js";
+import IssueMap from "../models/dbModels/issueMap.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
@@ -78,6 +78,12 @@ export default class IssueMapAccessor {
     await Connection.open();
     const issues = await IssueMap.find({ pages: { $gte: min, $lte: max } });
     return issues;
+  }
+
+  static async getIssueMapByIssueNumber(issueNumber) {
+    await Connection.open();
+    const issueMap = await IssueMap.findOne({ issueNumber });
+    return issueMap;
   }
 
   /**

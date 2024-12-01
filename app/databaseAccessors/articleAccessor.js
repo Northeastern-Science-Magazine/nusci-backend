@@ -17,7 +17,7 @@ export default class ArticlesAccessor {
    */
   static async getArticle(articleId) {
     await Connection.open();
-    const article = await Article.findBy({ _id: articleId });
+    const article = await Article.findById({ _id: articleId });
     return article;
   }
 
