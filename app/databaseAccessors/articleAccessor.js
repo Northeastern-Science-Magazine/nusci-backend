@@ -321,7 +321,7 @@ export default class ArticlesAccessor {
    * @param {*} search the term(s) to search for
    * @param {*} fields the field to search for
    */
-  static async searchArticles(search, fields) {
+  static async fuzzySearchArticles(search, fields) {
     await Connection.open();
 
     const results = await Article.aggregate([
@@ -338,5 +338,22 @@ export default class ArticlesAccessor {
     ]);
 
     return results;
+  }
+
+  /**
+   * searchArticles method
+   *
+   * This method finds all articles that match the search query
+   *
+   * @param {query} json object of query we want
+   * @param {limit} numerical limit to the number of elements to return
+   */
+  static async searchArticles(query, limit) {
+    await Connection.open();
+    if (limit <= 0) {
+      return [];
+    } else {
+      return await Article.find(query).limit(limit);
+    }
   }
 }

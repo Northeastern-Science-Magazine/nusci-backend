@@ -13,6 +13,7 @@ articles.route("/create"); //create an article
 // router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
 // router.route("/filter-by-user-and-role"); //get articles by email and role, by query
 // //etc
+articles.route("/search").get(ArticlesController.search);
 
 articles.route("/approved-by/:email"); //get articles approved by the given user
 articles.route("/slug/:slug"); //get article by its unique slug
