@@ -39,7 +39,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -56,7 +56,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -73,7 +73,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -90,7 +90,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -106,7 +106,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -115,12 +115,11 @@ describe("Remove article from issue map", () => {
   });
 
   test("Invalid removal of article due to empty request body", async () => {
-    const requestBody = {
-    };
+    const requestBody = {};
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -136,7 +135,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);
@@ -152,7 +151,7 @@ describe("Remove article from issue map", () => {
 
     const response = await request(app)
       .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
     showLog && console.log(response);

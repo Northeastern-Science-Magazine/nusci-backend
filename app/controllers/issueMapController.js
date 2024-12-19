@@ -1,6 +1,5 @@
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import { ErrorInvalidRequestBody, ErrorUnexpected, HttpError } from "../error/errors.js";
-import { IssueMapResponse } from "../models/apiModels/issueMap.js";
 
 /**
  * IssueMapController Class
@@ -27,7 +26,6 @@ export default class IssueMapController {
       }
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
-
       res.status(200).json(updatedIssue);
     } catch (e) {
       if (e instanceof HttpError) {

@@ -2,8 +2,7 @@ import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, HttpError } from "../error/errors.js";
-
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -137,23 +136,23 @@ export default class IssueMapAccessor {
       throw new ErrorArticleNotFound();
     }
 
-    const existingIssue = await IssueMap.findOne({ 
-      issueNumber: issueNumber, 
-      articles: article._id 
+    const existingIssue = await IssueMap.findOne({
+      issueNumber: issueNumber,
+      articles: article._id,
     });
-  
+
     //article slug exists, but not in this issue
     if (!existingIssue) {
-      throw new ErrorInvalidArticleAndIssueCombination(); 
+      throw new ErrorInvalidArticleAndIssueCombination();
     }
 
     //remove the article from the issue using object id
     const updatedIssue = await IssueMap.findOneAndUpdate(
       { issueNumber: issueNumber },
-      { $pull: { articles: article._id } }, 
-      { new: true } 
+      { $pull: { articles: article._id } },
+      { new: true }
     );
-    
+
     return updatedIssue;
   }
 }
