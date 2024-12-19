@@ -18,9 +18,14 @@ export const log = {
       putResolveUser: false,
     },
     article: {},
-    issueMap: {},
+    issueMap: {
+      patchRemoveArticle: false,
+      patchCreateAddArticleToMap: false,
+    },
     photo: {},
-    photoTag: {},
+    photoTag: {
+      postCreatePhotoTag: false,
+    },
   },
   integration: {
     user: {

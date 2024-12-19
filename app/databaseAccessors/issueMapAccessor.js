@@ -1,6 +1,8 @@
-import IssueMap from "../models/issue_map.js";
+import IssueMap from "../models/dbModels/issueMap.js";
+import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -80,6 +82,12 @@ export default class IssueMapAccessor {
     return issues;
   }
 
+  static async getIssueMapByIssueNumber(issueNumber) {
+    await Connection.open();
+    const issueMap = await IssueMap.findOne({ issueNumber });
+    return issueMap;
+  }
+
   /**
    * Find issues by user
    *
@@ -116,5 +124,41 @@ export default class IssueMapAccessor {
     await Connection.open();
     const issues = await IssueMap.find({ modificationTime: { $gte: start, $lte: end } });
     return issues;
+  }
+
+  /**
+   * Find and remove article from given issue
+   *
+   * @param {Number} issueNumber - Issue number to remove from
+   * @param {String} articleSlug - Article slug to remove
+   * @returns the updated issues
+   */
+  static async removeArticleFromIssue(issueNumber, articleSlug) {
+    await Connection.open();
+
+    //get article needed to remove
+    const article = await Article.findOne({ slug: articleSlug });
+    if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    const existingIssue = await IssueMap.findOne({
+      issueNumber: issueNumber,
+      articles: article._id,
+    });
+
+    //article slug exists, but not in this issue
+    if (!existingIssue) {
+      throw new ErrorInvalidArticleAndIssueCombination();
+    }
+
+    //remove the article from the issue using object id
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { issueNumber: issueNumber },
+      { $pull: { articles: article._id } },
+      { new: true }
+    );
+
+    return updatedIssue;
   }
 }

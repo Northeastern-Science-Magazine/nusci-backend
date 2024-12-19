@@ -42,4 +42,7 @@ articles
   .route("/resolve-internal-comment") // editor or admin can resolve an internal comment
   .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
 
+articles.get("/search/title", ArticlesController.searchByTitle); //fuzzy search an article's title
+articles.get("/search/title-and-content", ArticlesController.searchByTitleAndContent); //fuzzy search both an article's title and content
+
 export default articles;

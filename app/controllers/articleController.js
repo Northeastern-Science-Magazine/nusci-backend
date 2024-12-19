@@ -79,6 +79,7 @@ export default class ArticleController {
       }
     }
   }
+
   /**
    * addInternalComment Method
    *
@@ -108,6 +109,54 @@ export default class ArticleController {
 
       //return updated article with new comment
       res.status(201).json(finalArticle);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitle(req, res) {
+    try {
+      const search = req.query.search;
+
+      const fields = ["title"];
+
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
+
+      res.status(200).json(results);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title and content
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitleAndContent(req, res) {
+    try {
+      const search = req.query.search;
+
+      const fields = ["title", "articleContent.content"];
+
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
+
+      res.status(200).json(results);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
