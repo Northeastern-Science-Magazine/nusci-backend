@@ -24,6 +24,8 @@ jobs:
           MONGODB_INITDB_ROOT_PASSWORD=${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}
           MONGODB_INITDB_HOSTNAME=${{ vars.MONGODB_INITDB_HOSTNAME }}
           MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
+          MONGODB_CONNECTION_STRING=${{ vars.MONGODB_CONNECTION_STRING }}
+          MONGODB_TEST_CONNECTION_STRING=${{ vars.MONGODB_TEST_CONNECTION_STRING }}
           EOF
 
       # Step 3: Build and Start Docker Compose with secrets as environment variables
