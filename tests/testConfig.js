@@ -6,6 +6,7 @@ export const log = {
       patchResolveComment: false,
       patchStatus: false,
       postCommentCreate: false,
+      getSearch: false,
     },
     default: {
       default: false,
@@ -17,7 +18,9 @@ export const log = {
       putResolveUser: false,
     },
     article: {},
-    issueMap: {},
+    issueMap: {
+      patchRemoveArticle: false,
+    },
     photo: {},
     photoTag: {},
   },
