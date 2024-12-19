@@ -20,6 +20,7 @@ export const log = {
     article: {},
     issueMap: {
       patchRemoveArticle: false,
+      patchCreateAddArticleToMap: false,
     },
     photo: {},
     photoTag: {

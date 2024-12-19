@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
-import { validArticleSlug, validSectionName} from "../../../testData/issueMapTestData.js";
+import { validArticleSlug, validSectionName } from "../../../testData/issueMapTestData.js";
 import Connection from "../../../../app/db/connection.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
@@ -39,7 +39,7 @@ describe("create and add article to issue map", () => {
       .patch(`/issue-map/add-and-create-article`)
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
-    console.log(response);
+    showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
     expect(errorMessage).toStrictEqual("Invalid request body.");
@@ -61,7 +61,7 @@ describe("create and add article to issue map", () => {
       .patch(`/issue-map/add-and-create-article`)
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
-    console.log(response);
+    showLog && console.log(response);
     expect(response.status).toBe(404);
     const errorMessage = JSON.parse(response.text).error;
     expect(errorMessage).toStrictEqual("Invalid request body.");
@@ -167,7 +167,7 @@ describe("create and add article to issue map", () => {
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
-    console.log(response.body);
+    showLog && console.log(response);
     expect(response.status).toBe(200);
 
     const createdArticleID = response.body.articles.at(-1);
@@ -199,7 +199,7 @@ describe("create and add article to issue map", () => {
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(requestBody);
 
-    console.log(response.body);
+    showLog && console.log(response);
     expect(response.status).toBe(200);
 
     const sectionIndex = response.body.sections.findIndex((sec) => sec.sectionName === validSectionName);
