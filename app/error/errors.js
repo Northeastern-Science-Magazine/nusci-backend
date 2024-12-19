@@ -136,6 +136,12 @@ export class ErrorUserStatusAlreadyResolved extends HttpError {
   }
 }
 
+export class ErrorDuplicateKey extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Entry has duplicate key in entry.", message: this.message });
+  }
+}
+
 /**
  * 500 Errors
  *
