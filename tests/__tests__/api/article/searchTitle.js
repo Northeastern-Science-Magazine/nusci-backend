@@ -1,23 +1,24 @@
 // searchArticles.test.js
 import request from "supertest";
 import app from "../../../../app/app.js";
-import { validSearchQuery, validSearchQuery2, validSearchQuery3, InvalidSearchQuery, InvalidSearchQuery2 } from "../../../testData/articleTestData.js";
-import Connection from "../../../../app/db/connection.js";
+import {
+  validSearchQuery,
+  validSearchQuery2,
+  validSearchQuery3,
+  InvalidSearchQuery,
+  InvalidSearchQuery2,
+} from "../../../testData/articleTestData.js";
 import { log } from "../../../testConfig.js";
+import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
   .replace(".js", "")
   .split(/[/\\]/)
   .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
   .reduce((acc, key) => acc && acc[key], log);
-
-beforeAll(async () => {
-  await Connection.open(true);
-});
-
-afterAll(async () => {
-  await Connection.close(true);
-});
+beforeEach(injectMockConnection);
+beforeEach(executeReset);
+afterAll(closeMockConnection);
 
 /*
 These tests pass only when using the cdi tool to connect to the remote atlas database
