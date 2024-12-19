@@ -14,11 +14,11 @@ jobs:
       - uses: actions/checkout@v4
 
       # Step 2: Set up Docker manually (Docker is already pre-installed on ubuntu-latest)
-      - name: Install Docker
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker
-          sudo apt-get install -y docker-compose
+      # - name: Install Docker
+      #   run: |
+      #     sudo apt-get update
+      #     sudo apt-get install -y docker
+      #     sudo apt-get install -y docker-compose
 
       # Step 3: Build and Start Docker Compose with secrets as environment variables
       - name: Build Docker Compose Project
