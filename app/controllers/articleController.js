@@ -130,7 +130,7 @@ export default class ArticleController {
 
       const fields = ["title"];
 
-      var results = await ArticlesAccessor.searchArticles(search, fields);
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
 
       res.status(200).json(results);
     } catch (e) {
@@ -151,10 +151,10 @@ export default class ArticleController {
   static async searchByTitleAndContent(req, res) {
     try {
       const search = req.query.search;
-      
+
       const fields = ["title", "articleContent.content"];
 
-      var results = await ArticlesAccessor.searchArticles(search, fields);
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
 
       res.status(200).json(results);
     } catch (e) {
