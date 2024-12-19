@@ -1,4 +1,4 @@
-import { BaseModel, string, date, now } from "./base_model.js";
+import { BaseModel, string, date, now } from "./baseModel.js";
 import { UserPublicResponse } from "./user.js";
 
 export class PhotoTagCreate extends BaseModel {
