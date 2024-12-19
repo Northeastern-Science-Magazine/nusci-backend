@@ -53,6 +53,10 @@ const ArticleSchema = new Schema(
     collection: "articles",
   }
 );
+
+// Add a text index for title and articleContent.content
+ArticleSchema.index({ title: "text", "articleContent.content": "text" }, { name: "article_text_index" });
+
 const db = mongoose.connection.useDb("articles");
 const Article = db.model("Articles", ArticleSchema);
 

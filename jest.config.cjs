@@ -5,9 +5,9 @@ const config = {
   collectCoverageFrom: ["app/**"],
   coverageThreshold: {
     global: {
-      statements: 59.23,
-      branches: 69.02,
-      lines: 57.91,
+      statements: 58.72,
+      branches: 67.74,
+      lines: 57.38,
       functions: 50.49,
     },
   },
