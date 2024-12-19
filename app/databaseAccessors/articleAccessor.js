@@ -310,8 +310,34 @@ export default class ArticlesAccessor {
         $set: {
           "comments.$.commentStatus": "resolved",
         },
-      },
+      }
     );
+  }
+
+  /**
+   *
+   * Search for articles with the given query and path
+   *
+   * @param {*} search the term(s) to search for
+   * @param {*} fields the field to search for
+   */
+  static async fuzzySearchArticles(search, fields) {
+    await Connection.open();
+
+    const results = await Article.aggregate([
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: search,
+            path: fields,
+            fuzzy: {},
+          },
+        },
+      },
+    ]);
+
+    return results;
   }
 
   /**
@@ -326,10 +352,8 @@ export default class ArticlesAccessor {
     await Connection.open();
     if (limit <= 0) {
       return [];
-    }
-    else {
+    } else {
       return await Article.find(query).limit(limit);
     }
-
   }
 }
