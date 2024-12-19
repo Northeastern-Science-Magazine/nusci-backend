@@ -22,7 +22,9 @@ export const log = {
       patchRemoveArticle: false,
     },
     photo: {},
-    photoTag: {},
+    photoTag: {
+      postCreatePhotoTag: false,
+    },
   },
   integration: {
     user: {
