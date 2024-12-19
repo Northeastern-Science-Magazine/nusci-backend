@@ -35,18 +35,11 @@ export default class PhotographyStatus {
    * @returns {PhotographyStatus}
    */
   static toPhotographyStatus(str) {
-    switch (str.toLowerCase()) {
-      case this.No_Photo.status:
-        return this.No_Photo;
-      case this.Needs_Photographer.status:
-        return this.Needs_Photographer;
-      case this.Photographer_Assigned.status:
-        return this.Photographer_Assigned;
-      case this.Photo_Complete.status:
-        return this.Photo_Complete;
-      default:
-        throw new ErrorValidation("Invalid PhotographyStatus enum given.");
+    const photographyStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    if (!photographyStatus) {
+      throw new ErrorValidation("Invalid Photography Status enum given.");
     }
+    return photographyStatus;
   }
 
   /**

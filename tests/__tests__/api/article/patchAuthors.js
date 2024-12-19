@@ -33,18 +33,18 @@ describe("Update Article Authors", () => {
   test("should update article authors successfully", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validAuthorsUpdate);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect({ authors: response.body.authors.map((author) => author.username) }).toEqual(validAuthorsUpdate);
+    expect({ authors: response.body.authors.map((author) => author.email) }).toEqual(validAuthorsUpdate);
   });
 
   test("should update article authors to an empty list", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(emptyAuthorsUpdate);
 
     showLog && console.log(response.body);
@@ -55,7 +55,7 @@ describe("Update Article Authors", () => {
   test("should fail to update article authors due to invalid author username", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
-      .set("Cookie", [`token=${tokens.ethan}`])
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(invalidAuthorsUpdate);
 
     showLog && console.log(response.body);

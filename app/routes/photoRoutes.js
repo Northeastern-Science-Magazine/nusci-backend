@@ -1,17 +1,13 @@
 import express from "express";
-import bodyParser from "body-parser";
 
+const photo = express.Router();
 
-const router = express.Router();
+photo.route("/upload"); //upload a photo
 
-router.use(bodyParser.urlencoded({ extended: false }));
+photo.route("/add-tag/:url"); //add a tag to this photo (maybe do it by id?)
+photo.route("/filter"); //filter by tags, photographer etc
+photo.route("/:url"); //get a photo by its url
 
-router.route("/upload"); //upload a photo
+photo.route("/photographers/:url"); //update the list of photographers for the photo
 
-router.route("/add-tag/:url"); //add a tag to this photo (maybe do it by id?)
-router.route("/filter"); //filter by tags, photographer etc
-router.route("/:url"); //get a photo by its url
-
-router.route("/photographers/:url"); //update the list of photographers for the photo
-
-export default router;
+export default photo;
