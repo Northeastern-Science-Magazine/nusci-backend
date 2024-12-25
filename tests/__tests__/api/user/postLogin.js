@@ -1,13 +1,6 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
-import {
-  validUserLoginRaisa,
-  validUserLoginEthan,
-  invalidUserLoginEthan,
-  invalidUserLoginRaisa,
-  pendingUserLoginAce,
-} from "../../../testData/userTestData.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
@@ -21,7 +14,10 @@ afterAll(closeMockConnection);
 
 describe("User Login Tests", () => {
   test("should login a valid user Raisa", async () => {
-    const response = await request(app).post("/user/login").send(validUserLoginRaisa);
+    const response = await request(app).post("/user/login").send({
+      email: "raisa@raisa.com",
+      password: "raisa",
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
@@ -30,7 +26,10 @@ describe("User Login Tests", () => {
   });
 
   test("should login a valid user Ethan", async () => {
-    const response = await request(app).post("/user/login").send(validUserLoginEthan);
+    const response = await request(app).post("/user/login").send({
+      email: "ethan@ethan.com",
+      password: "123",
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
@@ -39,14 +38,20 @@ describe("User Login Tests", () => {
   });
 
   test("should not login with incorrect password for Ethan", async () => {
-    const response = await request(app).post("/user/login").send(invalidUserLoginEthan);
+    const response = await request(app).post("/user/login").send({
+      email: "ethan@ethan.com",
+      password: "321",
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
 
   test("should not login with incorrect password for Raisa", async () => {
-    const response = await request(app).post("/user/login").send(invalidUserLoginRaisa);
+    const response = await request(app).post("/user/login").send({
+      email: "raisa@raisa.com",
+      password: "notraisa",
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
@@ -65,7 +70,10 @@ describe("User Login Tests", () => {
   });
 
   test("should not login if user is unapproved", async () => {
-    const response = await request(app).post("/user/login").send(pendingUserLoginAce);
+    const response = await request(app).post("/user/login").send({
+      email: "ace@ace.com",
+      password: "sparky",
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);

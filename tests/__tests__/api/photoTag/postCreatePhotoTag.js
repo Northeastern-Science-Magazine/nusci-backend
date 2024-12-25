@@ -1,18 +1,9 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
-import Connection from "../../../../app/db/connection.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
-import { execSync } from "child_process";
-import {
-  validTag2,
-  validTag,
-  expectedValidTag,
-  expectedValidTag2,
-  validTag3,
-  expectedValidTag3,
-} from "../../../testData/photoTagTestData.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
+import { userResponseEthan, userResponseRaisa } from "../../../testData/userTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -22,7 +13,56 @@ const showLog = __filename
 beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
+
 describe("Create PhotoTags Test", () => {
+  const validTag = {
+    tagName: "Clouds",
+    color: "#4CAF51",
+    creatingUser: "b00000000000000000000001",
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
+  const expectedValidTag = {
+    tagName: "Clouds",
+    color: "#4CAF51",
+    creatingUser: userResponseRaisa,
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
+  const validTag2 = {
+    tagName: "Clouds",
+    color: "#FFC107",
+    creatingUser: "b00000000000000000000000",
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
+  const expectedValidTag2 = {
+    tagName: "Clouds",
+    color: "#FFC107",
+    creatingUser: userResponseEthan,
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
+  const validTag3 = {
+    tagName: "Filler",
+    color: "#4CAF51",
+    creatingUser: "b00000000000000000000001",
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
+  const expectedValidTag3 = {
+    tagName: "Filler",
+    color: "#4CAF51",
+    creatingUser: userResponseRaisa,
+    creationTime: new Date("2024-04-06"),
+    modificationTime: new Date("2024-04-07"),
+  };
+
   test("Tag created successfully", async () => {
     const response = await request(app)
       .post("/photo-tag/create")

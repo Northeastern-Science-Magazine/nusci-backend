@@ -1,13 +1,6 @@
 // searchArticles.test.js
 import request from "supertest";
 import app from "../../../../app/app.js";
-import {
-  validSearchQuery,
-  validSearchQuery2,
-  validSearchQuery3,
-  InvalidSearchQuery,
-  InvalidSearchQuery2,
-} from "../../../testData/articleTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
@@ -26,6 +19,13 @@ This is due to the fact that fuzzy search is a only an atlas feature
 As these tests will not pass in local environments, they are marked here as skipped by default
 */
 describe("Search Articles", () => {
+  /* In-file test data */
+  const validSearchQuery = "AI integration";
+  const validSearchQuery2 = "Sweess";
+  const validSearchQuery3 = "World";
+  const InvalidSearchQuery = "NonexistentTopic";
+  const InvalidSearchQuery2 = "ab23uyrbfvawoiu4grtREf982";
+
   test.skip("Valid fuzzy search query of title", async () => {
     const response = await request(app).get(`/articles/search/title`).query({ search: validSearchQuery });
 

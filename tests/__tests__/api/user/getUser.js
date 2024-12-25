@@ -1,8 +1,8 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
-import { validEmailQueryRaisa, validEmailQueryEthan } from "../../../testData/userTestData.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
+import { userResponseRaisa, userResponseEthan } from "../../../testData/userTestData.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -19,7 +19,7 @@ describe("Get User By Email Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validEmailQueryRaisa);
+    expect(response.body).toStrictEqual(userResponseRaisa);
   });
 
   test("get a user by a valid/existing email (Ethan)", async () => {
@@ -27,7 +27,7 @@ describe("Get User By Email Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual(validEmailQueryEthan);
+    expect(response.body).toStrictEqual(userResponseEthan);
   });
 
   test("attempt getting an invalid email", async () => {

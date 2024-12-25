@@ -1,11 +1,5 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
-import {
-  validArticleSlug,
-  validAuthorsUpdate,
-  invalidAuthorsUpdate,
-  emptyAuthorsUpdate,
-} from "../../../testData/articleTestData.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
@@ -20,6 +14,12 @@ beforeEach(executeReset);
 afterAll(closeMockConnection);
 
 describe("Update Article Authors", () => {
+  /* In-file test data */
+  const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";
+  const validAuthorsUpdate = { authors: ["anika@anika.com", "jasmine@jasmine.com"] };
+  const emptyAuthorsUpdate = { authors: [] };
+  const invalidAuthorsUpdate = { authors: ["invalidUsername"] };
+
   test("should update article authors successfully", async () => {
     const response = await request(app)
       .patch(`/articles/authors/${validArticleSlug}`)
