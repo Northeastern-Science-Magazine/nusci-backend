@@ -1,4 +1,3 @@
-// searchArticles.test.js
 import request from "supertest";
 import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
