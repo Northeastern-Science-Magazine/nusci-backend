@@ -7,29 +7,24 @@ import Accounts from "../models/enums/accounts.js";
 
 const articles = express.Router();
 
-articles.route("/create"); //create an article
-
-// filter + get articles by -- maybe find better ways
-// router.route("/filter-by-statuses-and-issue-number"); //filter by all 4 status options and issueNumber, by querys
-// router.route("/filter-by-user-and-role"); //get articles by email and role, by query
-// //etc
+articles.route("/create");
+articles.route("/slug/:slug"); //get article by slug
 articles.route("/search").get(ArticlesController.search);
+articles.route("/search/title").get(ArticlesController.searchByTitle);
+articles.route("/search/title-and-content").get(ArticlesController.searchByTitleAndContent);
+articles.route("/approved-by/:email"); //internal use only (aka. need an account)
 
-articles.route("/approved-by/:email"); //get articles approved by the given user
-articles.route("/slug/:slug"); //get article by its unique slug
-
-articles.route("/set-issue-number/:slug"); // update the issue number of this article (admin only?)
-
-articles.patch("/article-status/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
+/* Targeted Update Endpoints */
+articles.route("/article-status/:slug").patch(Authorize.allow([Accounts.Admin]), ArticlesController.updateStatus); //update the status of a given article
 articles.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
-articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
 articles.route("/design-status/:slug"); //update the design status of a given article
 articles.route("/photography-status/:slug"); //update the photography status of a given article
-
-articles.patch("/authors/:slug", Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
+articles.route("/authors/:slug").patch(Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
 articles.route("/editors/:slug"); //update the list of editor to this article,
 articles.route("/designers/:slug"); //update the list of designer to this article,
 articles.route("/photographers/:slug"); //update the list of photographer to this article
+
+articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
 
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
 articles.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
@@ -41,8 +36,5 @@ articles
 articles
   .route("/resolve-internal-comment") // editor or admin can resolve an internal comment
   .patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.resolveInternalComment);
-
-articles.get("/search/title", ArticlesController.searchByTitle); //fuzzy search an article's title
-articles.get("/search/title-and-content", ArticlesController.searchByTitleAndContent); //fuzzy search both an article's title and content
 
 export default articles;
