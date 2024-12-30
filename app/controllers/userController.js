@@ -1,7 +1,7 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
@@ -35,8 +35,8 @@ export default class UserController {
    * to sign in is valid. Utilizes the getApprovedByEmail
    * UserAccessor method to accomplish this.
    *
-   * @param {HTTP REQ} req web request object
-   * @param {HTTP RES} res web response
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
   static async login(req, res) {
     try {
@@ -44,14 +44,14 @@ export default class UserController {
         email: { type: string, required: true },
         password: { type: string, required: true },
       });
+      // check if already logged in
       if (req.cookies.token) {
-        // already logged in
         throw new ErrorUserAlreadyLoggedIn();
       }
       // check if the user exists and is approved
       const user = await UsersAccessor.getUserByEmail(req.body.email);
+      // user doesn't exist
       if (!user) {
-        //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
       }
       //check if the user is pending
@@ -106,8 +106,8 @@ export default class UserController {
    * by calling the user.accessor.js file and creating a new
    * user with the existing req data.
    *
-   * @param {HTTP REQ} req web request information for signup
-   * @param {HTTP RES} res web response object
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
   static async signup(req, res) {
     try {
@@ -160,60 +160,12 @@ export default class UserController {
   }
 
   /**
-   * @TODO fix this method
-   *
-   * postDeactivateProfile Method
-   *
-   * This method dispatches to the user accessor where the email passed
-   * from the Auth getEmail() method is then deactivated.
-   *
-   * @param {HTTP REQ} req web request information for signup
-   * @param {HTTP RES} res web response object
-   */
-  // static async deactivateUser(req, res) {
-  //   try {
-  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
-  //     res.redirect("/logout");
-  //   } catch (e) {
-  //     if (e instanceof HttpError) {
-  //       e.throwHttp(req, res);
-  //     } else {
-  //       new ErrorUnexpected(e.message).throwHttp(req, res);
-  //     }
-  //   }
-  // }
-
-  /**
-   * @TODO FIX
-   *
-   * postDeleteProfile Method
-   *
-   * This method dispatches to the user accessor where the email passed
-   * from the Auth getEmail() method is then deleted and so is all associated work.
-   *
-   * @param {HTTP REQ} req web request information for signup
-   * @param {HTTP RES} res web response object
-   */
-  // static async deleteUser(req, res) {
-  //   try {
-  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
-  //     res.redirect("/logout");
-  //   } catch (e) {
-  //     if (e instanceof HttpError) {
-  //       e.throwHttp(req, res);
-  //     } else {
-  //       new ErrorUnexpected(e.message).throwHttp(req, res);
-  //     }
-  //   }
-  // }
-
-  /**
    * getMyProfile Method
    *
    * This method retrieves the profile of the logged-in user.
    *
-   * @param {HTTP REQ} req web request object
-   * @param {HTTP RES} res web response object
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
   static async getMyProfile(req, res) {
     try {
@@ -240,8 +192,8 @@ export default class UserController {
    *
    * This method retrieves the public profile of a user by their email.
    *
-   * @param {HTTP REQ} req web request object
-   * @param {HTTP RES} res web response object
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
   static async getPublicUserByEmail(req, res) {
     try {
@@ -269,8 +221,8 @@ export default class UserController {
    *
    * This method updates the status of lists of pending users to deny or approve them.
    *
-   * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
-   * @param {HTTP RES} res web response object.
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
   static async resolveUserApprovals(req, res) {
     try {
@@ -321,6 +273,17 @@ export default class UserController {
   }
 
   /**
+   * Removes the user's login cookie from browser.
+   *
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
+   */
+  static logout(req, res) {
+    res.clearCookie("token");
+    res.status(200).json({ message: "Successfully logged out." });
+  }
+
+  /**
    * @TODO FIX
    *
    * @param {HTTP REQ} req
@@ -365,13 +328,50 @@ export default class UserController {
   // }
 
   /**
-   * Removes the user's login cookie from browser.
+   * @TODO fix this method
    *
-   * @param {HTTP REQ} req
-   * @param {HTTP RES} res
+   * postDeactivateProfile Method
+   *
+   * This method dispatches to the user accessor where the email passed
+   * from the Auth getEmail() method is then deactivated.
+   *
+   * @param {Express.Request} req Express Request Object
+   * @param {Express.Response} res Express Response Object
    */
-  static logout(req, res) {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Successfully logged out." });
-  }
+  // static async deactivateUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
+
+  /**
+   * @TODO FIX
+   *
+   * postDeleteProfile Method
+   *
+   * This method dispatches to the user accessor where the email passed
+   * from the Auth getEmail() method is then deleted and so is all associated work.
+   *
+   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP RES} res web response object
+   */
+  // static async deleteUser(req, res) {
+  //   try {
+  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
+  //     res.redirect("/logout");
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 }

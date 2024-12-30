@@ -7,7 +7,7 @@ import { string, date, array, integer, object } from "./schemaTypes.js";
  *
  * Base model that contains fields commonly used to describe a user.
  */
-const commonUserProperties = {
+const userProps = {
   firstName: { type: string, required: true },
   lastName: { type: string, required: true },
   pronouns: { type: array, items: { type: string } },
@@ -18,18 +18,20 @@ const commonUserProperties = {
   bannerImage: { type: string },
   bio: { type: string, required: true },
   email: { type: string, required: true },
-  roles: { type: array, items: { enum: Accounts.listr(), required: true } },
+  roles: { type: array, items: { type: string, enum: Accounts.listr(), required: true } },
   gameData: { const: undefined },
   creationTime: { type: date, required: true },
   modificationTime: { type: date, required: true },
 };
 
-/* private user response; the base model with additional properties */
+/**
+ * User Response containing all user properties.
+ */
 export const userResponse = {
   type: object,
   id: "/user/response",
   properties: {
-    ...commonUserProperties,
+    ...userProps,
     password: { type: string, required: true },
     phone: { type: string },
     status: { enum: AccountStatus.listr(), required: true },
@@ -37,11 +39,13 @@ export const userResponse = {
   },
 };
 
-/* public user response; just the publicaly accesible data from the base */
+/**
+ * User Public Response containing all publicly available user data.
+ */
 export const userPublicResponse = {
   type: object,
   id: "/user/public/response",
   properties: {
-    ...commonUserProperties,
+    ...userProps,
   },
 };

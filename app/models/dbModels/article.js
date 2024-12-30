@@ -5,7 +5,7 @@ import CommentStatus from "../enums/commentStatus.js";
 import DesignStatus from "../enums/designStatus.js";
 import PhotographyStatus from "../enums/photographyStatus.js";
 import ArticleContent from "../enums/articleContent.js";
-import Categories from "../enums/categories.js";
+import Category from "../enums/categories.js";
 import User from "./user.js";
 
 const Schema = mongoose.Schema;
@@ -16,7 +16,7 @@ const ArticleSchema = new Schema(
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
     issueNumber: { type: Number },
-    categories: [{ type: String, enum: Categories.listr(), required: true }],
+    categories: [{ type: String, enum: Category.listr(), required: true }],
     articleContent: [
       {
         contentType: { type: String, enum: ArticleContent.listr(), required: true },

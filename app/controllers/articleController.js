@@ -87,9 +87,8 @@ export default class ArticleController {
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
-  static async addInternalComment(req, res, next) {
+  static async addInternalComment(req, res) {
     try {
       //comment validation
       const email = Authorize.getEmail(req);
@@ -195,7 +194,6 @@ export default class ArticleController {
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
   static async search(req, res) {
     async function getUserIdsByEmailsQuery(listOfEmails) {

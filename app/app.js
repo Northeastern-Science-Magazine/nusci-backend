@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
+import dotenv from "dotenv";
 import articleRouter from "./routes/articleRoutes.js";
 import defaultRouter from "./routes/defaultRoutes.js";
 import issueMapRouter from "./routes/issueMapRoutes.js";
@@ -15,6 +16,7 @@ import userRouter from "./routes/userRoutes.js";
  * in order to function.
  */
 
+dotenv.config();
 const app = express();
 
 app.use(cors());

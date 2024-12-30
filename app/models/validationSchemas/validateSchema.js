@@ -1,4 +1,4 @@
-import { validate } from "jsonschema";
+import { validate, Validator } from "jsonschema";
 import { object } from "./schemaTypes.js";
 import { ErrorValidation } from "../../error/errors.js";
 
@@ -21,6 +21,25 @@ import { ErrorValidation } from "../../error/errors.js";
  * should not be returned to any external requester.
  */
 export default class Validate {
+  /**
+   * Returns the validator primed with the given refs.
+   * Refs should be given as valid JSON Schemas with an
+   * `id` field, used as it's $ref. Returns null if
+   * passed undefined.
+   *
+   * @param {JSON} refs
+   */
+  static _validateWithRef = (refs) => {
+    if (!refs) {
+      return null;
+    }
+    const validator = new Validator();
+    refs.forEach((ref) => {
+      validator.addSchema(ref, ref.id);
+    });
+    return validator;
+  };
+
   /**
    * Instructions for populating override fields on an object.
    * This is where you would add the resolvers for any overriding
@@ -51,13 +70,16 @@ export default class Validate {
    *
    * @param {JSON} instance object to validate
    * @param {JSON} schema definition (properties only)
-   * @param {JSON} options override values + other optional options
+   * @param {JSON} options override, ref + other optional options
    * @returns
    */
   static incoming(instance, schema, options) {
     try {
       options?.override && this._populateOverrides(instance, options.override);
-      return validate(instance, { type: object, properties: schema });
+      return (
+        this._validateWithRef(options?.ref)?.validate(instance, { type: object, properties: schema }) ||
+        validate(instance, { type: object, properties: schema })
+      );
     } catch (e) {
       throw new ErrorValidation(e);
     }
