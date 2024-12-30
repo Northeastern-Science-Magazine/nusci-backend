@@ -43,13 +43,19 @@ const articleProps = {
   designStatus: { type: string, enum: DesignStatus.listr(), required: true },
   photographyStatus: { type: string, enum: PhotographyStatus.listr(), required: true },
   authors: { type: array, items: { $ref: "/user/public/response" } },
-  editors: [{ type: Schema.Types.ObjectId, ref: User }],
-  designers: [{ type: Schema.Types.ObjectId, ref: User }],
-  photographers: [{ type: Schema.Types.ObjectId, ref: User }],
-  approvingUser: { type: Schema.Types.ObjectId, ref: User },
+  editors: { type: array, items: { $ref: "/user/public/response" } },
+  designers: { type: array, items: { $ref: "/user/public/response" } },
+  photographers: { type: array, items: { $ref: "/user/public/response" } },
+  approvingUser: { $ref: "/user/public/response" },
   approvalTime: { type: date },
   creationTime: { type: date, required: true },
   modificationTime: { type: date, required: true },
 };
 
-export default articleResponse = {};
+export default articleResponse = {
+  type: object,
+  id: "/article/response",
+  properties: {
+    ...articleProps,
+  },
+};
