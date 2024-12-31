@@ -7,6 +7,22 @@ import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
 import PhotographyStatus from "../enums/photographyStatus.js";
 
+const commentProps = {
+  user: { $ref: "/user/public/response", required: true },
+  comment: { type: string, required: true },
+  commentStatus: { type: string, enum: CommentStatus.listr(), required: true },
+  creationTime: { type: date, required: true },
+  modificationTime: { type: date, required: true },
+};
+
+export const commentResponse = {
+  type: object,
+  id: "/comment/response",
+  properties: {
+    ...commentProps,
+  },
+};
+
 const articleProps = {
   title: { type: string, required: true },
   slug: { type: string, required: true },
@@ -25,19 +41,7 @@ const articleProps = {
   sources: { type: array, items: { type: string } },
   link: { type: string },
   pageLength: { type: integer, required: true },
-  comments: {
-    type: array,
-    items: {
-      type: object,
-      properties: {
-        user: { $ref: "/user/public/response", required: true },
-        comment: { type: string, required: true },
-        commentStatus: { type: string, enum: CommentStatus.listr(), required: true },
-        creationTime: { type: date, required: true },
-        modificationTime: { type: date, required: true },
-      },
-    },
-  },
+  comments: { type: array, items: { $ref: "/comment/response" } },
   articleStatus: { type: string, enum: ArticleStatus.listr(), required: true },
   writingStatus: { type: string, enum: WritingStatus.listr(), required: true },
   designStatus: { type: string, enum: DesignStatus.listr(), required: true },
@@ -52,7 +56,7 @@ const articleProps = {
   modificationTime: { type: date, required: true },
 };
 
-export default articleResponse = {
+export const articleResponse = {
   type: object,
   id: "/article/response",
   properties: {

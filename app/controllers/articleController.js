@@ -1,10 +1,14 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
+import Validate from "../models/validationSchemas/validateSchema.js";
+import { string } from "../models/validationSchemas/schemaTypes.js";
+import { articleResponse } from "../models/validationSchemas/article.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
 import Utils from "./utils.js";
+import ArticleStatus from "../models/enums/articleStatus.js";
 
 /**
  * ArticleController Class
@@ -25,16 +29,19 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
 
-      const updates = new ArticleUpdate(req.body);
+      Validate.incoming(req.body, {
+        articleStatus: { type: string, enum: ArticleStatus.listr(), required: true },
+      });
 
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, req.body);
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
       }
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = updatedArticleData.toObject();
+      Validate.outgoing(updatedArticleData.toObject(), articleResponse);
 
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
@@ -58,17 +65,20 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-      const updates = new ArticleUpdate(req.body);
-      const authorIds = await Utils.getUserIdsByEmails(updates.authors);
-      updates.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+      Validate.incoming(req.body, {
+        authors: { type: string, required: true },
+      });
+
+      const authorIds = await Utils.getUserIdsByEmails(req.body.authors);
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, { authors: authorIds });
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
       }
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = updatedArticleData.toObject();
+      Validate.outgoing(updatedArticleResponse, articleResponse);
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
