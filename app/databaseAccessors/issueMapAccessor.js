@@ -1,4 +1,4 @@
-import IssueMap from "../models/issue_map.js";
+import IssueMap from "../models/dbModels/issue_map.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
@@ -116,5 +116,16 @@ export default class IssueMapAccessor {
     await Connection.open();
     const issues = await IssueMap.find({ modificationTime: { $gte: start, $lte: end } });
     return issues;
+  }
+
+  /**
+   * Posts the issue map and returns it.
+   * @param {IssueMap} issueMap the issue map to be posted
+   */
+  static async postIssueMap(issueMap) {
+    await Connection.open();
+    const newIssueMap = new IssueMap(issueMap);
+    await newIssueMap.save();
+    return newIssueMap;
   }
 }
