@@ -39,7 +39,7 @@ export default class PhotoTagAccessor {
    */
   static async getTagById(tagId) {
     await Connection.open();
-    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagId));
+    const tag = await PhotoTag.findById(new mongoose.Types.ObjectId(tagId)).populate("creatingUser");
     return tag;
   }
 
