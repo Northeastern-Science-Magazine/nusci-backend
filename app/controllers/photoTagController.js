@@ -3,6 +3,7 @@ import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import { photoTagResponse } from "../models/validationSchemas/photoTag.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { ErrorDuplicateKey, ErrorUnexpected, ErrorPhotoTagNotFound, HttpError } from "../error/errors.js";
+import { userPublicResponse } from "../models/validationSchemas/user.js";
 
 /**
  * PhotoTagController Class
@@ -57,6 +58,7 @@ export default class PhotoTagController {
         throw new ErrorPhotoTagNotFound();
       }
     
+      Validate.outgoing(photoTag.creatingUser, userPublicResponse);
       Validate.outgoing(photoTag, photoTagResponse);
       res.status(200).json(photoTag);
     } catch (e) {
