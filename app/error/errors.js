@@ -87,6 +87,12 @@ export class ErrorUserNotFound extends HttpError {
   }
 }
 
+export class ErrorPhotoTagNotFound extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Photo tag not found.", message: this.message });
+  }
+}
+
 export class ErrorArticleNotFound extends HttpError {
   throwHttp(req, res) {
     res.status(404).json({ error: "Article not found.", message: this.message });
