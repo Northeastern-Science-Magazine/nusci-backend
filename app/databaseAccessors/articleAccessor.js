@@ -356,4 +356,23 @@ export default class ArticlesAccessor {
       return await Article.find(query).limit(limit);
     }
   }
+
+  static async deleteArticle(slug) {
+    await Connection.open();
+
+    const article = await Article.findOne( {slug: slug} );
+    if (article) {
+      
+      await Article.findByIdAndDelete(article._id);
+    
+      await IssueMap.updateMany(
+        { articles: article._id },
+        { $pull: { articles: article._id } }
+      );
+
+      return article;
+      }
+
+  }
+  
 }
