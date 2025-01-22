@@ -3,6 +3,7 @@ import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import { ErrorDuplicateKey, ErrorUnexpected, HttpError } from "../error/errors.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import User from "../models/dbModels/user.js";
+import user from "../routes/userRoutes.js";
 
 
 /**
@@ -49,7 +50,7 @@ export default class PhotoTagController {
   static async filter(req, res) {
     try {
     const { color, userEmail } = req.body;
-
+    console.log(color, userEmail)
     let photoTags = [];
 
     if (color && userEmail) {
