@@ -18,7 +18,7 @@ export default class ArticlesAccessor {
    */
   static async getArticle(articleId) {
     await Connection.open();
-    const article = await Article.findBy({ _id: articleId });
+    const article = await Article.findById({ _id: articleId });
     return article;
   }
 
@@ -311,40 +311,74 @@ export default class ArticlesAccessor {
         $set: {
           "comments.$.commentStatus": "resolved",
         },
-      },
+      }
     );
   }
 
+  /**
+   *
+   * Search for articles with the given query and path
+   *
+   * @param {*} search the term(s) to search for
+   * @param {*} fields the field to search for
+   */
+  static async fuzzySearchArticles(search, fields) {
+    await Connection.open();
 
+    const results = await Article.aggregate([
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: search,
+            path: fields,
+            fuzzy: {},
+          },
+        },
+      },
+    ]);
+
+    return results;
+  }
+
+  /**
+   * searchArticles method
+   *
+   * This method finds all articles that match the search query
+   *
+   * @param {query} json object of query we want
+   * @param {limit} numerical limit to the number of elements to return
+   */
+  static async searchArticles(query, limit) {
+    await Connection.open();
+    if (limit <= 0) {
+      return [];
+    } else {
+      return await Article.find(query).limit(limit);
+    }
+  }
 
   static async deleteArticle(slug) {
     await Connection.open();
 
-    
-
-    const article = await Article.findOne( {slug: slug} );
+    const article = await Article.findOne({ slug: slug });
     if (article) {
-
       try {
-      console.log("we found the article");
+        console.log("we found the article");
 
-      //console.log(article);
+        //console.log(article);
 
-      const resp = await Article.deleteOne({ _id: article._id });
-      
-      console.log("ok");
-    //  console.log(resp);
-     
-     // console.log(article);
-      return article;
-      }
+        const resp = await Article.deleteOne({ _id: article._id });
 
-      catch(e) {
+        console.log("ok");
+        //  console.log(resp);
+
+        // console.log(article);
+        return article;
+      } catch (e) {
         console.error("Error in cascading deletion", e);
         throw e;
       }
-
-    }
-    
     }
   }
+}

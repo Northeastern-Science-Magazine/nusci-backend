@@ -1,5 +1,4 @@
 import Connection from "../db/connection.js";
-import { ErrorUserNotFound } from "../error/errors.js";
 import User from "../models/dbModels/user.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 
@@ -34,30 +33,9 @@ export default class UsersAccessor {
    * @returns {ObjectId} - user's ID
    */
   static async getUserIdByEmail(email) {
-    const user = await this.getUserByEmail(email);
-    if (!user) {
-      throw new ErrorUserNotFound(`User not found for email: ${email}`);
-    }
-    return user;
-  }
-
-  /**
- * Get a list of User IDs by a list emails
- *
- * @param {[String]} email - Array of email
- * @returns {{[ObjectId]}} - Array of user ID
- */
-  static async getUserIdsByMultipleEmails(emails) {
-    const userIds = [];
-    for (const email of emails) {
-      const user = await this.getUserByEmail(email);
-      if (user) {
-        userIds.push(user._id);
-      } else {
-        throw new ErrorUserNotFound(`User not found for email: ${email}`);
-      }
-    }
-    return userIds;
+    await Connection.open();
+    const userId = await User.findOne({ email: email }, "_id");
+    return userId;
   }
 
   /**
@@ -110,11 +88,7 @@ export default class UsersAccessor {
   static async approveUserByEmail(email) {
     await Connection.open();
     //update the status
-    const user = await User.findOneAndUpdate(
-      { email: email },
-      { status: AccountStatus.Approved.toString() },
-      { new: true }
-    );
+    const user = await User.findOneAndUpdate({ email: email }, { status: AccountStatus.Approved.toString() }, { new: true });
     return user;
   }
 
@@ -130,11 +104,7 @@ export default class UsersAccessor {
   static async denyUserByEmail(email) {
     await Connection.open();
     //update the status
-    const user = await User.findOneAndUpdate(
-      { email: email },
-      { status: AccountStatus.Denied.toString() },
-      { new: true }
-    );
+    const user = await User.findOneAndUpdate({ email: email }, { status: AccountStatus.Denied.toString() }, { new: true });
     return user;
   }
 
@@ -155,6 +125,12 @@ export default class UsersAccessor {
     return user;
   }
 
+  static async getUsersByEmail(emails) {
+    await Connection.open();
+    const users = await User.find({ email: { $in: emails } });
+    return users;
+  }
+  
   /**
    * getUserByRole Method
    *

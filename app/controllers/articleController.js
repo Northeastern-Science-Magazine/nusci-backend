@@ -3,7 +3,8 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
+import Utils from "./utils.js";
 
 /**
  * ArticleController Class
@@ -58,7 +59,7 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
       const updates = new ArticleUpdate(req.body);
-      const authorIds = await UsersAccessor.getUserIdsByMultipleEmails(updates.authors);
+      const authorIds = await Utils.getUserIdsByEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
@@ -78,6 +79,7 @@ export default class ArticleController {
       }
     }
   }
+
   /**
    * addInternalComment Method
    *
@@ -107,6 +109,54 @@ export default class ArticleController {
 
       //return updated article with new comment
       res.status(201).json(finalArticle);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitle(req, res) {
+    try {
+      const search = req.query.search;
+
+      const fields = ["title"];
+
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
+
+      res.status(200).json(results);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Fuzzy searches for articles based on title and content
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async searchByTitleAndContent(req, res) {
+    try {
+      const search = req.query.search;
+
+      const fields = ["title", "articleContent.content"];
+
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
+
+      res.status(200).json(results);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -149,15 +199,12 @@ export default class ArticleController {
   static async deleteArticle(req, res) {
     try {
       const { slug } = req.params;
-      
 
-      // make ArticleAccessor in articleAccessor.js 
+      // make ArticleAccessor in articleAccessor.js
       const deletedArticle = await ArticlesAccessor.deleteArticle(slug);
-    //  console.log(deletedArticle);
+      //  console.log(deletedArticle);
 
-      
-
-      // naming of variable was incorrect, causing errors --> FIXED 
+      // naming of variable was incorrect, causing errors --> FIXED
       if (!deletedArticle) {
         console.log("throwing error");
         throw new ErrorArticleNotFound();
@@ -166,16 +213,105 @@ export default class ArticleController {
       res.status(204).json(deletedArticle);
       console.log("success!");
 
-    // res.status(204).json(deletedArticle);
+      // res.status(204).json(deletedArticle);
     } catch (e) {
-      console.log("hello")
+      console.log("hello");
       if (e instanceof HttpError) {
-        
         e.throwHttp(req, res);
       } else {
-        
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
+    }
   }
+  /**
+   * search Method
+   *
+   * This method searches and returns all articles matching the given params
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async search(req, res) {
+    async function getUserIdsByEmailsQuery(listOfEmails) {
+      if (!Array.isArray(listOfEmails)) {
+        throw new ErrorTypeOfQuery();
+      }
+      // returns ids of the user objects given as a list of emails
+      const allUsers = [];
+      for (let i = 0; i < listOfEmails.length; i++) {
+        const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
+        allUsers[i] = user._id;
+      }
+      return { $in: allUsers };
+    }
+
+    function numberTypeCheck(num) {
+      if (!Number.isNaN(Number(num))) {
+        return num;
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    function stringTypeCheck(str) {
+      if (typeof str === "string") {
+        return str;
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    function inQuery(cats) {
+      if (Array.isArray(cats)) {
+        return { $in: cats };
+      } else {
+        throw new ErrorTypeOfQuery();
+      }
+    }
+
+    const mapping = {
+      issueNumber: numberTypeCheck,
+      authors: getUserIdsByEmailsQuery,
+      editors: getUserIdsByEmailsQuery,
+      designers: getUserIdsByEmailsQuery,
+      photographers: getUserIdsByEmailsQuery,
+      slug: stringTypeCheck,
+      categories: inQuery,
+    };
+
+    try {
+      const query = {};
+      var limit;
+
+      for (const searchOption of Object.keys(mapping)) {
+        if (req.body.hasOwnProperty(searchOption)) {
+          query[searchOption] = await mapping[searchOption](req.body[searchOption]);
+        }
+      }
+
+      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
+        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
+      } else if (req.body.hasOwnProperty("before")) {
+        query.approvalTime = { $lte: req.body.before };
+      } else if (req.body.hasOwnProperty("after")) {
+        query.approvalTime = { $gte: req.body.after };
+      }
+
+      // limits are not a part of query, thus handled separately
+      if (req.body.hasOwnProperty("limit")) {
+        limit = Number(req.body.limit);
+      }
+
+      // access the database and retrieve the matching articles
+      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
+      res.status(200).json(matchingArticles);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 }

@@ -54,17 +54,17 @@ const ArticleSchema = new Schema(
   }
 );
 
-ArticleSchema.pre('deleteOne', { document: true, query: false }, async function() {
+ArticleSchema.pre("deleteOne", { document: true, query: false }, async function () {
   try {
-    // changed name to IssueMapSchema 
-    await mongoose.model('IssueMap').updateMany(
-      { articles: this._id },
-      { $pull: { articles: this._id } }
-    );
+    // changed name to IssueMapSchema
+    await mongoose.model("IssueMap").updateMany({ articles: this._id }, { $pull: { articles: this._id } });
   } catch (e) {
-    console.error('Error in pre-deleteOne hook:', e);
+    console.error("Error in pre-deleteOne hook:", e);
   }
 });
+
+// Add a text index for title and articleContent.content
+ArticleSchema.index({ title: "text", "articleContent.content": "text" }, { name: "article_text_index" });
 
 const db = mongoose.connection.useDb("articles");
 const Article = db.model("Articles", ArticleSchema);
