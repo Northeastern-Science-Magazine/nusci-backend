@@ -2,7 +2,7 @@ import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, ErrorIssueMapNotFound } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -160,5 +160,77 @@ export default class IssueMapAccessor {
     );
 
     return updatedIssue;
+  }
+
+  /**
+   * Find and remove a section
+   * Remaining articles will be moved to general articles field
+   *
+   * @param issueNumber - issue number
+   * @param sectionName - section name
+   * @param sectionColor - section color
+   * @returns remove issue map
+   */
+  static async removeSection(issueNumber, sectionName, sectionColor) {
+    await Connection.open();
+
+    // move issues to general
+    this.addArticles(issueNumber, sectionName, sectionColor);
+
+    const issues = await IssueMap.updateOne(
+      { issueNumber: issueNumber },
+      // delete section
+      {
+        $pull: {
+          sections: {
+            sectionName: sectionName,
+            color: sectionColor,
+          },
+        },
+      }
+    );
+    if (!issues) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    return issues;
+  }
+
+  /**
+   * Add a list of articles to the general articles field
+   *
+   * @param issueNumber - issue number
+   * @param sectionName - section name
+   * @param sectionColor - section color
+   */
+  static async addArticles(issueNumber, sectionName, sectionColor) {
+    const article = await IssueMap.findOne(
+      { issueNumber: issueNumber },
+      {
+        sections: {
+          $elemMatch: {
+            sectionName: sectionName,
+            color: sectionColor,
+          },
+        },
+      },
+      {
+        // Gets the article instead of the entire issueMap
+        "sections.articles": 1,
+      }
+    );
+
+    if (!article || !article.sections) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    // extract articles
+    const toMove = article.sections[0].articles;
+
+    await IssueMap.updateOne({
+      $push: {
+        articles: { $each: toMove },
+      },
+    });
   }
 }

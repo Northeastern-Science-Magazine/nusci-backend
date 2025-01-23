@@ -17,7 +17,7 @@ const IssueMapSchema = new Schema(
         modificationTime: { type: Date, required: true },
       },
     ],
-    articles: [{ type: Schema.Types.ObjectId, ref: "Articles", unique: true }],
+    articles: [{ type: Schema.Types.ObjectId, ref: "Articles", unique: true }], 
     pages: { type: Number, required: true },
     creatingUser: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     creationTime: { type: Date, required: true },
