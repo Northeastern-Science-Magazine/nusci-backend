@@ -1,0 +1,162 @@
+import request from "supertest";
+import app from "../../../../app/app.js";
+import tokens from "../../../testData/tokenTestData.js";
+import { log } from "../../../testConfig.js";
+import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
+import { userResponseEthan, userResponseRaisa } from "../../../testData/userTestData.js";
+
+const showLog = __filename
+  .replace(".js", "")
+  .split(/[/\\]/)
+  .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
+  .reduce((acc, key) => acc && acc[key], log);
+beforeEach(injectMockConnection);
+beforeEach(executeReset);
+afterAll(closeMockConnection);
+
+describe("Create Photos Test", () => {
+  const validPhoto = {
+    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd14iSERX2EDERqpulNP0RyrgxRw2x5Ju1Dw&s",
+    tags: [],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-22"),
+    rights: "",
+    creationTime: new Date("2024-01-22"),
+    modificationTime: new Date("2024-01-22"),
+  };
+
+  const expectedValidPhoto = {
+    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd14iSERX2EDERqpulNP0RyrgxRw2x5Ju1Dw&s",
+    tags: [],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-22"),
+    rights: "",
+    creationTime: new Date("2024-01-22"),
+    modificationTime: new Date("2024-01-22"),
+  };
+
+  const validPhoto2 = {
+    url: "https://cdn.britannica.com/73/9173-004-56D81BC8.jpg",
+    tags: ["tag1", "tag2"],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    rights: "",
+    creationTime: new Date("2024-01-21"),
+    modificationTime: new Date("2024-01-21"),
+  };
+
+  const expectedValidPhoto2 = {
+    url: "https://cdn.britannica.com/73/9173-004-56D81BC8.jpg",
+    tags: ["tag1", "tag2"],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    rights: "",
+    creationTime: new Date("2024-01-21"),
+    modificationTime: new Date("2024-01-21"),
+  };
+
+  const validPhoto3 = {
+    url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
+    tags: ["tag1", "tag2", "tag3"],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    rights: "",
+    creationTime: new Date("2024-01-21"),
+    modificationTime: new Date("2024-01-21"),
+  };
+
+  const expectedValidPhoto3 = {
+    url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
+    tags: ["tag1", "tag2", "tag3"],
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    rights: "",
+    creationTime: new Date("2024-01-21"),
+    modificationTime: new Date("2024-01-21"),
+  };
+
+  const validPhoto4 = {
+    url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
+    tags: ["tag1", "tag2", "tag3"],
+    internalPhotographer: true,
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    license: "",
+  };
+
+  const expectedValidPhoto4 = {
+    url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
+    tags: ["tag1", "tag2", "tag3"],
+    internalPhotographer: true,
+    photographers: ["ethan@ethan.com"],
+    photoTime: new Date("2024-01-21"),
+    license: "",
+  };
+
+  test("Photo created successfully", async () => {
+    const response = await request(app)
+      .post("/photos/upload/url")
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(validPhoto);
+    showLog && console.log(response.body);
+    expect(response.statusCode).toBe(201);
+
+    expect(response.body.url).toBe(expectedValidPhoto.url);
+    expect(response.body.tags).toBe(expectedValidPhoto.tags);
+    expect(response.body.photographers).toBe(expectedValidPhoto.photographers);
+    expect(response.body.photoTime).toBeDefined();
+    expect(response.body.rights).toBe(expectedValidPhoto.rights);
+    expect(response.body.creationTime).toBeDefined();
+    expect(response.body.modificationTime).toBeDefined();
+  });
+
+  test("Photo created successfully", async () => {
+    const response = await request(app)
+      .post("/photos/upload/url")
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(validPhoto2);
+    showLog && console.log(response.body);
+    expect(response.statusCode).toBe(201);
+
+    expect(response.body.url).toBe(expectedValidPhoto2.url);
+    expect(response.body.tags).toBe(expectedValidPhoto2.tags);
+    expect(response.body.photographers).toBe(expectedValidPhoto2.photographers);
+    expect(response.body.photoTime).toBeDefined();
+    expect(response.body.rights).toBe(expectedValidPhoto2.rights);
+    expect(response.body.creationTime).toBeDefined();
+    expect(response.body.modificationTime).toBeDefined();
+  });
+
+  test("Photo created successfully", async () => {
+    const response = await request(app)
+      .post("/photos/upload/url")
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(validPhoto3);
+    showLog && console.log(response.body);
+    expect(response.statusCode).toBe(201);
+
+    expect(response.body.url).toBe(expectedValidPhoto3.url);
+    expect(response.body.tags).toBe(expectedValidPhoto3.tags);
+    expect(response.body.photographers).toBe(expectedValidPhoto3.photographers);
+    expect(response.body.photoTime).toBeDefined();
+    expect(response.body.rights).toBe(expectedValidPhoto3.rights);
+    expect(response.body.creationTime).toBeDefined();
+    expect(response.body.modificationTime).toBeDefined();
+  });
+
+  test("Photo created successfully", async () => {
+    const response = await request(app)
+      .post("/photos/upload/url")
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(validPhoto4);
+    showLog && console.log(response.body);
+    expect(response.statusCode).toBe(201);
+
+    expect(response.body.url).toBe(expectedValidPhoto4.url);
+    expect(response.body.tags).toBe(expectedValidPhoto4.tags);
+    expect(response.body.photographers).toBe(expectedValidPhoto4.photographers);
+    expect(response.body.internalPhotographer).toBe(expectedValidPhoto4.internalPhotographer);
+    expect(response.body.photoTime).toBeDefined();
+    expect(response.body.license).toBe(expectedValidPhoto4.rights);
+  });
+});

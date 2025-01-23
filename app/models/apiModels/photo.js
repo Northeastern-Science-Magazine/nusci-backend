@@ -1,8 +1,6 @@
-import { BaseModel, string, date, object, now } from "./base_model.js";
-import Photography_status from "../enums/photography_status.js";
-import { ErrorInternalAPIModelValidation } from "../../error/internalErrors.js";
+import { BaseModel, string, date, object, now } from "./baseModel.js";
 import { UserPublicResponse } from "./user.js";
-import { PhotoTagResponse } from "./photo_tags.js";
+import { PhotoTagResponse } from "./photoTag.js";
 
 /**
  * Represents the http request body required

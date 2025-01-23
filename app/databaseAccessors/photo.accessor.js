@@ -1,4 +1,4 @@
-import Photo from "../models/photo.js";
+import Photo from "../models/dbModels/photo.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
@@ -8,6 +8,18 @@ import mongoose from "mongoose";
  * Accesses the photos
  */
 export default class PhotoAccessor {
+  /**
+   * creates a new photo
+   *
+   * @param {Object} photo - an instance of a Photo model
+   * @return a new photo
+   */
+  static async createPhoto(photo) {
+    await Connection.open();
+    const createPhoto = await Photo.create(photo);
+    return createPhoto;
+  }
+
   /**
    * Get all photos
    *
