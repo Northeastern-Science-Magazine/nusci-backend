@@ -28,7 +28,7 @@ articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go li
 
 // idea: update is when updating article content, categories, sources, etc, but not metadata about an article
 articles.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
-articles.route("/delete/:slug"); //delete an article
+articles.route("/delete/:slug").delete(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.deleteArticle); //delete an article
 
 articles
   .route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article

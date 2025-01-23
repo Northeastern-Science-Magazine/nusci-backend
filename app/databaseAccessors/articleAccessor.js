@@ -1,5 +1,6 @@
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
+import IssueMap from "../models/dbModels/issueMap.js";
 
 /**
  * Articles Accessor Class
