@@ -3,23 +3,29 @@ export const log = {
   api: {
     article: {
       patchAuthors: false,
+      patchResolveComment: false,
       patchStatus: false,
       postCommentCreate: false,
+      getSearch: false,
     },
     default: {
       default: false,
     },
     user: {
-      getUsername: false,
+      getEmail: false,
       postLogin: false,
       postSignup: false,
       putResolveUser: false,
     },
     article: {},
-    issueMap: {},
+    issueMap: {
+      patchRemoveArticle: false,
+      patchCreateAddArticleToMap: false,
+    },
     photo: {},
-    photoTag: {},
-    calendarEvent: {},
+    photoTag: {
+      postCreatePhotoTag: false,
+    },
   },
   integration: {
     user: {

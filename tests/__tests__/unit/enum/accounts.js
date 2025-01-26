@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import Accounts from "../../../../app/models/enums/accounts.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type Accounts", () => {
   test("toString Admin", () => {
     expect(Accounts.Admin.toString()).toStrictEqual("admin");

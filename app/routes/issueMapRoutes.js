@@ -1,11 +1,12 @@
 import express from "express";
-import bodyParser from "body-parser";
-import IssueMapController from "../controllers/issueMapController";
+import Authorize from "../auth/authorization.js";
+import Accounts from "../models/enums/accounts.js";
+import IssueMapController from "../controllers/issueMapController.js";
 
-const router = express.Router();
+const issueMap = express.Router();
 
-router.use(bodyParser.urlencoded({ extended: false }));
+issueMap.route("/create").post(Authorize.allow([Accounts.Admin]), IssueMapController.createIssueMap); //create an issue map
+issueMap.route("/remove-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.removeArticle); //remove an article from an issue map
+issueMap.route("/add-and-create-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.addAndCreateArticle);
 
-router.route("/create").post(Authorize.allow([Accounts.Admin]), IssueMapController.createIssueMap); //create an issue map
-
-export default router;
+export default issueMap;

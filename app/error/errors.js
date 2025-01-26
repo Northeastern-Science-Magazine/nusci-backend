@@ -51,6 +51,12 @@ export class ErrorValidation extends HttpError {
   }
 }
 
+export class ErrorTypeOfQuery extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Invalid query type.", message: this.message });
+  }
+}
+
 /**
  * 403 Errors
  *
@@ -87,9 +93,27 @@ export class ErrorArticleNotFound extends HttpError {
   }
 }
 
+export class ErrorSectionNotFound extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Section not found.", message: this.message });
+  }
+}
+
+export class ErrorInvalidArticleAndIssueCombination extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Invalid combination of article slug and issue number.", message: this.message });
+  }
+}
+
 export class ErrorIssueMapNotFound extends HttpError {
   throwHttp(req, res) {
     res.status(404).json({ error: "Issue Map not found.", message: this.message });
+  }
+}
+
+export class ErrorInvalidRequestBody extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Invalid request body.", message: this.message });
   }
 }
 
@@ -107,13 +131,19 @@ export class ErrorUserAlreadyLoggedIn extends HttpError {
 
 export class ErrorUserAlreadyExists extends HttpError {
   throwHttp(req, res) {
-    res.status(409).json({ error: "Username or email already registered with an account.", message: this.message });
+    res.status(409).json({ error: "Email already registered with an account.", message: this.message });
   }
 }
 
 export class ErrorUserStatusAlreadyResolved extends HttpError {
   throwHttp(req, res) {
     res.status(409).json({ error: "User's status is already resolved.", message: this.message });
+  }
+}
+
+export class ErrorDuplicateKey extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Entry has duplicate key in entry.", message: this.message });
   }
 }
 

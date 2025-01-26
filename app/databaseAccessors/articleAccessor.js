@@ -17,7 +17,7 @@ export default class ArticlesAccessor {
    */
   static async getArticle(articleId) {
     await Connection.open();
-    const article = await Article.findBy({ _id: articleId });
+    const article = await Article.findById({ _id: articleId });
     return article;
   }
 
@@ -53,11 +53,11 @@ export default class ArticlesAccessor {
   }
 
   /**
-   * @TODO getArticlesByAuthorUsername
+   * @TODO getArticlesByAuthorEmail
    */
 
   /**
-   * @TODO getArticlesByEditorUsername
+   * @TODO getArticlesByEditorEmail
    */
 
   /**
@@ -73,10 +73,6 @@ export default class ArticlesAccessor {
     const articles = await Article.find({ authors: { $in: [author] } });
     return articles;
   }
-
-  /**
-   * @TODO getArticlesByEditorUsername
-   */
 
   /**
    * getArticlesByEditorID method
@@ -298,34 +294,66 @@ export default class ArticlesAccessor {
   }
 
   /**
-   * addCommentBySlug method
+   * resolveCommentById method
    *
-   * This method finds the article with the given
-   * slug and adds the given comment to its comments.
+   * This method finds the comment with the ID
+   * and resolves it.
    *
-   * @param {slug}  slug of the article to find
-   * @param {comment} comment to be added to the article
-   * @returns a single updated article
+   * @param {commentId} mongo Id of the comment to be resolved
    */
-  static async addCommentBySlug(slug, comment) {
+  static async resolveCommentById(commentId) {
     await Connection.open();
-    // update the article by adding the new comment to its array
-    const newArticle = await Article.findOneAndUpdate(
-      { slug: slug },
+    // find the comment by ID and then resolve it
+    await Article.findOneAndUpdate(
+      { "comments._id": commentId },
       {
-        $push: {
-          comments: comment,
+        $set: {
+          "comments.$.commentStatus": "resolved",
+        },
+      }
+    );
+  }
+
+  /**
+   *
+   * Search for articles with the given query and path
+   *
+   * @param {*} search the term(s) to search for
+   * @param {*} fields the field to search for
+   */
+  static async fuzzySearchArticles(search, fields) {
+    await Connection.open();
+
+    const results = await Article.aggregate([
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: search,
+            path: fields,
+            fuzzy: {},
+          },
         },
       },
-      { returnDocument: "after" }
-    )
-      .populate("comments.user")
-      .populate("authors")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
-      .exec();
-    return newArticle;
+    ]);
+
+    return results;
+  }
+
+  /**
+   * searchArticles method
+   *
+   * This method finds all articles that match the search query
+   *
+   * @param {query} json object of query we want
+   * @param {limit} numerical limit to the number of elements to return
+   */
+  static async searchArticles(query, limit) {
+    await Connection.open();
+    if (limit <= 0) {
+      return [];
+    } else {
+      return await Article.find(query).limit(limit);
+    }
   }
 }

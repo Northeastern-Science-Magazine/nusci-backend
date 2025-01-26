@@ -1,39 +1,29 @@
-import { execSync } from "child_process";
 import request from "supertest";
 import app from "../../../../app/app.js";
-import Connection from "../../../../app/db/connection.js";
 import { log } from "../../../testConfig.js";
 import tokens from "../../../testData/tokenTestData.js";
+import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
   .replace(".js", "")
   .split(/[/\\]/)
   .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
   .reduce((acc, key) => acc && acc[key], log);
-
-beforeAll(async () => {
-  await Connection.open(true);
-});
-
-afterAll(async () => {
-  await Connection.close(true);
-});
-
-beforeEach(async () => {
-  execSync("npm run reset-s", { stdio: "ignore" });
-});
+beforeEach(injectMockConnection);
+beforeEach(executeReset);
+afterAll(closeMockConnection);
 
 describe("Approve or deny given users test", () => {
   test("test only approving users", async () => {
     const listOfUsers = {
-      approve: ["ace", "dhoward"],
+      approve: ["ace@ace.com", "dylan@howard.com"],
       deny: [],
     };
 
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
@@ -44,13 +34,13 @@ describe("Approve or deny given users test", () => {
   test("test only denying users", async () => {
     const listOfUsers = {
       approve: [],
-      deny: ["fdallis", "amartinez"],
+      deny: ["anika@anika.com", "michael@smith.com"],
     };
 
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
@@ -59,14 +49,14 @@ describe("Approve or deny given users test", () => {
 
   test("test approving and denying users", async () => {
     const listOfUsers = {
-      approve: ["ejohnson", "msmith"],
-      deny: ["cbrown", "jdavis"],
+      approve: ["ace@ace.com", "dylan@howard.com"],
+      deny: ["anika@anika.com", "michael@smith.com"],
     };
 
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
@@ -82,7 +72,7 @@ describe("Approve or deny given users test", () => {
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
@@ -98,7 +88,7 @@ describe("Approve or deny given users test", () => {
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
@@ -114,7 +104,7 @@ describe("Approve or deny given users test", () => {
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
@@ -130,7 +120,7 @@ describe("Approve or deny given users test", () => {
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);
@@ -146,7 +136,7 @@ describe("Approve or deny given users test", () => {
     const response = await request(app)
       .put("/user/resolve-status")
       .send(listOfUsers)
-      .set("Cookie", [`token=${tokens.ethan}`]);
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`]);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(404);

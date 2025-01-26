@@ -8,14 +8,14 @@ if (!process.env.SERVER_TOKEN_KEY) {
   throw new Error("SERVER_TOKEN_KEY is not defined in the environment variables");
 }
 
-const generateToken = (username, roles) => {
+const generateToken = (email, roles) => {
   if (!Array.isArray(roles)) {
     roles = [roles];
   }
 
   return jwt.sign(
     {
-      username: username,
+      email: email,
       roles: roles,
     },
     process.env.SERVER_TOKEN_KEY,
@@ -23,35 +23,35 @@ const generateToken = (username, roles) => {
   );
 };
 
-// User data (usernames) with roles
+// User data (email) with roles
 const users = [
-  { username: "ethan", roles: Accounts.Admin.role },
-  { username: "raisa", roles: Accounts.Admin.role },
-  { username: "sutton", roles: Accounts.Developer.role },
-  { username: "arushi", roles: Accounts.Developer.role },
-  { username: "jiajia", roles: Accounts.Photographer.role },
-  { username: "noah", roles: Accounts.Editor.role },
-  { username: "nethra", roles: Accounts.Editor.role },
-  { username: "vianna", roles: Accounts.Designer.role },
-  { username: "jasmine", roles: Accounts.Author.role },
-  { username: "johnnyappleseed", roles: Accounts.Developer.role },
-  { username: "janedoe", roles: Accounts.Photographer.role },
-  { username: "kayla", roles: Accounts.Admin.role },
-  { username: "anika", roles: Accounts.Author.role },
-  { username: "ace", roles: Accounts.Editor.role },
+  { email: "ethan@ethan.com", roles: Accounts.Admin.role },
+  { email: "raisa@raisa.com", roles: Accounts.Admin.role },
+  { email: "sutton@sutton.com", roles: Accounts.Developer.role },
+  { email: "arushi@arushi.com", roles: Accounts.Developer.role },
+  { email: "jiajia@jiajia.com", roles: Accounts.Photographer.role },
+  { email: "noah@noah.com", roles: Accounts.Editor.role },
+  { email: "nethra@nethra.com", roles: Accounts.Editor.role },
+  { email: "vianna@vianna.com", roles: Accounts.Designer.role },
+  { email: "jasmine@jasmine.com", roles: Accounts.Author.role },
+  { email: "johnnyappleseed@johnnyappleseed.com", roles: Accounts.Developer.role },
+  { email: "janedoe@janedoe.com", roles: Accounts.Photographer.role },
+  { email: "kayla@kayla.com", roles: Accounts.Admin.role },
+  { email: "anika@anika.com", roles: Accounts.Author.role },
+  { email: "ace@ace.com", roles: Accounts.Editor.role },
 ];
 
 // Generate tokens for each user
 const tokens = {};
 users.forEach((user) => {
-  tokens[user.username] = generateToken(user.username, user.roles);
+  tokens[user.email] = generateToken(user.email, user.roles);
 });
 
 export default tokens;
 
 /*
 To use, import tokens into testFile, then after get/post add 
-      .set("Cookie", [`token=${tokens.[username]}`])
+      .set("Cookie", [`token=${tokens.[email]}`])
 
 For example (admin privileges):
 const response = await request(app)

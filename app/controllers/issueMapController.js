@@ -1,6 +1,17 @@
+import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import {
+  ErrorInvalidRequestBody,
+  ErrorUnexpected,
+  HttpError,
+  ErrorSectionNotFound,
+  ErrorIssueMapNotFound,
+} from "../error/errors.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor";
 import { IssueMapCreate, IssueMapResponse } from "../models/apiModels/issueMap";
-import Validate from "../models/"
+import Validate from "../models/validationSchemas/validateSchema.js";
+import { number } from "../models/apiModels/baseModel.js";
 
 /**
  * IssueMapController Class
@@ -18,11 +29,34 @@ export default class IssueMapController {
   static async createIssueMap(req, res) {
     try {
       // validate req body and create issue map
-      
-      const issueMap = new IssueMapCreate(req.body);
-      // post to database using accessor, which returns the issue map
-      const postedIssueMap = IssueMapAccessor.postIssueMap(issueMap);
-      // return 
+      Validate.incoming(
+        req.body, 
+        {
+          issueNumber: { type: number, required: true },
+          issueName: { type: string, required: true },
+          pages: {type: number, required: true }
+        },
+        {
+          sections: { type: array, items: { 
+            sectionName: { type: string },
+            sectionColor: { type: string }
+          }}
+        }
+      );
+
+      // check for an already existing issueMap with the same issue number
+      const issueMapByIssueNumber = await IssueMapAccessor.getIssueMapByIssueNumber(req.body.issueNumber);
+      if (issueMapByIssueNumber) {
+        // can I add a new error to errors.js
+        throw new ErrorIssueMapExists();
+      }
+
+      // post to database using accessor, which returns the issue map (db model)
+      const postedIssueMap = IssueMapAccessor.postIssueMap(req.body);
+
+      // validating outgoing issueMap
+      Validate.outgoing(postedIssueMap, IssueMapResponse(), null);
+
       res.status(201).json(postedIssueMap);
     }
     catch (e) {
