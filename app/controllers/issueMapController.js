@@ -5,13 +5,14 @@ import {
   HttpError,
   ErrorSectionNotFound,
   ErrorIssueMapNotFound,
+  ErrorIssueMapExists,
+  ErrorIssueMapWithIssueNumberExists,
+  ErrorTypeOfQuery,
 } from "../error/errors.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
-
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor";
-import { IssueMapCreate, IssueMapResponse } from "../models/apiModels/issueMap";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { number } from "../models/apiModels/baseModel.js";
+import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
 
 /**
  * IssueMapController Class
@@ -37,26 +38,26 @@ export default class IssueMapController {
           pages: {type: number, required: true }
         },
         {
-          sections: { type: array, items: { 
+          sections: { type: array, items: [{ 
             sectionName: { type: string },
             sectionColor: { type: string }
-          }}
+          }]}
         }
       );
-
       // check for an already existing issueMap with the same issue number
       const issueMapByIssueNumber = await IssueMapAccessor.getIssueMapByIssueNumber(req.body.issueNumber);
       if (issueMapByIssueNumber) {
         // can I add a new error to errors.js
-        throw new ErrorIssueMapExists();
+        throw new ErrorTypeOfQuery("Issue map with given issue number already exists.");
       }
-
+      const issueMapByIssueName = await IssueMapAccessor.getIssueByName(req.body.issueName);
+      if (issueMapByIssueName) {
+        throw new ErrorTypeOfQuery("Issue map with given issue name already exists.");
+      }
       // post to database using accessor, which returns the issue map (db model)
       const postedIssueMap = IssueMapAccessor.postIssueMap(req.body);
-
       // validating outgoing issueMap
-      Validate.outgoing(postedIssueMap, IssueMapResponse(), null);
-
+      Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
       res.status(201).json(postedIssueMap);
     }
     catch (e) {

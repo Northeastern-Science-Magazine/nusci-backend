@@ -168,7 +168,6 @@ export default class IssueMapAccessor {
    */
   static async postIssueMap(issueMap) {
     await Connection.open();
-    // assuming the new keyword implies the creation of a new and unique id, and will not introduce any collisions
     const newIssueMap = new IssueMap(issueMap);
     await newIssueMap.save();
     return newIssueMap;
