@@ -58,7 +58,6 @@ export default class PhotoTagController {
         throw new ErrorPhotoTagNotFound();
       }
     
-      Validate.outgoing(photoTag.creatingUser, userPublicResponse);
       Validate.outgoing(photoTag, photoTagResponse);
       res.status(200).json(photoTag);
     } catch (e) {

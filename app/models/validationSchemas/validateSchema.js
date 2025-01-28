@@ -65,15 +65,30 @@ export default class Validate {
 
   /**
    * Given an instance and a schema, this function will remove any fields from the
-   * instnace that are not defined in the schema.
+   * instance that are not defined in the schema.
    *
    * @param {JSON} instance instance of object being stripped
    * @param {JSON} schema json schema definition for object's validation
    * @returns
    */
   static _removeExtraneousFields(instance, schema) {
+    // Only process if schema is an object with defined properties
     if (schema.type !== "object" || !schema.properties) return;
-    for (const key in instance) if (!schema.properties[key]) delete instance[key];
+
+    for (const key in instance) {
+      // Remove field if key does not exist in schema
+      if (!schema.properties[key]) {
+        delete instance[key];
+        continue;
+      }
+
+      // Check if field is defined as nested object in schema
+      const nestedSchema = schema.properties[key].type;
+
+      if (nestedSchema.type) {
+        this._removeExtraneousFields(instance[key], nestedSchema);
+      }
+    }
   }
 
   /**
