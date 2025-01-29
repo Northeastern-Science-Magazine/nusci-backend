@@ -5,7 +5,7 @@ import Accounts from "../models/enums/accounts.js";
 
 const photo = express.Router();
 
-photo.route("/upload"); //upload a photo
+//photo.route("/upload"); //upload a photo
 
 photo.route("/upload/url").post(Authorize.allow([Accounts.Admin, Accounts.Photographer]), PhotoController.addPhotoByURL); // upload a photo by URL
 

@@ -56,6 +56,23 @@ export default class PhotoTagAccessor {
   }
 
   /**
+   * Find tags by their names
+   *
+   * @param {[String]} tagNames - An array of tag names
+   * @returns Tags
+   */
+  static async getTagsByName(tagNames) {
+    try {
+      await Connection.open();
+      const tags = await PhotoTag.find({ tagName: { $in: tagNames } });
+      return tags;
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
+  }
+
+  /**
    * Find tags by color
    *
    * @param {String} color - The color of the tag

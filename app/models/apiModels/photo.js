@@ -1,4 +1,6 @@
 import { BaseModel, string, date, object, now } from "./baseModel.js";
+// import Photography_status from "../enums/photography_status.js";
+//import { ErrorInternalAPIModelValidation } from "../../error/internalErrors.js";
 import { UserPublicResponse } from "./user.js";
 import { PhotoTagResponse } from "./photoTag.js";
 
@@ -9,8 +11,8 @@ import { PhotoTagResponse } from "./photoTag.js";
 export class PhotoCreate extends BaseModel {
   static schema = {
     url: { type: string, required: true },
-    tags: [{ type: string, required: true }],
-    photographers: [{ type: string, required: true }],
+    tags: { type: [string], required: true },
+    photographers: { type: [string], required: true },
     photoTime: { type: date, default: now },
     rights: { type: string, required: true, default: "" },
     creationTime: { type: date, default: now, required: true },

@@ -1,5 +1,7 @@
 import PhotoAccessor from "../databaseAccessors/photo.accessor.js";
-import { PhotoCreate } from "../models/apiModels/photo.js";
+import { PhotoCreate, PhotoResponse } from "../models/apiModels/photo.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 
 /**
  * PhotoController Class
@@ -18,31 +20,54 @@ export default class PhotoController {
    */
   static async addPhotoByURL(req, res) {
     try {
-      const {
-        tags,
-        photographers,
-        internalPhotographer,
-        license = "By uploading this photo, I guarantee that I have the express permission by the owner of this photo to use this photo and share it publicly and/or that this photo falls under the Creative Commons License.",
-        url,
-        photoTime,
-      } = req.body;
-
-      // const newPhoto = {
-      //     tags: tags,
-      //     photographers: photographers,
-      //     internalPhotographer: internalPhotographer,
-      //     license: license,
-      //     url: url,
-      //     photoTime: photoTime,
-      //     creationTime: new Date(),
-      //     modificationTime: new Date(),
-      // };
-
-      const newPhoto = new PhotoCreate(req.body);
-
-      const createdPhoto = await PhotoAccessor.create(newPhoto);
-      // validation
-      return res.status(200).json(createdPhoto);
+      // create dates from the dates sent in the request
+      req.body.photoTime = req.body.photoTime ? new Date(req.body.photoTime) : req.body.photoTime;
+      req.body.creationTime = req.body.creationTime ? new Date(req.body.creationTime) : req.body.creationTime;
+      req.body.modificationTime = req.body.modificationTime
+        ? new Date(req.body.modificationTime)
+        : req.body.modificationTime;
+      // create a PhotoCreate object from the request
+      const photoCreate = new PhotoCreate(req.body);
+      // fetch users
+      const fetchUsers = async (emails, role) => {
+        const users = await UsersAccessor.getUsersByEmail(emails);
+        if (users.length !== emails.length) {
+          throw new ErrorInvalidRequestBody(`Invalid ${role} emails`);
+        }
+        return users;
+      };
+      // fetch tags
+      const fetchTags = async (tagNames) => {
+        const tags = await PhotoTagAccessor.getTagsByName(tagNames);
+        if (tags.length !== tagNames.length) {
+          throw new ErrorInvalidRequestBody(`Invalid tag names`);
+        }
+        return tags;
+      };
+      const { url, tags, photographers, photoTime, rights, creationTime, modificationTime } = photoCreate;
+      // fetch the photographers
+      const photographerUsers = await fetchUsers(photographers, "photographers");
+      // fetch the photo tags
+      const photoTags = await fetchTags(tags);
+      // create a new photo using the photographers and photo tags
+      const newPhoto = {
+        url: url,
+        tags: photoTags,
+        photographers: photographerUsers,
+        photoTime: photoTime,
+        rights: rights,
+        creationTime: creationTime,
+        modificationTime: modificationTime,
+      };
+      // create the photo
+      const createdPhoto = await PhotoAccessor.createPhoto(newPhoto);
+      // fetch photo information with populated objects
+      const populatedCreatedPhoto = await PhotoAccessor.getPhotoByID(createdPhoto._id);
+      // create a new photo response
+      const newPhotoResponse = new PhotoResponse(populatedCreatedPhoto.toObject());
+      // validation needed?
+      // return
+      return res.status(201).json(newPhotoResponse);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

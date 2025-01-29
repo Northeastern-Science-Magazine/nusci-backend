@@ -39,7 +39,14 @@ export default class PhotoAccessor {
    */
   static async getPhotoByID(photoID) {
     await Connection.open();
-    const photo = await Photo.findById(new mongoose.Types.ObjectId(photoID));
+    const photo = await Photo.findById(new mongoose.Types.ObjectId(photoID))
+      .populate("photographers")
+      .populate({
+        path: "tags",
+        populate: {
+          path: "creatingUser",
+        },
+      });
     return photo;
   }
 
