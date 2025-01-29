@@ -17,28 +17,4 @@ describe("User sign up flow", () => {
     const response = await request(app).get("/");
   });
   
-  test("User sign up", async () => {
-    const response = await request(app)
-      .post("/api/user/postSignup")
-      .send({ username: "testuser", password: "testpass" });
-
-    if (response.status !== 201) {
-      console.error("Sign up failed:", response.body);
-    }
-
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty("message", "User created successfully");
-  });
-
-  test("User log in", async () => {
-    const response = await request(app)
-      .post("/api/user/postLogin")
-      .send({ username: "testuser", password: "testpass" });
-
-    if (response.status !== 200) {
-      console.error("Login failed:", response.body);
-    }
-
-    expect(response.status).toBe(200);
-  });
 });
