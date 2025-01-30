@@ -29,8 +29,8 @@ describe("User integration flow", () => {
             });
 
             console.log("Signup response body:", signupResponse.body);
+
         
-        // Enhanced error handling to log the response body and request details if the status is not 201
         if (signupResponse.status !== 201) {
             console.error("Signup failed:", signupResponse.body);
             console.error("Request body:", { 
@@ -48,18 +48,23 @@ describe("User integration flow", () => {
         expect(signupResponse.status).toBe(201);
         expect(signupResponse.body).toHaveProperty("message", "Signup successful.");
 
+        if (!signupResponse.body.username) {
+            console.error("User ID is undefined in the signup response: ", signupResponse.body);
+
+            return;
+        }
 
         // Step 2: Admin approves the account
         const listOfUsers = {
             approve: [signupResponse.body.userId],
             deny: [],
           };
-        console.log("User ID for approval:", listOfUsers); // Log the userId
+        console.log("User ID for approval:", listOfUsers);
         const approvalResponse = await request(app)
             .post("/user/resolve-status")
             .send(listOfUsers);
         
-        // Enhanced error handling to log the response body if the status is not 200
+
         if (approvalResponse.status !== 200) {
             console.error("Approval failed:", approvalResponse.body);
             console.error("Request body:", listOfUsers);
