@@ -43,6 +43,7 @@ describe("Delete PhotoTags Test", () => {
       .post("/photo-tag/create")
       .set("Cookie", [`token=${tokens["raisa@raisa.com"]}`])
       .send(validTag);
+    showLog && console.log(newTag.body);
     expect(newTag.statusCode).toBe(201);
   });
 
