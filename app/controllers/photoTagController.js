@@ -1,8 +1,6 @@
 import { PhotoTagCreate, PhotoTagResponse } from "../models/apiModels/photoTag.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
-import { ErrorTagNameNotFound, ErrorDuplicateKey, ErrorUnexpected, HttpError } from "../error/errors.js";
-import PhotoAccessor from "../databaseAccessors/photo.accessor.js";
-
+import { ErrorTagNameNotFound, ErrorDuplicateKey, ErrorUnexpected, HttpError } from "../error/errors.js"; 
 
 /**
  * PhotoTagController Class
