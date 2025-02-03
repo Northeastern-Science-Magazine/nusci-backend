@@ -111,6 +111,12 @@ export class ErrorIssueMapNotFound extends HttpError {
   }
 }
 
+export class ErrorTagNameNotFound extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Photo Tag with the specified tag name is not found.", message: this.message });
+  }
+}
+
 export class ErrorInvalidRequestBody extends HttpError {
   throwHttp(req, res) {
     res.status(404).json({ error: "Invalid request body.", message: this.message });
