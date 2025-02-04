@@ -65,7 +65,7 @@ describe("Create PhotoTags Test", () => {
 
   test("Tag created successfully", async () => {
     const response = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag);
     showLog && console.log(response.body);
@@ -79,7 +79,7 @@ describe("Create PhotoTags Test", () => {
 
   test("Tag created successfully", async () => {
     const response = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag2);
     showLog && console.log(response.body);
@@ -93,11 +93,11 @@ describe("Create PhotoTags Test", () => {
 
   test("Creating a tag with existing tag name", async () => {
     const response = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag);
     const sameTagName = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag2);
     showLog && console.log(sameTagName.body);
@@ -107,11 +107,11 @@ describe("Create PhotoTags Test", () => {
 
   test("Two tags created successfully by same user", async () => {
     const tag1 = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag);
     const tag2 = await request(app)
-      .post("/photo-tag/create")
+      .post("/phototag/create")
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(validTag3);
     showLog && console.log(tag1.body) && console.log(tag2.body);
