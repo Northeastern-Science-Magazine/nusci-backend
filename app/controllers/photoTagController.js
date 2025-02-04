@@ -2,6 +2,7 @@ import { PhotoTagCreate, PhotoTagResponse } from "../models/apiModels/photoTag.j
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import { ErrorDuplicateKey, ErrorUnexpected, HttpError } from "../error/errors.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import Utils from "../controllers/utils.js"
 import User from "../models/dbModels/user.js";
 import user from "../routes/userRoutes.js";
 
@@ -41,7 +42,7 @@ export default class PhotoTagController {
       }
     }
   }
-  
+
   /**
    * Filters PhotoTags by the given color and/or email, or returns all PhotoTags
    * @param {Request} req 
@@ -49,41 +50,48 @@ export default class PhotoTagController {
    */
   static async filter(req, res) {
     try {
-    const { color, userEmail } = req.body;
-    console.log(color, userEmail)
-    let photoTags = [];
+      const { color, userEmail } = req.body;
+      let photoTags = [];
 
-    if (color && userEmail) {
-      // get the tags by color 
-      const photoTagByColor = await PhotoTagAccessor.getTagsByColor(color);
-      // get the phototags by the given email  
-      const photoTagsByEmail = await PhotoTagAccessorAccessor.getTagsByUser(userEmail);
-
-      // filter the photo tags to find the tags by color and email
-      photoTags = photoTagByColor.filter(photoTag => photoTagsByEmail.includes(photoTag))
+      // get tags by color and email 
+      if (color && userEmail) {
+        // get the tags by color 
+        const photoTagByColor = await PhotoTagAccessor.getTagsByColor(color);
+        // get the user's id based on their email
+        const decodedEmail = decodeURIComponent(userEmail);
+        const userId = await Utils.getUserIdByEmail(decodedEmail)
+        // get the phototags by the id
+        const photoTagsById = await PhotoTagAccessor.getTagsByUserID(userId);
+        // filter the photo tags to find the tags by color and email
+        const photoTagsByColorAndEmail = photoTagByColor.filter(photoTag => 
+          photoTagsById.some(tag => tag._id.toString() === photoTag._id.toString())
+        );        
+        photoTags = photoTagsByColorAndEmail;
+      }
+      // else get tags by color
+      else if (color) {
+        photoTags = await PhotoTagAccessor.getTagsByColor(color);
+      }
+      // else get tags by userEmail
+      else if (userEmail) {
+        const decodedEmail = decodeURIComponent(userEmail);
+        const userId = await Utils.getUserIdByEmail(decodedEmail);
+        photoTags = await PhotoTagAccessor.getTagsByUserID(userId);
+      }
+      // else return all tags 
+      else {
+        photoTags = await PhotoTagAccessor.getAllTags();
+      }
+      // return success status code 
+      res.status(200).json(photoTags);
+      // or throw error
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
     }
-    // else get tags by color
-    else if (color) {
-      photoTags = await PhotoTagAccessor.getTagsByColor(color);
-    }
-    // else get tags by userEmail
-    else if (userEmail) {
-      photoTags = await PhotoTagAccessorAccessor.getTagsByUser(userEmail);
-    }
-    // else return all tags 
-    else {
-      photoTags = await PhotoTagAccessor.getAllTags();
-    }
-    // return success status code 
-    res.status(200).json(photoTags);
-    // or throw error
-  } catch (e) {
-    if (e instanceof HttpError) {
-      e.throwHttp(req, res);
-    } else {
-      new ErrorUnexpected(e.message).throwHttp(req, res);
-    }
-  }
 
   }
 }

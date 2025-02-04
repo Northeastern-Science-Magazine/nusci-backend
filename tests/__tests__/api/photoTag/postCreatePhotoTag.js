@@ -17,7 +17,7 @@ afterAll(closeMockConnection);
 describe("Create PhotoTags Test", () => {
   const validTag = {
     tagName: "Clouds",
-    color: "#4CAF51",
+    color: "#4CAF51", 
     creatingUser: "b00000000000000000000001",
     creationTime: new Date("2024-04-06"),
     modificationTime: new Date("2024-04-07"),

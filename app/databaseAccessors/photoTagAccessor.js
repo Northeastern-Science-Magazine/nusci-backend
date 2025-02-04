@@ -73,9 +73,9 @@ export default class PhotoTagAccessor {
    * @param {String} userID - The ID of the user
    * @returns tags
    */
-  static async getTagsByUser(userID) {
+  static async getTagsByUserID(userID) {
     await Connection.open();
-    const tags = await PhotoTag.find({ user: new mongoose.Types.ObjectId(userID) });
+    const tags = await PhotoTag.find({ creatingUser: new mongoose.Types.ObjectId(userID) });
     return tags;
   }
 
