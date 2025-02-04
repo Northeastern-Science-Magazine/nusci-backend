@@ -75,24 +75,6 @@ describe("Create Photos Test", () => {
     modificationTime: new Date("2024-01-21"),
   };
 
-  // const validPhoto4 = {
-  //   url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
-  //   tags:["tag1", "tag2", "tag3"],
-  //   internalPhotographer: true,
-  //   photographers:["ethan@ethan.com"],
-  //   photoTime: new Date("2024-01-21"),
-  //   license:"",
-  // };
-
-  // const expectedValidPhoto4 = {
-  //   url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
-  //   tags:["tag1", "tag2", "tag3"],
-  //   internalPhotographer: true,
-  //   photographers:["ethan@ethan.com"],
-  //   photoTime: new Date("2024-01-21"),
-  //   license:"",
-  // };
-
   test("Photo created successfully", async () => {
     const response = await request(app)
       .post(`/photo/upload/url`)
@@ -143,20 +125,4 @@ describe("Create Photos Test", () => {
     expect(response.body.creationTime).toBeDefined();
     expect(response.body.modificationTime).toBeDefined();
   });
-
-  // test("Photo created successfully", async () => {
-  //   const response = await request(app)
-  //   .post(`/photo/upload/url`)
-  //     .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
-  //     .send(validPhoto4);
-  //   showLog && console.log(response.body);
-  //   expect(response.statusCode).toBe(201);
-
-  //   expect(response.body.url).toBe(expectedValidPhoto4.url);
-  //   expect(response.body.tags).toBe(expectedValidPhoto4.tags);
-  //   expect(response.body.photographers).toBe(expectedValidPhoto4.photographers);
-  //   expect(response.body.internalPhotographer).toBe(expectedValidPhoto4.internalPhotographer);
-  //   expect(response.body.photoTime).toBeDefined();
-  //   expect(response.body.license).toBe(expectedValidPhoto4.rights);
-  // });
 });
