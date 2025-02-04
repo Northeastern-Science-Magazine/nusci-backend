@@ -169,6 +169,7 @@ export default class IssueMapController {
 
       res.status(200).json(updatedIssue);
     } catch (e) {
+      console.log(e);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {

@@ -14,22 +14,107 @@ beforeEach(executeReset);
 afterAll(closeMockConnection);
 
 describe("Remove section from issue map", () => {
-  test("Remove section with no articles in section", async () => {
+  const validSection = {
+    issueNumber: 1,
+    sections: [
+      {
+        articles: [],
+      },
+    ],
+    articles: ["a00000000000000000000000", "a00000000000000000000001", "a00000000000000000000002"],
+  };
+
+  const emptySection = {
+    issueNumber: 1,
+    sections: [
+      {
+        articles: [],
+      },
+    ],
+    articles: [],
+  };
+
+  test("Remove valid section with no articles in section", async () => {
     const requestBody = {
-      issueNumber: 1,
-      sectionName: "Psychology",
-      sectionColor: "red",
+      issueNumber: 2,
+      sectionName: "Event Planning",
+      sectionColor: "#33FF66",
     };
 
     const response = await request(app)
-        .patch(`/issue-map/remove-section`).send(requestBody);
+      .patch(`/issue-map/remove-section`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(200);
+    expect(response.body.sections).not.toContainEqual(
+      expect.objectContaining({
+        sectionName: requestBody.sectionName,
+        color: requestBody.sectionColor,
+      })
+    );
+
+    expect(response.body.articles).toStrictEqual(emptySection.articles);
+  });
+
+  test("Remove valid section with multiple articles in section", async () => {
+    const requestBody = {
+      issueNumber: 1,
+      sectionName: "Project Discussion",
+      sectionColor: "#FF5733",
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-section`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(200);
+    expect(response.body.sections).not.toContainEqual(
+      expect.objectContaining({
+        sectionName: requestBody.sectionName,
+        color: requestBody.sectionColor,
+      })
+    );
+
+    expect(response.body.articles).toStrictEqual(validSection.articles);
+  });
+
+  test("Remove invalid section with no corresponding issue number", async () => {
+    const requestBody = {
+      issueNumber: 3,
+      sectionName: "Project Discussion",
+      sectionColor: "#FF5733",
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-section`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(requestBody);
 
     showLog && console.log(response);
     expect(response.status).toBe(404);
-    expect(response.body.articles).toStrictEqual(articleObjectIdAfterIssue1Removal);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Issue Map not found.");
   });
-  test("Remove section with multiple articles in section", async () => {});
-  test("Remove section with no matching section name ", async () => {});
-  test("Remove section with no matching color", async () => {});
-  test("Remove section with matching color and section name, but not in the correct issue number", async () => {});
+
+  test("Remove invalid section from issue map where the sectionName and color exists in another issue", async () => {
+    const requestBody = {
+      issueNumber: 2,
+      sectionName: "Project Discussion",
+      sectionColor: "#FF5733",
+    };
+
+    const response = await request(app)
+      .patch(`/issue-map/remove-section`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(requestBody);
+
+    showLog && console.log(response);
+    expect(response.status).toBe(404);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Issue Map not found.");
+  });
 });
