@@ -1,6 +1,7 @@
 import PhotoTag from "../models/dbModels/photoTag.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
+import Photo from "../models/dbModels/photo.js";
 
 /**
  * PhotoTag Accessor Class
@@ -18,6 +19,23 @@ export default class PhotoTagAccessor {
     await Connection.open();
     const createTag = await PhotoTag.create(tag);
     return createTag;
+  }
+
+  /**
+   * finds and deletes a photo tag with cascading effect
+   *
+   * @param {Object} tag - a PhotoTag object
+   * @return the deleted PhotoTag object
+   */
+  static async deletePhotoTag(tag) {
+    await Connection.open();
+    const deletedTag = await PhotoTag.findOneAndDelete(tag).populate("creatingUser");
+    const referencesToPhotoTag = [Photo];
+
+    for (const model of referencesToPhotoTag) {
+      await model.updateMany({ tags: deletedTag._id }, { $pull: { tags: deletedTag._id } });
+    }
+    return deletedTag;
   }
 
   /**

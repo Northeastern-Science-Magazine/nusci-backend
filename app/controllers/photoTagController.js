@@ -3,7 +3,6 @@ import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import { photoTagResponse } from "../models/validationSchemas/photoTag.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { ErrorDuplicateKey, ErrorUnexpected, ErrorPhotoTagNotFound, HttpError } from "../error/errors.js";
-import { userPublicResponse } from "../models/validationSchemas/user.js";
 
 /**
  * PhotoTagController Class
@@ -42,13 +41,39 @@ export default class PhotoTagController {
   }
 
   /**
+   * Deletes a PhotoTag given the tagName within the url param
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async delete(req, res) {
+    try {
+      const tagName = req.params.tagName;
+      const tag = await PhotoTagAccessor.getTagByName(tagName);
+
+      if (!tag) {
+        throw new ErrorPhotoTagNotFound();
+      }
+
+      const deletedTag = await PhotoTagAccessor.deletePhotoTag(tag);
+      const deletedTagResponse = new PhotoTagResponse(deletedTag.toObject());
+      res.status(200).json(deletedTagResponse);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    *
    * @param {Request} req
    * @param {Response} res
    */
   static async getTagByName(req, res) {
     try {
-
       const tagName = req.params.tagName;
 
       const photoTag = await PhotoTagAccessor.getTagByName(tagName).then((_) => _?.toObject());
@@ -57,7 +82,7 @@ export default class PhotoTagController {
         // thrown due to null response from getTagByName when using .toObject() on null.
         throw new ErrorPhotoTagNotFound();
       }
-    
+
       Validate.outgoing(photoTag, photoTagResponse);
       res.status(200).json(photoTag);
     } catch (e) {
