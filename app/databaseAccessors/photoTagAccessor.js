@@ -62,14 +62,9 @@ export default class PhotoTagAccessor {
    * @returns Tags
    */
   static async getTagsByName(tagNames) {
-    try {
       await Connection.open();
       const tags = await PhotoTag.find({ tagName: { $in: tagNames } });
       return tags;
-    } catch (error) {
-      console.error(error);
-      throw new Error(error);
-    }
   }
 
   /**

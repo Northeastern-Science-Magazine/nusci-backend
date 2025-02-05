@@ -1,6 +1,4 @@
 import { BaseModel, string, date, object, now } from "./baseModel.js";
-// import Photography_status from "../enums/photography_status.js";
-//import { ErrorInternalAPIModelValidation } from "../../error/internalErrors.js";
 import { UserPublicResponse } from "./user.js";
 import { PhotoTagResponse } from "./photoTag.js";
 
