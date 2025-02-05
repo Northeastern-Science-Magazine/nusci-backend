@@ -222,7 +222,7 @@ export default class IssueMapAccessor {
         articles: 1,
       }
     );
-    
+
     if (!article || !article.sections || !article.sections[0]) {
       throw new ErrorIssueMapNotFound();
     }
@@ -233,7 +233,8 @@ export default class IssueMapAccessor {
     const finalArticle = await IssueMap.findOneAndUpdate(
       { issueNumber: issueNumber },
       {
-        $push: {
+        // make sure articles are unique
+        $addToSet: {
           articles: { $each: toMove },
         },
       },

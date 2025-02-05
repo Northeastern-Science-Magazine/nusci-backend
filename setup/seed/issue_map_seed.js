@@ -45,7 +45,7 @@ export default [
         sectionName: "Event Planning",
         color: "#33FF66",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000001"),
-        articles: [new mongoose.Types.ObjectId("a00000000000000000000003")],
+        articles: [],
         creationTime: new Date("2024-04-03"),
         modificationTime: new Date("2024-04-03"),
       },
@@ -54,6 +54,7 @@ export default [
         color: "#FF3366",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000001"),
         articles: [
+          new mongoose.Types.ObjectId("a00000000000000000000003"),
           new mongoose.Types.ObjectId("a00000000000000000000004"),
           new mongoose.Types.ObjectId("a00000000000000000000005"),
         ],

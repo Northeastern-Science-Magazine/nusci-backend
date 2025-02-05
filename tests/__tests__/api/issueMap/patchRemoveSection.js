@@ -31,7 +31,7 @@ describe("Remove section from issue map", () => {
         articles: [],
       },
     ],
-    articles: [],
+    articles: ["a00000000000000000000003", "a00000000000000000000004", "a00000000000000000000005"],
   };
 
   test("Remove valid section with no articles in section", async () => {
