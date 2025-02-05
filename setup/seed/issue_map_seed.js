@@ -11,7 +11,6 @@ export default [
         color: "#FF5733",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000000"),
         articles: [
-          new mongoose.Types.ObjectId("a00000000000000000000000"),
           new mongoose.Types.ObjectId("a00000000000000000000001"),
         ],
         creationTime: new Date("2024-04-02"),
@@ -21,14 +20,13 @@ export default [
         sectionName: "Action Items",
         color: "#3366FF",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000000"),
-        articles: [new mongoose.Types.ObjectId("a00000000000000000000002")],
+        articles: [],
         creationTime: new Date("2024-04-02"),
         modificationTime: new Date("2024-04-02"),
       },
     ],
     articles: [
       new mongoose.Types.ObjectId("a00000000000000000000000"),
-      new mongoose.Types.ObjectId("a00000000000000000000001"),
       new mongoose.Types.ObjectId("a00000000000000000000002"),
     ],
     pages: 5,
@@ -54,9 +52,7 @@ export default [
         color: "#FF3366",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000001"),
         articles: [
-          new mongoose.Types.ObjectId("a00000000000000000000003"),
           new mongoose.Types.ObjectId("a00000000000000000000004"),
-          new mongoose.Types.ObjectId("a00000000000000000000005"),
         ],
         creationTime: new Date("2024-04-04"),
         modificationTime: new Date("2024-04-04"),
@@ -64,7 +60,6 @@ export default [
     ],
     articles: [
       new mongoose.Types.ObjectId("a00000000000000000000003"),
-      new mongoose.Types.ObjectId("a00000000000000000000004"),
       new mongoose.Types.ObjectId("a00000000000000000000005"),
     ],
     pages: 7,
