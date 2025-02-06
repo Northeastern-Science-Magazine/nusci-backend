@@ -3,7 +3,9 @@ import PhotoAccessor from "../databaseAccessors/photo.accessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { PhotoResponse } from "..models/validationSchemas/photo.js";
+//import { PhotoResponse } from "..models/validationSchemas/photo.js";
+import PhotoResponse from "../models/validationSchemas/photo.js";
+
 /**
  * PhotoController Class
  *

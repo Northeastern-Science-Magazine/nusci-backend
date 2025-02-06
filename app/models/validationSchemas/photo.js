@@ -1,15 +1,14 @@
-import { BaseModel, string, date, object, now } from "./baseModel.js";
+import { string, date, array, integer, object } from "./schemaTypes.js";
 import { UserPublicResponse } from "./user.js";
-import { PhotoTagResponse } from "./photoTag.js";
 
-const PhotoProperty = {
+const photoProperties = {
   url: { type: string, required: true },
   tags: { type: [string], required: true },
   photographers: { type: [string], required: true },
-  photoTime: { type: date, default: now },
+  photoTime: { type: date, required: true },
   rights: { type: string, required: true, default: "" },
-  creationTime: { type: date, default: now, required: true },
-  modificationTime: { type: date, default: now, required: true },
+  creationTime: { type: date, required: true },
+  modificationTime: { type: date, required: true },
 };
 
 /**
@@ -19,7 +18,7 @@ const PhotoProperty = {
 export const PhotoCreate = {
   type: object,
   id: "/photo/create",
-  properties: { ...PhotoProperty },
+  properties: { ...photoProperties },
 };
 
 /**
@@ -28,30 +27,7 @@ export const PhotoCreate = {
 export const PhotoResponse = {
   type: object,
   id: "/photo/response",
-  properties: { ...photo },
+  properties: { ...photoProperties },
 };
 
-export class PhotoUpdate extends BaseModel {
-  static schema = {
-    url: { type: string },
-    tags: { type: string },
-    photographers: { type: string },
-    photoTime: { type: date },
-    rights: { type: string },
-    modificationTime: { type: date, default: now, override: true },
-  };
 
-  constructor(json) {
-    super(json, PhotoUpdate.schema);
-  }
-}
-
-export class PhotoDelete extends BaseModel {
-  static schema = {
-    url: { type: String, required: true },
-  };
-
-  constructor(json) {
-    super(json, PhotoDelete.schema);
-  }
-}
