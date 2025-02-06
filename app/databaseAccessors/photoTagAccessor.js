@@ -32,6 +32,18 @@ export default class PhotoTagAccessor {
   }
 
   /**
+   * Find and returns tag IDs by name
+   *
+   * @param {ObjectID} tagNames - The names of the tags
+   * @returns Tag IDs of the tag names
+   */
+  static async getTagIdsByName(tagNames) {
+    await Connection.open();
+    const tagIds = await PhotoTag.find({ tagName: { $in: tagNames } }, "_id");
+    return tagIds;
+  }
+
+  /**
    * Find and returns populated tag by its Id
    *
    * @param {ObjectID} tagId - The ID of the tag
@@ -62,9 +74,9 @@ export default class PhotoTagAccessor {
    * @returns Tags
    */
   static async getTagsByName(tagNames) {
-      await Connection.open();
-      const tags = await PhotoTag.find({ tagName: { $in: tagNames } });
-      return tags;
+    await Connection.open();
+    const tags = await PhotoTag.find({ tagName: { $in: tagNames } });
+    return tags;
   }
 
   /**
