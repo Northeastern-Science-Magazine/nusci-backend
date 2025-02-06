@@ -29,3 +29,19 @@ export const userResponseRaisa = {
   creationTime: "2024-02-27T00:00:00.000Z",
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
+
+export const userResponseVianna = {
+  firstName: "Vianna",
+  lastName: "W",
+  pronouns: [],
+  graduationYear: 2025,
+  major: "Pharmaceutical Science",
+  location: "Boston",
+  profileImage: "https://example.com/profile.jpg",
+  bannerImage: "https://example.com/banner.jpg",
+  bio: "Good author, awesome designer",
+  email: "vianna@vianna.com",
+  roles: ["designer"],
+  creationTime: "2024-02-28T00:00:00.000Z",
+  modificationTime: "2024-02-28T00:00:00.000Z",
+}
