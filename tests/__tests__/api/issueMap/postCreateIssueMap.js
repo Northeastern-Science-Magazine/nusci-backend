@@ -82,6 +82,20 @@ describe( "Create Issue Map Tests", () => {
         expect(response.status).toBe(409);
         expect(response.body).toStrictEqual({error: "Invalid query type.", message: "Issue map with given issue number already exists."})
     });
-
-    // should I make a test for non-admin permissions? how would I go about doing that; i assume changing the cookie?
+    test("Attempt invalid issue map create: wrong user permissions", async () => {
+        const response = await request(app)
+        .post("/issue-map/create")
+        .set("Cookie", [`token=${tokens["arushi@arushi.com"]}`])
+        .send({
+            issueNumber: 20,
+            issueName: "donut seam like a snow day?",
+            pages: 70,
+            sections: [
+                { sectionName: "bright futures", sectionColor: "insert hex code here"}
+            ]
+        });
+        showLog && console.log(response.body);
+        expect(response.status).toBe(403);
+        expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource."})
+    });
 });

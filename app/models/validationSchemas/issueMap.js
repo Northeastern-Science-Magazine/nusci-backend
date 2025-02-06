@@ -1,3 +1,6 @@
+import { number } from "../apiModels/baseModel";
+import { string } from "./schemaTypes";
+
 /**
  *  Incoming/Outgoing validation schema (used in post requests, creating a new issue map) 
  */

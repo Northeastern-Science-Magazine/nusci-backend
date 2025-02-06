@@ -9,7 +9,6 @@ import {
   ErrorIssueMapWithIssueNumberExists,
   ErrorTypeOfQuery,
 } from "../error/errors.js";
-import IssueMapAccessor from "../databaseAccessors/issueMapAccessor";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { number } from "../models/apiModels/baseModel.js";
 import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
