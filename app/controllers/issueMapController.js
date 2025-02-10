@@ -17,7 +17,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 /**
  * IssueMapController Class
  *
- * This class controls the behaviour of any web request
+ * This class controls the behavior of any web request
  * related to IssueMaps.
  */
 
@@ -139,6 +139,34 @@ export default class IssueMapController {
       }
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
+      res.status(200).json(updatedIssue);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * method to remove section from the issue map.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async patchRemoveSection(req, res) {
+    try {
+      const issueNumber = req.body.issueNumber;
+      const sectionName = req.body.sectionName;
+      const sectionColor = req.body.sectionColor;
+
+      if (!sectionName || !sectionColor || !issueNumber) {
+        throw new ErrorInvalidRequestBody();
+      }
+
+      const updatedIssue = await IssueMapAccessor.removeSection(issueNumber, sectionName, sectionColor);
+
       res.status(200).json(updatedIssue);
     } catch (e) {
       if (e instanceof HttpError) {
