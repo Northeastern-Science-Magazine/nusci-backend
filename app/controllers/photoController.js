@@ -1,10 +1,11 @@
 import PhotoAccessor from "../databaseAccessors/photo.accessor.js";
-// import { PhotoCreate, PhotoResponse } from "../models/apiModels/photo.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-//import { PhotoResponse } from "..models/validationSchemas/photo.js";
-import publicPhotoResponse from "../models/validationSchemas/photo.js";
+import { photoPublicResponse, photoCreate } from "../models/validationSchemas/photo.js";
+import { photoTagPublicResponse } from "../models/validationSchemas/photoTag.js";
+import { userPublicResponse } from "../models/validationSchemas/user.js";
+
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 
 /**
@@ -24,7 +25,6 @@ export default class PhotoController {
    */
   static async addPhotoByURL(req, res) {
     try {
-
       Validate.incoming(
         req.body,
         {
@@ -39,9 +39,7 @@ export default class PhotoController {
         { override: ["creationTime", "modificationTime"] }
       );
 
-      // create a PhotoCreate object from the request
-     // const photoCreate = new PhotoResponse(req.body);
-      // fetch users
+      // fetch user ids 
       const fetchUsers = async (emails, role) => {
         const userIDs = await UsersAccessor.getUserIdsByEmail(emails);
         if (userIDs.length !== emails.length) {
@@ -49,7 +47,8 @@ export default class PhotoController {
         }
         return userIDs;
       };
-      // fetch tags
+
+      // fetch tag ids 
       const fetchTags = async (tagNames) => {
         const tagIDs = await PhotoTagAccessor.getTagIdsByName(tagNames);
         if (tagIDs.length !== tagNames.length) {
@@ -57,45 +56,28 @@ export default class PhotoController {
         }
         return tagIDs;
       };
-      // const { url, tags, photographers, photoTime, rights, creationTime, modificationTime } = photoCreate;
-      // // fetch the photographers
-      // const photographerUsers = await fetchUsers(photographers, "photographers");
-      // // fetch the photo tags
-      // const photoTags = await fetchTags(tags);
-      // // create a new photo using the photographers and photo tags
-      // const newPhoto = {
-      //   url: url,
-      //   tags: photoTags,
-      //   photographers: photographerUsers,
-      //   photoTime: photoTime,
-      //   rights: rights,
-      //   creationTime: creationTime,
-      //   modificationTime: modificationTime,
-      // };
+      
+      // fetch user ids and tag ids 
       req.body.photographers =  await fetchUsers(req.body.photographers, "photographers");
       req.body.tags = await fetchTags(req.body.tags);
-      const createdPhoto = await PhotoAccessor.createPhoto(req.body);
-      // create the photo
-      const populatedCreatedPhoto = await PhotoAccessor.getPhotoByID(createdPhoto._id);
-      //const populatedCreatedPhoto = await PhotoAccessor.getPhotoByID(createdPhoto._id).then((_) => _?.toObject());
-      //const user = await UsersAccessor.getUserByEmail(email)
-    
-      try {
-        Validate.outgoing(populatedCreatedPhoto, publicPhotoResponse);
-      } catch (e) {
-        console.error(populatedCreatedPhoto)
-        console.error(e)
-      }
       
+      // create photo
+      const createdPhoto = await PhotoAccessor.createPhoto(req.body);
+      const populatedCreatedPhoto = await PhotoAccessor.getPhotoByID(createdPhoto._id).then((_) => _?.toObject());  
+      
+      // validate the photo 
+      Validate.outgoing(populatedCreatedPhoto, photoPublicResponse);
+
+      // validate the tags 
+      populatedCreatedPhoto.tags.forEach(tag => {
+        Validate.outgoing(tag, photoTagPublicResponse); 
+        Validate.outgoing(tag.creatingUser, userPublicResponse);  
+      }); 
+
+      // validate the photographers 
+      populatedCreatedPhoto.photographers.forEach(user => Validate.outgoing(user, userPublicResponse));
+
       return res.status(201).json(populatedCreatedPhoto);
-      // fetch photo information with populated objects
-     
-      // create a new photo response
-      // const newPhotoResponse = new PhotoResponse(populatedCreatedPhoto.toObject());
-      // validation
-     
-      // return
-     
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -104,18 +86,4 @@ export default class PhotoController {
       }
     }
   }
-
-  // static async addPhotoByFile(req, res) {
-  //   try {
-  //     const newPhoto = new PhotoCreate(req.body);
-  //     const createdPhoto = await Photo.create(newPhoto);
-  //     return res.status(200).json(createdPhoto);
-  //   } catch (e) {
-  //     if (e instanceof HttpError) {
-  //       e.throwHttp(req, res);
-  //     } else {
-  //       new ErrorUnexpected(e.message).throwHttp(req, res);
-  //     }
-  //   }
-  // }
 }
