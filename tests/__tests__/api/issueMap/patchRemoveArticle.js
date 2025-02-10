@@ -18,7 +18,7 @@ describe("Remove article from issue map", () => {
   const validArticleSlugFromIssue1 = "exploring-the-future-ai-integration-in-everyday-life";
   const validArticleSlugFromIssue2 = "discovery-of-ancient-flying-machine-leaves-scientists-baffled";
   const invalidArticleSlug = "invalid-article-slug";
-  const articleObjectIdAfterIssue1Removal = ["a00000000000000000000002"];
+  const articleObjectIdAfterIssue1Removal = [];
   const articleObjectIdAfterIssue2Removal = ["a00000000000000000000005"];
 
   test("Invalid article removal due to invalid issue number", async () => {

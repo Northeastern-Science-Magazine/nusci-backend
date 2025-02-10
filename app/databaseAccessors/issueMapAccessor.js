@@ -179,7 +179,7 @@ export default class IssueMapAccessor {
     await updated.save();
 
     // remove section
-    const issues = await IssueMap.findOneAndUpdate(
+    const issue = await IssueMap.findOneAndUpdate(
       { issueNumber: issueNumber },
       {
         $pull: {
@@ -193,11 +193,11 @@ export default class IssueMapAccessor {
     );
 
     // no valid issue map
-    if (!issues) {
+    if (!issue) {
       throw new ErrorIssueMapNotFound();
     }
 
-    return issues;
+    return issue;
   }
 
   /**
@@ -219,7 +219,6 @@ export default class IssueMapAccessor {
             color: sectionColor,
           },
         },
-        articles: 1,
       }
     );
 

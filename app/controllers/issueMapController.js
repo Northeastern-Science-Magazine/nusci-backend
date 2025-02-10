@@ -155,13 +155,13 @@ export default class IssueMapController {
    * @param {Request} req
    * @param {Response} res
    */
-  static async patchSection(req, res) {
+  static async patchRemoveSection(req, res) {
     try {
       const issueNumber = req.body.issueNumber;
       const sectionName = req.body.sectionName;
       const sectionColor = req.body.sectionColor;
 
-      if (!sectionName || !sectionColor) {
+      if (!sectionName || !sectionColor || !issueNumber) {
         throw new ErrorInvalidRequestBody();
       }
 

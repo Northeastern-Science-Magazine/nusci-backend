@@ -12,6 +12,7 @@ export default [
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000000"),
         articles: [
           new mongoose.Types.ObjectId("a00000000000000000000001"),
+          new mongoose.Types.ObjectId("a00000000000000000000002"),
         ],
         creationTime: new Date("2024-04-02"),
         modificationTime: new Date("2024-04-02"),
@@ -25,10 +26,7 @@ export default [
         modificationTime: new Date("2024-04-02"),
       },
     ],
-    articles: [
-      new mongoose.Types.ObjectId("a00000000000000000000000"),
-      new mongoose.Types.ObjectId("a00000000000000000000002"),
-    ],
+    articles: [new mongoose.Types.ObjectId("a00000000000000000000000")],
     pages: 5,
     creatingUser: new mongoose.Types.ObjectId("b00000000000000000000000"),
     creationTime: new Date("2024-04-01"),
@@ -51,9 +49,7 @@ export default [
         sectionName: "Decorations",
         color: "#FF3366",
         creatingUser: new mongoose.Types.ObjectId("b00000000000000000000001"),
-        articles: [
-          new mongoose.Types.ObjectId("a00000000000000000000004"),
-        ],
+        articles: [new mongoose.Types.ObjectId("a00000000000000000000004")],
         creationTime: new Date("2024-04-04"),
         modificationTime: new Date("2024-04-04"),
       },

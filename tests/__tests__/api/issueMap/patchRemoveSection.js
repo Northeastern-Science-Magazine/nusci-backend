@@ -16,16 +16,12 @@ afterAll(closeMockConnection);
 describe("Remove section from issue map", () => {
   const validSection = {
     issueNumber: 1,
-    sections: [
-      {
-        articles: [],
-      },
-    ],
-    articles: ["a00000000000000000000000", "a00000000000000000000002", "a00000000000000000000001"],
+    sections: [{ sectionName: "Project Discussion", sectionColor: "#FF5733", articles: [] }],
+    articles: ["a00000000000000000000000", "a00000000000000000000001", "a00000000000000000000002"],
   };
 
   const emptySection = {
-    issueNumber: 1,
+    issueNumber: 2,
     sections: [
       {
         articles: [],
