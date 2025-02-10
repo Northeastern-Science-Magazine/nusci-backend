@@ -24,12 +24,12 @@ export default class PhotoTagAccessor {
   /**
    * finds and deletes a photo tag with cascading effect
    *
-   * @param {Object} tag - a PhotoTag object
+   * @param {Object} tag - name of the tag
    * @return the deleted PhotoTag object
    */
   static async deletePhotoTag(tag) {
     await Connection.open();
-    const deletedTag = await PhotoTag.findOneAndDelete(tag).populate("creatingUser");
+    const deletedTag = await PhotoTag.findOneAndDelete({tagName: tag}).populate("creatingUser");
     const referencesToPhotoTag = [Photo];
 
     for (const model of referencesToPhotoTag) {

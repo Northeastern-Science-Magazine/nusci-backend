@@ -48,16 +48,14 @@ export default class PhotoTagController {
    */
   static async delete(req, res) {
     try {
-      const tagName = req.params.tagName;
-      const tag = await PhotoTagAccessor.getTagByName(tagName);
-
-      if (!tag) {
-        throw new ErrorPhotoTagNotFound();
+       try {
+        const tagName = req.params.tagName;
+        const deletedTag = await PhotoTagAccessor.deletePhotoTag(tagName);
+        const deletedTagResponse = new PhotoTagResponse(deletedTag.toObject());
+        res.status(200).json(deletedTagResponse);
+      } catch (e) {
+        throw new ErrorPhotoTagNotFound(); 
       }
-
-      const deletedTag = await PhotoTagAccessor.deletePhotoTag(tag);
-      const deletedTagResponse = new PhotoTagResponse(deletedTag.toObject());
-      res.status(200).json(deletedTagResponse);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
