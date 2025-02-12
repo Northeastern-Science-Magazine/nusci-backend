@@ -26,7 +26,7 @@ app.use("/", defaultRouter);
 app.use("/articles", articleRouter);
 app.use("/issue-map", issueMapRouter);
 app.use("/photo", photoRouter);
-app.use("/photo-tag", photoTagRouter);
+app.use("/phototag", photoTagRouter);
 app.use("/user", userRouter);
 
 export default app;
