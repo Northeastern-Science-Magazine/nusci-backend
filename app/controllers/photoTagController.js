@@ -48,7 +48,7 @@ export default class PhotoTagController {
    * @param {Request} req 
    * @param {Response} res 
    */
-  static async filter(req, res) {
+  static async filterTagsByColorAndEmail(req, res) {
     try {
       const { color, userEmail } = req.body;
       let photoTags = [];

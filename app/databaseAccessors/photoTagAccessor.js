@@ -105,15 +105,4 @@ export default class PhotoTagAccessor {
     return tags;
   }
 
-   /**
-   * Find tags by user's email 
-   *
-   * @param {String} user email - The email of the user 
-   * @returns tags
-   */
-   static async getTagsByUser(userEmail) {
-    await Connection.open();
-    const tags = await PhotoTag.find({ user: new mongoose.Types.ObjectId(userEmail) });
-    return tags;
-  }
 }

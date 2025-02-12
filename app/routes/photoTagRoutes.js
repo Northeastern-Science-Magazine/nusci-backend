@@ -7,7 +7,8 @@ const photoTag = express.Router();
 
 photoTag.route("/create").post(Authorize.allow([Accounts.Admin, Accounts.Photographer]), PhotoTagController.create); //create a phototag
 photoTag.route("/tag-name/:tagName"); //get a tag by its name
-photoTag.route("/filter").get(Authorize.allow([Accounts.Admin, Accounts.Photographer]), PhotoTagController.filter); //get photo tags by colors, creating users
+photoTag.route("/filter").get(Authorize.allow([Accounts.Admin, Accounts.Photographer]), 
+PhotoTagController.filterTagsByColorAndEmail); //get photo tags by colors, creating users
 photoTag.route("/update/:tagName"); //update a photo tag
 photoTag.route("/delete/:tagName"); //delete a photo tag
 export default photoTag;
