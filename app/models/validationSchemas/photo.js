@@ -1,6 +1,6 @@
 import { string, date, array, integer, object } from "./schemaTypes.js";
 import { userPublicResponse } from "./user.js";
-import { photoTagPublicResponse } from "./temp_phototag.js"
+import { photoTagPublicResponse } from "./phototag.js";
 
 const commonPhotoProperties = {
   url: { type: string, required: true },
