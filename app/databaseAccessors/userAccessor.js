@@ -46,7 +46,7 @@ export default class UsersAccessor {
    */
   static async getUserIdByEmail(email) {
     await Connection.open();
-    const userId = await User.find({ email: email }, "_id");
+    const userId = await User.findOne({ email: email }, "_id");
     return userId;
   }
 
