@@ -1,6 +1,6 @@
 import { string, date, array, integer, object } from "./schemaTypes.js";
 import { userPublicResponse } from "./user.js";
-import { photoTagPublicResponse } from "./phototag.js";
+import { photoTagPublicResponse } from "./photoTag.js";
 
 const commonPhotoProperties = {
   url: { type: string, required: true },
@@ -31,23 +31,21 @@ export const photoResponse = {
   properties: { ...commonPhotoProperties },
 };
 
-
 /**
  * Represents the http response body returned to a frontend with no private data.
  */
 export const photoPublicResponse = {
   type: object,
   id: "/photo/public/response",
-  properties: { 
+  properties: {
     ...commonPhotoProperties,
     photographers: {
-      type: array, 
-      items: userPublicResponse, 
+      type: array,
+      items: userPublicResponse,
     },
     tags: {
-      type: array, 
-      items: photoTagPublicResponse, 
+      type: array,
+      items: photoTagPublicResponse,
     },
-   },
+  },
 };
-
