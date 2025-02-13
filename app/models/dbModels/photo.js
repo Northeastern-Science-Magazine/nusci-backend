@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import User from "./user.js";
+import PhotoTag from "./photoTag.js";
 
 const Schema = mongoose.Schema;
 
@@ -6,8 +8,8 @@ const Schema = mongoose.Schema;
 const PhotoSchema = new Schema(
   {
     url: { type: String, unique: true, required: true },
-    tags: [{ type: Schema.Types.ObjectId, ref: "PhotoTags" }],
-    photographers: [{ type: Schema.Types.ObjectId, ref: "Users", required: true }],
+    tags: [{ type: Schema.Types.ObjectId, ref: PhotoTag }],
+    photographers: [{ type: Schema.Types.ObjectId, ref: User, required: true }],
     photoTime: { type: Date },
     rights: { type: String, required: true, default: "" },
     creationTime: { type: Date, required: true },
