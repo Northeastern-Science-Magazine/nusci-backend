@@ -85,6 +85,28 @@ describe("Create Photos Test", () => {
     modificationTime: new Date("2024-01-22"),
   };
 
+  const invalidTag = {
+        url: "https://www.pond-planet.co.uk/blog/wp-content/uploads/2023/12/Untitled-91.png",
+        tags: ["aaaaaaaafjdskfjsklhglk"],
+        photographers: ["raisa@raisa.com"],
+        photoTime: new Date("2024-01-21"),
+        rights: "All rights reserved",
+        creationTime: new Date("2024-01-21"),
+        modificationTime: new Date("2024-01-21"),
+      };
+    
+      test("Attempt to add invalid tag", async () => {
+        const response = await request(app)
+          .post(`/photo/upload/url`)
+          .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+          .send(invalidTag);
+    
+        expect(response.status).toBe(404);
+        const errorMessage = JSON.parse(response.text).error;
+        expect(errorMessage).toStrictEqual("Invalid request body.");
+      });
+    
+
   test("Invalid photo creation due to invalid photographer email", async () => {
     const response = await request(app)
     .post(`/photo/upload/url`)
@@ -95,7 +117,7 @@ describe("Create Photos Test", () => {
     const errorMessage = JSON.parse(response.text).error;
     expect(errorMessage).toStrictEqual("Invalid request body.");
   });
-  
+
 
   test("Photo created successfully", async () => {
     const response = await request(app)
