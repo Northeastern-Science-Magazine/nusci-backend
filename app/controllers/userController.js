@@ -274,19 +274,20 @@ export default class UserController {
    */
   static async resolveUserApprovals(req, res) {
     try {
+      console.log("Test0");
       Validate.incoming(req.body, {
         approve: { type: array, items: { type: string } },
         deny: { type: array, items: { type: string } },
       });
-
+      console.log("test1");
       if (!(req.body.approve && req.body.deny)) {
         throw new ErrorValidation("No users given to resolve status for.");
       }
-
+      console.log("test2");
       const approveUsers = req.body.approve ?? [];
       const denyUsers = req.body.deny ?? [];
       const allUsers = [...approveUsers, ...denyUsers];
-
+      console.log("test3");
       //check if the users given exists and are pending
       for (const email of allUsers) {
         //check if the user exists and is pending

@@ -31,45 +31,18 @@ describe("User integration flow", () => {
             console.log("Signup response body:", signupResponse.body);
 
         
-        if (signupResponse.status !== 201) {
-            console.error("Signup failed:", signupResponse.body);
-            console.error("Request body:", { 
-                username: "testuser", 
-                password: "testpass", 
-                status: AccountStatus.Pending.toString(), 
-                email: "testuser@example.com", 
-                graduationYear: 2023, 
-                lastName: "User", 
-                firstName: "Test" 
-            });
-            console.error("Response status:", signupResponse.status);
-        }
-        
         expect(signupResponse.status).toBe(201);
         expect(signupResponse.body).toHaveProperty("message", "Signup successful.");
 
-        if (!signupResponse.body.username) {
-            console.error("User ID is undefined in the signup response: ", signupResponse.body);
-
-            return;
-        }
-
         // Step 2: Admin approves the account
         const listOfUsers = {
-            approve: [signupResponse.body.userId],
+            approve: ["testuser"],
             deny: [],
           };
         console.log("User ID for approval:", listOfUsers);
         const approvalResponse = await request(app)
-            .post("/user/resolve-status")
+            .put("/user/resolve-status")
             .send(listOfUsers);
-        
-
-        if (approvalResponse.status !== 200) {
-            console.error("Approval failed:", approvalResponse.body);
-            console.error("Request body:", listOfUsers);
-            console.error("Response status:", approvalResponse.status);
-        }
         
         expect(approvalResponse.status).toBe(200);
         expect(approvalResponse.body).toHaveProperty("message", "User approved successfully");
@@ -85,7 +58,7 @@ describe("User integration flow", () => {
         // Step 4: User requests their profile
         const profileResponse = await request(app)
             .get("/user/me")
-            .set("Authorization", `Bearer ${loginResponse.body.token}`);
+            .set("Cookie", `token=${loginResponse.body.token}`);
         
         expect(profileResponse.status).toBe(200);
         expect(profileResponse.body).toHaveProperty("username", "testuser");
