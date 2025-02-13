@@ -147,6 +147,12 @@ export class ErrorDuplicateKey extends HttpError {
   }
 }
 
+export class ErrorExistingIssueMapsWithCredentials extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Issue map with provided credentials already exists.", message: this.message });
+  }
+}
+
 /**
  * 500 Errors
  *

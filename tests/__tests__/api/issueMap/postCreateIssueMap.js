@@ -23,7 +23,7 @@ describe( "Create Issue Map Tests", () => {
             issueName: "newfangled rotary phones",
             pages: 3
         });
-        showLog && console.log(response);
+        console.log(response);
         expect(response.status).toBe(201);
         expect(response.body).toBe({issueNumber: 3, issueName: "newfangled rotary phones", pages: 3, sections: []}); // or toStrictEqual?
     });

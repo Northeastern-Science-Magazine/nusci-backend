@@ -1,17 +1,26 @@
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+
 import {
   ErrorInvalidRequestBody,
   ErrorUnexpected,
   HttpError,
   ErrorSectionNotFound,
   ErrorIssueMapNotFound,
-  ErrorIssueMapExists,
-  ErrorIssueMapWithIssueNumberExists,
   ErrorTypeOfQuery,
 } from "../error/errors.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { number } from "../models/apiModels/baseModel.js";
+import { number, string, array } from "../models/validationSchemas/schemaTypes.js";
 import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
+
+import ArticleStatus from "../models/enums/articleStatus.js";
+import DesignStatus from "../models/enums/designStatus.js";
+import PhotographyStatus from "../models/enums/photographyStatus.js";
+import WritingStatus from "../models/enums/writingStatus.js";
+
+// deprecated import?
+import Article from "../models/dbModels/article.js";
 
 /**
  * IssueMapController Class
@@ -31,32 +40,12 @@ export default class IssueMapController {
       // validate req body and create issue map
       Validate.incoming(
         req.body, 
-        {
-          issueNumber: { type: number, required: true },
-          issueName: { type: string, required: true },
-          pages: {type: number, required: true }
-        },
-        {
-          sections: { type: array, items: [{ 
-            sectionName: { type: string },
-            sectionColor: { type: string }
-          }]}
-        }
+        issueMapValidationSchema,
       );
-      // check for an already existing issueMap with the same issue number
-      const issueMapByIssueNumber = await IssueMapAccessor.getIssueMapByIssueNumber(req.body.issueNumber);
-      if (issueMapByIssueNumber) {
-        // can I add a new error to errors.js
-        throw new ErrorTypeOfQuery("Issue map with given issue number already exists.");
-      }
-      const issueMapByIssueName = await IssueMapAccessor.getIssueByName(req.body.issueName);
-      if (issueMapByIssueName) {
-        throw new ErrorTypeOfQuery("Issue map with given issue name already exists.");
-      }
       // post to database using accessor, which returns the issue map (db model)
-      const postedIssueMap = IssueMapAccessor.postIssueMap(req.body);
-      // validating outgoing issueMap
-      Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
+      const postedIssueMap = IssueMapAccessor.createIssueMap(req.body);
+      // validating outgoing issueMap (getting rid of this, it might be removing important fields)
+      // Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
       res.status(201).json(postedIssueMap);
     }
     catch (e) {
