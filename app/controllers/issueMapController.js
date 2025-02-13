@@ -1,18 +1,26 @@
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+
 import {
   ErrorInvalidRequestBody,
   ErrorUnexpected,
   HttpError,
   ErrorSectionNotFound,
   ErrorIssueMapNotFound,
+  ErrorTypeOfQuery,
 } from "../error/errors.js";
+import Validate from "../models/validationSchemas/validateSchema.js";
+import { number, string, array } from "../models/validationSchemas/schemaTypes.js";
+import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
+
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
+
+// deprecated import?
 import Article from "../models/dbModels/article.js";
-import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
 
 /**
  * IssueMapController Class
@@ -20,8 +28,35 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
  * This class controls the behaviour of any web request
  * related to IssueMaps.
  */
-
 export default class IssueMapController {
+
+  /**
+   * Creates an issue map. Receives a request with issue number, issue name, number of pages, and sections (optional)
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async createIssueMap(req, res) {
+    try {
+      // validate req body and create issue map
+      Validate.incoming(
+        req.body, 
+        issueMapValidationSchema,
+      );
+      // post to database using accessor, which returns the issue map (db model)
+      const postedIssueMap = IssueMapAccessor.createIssueMap(req.body);
+      // validating outgoing issueMap (getting rid of this, it might be removing important fields)
+      // Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
+      res.status(201).json(postedIssueMap);
+    }
+    catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * method to create and add an article from the issue map.
    *
@@ -148,4 +183,5 @@ export default class IssueMapController {
       }
     }
   }
+
 }
