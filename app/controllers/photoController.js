@@ -5,7 +5,7 @@ import Validate from "../models/validationSchemas/validateSchema.js";
 import { photoPublicResponse, photoCreate } from "../models/validationSchemas/photo.js";
 import { photoTagPublicResponse } from "../models/validationSchemas/photoTag.js";
 import { userPublicResponse } from "../models/validationSchemas/user.js";
-
+import { ErrorInvalidRequestBody, HttpError } from "../error/errors.js";
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 
 /**

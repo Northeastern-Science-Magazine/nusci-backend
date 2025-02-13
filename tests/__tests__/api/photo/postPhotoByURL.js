@@ -75,6 +75,28 @@ describe("Create Photos Test", () => {
     modificationTime: new Date("2024-01-21"),
   };
 
+  const invalidPhoto = {
+    url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRd14iSERX2EDERqpulNP0RyrgxRw2x5Ju1Dw&s",
+    tags: ["Nature"],
+    photographers: ["invalid@email.com"],
+    photoTime: new Date("2024-01-22"),
+    rights: "All rights reserved",
+    creationTime: new Date("2024-01-22"),
+    modificationTime: new Date("2024-01-22"),
+  };
+
+  test("Invalid photo creation due to invalid photographer email", async () => {
+    const response = await request(app)
+    .post(`/photo/upload/url`)
+    .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+    .send(invalidPhoto);
+    showLog && console.log(response);
+    expect(response.status).toBe(404);
+    const errorMessage = JSON.parse(response.text).error;
+    expect(errorMessage).toStrictEqual("Invalid request body.");
+  });
+  
+
   test("Photo created successfully", async () => {
     const response = await request(app)
       .post(`/photo/upload/url`)
