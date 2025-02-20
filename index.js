@@ -18,7 +18,7 @@ const io = new Server(server, {
   // specify settings for cors
   cors: {
     // where react runs
-    origin: http://${SERVER_HOSTNAME}:${SERVER_PORT}/,
+    origin: "${SERVER_HOSTNAME}:${SERVER_PORT}/",
   // what methods are we expecting
   methods: ["GET", "POST"]
 }
