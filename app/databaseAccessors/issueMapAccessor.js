@@ -1,8 +1,10 @@
 import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
+import Authorize from "../auth/authorization.js"
 import mongoose from "mongoose";
 import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, ErrorExistingIssueMapsWithCredentials } from "../error/errors.js";
+import UsersAccessor from "./userAccessor.js";
 
 /**
  * IssueMap Accessor Class
@@ -165,19 +167,20 @@ export default class IssueMapAccessor {
   /**
    * Posts a new issue map and returns it.
    * @param {Object} issueMap the issue map to be posted
+   * @throws {ErrorExistingIssueMapsWithCredentials} if the provided issue name or issue number are already in use
    */
-  static async createIssueMap(issueMap) {
+  static async postCreateIssueMap(issueMap) {
     await Connection.open();
-    const existingIssueMaps = IssueMap.find(
+    const existingIssueMaps = await IssueMap.find(
       { $or: [
         { issueNumber: issueMap.issueNumber },
         { issueName: issueMap.issueName }
       ]}
-    )
-    if (existingIssueMaps) {
+    );
+    if (existingIssueMaps.length !== 0) {
       throw new ErrorExistingIssueMapsWithCredentials();
     }
-    const newIssueMap = new IssueMap(issueMap);
+    const newIssueMap = new IssueMap(issueMap); 
     await newIssueMap.save();
     return newIssueMap;
   }

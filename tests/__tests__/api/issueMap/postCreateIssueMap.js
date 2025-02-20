@@ -21,11 +21,14 @@ describe( "Create Issue Map Tests", () => {
         .send({
             issueNumber: 3,
             issueName: "newfangled rotary phones",
-            pages: 3
+            pages: 7
         });
-        console.log(response);
+        console.log(response.body);
         expect(response.status).toBe(201);
-        expect(response.body).toBe({issueNumber: 3, issueName: "newfangled rotary phones", pages: 3, sections: []}); // or toStrictEqual?
+        expect(response.body.issueNumber).toBe(3);
+        expect(response.body.issueName).toBe("newfangled rotary phones");
+        expect(response.body.pages).toBe(7);
+        expect(response.body.sections).toStrictEqual([]);
     });
     test("Create a valid issue map, with sections", async () => {
         const response = await request(app)
@@ -40,9 +43,9 @@ describe( "Create Issue Map Tests", () => {
                 { sectionName: "iphone covers and rusty mice", sectionColor: "baby blue"}
             ]
         });
-        showLog && console.log(response);
+        console.log(response.body);
         expect(response.status).toBe(201);
-        expect(response.body).toBe({ //toBe or toStrictEqual?
+        expect(response.body).toStrictEqual({ //toBe or toStrictEqual?
             issueNumber: 400,
             issueName: "morals and stars",
             pages: 8,

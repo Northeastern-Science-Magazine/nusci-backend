@@ -11,9 +11,9 @@ import {
   ErrorTypeOfQuery,
 } from "../error/errors.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { number, string, array } from "../models/validationSchemas/schemaTypes.js";
 import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
-
+ 
+import Authorize from "../auth/authorization.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
@@ -37,13 +37,32 @@ export default class IssueMapController {
    */
   static async createIssueMap(req, res) {
     try {
-      // validate req body and create issue map
       Validate.incoming(
         req.body, 
         issueMapValidationSchema,
+        { override: ["creationTime", "modificationTime"] }
       );
+      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+
+      var sectionArray = [];
+      if (!req.body.sections) {
+        sectionArray = [];
+      }
+      else {
+        sectionArray = req.body.sections.map((section) => ({
+          ...section,
+          creatingUser : currentUserID 
+        }))
+      }
+      
+      const newIssueMapBody = {
+        ...req.body,
+        sections: sectionArray, 
+        creatingUser: currentUserID
+      }
+      console.log(`New body:\n ${JSON.stringify(newIssueMapBody, null, 2)}`);
       // post to database using accessor, which returns the issue map (db model)
-      const postedIssueMap = IssueMapAccessor.createIssueMap(req.body);
+      const postedIssueMap = await IssueMapAccessor.postCreateIssueMap(newIssueMapBody);
       // validating outgoing issueMap (getting rid of this, it might be removing important fields)
       // Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
       res.status(201).json(postedIssueMap);
