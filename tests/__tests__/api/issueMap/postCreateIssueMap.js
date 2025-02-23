@@ -66,7 +66,7 @@ describe( "Create Issue Map Tests", () => {
         });
         showLog && console.log(response.body);
         expect(response.status).toBe(409);
-        expect(response.body).toStrictEqual({error: "Invalid query type.", message: "Issue map with given issue number already exists."});
+        expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""});
     });
     test("Attempt invalid issue map create: issue name already in use", async () => {
         const response = await request(app)
@@ -83,7 +83,7 @@ describe( "Create Issue Map Tests", () => {
         });
         showLog && console.log(response.body);
         expect(response.status).toBe(409);
-        expect(response.body).toStrictEqual({error: "Invalid query type.", message: "Issue map with given issue number already exists."})
+        expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""})
     });
     test("Attempt invalid issue map create: wrong user permissions", async () => {
         const response = await request(app)
@@ -97,8 +97,8 @@ describe( "Create Issue Map Tests", () => {
                 { sectionName: "bright futures", sectionColor: "insert hex code here"}
             ]
         });
-        showLog && console.log(response.body);
+        console.log(response.body);
         expect(response.status).toBe(403);
-        expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource."})
+        expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource.", message: ""})
     });
 });

@@ -11,7 +11,7 @@ import {
   ErrorTypeOfQuery,
 } from "../error/errors.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
+import { issueMapSectionValidationSchema, issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
  
 import Authorize from "../auth/authorization.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
@@ -42,29 +42,26 @@ export default class IssueMapController {
         issueMapValidationSchema,
         { override: ["creationTime", "modificationTime"] }
       );
+
       const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
 
-      var sectionArray = [];
-      if (!req.body.sections) {
-        sectionArray = [];
-      }
-      else {
-        sectionArray = req.body.sections.map((section) => ({
-          ...section,
-          creatingUser : currentUserID 
-        }))
-      }
+      // Manually adding creation/modificationTime seems redundant, given the validate above
+      // is there an easier way to do this?
+      var sectionArray = (!req.body.sections) ? [] : req.body.sections.map((section) => ({
+        ...section,
+        creatingUser: currentUserID
+      }));
       
       const newIssueMapBody = {
         ...req.body,
         sections: sectionArray, 
-        creatingUser: currentUserID
+        creatingUser: currentUserID,
       }
       console.log(`New body:\n ${JSON.stringify(newIssueMapBody, null, 2)}`);
-      // post to database using accessor, which returns the issue map (db model)
       const postedIssueMap = await IssueMapAccessor.postCreateIssueMap(newIssueMapBody);
-      // validating outgoing issueMap (getting rid of this, it might be removing important fields)
-      // Validate.outgoing(postedIssueMap, issueMapValidationSchema, null);
+
+     // What should be returned to the frontend? Need this info to create the validation schema!
+      
       res.status(201).json(postedIssueMap);
     }
     catch (e) {
