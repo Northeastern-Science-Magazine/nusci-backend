@@ -11,7 +11,7 @@ import {
   ErrorTypeOfQuery,
 } from "../error/errors.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { issueMapSectionValidationSchema, issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
+import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
  
 import Authorize from "../auth/authorization.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
@@ -44,12 +44,13 @@ export default class IssueMapController {
       );
 
       const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      const date = new Date();
 
-      // Manually adding creation/modificationTime seems redundant, given the validate above
-      // is there an easier way to do this?
       var sectionArray = (!req.body.sections) ? [] : req.body.sections.map((section) => ({
         ...section,
-        creatingUser: currentUserID
+        creatingUser: currentUserID,
+        creationTime: date,
+        modificationTime: date 
       }));
       
       const newIssueMapBody = {
@@ -57,6 +58,7 @@ export default class IssueMapController {
         sections: sectionArray, 
         creatingUser: currentUserID,
       }
+      
       console.log(`New body:\n ${JSON.stringify(newIssueMapBody, null, 2)}`);
       const postedIssueMap = await IssueMapAccessor.postCreateIssueMap(newIssueMapBody);
 

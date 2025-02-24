@@ -9,6 +9,6 @@ export const issueMapValidationSchema = {
   sections: [
     {
       sectionName: { type: string, required: true},
-      sectionColor: { type: string, required: true}
+      color: { type: string, required: true}
     }],
 };
