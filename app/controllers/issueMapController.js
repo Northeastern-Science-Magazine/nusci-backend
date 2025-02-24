@@ -59,7 +59,6 @@ export default class IssueMapController {
         creatingUser: currentUserID,
       }
 
-      console.log(`New body:\n ${JSON.stringify(newIssueMapBody, null, 2)}`);
       const postedIssueMap = await IssueMapAccessor.postCreateIssueMap(newIssueMapBody);
 
      // What should be returned to the frontend? Need this info to create the validation schema!
