@@ -9,6 +9,6 @@ export const issueMapValidationSchema = {
   sections: [
     {
       sectionName: { type: string, required: true},
-      color: { type: string, required: true}
+      color: { type: string, required: true} // modified sectionColor -> color to match dbmodel valiation schema
     }],
 };

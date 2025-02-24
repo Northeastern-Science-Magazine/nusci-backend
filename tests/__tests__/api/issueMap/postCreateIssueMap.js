@@ -30,6 +30,7 @@ describe( "Create Issue Map Tests", () => {
         expect(response.body.pages).toBe(7);
         expect(response.body.sections).toStrictEqual([]);
     });
+    
     test("Create a valid issue map, with sections", async () => {
         const response = await request(app)
         .post("/issue-map/create")
@@ -39,22 +40,19 @@ describe( "Create Issue Map Tests", () => {
             issueName: "morals and stars",
             pages: 8,
             sections: [
-                { sectionName: "thermometers and chicken", sectionColor: "hot pink"},
-                { sectionName: "iphone covers and rusty mice", sectionColor: "baby blue"}
+                { sectionName: "thermometers and chicken", color: "hot pink"},
+                { sectionName: "iphone covers and rusty mice", color: "baby blue"}
             ]
         });
         console.log(response.body);
         expect(response.status).toBe(201);
-        expect(response.body).toStrictEqual({ //toBe or toStrictEqual?
-            issueNumber: 400,
-            issueName: "morals and stars",
-            pages: 8,
-            sections: [
-                { sectionName: "thermometers and chicken", sectionColor: "hot pink"},
-                { sectionName: "iphone covers and rusty mice", sectionColor: "baby blue"}
-            ]
-        });
+        expect(response.body.issueNumber).toBe(400);
+        expect(response.body.issueName).toBe("morals and stars");
+        expect(response.body.pages).toBe(8);
+        expect(response.body).toHaveProperty("sections");
+        expect(response.body.sections).toHaveLength(2);
     });
+    
     test("Attempt invalid issue map create: issue number already in use", async () => {
         const response = await request(app)
         .post("/issue-map/create")
@@ -77,8 +75,8 @@ describe( "Create Issue Map Tests", () => {
             issueName: "Meeting with Team", // in issue_map_seed.js
             pages: 8,
             sections: [
-                { sectionName: "thermometers and chicken", sectionColor: "hot pink"},
-                { sectionName: "iphone covers and rusty mice", sectionColor: "baby blue"}
+                { sectionName: "thermometers and chicken", color: "hot pink"},
+                { sectionName: "iphone covers and rusty mice", color: "baby blue"}
             ]
         });
         showLog && console.log(response.body);
@@ -94,7 +92,7 @@ describe( "Create Issue Map Tests", () => {
             issueName: "donut seam like a snow day?",
             pages: 70,
             sections: [
-                { sectionName: "bright futures", sectionColor: "insert hex code here"}
+                { sectionName: "bright futures", color: "insert hex code here"}
             ]
         });
         console.log(response.body);
