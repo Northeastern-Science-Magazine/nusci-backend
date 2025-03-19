@@ -1,4 +1,7 @@
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+
 import {
   ErrorInvalidRequestBody,
   ErrorUnexpected,
@@ -6,13 +9,17 @@ import {
   ErrorSectionNotFound,
   ErrorIssueMapNotFound,
 } from "../error/errors.js";
+import Validate from "../models/validationSchemas/validateSchema.js";
+import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
+ 
+import Authorize from "../auth/authorization.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
+
+// deprecated import?
 import Article from "../models/dbModels/article.js";
-import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
 
 /**
  * IssueMapController Class
@@ -20,8 +27,54 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
  * This class controls the behaviour of any web request
  * related to IssueMaps.
  */
-
 export default class IssueMapController {
+
+  /**
+   * Creates an issue map. Receives a request with issue number, issue name, number of pages, and sections (optional)
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async createIssueMap(req, res) {
+    try {
+      Validate.incoming(
+        req.body, 
+        issueMapValidationSchema,
+        { override: ["creationTime", "modificationTime"] }
+      );
+
+      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req))._id;
+      const date = new Date();
+
+      var sectionArray = req.body.sections ? req.body.sections.map((section) => ({
+        ...section,
+        creatingUser: currentUserID,
+        creationTime: date,
+        modificationTime: date 
+      })) : [];
+      
+      const newIssueMapBody = {
+        ...req.body,
+        sections: sectionArray, 
+        creatingUser: currentUserID,
+      }
+
+      const postedIssueMap = (await IssueMapAccessor.postCreateIssueMap(newIssueMapBody)).toObject(); 
+      console.log(`${postedIssueMap}`);
+      // Validate.outgoing(
+      //   postedIssueMap,
+      //   issueMapValidationSchema
+      // )     
+      res.status(201).json(postedIssueMap);
+    }
+    catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * method to create and add an article from the issue map.
    *
@@ -148,4 +201,5 @@ export default class IssueMapController {
       }
     }
   }
+
 }

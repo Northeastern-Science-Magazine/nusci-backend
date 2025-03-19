@@ -161,4 +161,15 @@ export default class IssueMapAccessor {
 
     return updatedIssue;
   }
+
+  /**
+   * Posts a new issue map and returns it.
+   * @param {Object} issueMap the issue map to be posted
+   */
+  static async postCreateIssueMap(issueMap) {
+    await Connection.open();
+    const newIssueMap = new IssueMap(issueMap); 
+    await newIssueMap.save();
+    return newIssueMap;
+  }
 }
