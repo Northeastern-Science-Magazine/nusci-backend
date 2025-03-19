@@ -27,7 +27,19 @@ export default class UsersAccessor {
   }
 
   /**
-   * Get User IDs by a email
+   * Get User IDs of multiple emails
+   *
+   * @param {String} emails - Email
+   * @returns {ObjectId} - user IDs of the emails
+   */
+  static async getUserIdsByEmail(emails) {
+    await Connection.open();
+    const userIds = await User.find({ email: { $in: emails } }, "_id");
+    return userIds;
+  }
+
+  /**
+   * Get multiple User IDs by a email
    *
    * @param {String} email - Email
    * @returns {ObjectId} - user's ID
@@ -130,7 +142,7 @@ export default class UsersAccessor {
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
-  
+
   /**
    * getUserByRole Method
    *
