@@ -8,7 +8,6 @@ import {
   HttpError,
   ErrorSectionNotFound,
   ErrorIssueMapNotFound,
-  ErrorTypeOfQuery,
 } from "../error/errors.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { issueMapValidationSchema } from "../models/validationSchemas/issueMap.js";
@@ -43,15 +42,15 @@ export default class IssueMapController {
         { override: ["creationTime", "modificationTime"] }
       );
 
-      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req))._id;
       const date = new Date();
 
-      var sectionArray = (!req.body.sections) ? [] : req.body.sections.map((section) => ({
+      var sectionArray = req.body.sections ? req.body.sections.map((section) => ({
         ...section,
         creatingUser: currentUserID,
         creationTime: date,
         modificationTime: date 
-      }));
+      })) : [];
       
       const newIssueMapBody = {
         ...req.body,
@@ -59,10 +58,12 @@ export default class IssueMapController {
         creatingUser: currentUserID,
       }
 
-      const postedIssueMap = await IssueMapAccessor.postCreateIssueMap(newIssueMapBody);
-
-     // What should be returned to the frontend? Need this info to create the validation schema!
-      
+      const postedIssueMap = (await IssueMapAccessor.postCreateIssueMap(newIssueMapBody)).toObject(); 
+      console.log(`${postedIssueMap}`);
+      // Validate.outgoing(
+      //   postedIssueMap,
+      //   issueMapValidationSchema
+      // )     
       res.status(201).json(postedIssueMap);
     }
     catch (e) {
