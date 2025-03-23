@@ -1,4 +1,4 @@
-import Photo from "../models/photo.js";
+import Photo from "../models/dbModels/photo.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
 
