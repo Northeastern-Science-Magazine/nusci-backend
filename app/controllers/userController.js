@@ -72,7 +72,7 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = Password.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(req.body.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
@@ -141,7 +141,7 @@ export default class UserController {
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      req.body.password = Password.hash(req.body.password);
+      req.body.password = await Password.hash(req.body.password);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
