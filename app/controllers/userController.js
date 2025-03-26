@@ -20,7 +20,7 @@ import {
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
-
+import { Password } from "../auth/password.js";
 /**
  * UsersController Class
  *
@@ -72,7 +72,7 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await bcrypt.compare(req.body.password, user.password);
+      const decrypted = Password.compare(req.body.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
@@ -141,7 +141,7 @@ export default class UserController {
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      req.body.password = await bcrypt.hash(req.body.password, 10);
+      req.body.password = Password.hash(req.body.password);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
