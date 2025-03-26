@@ -2,7 +2,7 @@ import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, ErrorIssueMapNotFound } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -160,5 +160,90 @@ export default class IssueMapAccessor {
     );
 
     return updatedIssue;
+  }
+
+  /**
+   * Find and remove a section
+   * Remaining articles will be moved to general articles field
+   *
+   * @param issueNumber - issue number
+   * @param sectionName - section name
+   * @param sectionColor - section color
+   * @returns issue map with removed section
+   */
+  static async removeSection(issueNumber, sectionName, sectionColor) {
+    await Connection.open();
+
+    // move issues to general
+    const updated = await this.addArticles(issueNumber, sectionName, sectionColor);
+    await updated.save();
+
+    // remove section
+    const issue = await IssueMap.findOneAndUpdate(
+      { issueNumber: issueNumber },
+      {
+        $pull: {
+          sections: {
+            sectionName: sectionName,
+            color: sectionColor,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    // no valid issue map
+    if (!issue) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    return issue;
+  }
+
+  /**
+   * Add a list of articles to the general articles field
+   *
+   * @param issueNumber - issue number
+   * @param sectionName - section name
+   * @param sectionColor - section color
+   *
+   * @return issue map with added articles to general field
+   */
+  static async addArticles(issueNumber, sectionName, sectionColor) {
+    const article = await IssueMap.findOne(
+      { issueNumber: issueNumber },
+      {
+        sections: {
+          $elemMatch: {
+            sectionName: sectionName,
+            color: sectionColor,
+          },
+        },
+      }
+    );
+
+    if (!article || !article.sections || !article.sections[0]) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    // extract articles
+    const toMove = article.sections[0].articles;
+
+    const finalArticle = await IssueMap.findOneAndUpdate(
+      { issueNumber: issueNumber },
+      {
+        // make sure articles are unique
+        $addToSet: {
+          articles: { $each: toMove },
+        },
+      },
+      { new: true }
+    );
+
+    if (!finalArticle) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    return finalArticle;
   }
 }
