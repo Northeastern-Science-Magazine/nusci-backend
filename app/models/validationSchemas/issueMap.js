@@ -1,4 +1,4 @@
-import { number, string, array } from "./schemaTypes";
+import { number, string, array } from "./schemaTypes.js";
 
 /**
  *  incoming validation schema (used in post requests, creating a new issue map) 
