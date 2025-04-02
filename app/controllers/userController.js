@@ -374,4 +374,31 @@ export default class UserController {
     res.clearCookie("token");
     res.status(200).json({ message: "Successfully logged out." });
   }
+
+  /**
+     * search Method
+     *
+     * This method runs a fuzzy search on user names.
+     *
+     * @param {HTTP REQ} req web request object, contains the search body.
+     * @param {HTTP RES} res web response object.
+     */
+  static async search(req, res) {
+    try {
+      const search = req.query.search;
+      
+      var results = await UsersAccessor.fuzzySearchByName(search);
+
+      res.status(200).json(results);
+    }
+    catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
 }
+

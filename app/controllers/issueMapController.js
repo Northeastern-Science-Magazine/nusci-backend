@@ -42,7 +42,7 @@ export default class IssueMapController {
         { override: ["creationTime", "modificationTime"] }
       );
 
-      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req))._id;
+      const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
       console.log(`Got here!!! UserID: ${currentUserID}`); // getting null here... but only sometimes?
       const date = new Date();
 

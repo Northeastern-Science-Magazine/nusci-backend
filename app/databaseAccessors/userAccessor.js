@@ -130,7 +130,7 @@ export default class UsersAccessor {
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
-  
+
   /**
    * getUserByRole Method
    *
@@ -246,6 +246,36 @@ export default class UsersAccessor {
     const newUser = new User(user);
     await newUser.save();
     return newUser;
+  }
+
+  /**
+   * fuzzySearchByName Method
+   *
+   * This method runs a fuzzy search on the users by first name.
+   *
+   * @param {Object} search
+   * @returns max 10 users whose first name is similar to the search query
+   */
+  static async fuzzySearchByName(search) {
+    await Connection.open();
+
+    const results = await User.aggregate([
+      {
+        $search: {
+          index: "user_text_index",
+          text: {
+            query: search,
+            path: firstName,
+            fuzzy: {},
+          },
+        },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
+
+    return results;
   }
 }
 

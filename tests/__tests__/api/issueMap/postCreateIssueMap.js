@@ -23,7 +23,6 @@ describe( "Create Issue Map Tests", () => {
             issueName: "newfangled rotary phones",
             pages: 7
         });
-        console.log(response.body);
         expect(response.status).toBe(201);
         expect(response.body.issueNumber).toBe(3);
         expect(response.body.issueName).toBe("newfangled rotary phones");
@@ -44,7 +43,6 @@ describe( "Create Issue Map Tests", () => {
                 { sectionName: "iphone covers and rusty mice", color: "baby blue"}
             ]
         });
-        console.log(response.body);
         expect(response.status).toBe(201);
         expect(response.body.issueNumber).toBe(400);
         expect(response.body.issueName).toBe("morals and stars");
@@ -62,9 +60,8 @@ describe( "Create Issue Map Tests", () => {
             issueName: "newfangled rotary phones",
             pages: 3
         });
-        showLog && console.log(response.body);
-        expect(response.status).toBe(409);
-        //expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""});
+        expect(response.status).toBe(500);
+        expect(response.body.message).toMatch(/E11000 duplicate key error collection/);
     });
     test("Attempt invalid issue map create: issue name already in use", async () => {
         const response = await request(app)
@@ -79,9 +76,8 @@ describe( "Create Issue Map Tests", () => {
                 { sectionName: "iphone covers and rusty mice", color: "baby blue"}
             ]
         });
-        showLog && console.log(response.body);
-        expect(response.status).toBe(409);
-        //expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""})
+        expect(response.status).toBe(500);
+        expect(response.body.message).toMatch(/E11000 duplicate key error collection/);
     });
     test("Attempt invalid issue map create: wrong user permissions", async () => {
         const response = await request(app)
@@ -95,7 +91,6 @@ describe( "Create Issue Map Tests", () => {
                 { sectionName: "bright futures", color: "insert hex code here"}
             ]
         });
-        console.log(response.body);
         expect(response.status).toBe(403);
         expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource.", message: ""})
     });

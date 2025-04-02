@@ -15,5 +15,6 @@ user.route("/resolve-status").put(Authorize.allow([Accounts.Admin]), UserControl
 user.route("/update/:email");
 user.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
 user.route("/me/update");
+user.route("/search").get(UserController.search);
 
 export default user;

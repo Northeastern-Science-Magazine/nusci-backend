@@ -31,6 +31,10 @@ const UserSchema = new Schema(
     collection: "users",
   }
 );
+
+// Add a text index for first name
+UserSchema.index({ firstName: "text"}, { name: "user_text_index" });
+
 const db = mongoose.connection.useDb("users");
 const User = db.model("Users", UserSchema);
 
