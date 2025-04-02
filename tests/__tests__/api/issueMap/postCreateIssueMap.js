@@ -63,7 +63,7 @@ describe( "Create Issue Map Tests", () => {
             pages: 3
         });
         showLog && console.log(response.body);
-        //expect(response.status).toBe(409);
+        expect(response.status).toBe(409);
         //expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""});
     });
     test("Attempt invalid issue map create: issue name already in use", async () => {
@@ -80,7 +80,7 @@ describe( "Create Issue Map Tests", () => {
             ]
         });
         showLog && console.log(response.body);
-        //expect(response.status).toBe(409);
+        expect(response.status).toBe(409);
         //expect(response.body).toStrictEqual({error: "Issue map with provided credentials already exists.", message: ""})
     });
     test("Attempt invalid issue map create: wrong user permissions", async () => {
@@ -96,7 +96,7 @@ describe( "Create Issue Map Tests", () => {
             ]
         });
         console.log(response.body);
-        //expect(response.status).toBe(403);
-        //expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource.", message: ""})
+        expect(response.status).toBe(403);
+        expect(response.body).toStrictEqual({error: "Insufficient permissions to access this resource.", message: ""})
     });
 });

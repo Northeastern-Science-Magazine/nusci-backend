@@ -43,6 +43,7 @@ export default class IssueMapController {
       );
 
       const currentUserID = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req))._id;
+      console.log(`Got here!!! UserID: ${currentUserID}`); // getting null here... but only sometimes?
       const date = new Date();
 
       var sectionArray = req.body.sections ? req.body.sections.map((section) => ({
@@ -60,10 +61,6 @@ export default class IssueMapController {
 
       const postedIssueMap = (await IssueMapAccessor.postCreateIssueMap(newIssueMapBody)).toObject(); 
       console.log(`${postedIssueMap}`);
-      // Validate.outgoing(
-      //   postedIssueMap,
-      //   issueMapValidationSchema
-      // )     
       res.status(201).json(postedIssueMap);
     }
     catch (e) {
