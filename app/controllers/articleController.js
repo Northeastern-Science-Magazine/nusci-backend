@@ -5,7 +5,10 @@ import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
 import Utils from "./utils.js";
-
+import Article from "../models/dbModels/article.js";
+import { ArticleCreate } from "../models/apiModels/article.js";
+import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
+import { ErrorDuplicateKey } from "../error/errors.js";
 /**
  * ArticleController Class
  *
@@ -13,6 +16,32 @@ import Utils from "./utils.js";
  * related to Articles.
  */
 export default class ArticleController {
+
+  static async createArticle(req, res) {
+    console.log("entered create article in controller");
+    try {
+      const articleCreate = new ArticleCreate(req.body);
+      console.log("create article:", articleCreate);
+      const articleByID = await ArticlesAccessor.getArticleByTitle(articleCreate.title);
+      console.log("duplicate article:", articleByID);
+      if (articleByID) {
+        throw new ErrorDuplicateKey();
+      }
+      const newArticle = await ArticlesAccessor.createArticle(articleCreate);
+      console.log("new article:", newArticle);
+      const populatedArticle = await ArticlesAccessor.getArticle(newArticle._id);
+      const newArticleResponse = new ArticleResponse(populatedArticle.toObject);
+      res.status(201).json(newArticleResponse);
+    }
+    catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * updateStatus method
    *

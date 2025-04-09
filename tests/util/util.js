@@ -6,8 +6,13 @@ import { execSync } from "child_process";
  * terminal output at this project directory level.
  */
 export const executeReset = async () => {
-  execSync("npm run reset-s", { stdio: "ignore" });
+  try {execSync("npm run reset-s", { stdio: "ignore" });
+} catch (err) {
+  console.error("Failed to execute reset-s:", err.message);
+  throw err;
+}
 };
+  
 
 /**
  * This provides the mock that allows test runs in

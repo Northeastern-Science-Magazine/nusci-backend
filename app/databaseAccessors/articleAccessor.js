@@ -356,4 +356,11 @@ export default class ArticlesAccessor {
       return await Article.find(query).limit(limit);
     }
   }
+
+  static async createArticle(article) {
+    await Connection.open();
+    const newArticle = new Article(article);
+    // await newArticle.save();
+    return newArticle;
+  }
 }

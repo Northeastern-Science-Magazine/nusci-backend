@@ -6,8 +6,8 @@ import Accounts from "../models/enums/accounts.js";
 /* Controls Routing for Finished Articles */
 
 const articles = express.Router();
-
-articles.route("/create");
+console.log("entered routes");
+articles.route("/create").post(/*Authorize.allow([Accounts.Admin]),*/ ArticlesController.createArticle);
 articles.route("/slug/:slug"); //get article by slug
 articles.route("/search").get(ArticlesController.search);
 articles.route("/search/title").get(ArticlesController.searchByTitle);
