@@ -33,7 +33,7 @@ export default class Authorize {
             new ErrorForbidden().throwHttp(req, res);
           }
         } catch (error) {
-          ErrorForbidden().throwHttp(req, res);
+          new ErrorForbidden().throwHttp(req, res);
         }
       } else {
         new ErrorNotLoggedIn().throwHttp(req, res);
