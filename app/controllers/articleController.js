@@ -92,7 +92,7 @@ export default class ArticleController {
   static async addInternalComment(req, res, next) {
     try {
       //comment validation
-      const email = Authorize.getEmail(req);
+      const email = Authorize.getEmail(req, res);
       const user = await UsersAccessor.getUserByEmail(email);
       const userID = user._id;
 
