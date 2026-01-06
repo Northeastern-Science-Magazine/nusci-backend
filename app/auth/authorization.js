@@ -67,19 +67,20 @@ export default class Authorize {
    * using the token as auth
    *
    * @param {HTTP REQ} req
+   * @param {HTTP RES} res
    * @returns {String} String role
    */
-  static getRoles(req) {
+  static getRoles(req, res) {
     dotenv.config();
     if (req.cookies.token) {
       const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
       if (payload) {
         return payload.roles;
       } else {
-        new ErrorFailedLogin().throwHttp(req, res);
+        throw new ErrorFailedLogin();
       }
     } else {
-      new ErrorNotLoggedIn().throwHttp(req, res);
+      throw new ErrorNotLoggedIn();
     }
   }
 }

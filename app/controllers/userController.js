@@ -7,6 +7,7 @@ import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import {
   ErrorFailedLogin,
+  ErrorNotLoggedIn,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
   ErrorUserAlreadyLoggedIn,
@@ -39,6 +40,8 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
+    console.log("HERE");
+    console.log(req.body);
     try {
       Validate.incoming(req.body, {
         email: { type: string, required: true },
@@ -363,6 +366,31 @@ export default class UserController {
   //     }
   //   }
   // }
+
+  /**
+   * Gets the currently signed in user's role.
+   *
+   * Used for FE Middleware Authentication
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  static getMyRoles(req, res) {
+    try {
+      const roles = Authorize.getRoles(req, res);
+      res.json({ roles: roles });
+    } catch (e) {
+      if (e instanceof ErrorNotLoggedIn || e instanceof ErrorFailedLogin) {
+        // No Role
+        res.json({ roles: [] });
+      } else if (e instanceof HttpError) {
+        // Some other error
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
 
   /**
    * Removes the user's login cookie from browser.
