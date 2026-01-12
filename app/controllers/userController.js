@@ -175,7 +175,7 @@ export default class UserController {
    */
   // static async deactivateUser(req, res) {
   //   try {
-  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
+  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req, res));
   //     res.redirect("/logout");
   //   } catch (e) {
   //     if (e instanceof HttpError) {
@@ -199,7 +199,7 @@ export default class UserController {
    */
   // static async deleteUser(req, res) {
   //   try {
-  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
+  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req, res));
   //     res.redirect("/logout");
   //   } catch (e) {
   //     if (e instanceof HttpError) {
@@ -220,7 +220,7 @@ export default class UserController {
    */
   static async getMyProfile(req, res) {
     try {
-      const email = Authorize.getEmail(req);
+      const email = Authorize.getEmail(req, res);
       const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
 
       if (!user) {
