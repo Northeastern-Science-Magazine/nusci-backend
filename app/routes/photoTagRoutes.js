@@ -9,6 +9,6 @@ photoTag.route("/create").post(Authorize.allow([Accounts.Admin, Accounts.Photogr
 photoTag.route("/name/:tagName").get(PhotoTagController.getTagByName); //get a tag by its name
 photoTag.route("/filter"); //get photo tags by colors, creating users
 photoTag.route("/update/:tagName"); //update a photo tag
-photoTag.route("/delete/:tagName"); //delete a photo tag
+photoTag.route("/delete/:tagName").delete(Authorize.allow([Accounts.Admin]), PhotoTagController.delete); //delete a photo tag
 
 export default photoTag;
