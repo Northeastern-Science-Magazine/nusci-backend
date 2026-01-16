@@ -1,7 +1,6 @@
-import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
+import LoginToken from "../auth/loginToken.js";
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
@@ -79,18 +78,8 @@ export default class UserController {
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
-      dotenvConfig(); // load .env variables
-      // sign token and send it in response
-      const token = jwt.sign(
-        {
-          email: user.email,
-          roles: user.roles,
-        },
-        process.env.SERVER_TOKEN_KEY
-      );
-
-      //Users are logged in for 1 hour
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
+      const { token, cookieOptions } = LoginToken.generate(user);
+      res.cookie("token", token, cookieOptions);
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {
@@ -175,7 +164,7 @@ export default class UserController {
    */
   // static async deactivateUser(req, res) {
   //   try {
-  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req));
+  //     await UsersAccessor.deactivateUserByEmail(Authorize.getEmail(req, res));
   //     res.redirect("/logout");
   //   } catch (e) {
   //     if (e instanceof HttpError) {
@@ -199,7 +188,7 @@ export default class UserController {
    */
   // static async deleteUser(req, res) {
   //   try {
-  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req));
+  //     await UsersAccessor.deleteUserByEmail(Authorize.getEmail(req, res));
   //     res.redirect("/logout");
   //   } catch (e) {
   //     if (e instanceof HttpError) {
@@ -220,7 +209,7 @@ export default class UserController {
    */
   static async getMyProfile(req, res) {
     try {
-      const email = Authorize.getEmail(req);
+      const email = Authorize.getEmail(req, res);
       const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
 
       if (!user) {
