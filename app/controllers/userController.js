@@ -1,7 +1,6 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
@@ -21,6 +20,7 @@ import {
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
+import LoginToken from "../auth/token.js";
 
 /**
  * UsersController Class
@@ -40,8 +40,6 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
-    console.log("HERE");
-    console.log(req.body);
     try {
       Validate.incoming(req.body, {
         email: { type: string, required: true },
@@ -77,20 +75,13 @@ export default class UserController {
        */
       const decrypted = await bcrypt.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin();
+        throw new ErrorFailedLogin(user);
       }
       dotenvConfig(); // load .env variables
       // sign token and send it in response
-      const token = jwt.sign(
-        {
-          email: user.email,
-          roles: user.roles,
-        },
-        process.env.SERVER_TOKEN_KEY
-      );
+      LoginToken.generate(user, res, true);
 
       //Users are logged in for 1 hour
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {

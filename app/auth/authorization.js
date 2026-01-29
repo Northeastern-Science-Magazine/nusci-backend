@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import Accounts from "../models/enums/accounts.js";
 import { ErrorFailedLogin, ErrorForbidden, ErrorNotLoggedIn } from "../error/errors.js";
+import LoginToken from "./token.js";
 
 /**
  * Authorize class
