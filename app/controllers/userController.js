@@ -1,10 +1,12 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
+import bcrypt from "bcrypt"; // import bcrypt to hash passwords
 import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
+import { Login } from "../models/zodSchemas/user.js";
+
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -40,13 +42,12 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
-    console.log("HERE");
-    console.log(req.body);
     try {
-      Validate.incoming(req.body, {
-        email: { type: string, required: true },
-        password: { type: string, required: true },
-      });
+      // parse login request
+      if (!Login.safeParse(req)) {
+        throw new ErrorFailedLogin("Bad Request Body");
+      }
+
       if (req.cookies.token) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();
@@ -114,31 +115,6 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
-      Validate.incoming(
-        req.body,
-        {
-          firstName: { type: string, required: true },
-          lastName: { type: string, required: true },
-          password: { type: string, required: true },
-          pronouns: { type: array, items: { type: string } },
-          graduationYear: { type: integer, required: true },
-          major: { type: string },
-          location: { type: string },
-          profileImage: { type: string },
-          bannerImage: { type: string },
-          bio: { type: string, required: true },
-          email: { type: string, required: true },
-          phone: { type: string },
-          roles: { type: array, items: { enum: Accounts.listr(), required: true } },
-          status: { enum: AccountStatus.listr(), required: true },
-          approvingUser: { const: undefined },
-          gameData: { const: undefined },
-          creationTime: { type: date, required: true },
-          modificationTime: { type: date, required: true },
-        },
-        { override: ["creationTime", "modificationTime"] }
-      );
-
       // hash the password
       /**
        * @TODO Password hashing should actually be deferred to FE. It is
