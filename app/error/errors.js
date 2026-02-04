@@ -57,6 +57,18 @@ export class ErrorTypeOfQuery extends HttpError {
   }
 }
 
+export class ErrorEmailSend extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Could not send email.", message: this.message });
+  }
+}
+
+export class ErrorPasswordReset extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Could not reset password.", message: this.message });
+  }
+}
+
 /**
  * 403 Errors
  *

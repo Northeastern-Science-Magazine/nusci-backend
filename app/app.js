@@ -9,6 +9,7 @@ import issueMapRouter from "./routes/issueMapRoutes.js";
 import photoRouter from "./routes/photoRoutes.js";
 import photoTagRouter from "./routes/photoTagRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import emailRoute from "./routes/emailRoutes.js";
 
 /**
  * This file controls the express server and
@@ -60,5 +61,6 @@ app.use("/issue-map", issueMapRouter);
 app.use("/photo", photoRouter);
 app.use("/phototag", photoTagRouter);
 app.use("/user", userRouter);
+app.use("/email", emailRoute);
 
 export default app;
