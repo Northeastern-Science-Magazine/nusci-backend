@@ -2,7 +2,7 @@ name: ECR Backend Prod Push
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   id-token: write
