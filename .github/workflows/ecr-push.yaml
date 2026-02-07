@@ -26,6 +26,6 @@ jobs:
 
       - name: Build and push image
         run: |
-          docker build -t my-image .
-          docker tag my-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/my-repo:latest
+          docker build -t nusci/backend-prod .
+          docker tag my-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/nusci/backend-prod:latest
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/nusci/backend-prod:latest
