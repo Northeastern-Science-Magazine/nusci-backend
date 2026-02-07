@@ -1,4 +1,4 @@
-name: ECR Backend Prod Push
+name: Push to Backend Prod ECR
 
 on:
   push:
