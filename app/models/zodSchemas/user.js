@@ -1,32 +1,68 @@
-import z from "zod";
+import * as z from "zod";
+import Accounts from "../enums/accounts.js";
+import AccountStatus from "../enums/accountStatus.js";
+import { ErrorValidation } from "../../error/errors.js";
+
+export const BaseUser = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  pronouns: z.array(z.string()).default([]),
+  graduationYear: z.number(),
+  major: z.string().optional(),
+  location: z.string().optional(),
+  profileImage: z.string().optional(),
+  bannerImage: z.string().optional(),
+  bio: z.string(),
+  email: z.email(),
+  roles: z.string().array(Accounts.listr()),
+  gameData: z.undefined().optional(),
+  creationTime: z.date(),
+  modificationTime: z.date(),
+});
 
 export const Login = z.object({
   email: z.email(),
   password: z.string(),
 });
 
-export const Signup = z.object({});
-// Validate.incoming(
-//         req.body,
-//         {
-//           firstName: { type: string, required: true },
-//           lastName: { type: string, required: true },
-//           password: { type: string, required: true },
-//           pronouns: { type: array, items: { type: string } },
-//           graduationYear: { type: integer, required: true },
-//           major: { type: string },
-//           location: { type: string },
-//           profileImage: { type: string },
-//           bannerImage: { type: string },
-//           bio: { type: string, required: true },
-//           email: { type: string, required: true },
-//           phone: { type: string },
-//           roles: { type: array, items: { enum: Accounts.listr(), required: true } },
-//           status: { enum: AccountStatus.listr(), required: true },
-//           approvingUser: { const: undefined },
-//           gameData: { const: undefined },
-//           creationTime: { type: date, required: true },
-//           modificationTime: { type: date, required: true },
-//         },
-//         { override: ["creationTime", "modificationTime"] }
-//       );
+export const UserCreate = BaseUser.extend({
+  password: z.string(),
+  phone: z.string().optional(),
+  status: z.string(AccountStatus.listr()).default(AccountStatus.Pending),
+  approvinguser: z.undefined().optional(),
+});
+
+export const UserUpdate = BaseUser.extend({
+  phone: z.string(),
+  status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending),
+  approvingUser: z.string(),
+  modificationTime: z.date().default(new Date())
+})
+  .omit({
+    creationTime: true,
+  })
+  .partial();
+
+export const UserApprovals = z
+  .object({
+    approve: z.array(z.email()),
+    deny: z.array(z.email()),
+  });
+
+export const UserDelete = z.object({
+  email: z.email(),
+});
+
+export const UserPrivateResponse = z.object({
+  id: z.literal("/user/response"),
+  properties: BaseUser.extend({
+    password: z.string(),
+    phone: z.string().optional,
+    status: z.enum(AccountStatus.listr()),
+    approvingUser: z.undefined().optional(),
+  }),
+});
+
+export const UserPublicResponse = BaseUser.extend({
+  id: z.literal("/user/public/response"),
+});

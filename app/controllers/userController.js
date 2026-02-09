@@ -5,7 +5,8 @@ import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
-import { Login } from "../models/zodSchemas/user.js";
+import * as z from "zod";
+import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
 
 import {
   ErrorFailedLogin,
@@ -18,6 +19,7 @@ import {
   ErrorUserNotFound,
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
+  ErrorValidation,
   HttpError,
 } from "../error/errors.js";
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
@@ -44,7 +46,7 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req)) {
+      if (!Login.safeParse(req.body)) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
@@ -115,21 +117,28 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
+
+      let user = {...req.body, creationTime: new Date(), modificationTime: new Date()};
+      const userCreate = await UserCreate.parseAsync(user);
+
       // hash the password
       /**
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      req.body.password = await bcrypt.hash(req.body.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
+      userCreate.password = await bcrypt.hash(userCreate.password, 10);
+      const userByEmail = await UsersAccessor.getUserByEmail(userCreate.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
       }
 
-      await UsersAccessor.createUser(req.body);
+      await UsersAccessor.createUser(userCreate);
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
+      if (e instanceof z.ZodError) {
+        throw new ErrorValidation("Signup request validation failed.");
+      }
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -203,8 +212,10 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      Validate.outgoing(user, userResponse);
-      res.status(200).json(user);
+      // Validate.outgoing(user, userResponse);
+      const userResponse = await UserPrivateResponse.omit({id: true}).parseAsync(user);
+
+      res.status(200).json(userResponse);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -226,15 +237,19 @@ export default class UserController {
     try {
       const email = req.params.email;
       const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
+
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
+      
+      // Validate.outgoing(user, userPublicResponse);
+      const userResponse = await UserPublicResponse.omit({id: true}).parseAsync(user);
 
-      Validate.outgoing(user, userPublicResponse);
-      res.status(200).json(user);
+      res.status(200).json(userResponse);
     } catch (e) {
+      console.log(e.message)
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -253,17 +268,11 @@ export default class UserController {
    */
   static async resolveUserApprovals(req, res) {
     try {
-      Validate.incoming(req.body, {
-        approve: { type: array, items: { type: string } },
-        deny: { type: array, items: { type: string } },
-      });
 
-      if (!(req.body.approve && req.body.deny)) {
-        throw new ErrorValidation("No users given to resolve status for.");
-      }
+      const approvals = UserApprovals.parse(req.body);
 
-      const approveUsers = req.body.approve ?? [];
-      const denyUsers = req.body.deny ?? [];
+      const approveUsers = approvals.approve ?? [];
+      const denyUsers = approvals.deny ?? [];
       const allUsers = [...approveUsers, ...denyUsers];
 
       //check if the users given exists and are pending
