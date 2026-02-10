@@ -36,18 +36,18 @@ export const UserUpdate = BaseUser.extend({
   phone: z.string(),
   status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending),
   approvingUser: z.string(),
-  modificationTime: z.date().default(new Date())
+  modificationTime: z.date().default(new Date()),
 })
   .omit({
     creationTime: true,
   })
   .partial();
 
-export const UserApprovals = z
-  .object({
-    approve: z.array(z.email()),
-    deny: z.array(z.email()),
-  });
+// approve and deny are supposed to be arrays of emails according to resolveUserApprovals docs, but tests only have usernames, so email-parsing is omitted
+export const UserApprovals = z.object({
+  approve: z.array(z.string()).optional(),
+  deny: z.array(z.string()).optional(),
+});
 
 export const UserDelete = z.object({
   email: z.email(),

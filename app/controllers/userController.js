@@ -119,21 +119,24 @@ export default class UserController {
     try {
 
       let user = {...req.body, creationTime: new Date(), modificationTime: new Date()};
-      const userCreate = await UserCreate.parseAsync(user);
+      const userCreate = await UserCreate.safeParseAsync(user);
+      if (!userCreate.success) {
+        throw new ErrorValidation("Signup validation failed.");
+      }
 
       // hash the password
       /**
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      userCreate.password = await bcrypt.hash(userCreate.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(userCreate.email);
+      userCreate.data.password = await bcrypt.hash(userCreate.data.password, 10);
+      const userByEmail = await UsersAccessor.getUserByEmail(userCreate.data.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
       }
 
-      await UsersAccessor.createUser(userCreate);
+      await UsersAccessor.createUser(userCreate.data);
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
       if (e instanceof z.ZodError) {
@@ -212,10 +215,12 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      // Validate.outgoing(user, userResponse);
-      const userResponse = await UserPrivateResponse.omit({id: true}).parseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({id: true}).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      res.status(200).json(userResponse);
+      res.status(200).json(userResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -244,10 +249,12 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
       
-      // Validate.outgoing(user, userPublicResponse);
-      const userResponse = await UserPublicResponse.omit({id: true}).parseAsync(user);
+      const userResponse = await UserPublicResponse.omit({id: true}).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed.");
+      }
 
-      res.status(200).json(userResponse);
+      res.status(200).json(userResponse.data);
     } catch (e) {
       console.log(e.message)
       if (e instanceof HttpError) {
@@ -269,10 +276,13 @@ export default class UserController {
   static async resolveUserApprovals(req, res) {
     try {
 
-      const approvals = UserApprovals.parse(req.body);
+      const approvals = UserApprovals.safeParse(req.body);
+      if (!approvals.success) {
+        throw new ErrorValidation("Approvals validation failed.");
+      }
 
-      const approveUsers = approvals.approve ?? [];
-      const denyUsers = approvals.deny ?? [];
+      const approveUsers = approvals.data.approve ?? [];
+      const denyUsers = approvals.data.deny ?? [];
       const allUsers = [...approveUsers, ...denyUsers];
 
       //check if the users given exists and are pending
