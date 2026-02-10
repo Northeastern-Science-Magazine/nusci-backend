@@ -2,9 +2,10 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
+import { ArticleUpdate, ArticleResponse } from "../models/zodSchemas/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
 import Utils from "./utils.js";
+
 
 /**
  * ArticleController Class
@@ -25,7 +26,8 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
 
-      const updates = new ArticleUpdate(req.body);
+      // const updates = new ArticleUpdate(req.body);
+      const updates = await ArticleUpdate.parseAsync(req.body);
 
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
 
@@ -34,7 +36,8 @@ export default class ArticleController {
       }
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
 
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse);
@@ -58,7 +61,10 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-      const updates = new ArticleUpdate(req.body);
+
+      // const updates = new ArticleUpdate(req.body);
+      const updates = await ArticleUpdate.parseAsync(req.body);
+
       const authorIds = await Utils.getUserIdsByEmails(updates.authors);
       updates.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
@@ -68,7 +74,8 @@ export default class ArticleController {
       }
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
