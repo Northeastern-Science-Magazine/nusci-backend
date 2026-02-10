@@ -320,8 +320,8 @@ export default class ArticlesAccessor {
    *
    * @param {*} search the term(s) to search for
    * @param {*} fields the field to search for
-   * @param {limit} numerical limit to the number of elements to return
-   * @param {query} json object of query we want
+   * @param {limit} numerical limit to the number of elements to return (optional)
+   * @param {query} json object of query we want (optional)
    */
   static async fuzzySearchArticles(search, fields, limit, query) {
     await Connection.open();
@@ -348,7 +348,6 @@ export default class ArticlesAccessor {
     if (limit && limit > 0) {
       pipeline.push({ $limit: limit });
     }
-
     const results = await Article.aggregate(pipeline);
     return results;
   }

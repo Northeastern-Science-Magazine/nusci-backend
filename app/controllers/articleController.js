@@ -141,12 +141,18 @@ export default class ArticleController {
     }
   }
 
-    /**
-   * 
-   * @param {*} body 
+  /**
+   *
+   * Helper function for searching
+   * Generates a json of the query from req.body
+   * @param {*} body
    * @returns {query} json object of the query
    */
   static async buildSearchQuery(body) {
+    if (!body) {
+      return {};
+    }
+    
     async function getUserIdsByEmailsQuery(listOfEmails) {
       if (!Array.isArray(listOfEmails)) {
         throw new ErrorTypeOfQuery();
@@ -215,21 +221,25 @@ export default class ArticleController {
   }
 
   /**
-   * Fuzzy searches for articles based on title
+   * Fuzzy searches for articles based on fields with optional limit and query
    *
    * @param {Request} req
    * @param {Response} res
    */
   static async fuzzySearch(req, res) {
     try {
+      let limit;
       const search = req.query.search;
       // finds the query parmeter
       const query = await ArticleController.buildSearchQuery(req.body);
+      // what field (title, content, etc)
+      const fields = req.body.fields;
 
-      const fields = req.body.;
+      if (req.body.hasOwnProperty("limit")) {
+        limit = Number(req.body.limit);
+      }
 
-      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields, limits, query);
-
+      let results = await ArticlesAccessor.fuzzySearchArticles(search, fields, limit, query);
       res.status(200).json(results);
     } catch (e) {
       if (e instanceof HttpError) {
@@ -251,11 +261,13 @@ export default class ArticleController {
    */
   static async search(req, res) {
     try {
+      let limit;
+
       // finds the query parmeter
       const query = await ArticleController.buildSearchQuery(req.body);
       // limits are not a part of query, thus handled separately
       if (req.body.hasOwnProperty("limit")) {
-        const limit = Number(req.body.limit);
+        limit = Number(req.body.limit);
       }
 
       // access the database and retrieve the matching articles
