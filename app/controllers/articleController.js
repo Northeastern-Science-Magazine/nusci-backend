@@ -119,54 +119,6 @@ export default class ArticleController {
   }
 
   /**
-   * Fuzzy searches for articles based on title
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async searchByTitle(req, res) {
-    try {
-      const search = req.query.search;
-
-      const fields = ["title"];
-
-      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
-
-      res.status(200).json(results);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
-   * Fuzzy searches for articles based on title and content
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async searchByTitleAndContent(req, res) {
-    try {
-      const search = req.query.search;
-
-      const fields = ["title", "articleContent.content"];
-
-      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
-
-      res.status(200).json(results);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
    * resolveInternalComment Method
    *
    * This method resolves an internal comment given the mongoID of the comment.
@@ -188,21 +140,17 @@ export default class ArticleController {
       }
     }
   }
-  /**
-   * search Method
-   *
-   * This method searches and returns all articles matching the given params
-   *
-   * @param {HTTP REQ} req web request object
-   * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
+
+    /**
+   * 
+   * @param {*} body 
+   * @returns {query} json object of the query
    */
-  static async search(req, res) {
+  static async buildSearchQuery(body) {
     async function getUserIdsByEmailsQuery(listOfEmails) {
       if (!Array.isArray(listOfEmails)) {
         throw new ErrorTypeOfQuery();
       }
-      // returns ids of the user objects given as a list of emails
       const allUsers = [];
       for (let i = 0; i < listOfEmails.length; i++) {
         const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
@@ -245,27 +193,69 @@ export default class ArticleController {
       categories: inQuery,
     };
 
+    const query = {};
+
+    // Build query from mapping
+    for (const searchOption of Object.keys(mapping)) {
+      if (body.hasOwnProperty(searchOption)) {
+        query[searchOption] = await mapping[searchOption](body[searchOption]);
+      }
+    }
+
+    // Handle date ranges
+    if (body.hasOwnProperty("before") && body.hasOwnProperty("after")) {
+      query.$and = [{ approvalTime: { $gte: body.after } }, { approvalTime: { $lte: body.before } }];
+    } else if (body.hasOwnProperty("before")) {
+      query.approvalTime = { $lte: body.before };
+    } else if (body.hasOwnProperty("after")) {
+      query.approvalTime = { $gte: body.after };
+    }
+
+    return query;
+  }
+
+  /**
+   * Fuzzy searches for articles based on title
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async fuzzySearch(req, res) {
     try {
-      const query = {};
-      var limit;
+      const search = req.query.search;
+      // finds the query parmeter
+      const query = await ArticleController.buildSearchQuery(req.body);
 
-      for (const searchOption of Object.keys(mapping)) {
-        if (req.body.hasOwnProperty(searchOption)) {
-          query[searchOption] = await mapping[searchOption](req.body[searchOption]);
-        }
+      const fields = req.body.;
+
+      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields, limits, query);
+
+      res.status(200).json(results);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
       }
+    }
+  }
 
-      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
-        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
-      } else if (req.body.hasOwnProperty("before")) {
-        query.approvalTime = { $lte: req.body.before };
-      } else if (req.body.hasOwnProperty("after")) {
-        query.approvalTime = { $gte: req.body.after };
-      }
-
+  /**
+   * search Method
+   *
+   * This method searches and returns all articles matching the given params
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   * @param {function} next middleware function
+   */
+  static async search(req, res) {
+    try {
+      // finds the query parmeter
+      const query = await ArticleController.buildSearchQuery(req.body);
       // limits are not a part of query, thus handled separately
       if (req.body.hasOwnProperty("limit")) {
-        limit = Number(req.body.limit);
+        const limit = Number(req.body.limit);
       }
 
       // access the database and retrieve the matching articles
