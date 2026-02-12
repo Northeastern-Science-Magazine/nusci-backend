@@ -323,7 +323,7 @@ export default class ArticlesAccessor {
    * @param {limit} numerical limit to the number of elements to return (optional)
    * @param {query} json object of query we want (optional)
    */
-  static async fuzzySearchArticles(search, fields, limit, query) {
+  static async fuzzySearchArticles(search, fields = ["title", "content"], limit, query) {
     await Connection.open();
 
     const pipeline = [
@@ -342,6 +342,13 @@ export default class ArticlesAccessor {
     // Add additonal query if provided
     if (query) {
       pipeline.push({ $match: query });
+    }
+
+    // if no text provided, sort by publishDate
+    if (!search) {
+      pipeline.push({
+        $sort: { publishDate: -1 },
+      });
     }
 
     // Add limit if provided
