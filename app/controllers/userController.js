@@ -1,9 +1,7 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import bcrypt from "bcrypt"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
 import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
@@ -22,9 +20,6 @@ import {
   ErrorValidation,
   HttpError,
 } from "../error/errors.js";
-import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
-import Validate from "../models/validationSchemas/validateSchema.js";
-import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
 import LoginToken from "../auth/token.js";
 
 /**
