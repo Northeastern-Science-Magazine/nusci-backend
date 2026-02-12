@@ -1,6 +1,5 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import bcrypt from "bcrypt"; // import bcrypt to hash passwords
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
