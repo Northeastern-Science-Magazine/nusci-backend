@@ -4,21 +4,24 @@ import { ErrorValidation } from "../../error/errors.js";
  * Enumerated Class for Article Categories
  */
 export default class Category {
-  static ArtificialIntelligence = new Category("artificial_intelligence");
   static Biology = new Category("biology");
   static Chemistry = new Category("chemistry");
-  static ComputerScience = new Category("computer_science");
   static Culture = new Category("culture");
-  static Health = new Category("health");
   static Environment = new Category("environment");
-  static Medicine = new Category("medicine");
+  static Health = new Category("health");
+  static Local = new Category("local");
+  static Mathematics = new Category("mathematics");
+  static Neuroscience = new Category("neuroscience");
   static Newsletter = new Category("newsletter");
   static Opinion = new Category("opinion");
+  static Philosophy = new Category("philosophy");
   static Physics = new Category("physics");
+  static Politics = new Category("politics");
   static Psychology = new Category("psychology");
-  static Science = new Category("science");
   static Space = new Category("space");
   static Technology = new Category("technology");
+  static Uncategorized = new Category("uncategorized");
+  static World = new Category("world");
 
   /**
    * INTERNAL USE ONLY
