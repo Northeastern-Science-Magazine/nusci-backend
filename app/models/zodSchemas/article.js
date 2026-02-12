@@ -87,3 +87,11 @@ export const ArticleUpdate = Article.extend({
 export const ArticleDelete = z.object({
   slug: z.string(),
 });
+
+export const ArticleSearchRequest = z.object({
+  limit: z.number().int().nonnegative().optional(),
+  skip: z.number().int().nonnegative().default(0),
+  textQuery: z.string().optional(),
+  categories: z.array(z.enum(Category.listr())).optional(),
+  sortBy: z.enum(["asc", "desc"]).default("desc"),
+});

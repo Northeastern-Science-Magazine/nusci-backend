@@ -2,8 +2,8 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery, ErrorValidation } from "../error/errors.js";
+import { ArticleUpdate, ArticleResponse, ArticleSearchRequest } from "../models/zodSchemas/article.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
 import { ValidationError } from "jsonschema";
 
@@ -27,7 +27,7 @@ export default class ArticleController {
       const { slug } = req.params;
 
       // const updates = new ArticleUpdate(req.body);
-      
+
       const updates = await ArticleUpdate.safeParseAsync(req.body);
 
       if (!updates.success) {
@@ -48,7 +48,7 @@ export default class ArticleController {
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse.data);
     } catch (e) {
-        if (e instanceof HttpError) {
+      if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
         new ErrorUnexpected(e.message).throwHttp(req, res);
@@ -71,7 +71,7 @@ export default class ArticleController {
       // const updates = new ArticleUpdate(req.body);
       const updates = await ArticleUpdate.safeParseAsync(req.body);
 
-      if(!updates.success) {
+      if (!updates.success) {
         throw new ErrorValidation("Validation failed.");
       }
 
@@ -159,137 +159,50 @@ export default class ArticleController {
   }
 
   /**
-   *
-   * Helper function for searching
-   * Generates a json of the query from req.body
-   * @param {*} body
-   * @returns {query} json object of the query
-   */
-  static async buildSearchQuery(body) {
-    if (!body) {
-      return {};
-    }
-    
-    async function getUserIdsByEmailsQuery(listOfEmails) {
-      if (!Array.isArray(listOfEmails)) {
-        throw new ErrorTypeOfQuery();
-      }
-      const allUsers = [];
-      for (let i = 0; i < listOfEmails.length; i++) {
-        const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
-        allUsers[i] = user._id;
-      }
-      return { $in: allUsers };
-    }
-
-    function numberTypeCheck(num) {
-      if (!Number.isNaN(Number(num))) {
-        return num;
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    function stringTypeCheck(str) {
-      if (typeof str === "string") {
-        return str;
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    function inQuery(cats) {
-      if (Array.isArray(cats)) {
-        return { $in: cats };
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    const mapping = {
-      issueNumber: numberTypeCheck,
-      authors: getUserIdsByEmailsQuery,
-      editors: getUserIdsByEmailsQuery,
-      designers: getUserIdsByEmailsQuery,
-      photographers: getUserIdsByEmailsQuery,
-      slug: stringTypeCheck,
-      categories: inQuery,
-    };
-
-    const query = {};
-
-    // Build query from mapping
-    for (const searchOption of Object.keys(mapping)) {
-      if (body.hasOwnProperty(searchOption)) {
-        query[searchOption] = await mapping[searchOption](body[searchOption]);
-      }
-    }
-
-    // Handle date ranges
-    if (body.hasOwnProperty("before") && body.hasOwnProperty("after")) {
-      query.$and = [{ approvalTime: { $gte: body.after } }, { approvalTime: { $lte: body.before } }];
-    } else if (body.hasOwnProperty("before")) {
-      query.approvalTime = { $lte: body.before };
-    } else if (body.hasOwnProperty("after")) {
-      query.approvalTime = { $gte: body.after };
-    }
-
-    return query;
-  }
-
-  /**
-   * Fuzzy searches for articles based on fields with optional limit and query
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async fuzzySearch(req, res) {
-    try {
-      let limit;
-      const search = req.query.search;
-      // finds the query parmeter
-      const query = await ArticleController.buildSearchQuery(req.body);
-      // what field (title, content, etc)
-      const fields = req.body.fields;
-
-      if (req.body.hasOwnProperty("limit")) {
-        limit = Number(req.body.limit);
-      }
-
-      let results = await ArticlesAccessor.fuzzySearchArticles(search, fields, limit, query);
-      res.status(200).json(results);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
    * search Method
    *
-   * This method searches and returns all articles matching the given params
+   * Unified search method that supports both fuzzy text search and regular queries.
+   * Supports pagination, category filtering, and date sorting.
+   *
+   * Expected request body:
+   * - limit: number (optional, default: no limit)
+   * - skip: number (optional, default: 0)
+   * - textQuery: string (optional, triggers fuzzy search if provided)
+   * - categories: array of strings (optional, filters by categories)
+   * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
   static async search(req, res) {
     try {
-      let limit;
+      // Validate request body with Zod schema
+      const validationResult = await ArticleSearchRequest.safeParseAsync(req.body || {});
 
-      // finds the query parmeter
-      const query = await ArticleController.buildSearchQuery(req.body);
-      // limits are not a part of query, thus handled separately
-      if (req.body.hasOwnProperty("limit")) {
-        limit = Number(req.body.limit);
+      if (!validationResult.success) {
+        throw new ErrorValidation("Search request validation failed");
       }
 
-      // access the database and retrieve the matching articles
-      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
-      res.status(200).json(matchingArticles);
+      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const sortOrder = sortBy === "asc" ? 1 : -1;
+
+      // Build query object for non-text search filters
+      const query = {};
+      if (categories && categories.length > 0) {
+        query.categories = { $in: categories };
+      }
+
+      // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
+      let results;
+      if (textQuery && textQuery.trim().length > 0) {
+        // Use fuzzy search with textQuery (results sorted by relevance, not by date)
+        results = await ArticlesAccessor.searchArticlesWithText(textQuery.trim(), query, limit, skip);
+      } else {
+        // Use regular search without text query
+        results = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
+      }
+
+      res.status(200).json(results);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

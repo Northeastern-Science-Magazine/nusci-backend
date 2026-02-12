@@ -360,19 +360,87 @@ export default class ArticlesAccessor {
   }
 
   /**
+   * searchArticlesWithText method
+   *
+   * Performs fuzzy text search on articles with optional filters and pagination.
+   * Uses MongoDB Atlas Search for text search functionality.
+   * Results are sorted by relevance score (not by date) to preserve search ranking.
+   *
+   * @param {string} textQuery the text to search for
+   * @param {object} query additional MongoDB query filters (e.g., categories)
+   * @param {number} limit maximum number of results to return (optional)
+   * @param {number} skip number of results to skip for pagination (optional, default: 0)
+   * @returns {array} array of matching articles sorted by relevance
+   */
+  static async searchArticlesWithText(textQuery, query = {}, limit, skip = 0) {
+    await Connection.open();
+
+    const pipeline = [
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: textQuery,
+            path: ["title", "articleContent.content"],
+            fuzzy: {},
+          },
+        },
+      },
+    ];
+
+    // Add additional query filters if provided
+    if (Object.keys(query).length > 0) {
+      pipeline.push({ $match: query });
+    }
+
+    // Note: We do NOT sort by date here because MongoDB Atlas Search
+    // already returns results sorted by relevance score. Sorting by date
+    // would override the search relevance ranking.
+
+    // Add skip for pagination
+    if (skip > 0) {
+      pipeline.push({ $skip: skip });
+    }
+
+    // Add limit if provided
+    if (limit !== undefined && limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+
+    const results = await Article.aggregate(pipeline);
+    return results;
+  }
+
+  /**
    * searchArticles method
    *
-   * This method finds all articles that match the search query
+   * This method finds all articles that match the search query without text search.
+   * Supports pagination and sorting.
    *
-   * @param {query} json object of query we want
-   * @param {limit} numerical limit to the number of elements to return
+   * @param {object} query json object of query we want
+   * @param {number} limit numerical limit to the number of elements to return (optional)
+   * @param {number} skip number of results to skip for pagination (optional, default: 0)
+   * @param {number} sortOrder 1 for ascending, -1 for descending (optional, default: -1)
+   * @returns {array} array of matching articles
    */
-  static async searchArticles(query, limit) {
+  static async searchArticles(query = {}, limit, skip = 0, sortOrder = -1) {
     await Connection.open();
-    if (limit <= 0) {
-      return [];
-    } else {
-      return await Article.find(query).limit(limit);
+    
+    let mongoQuery = Article.find(query);
+
+    // Apply sorting by approvalTime (or creationTime if approvalTime doesn't exist)
+    mongoQuery = mongoQuery.sort({ approvalTime: sortOrder, creationTime: sortOrder });
+
+    // Apply skip for pagination
+    if (skip > 0) {
+      mongoQuery = mongoQuery.skip(skip);
     }
+
+    // Apply limit if provided and valid
+    if (limit !== undefined && limit > 0) {
+      mongoQuery = mongoQuery.limit(limit);
+    }
+
+    return await mongoQuery.exec();
   }
 }
