@@ -25,6 +25,7 @@ import {
 import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
 import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
+import LoginToken from "../auth/token.js";
 
 /**
  * UsersController Class
@@ -80,20 +81,13 @@ export default class UserController {
        */
       const decrypted = await bcrypt.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin();
+        throw new ErrorFailedLogin(user);
       }
       dotenvConfig(); // load .env variables
       // sign token and send it in response
-      const token = jwt.sign(
-        {
-          email: user.email,
-          roles: user.roles,
-        },
-        process.env.SERVER_TOKEN_KEY
-      );
+      LoginToken.generate(user, res, true);
 
       //Users are logged in for 1 hour
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {
@@ -117,8 +111,7 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
-
-      let user = {...req.body, creationTime: new Date(), modificationTime: new Date()};
+      let user = { ...req.body, creationTime: new Date(), modificationTime: new Date() };
       const userCreate = await UserCreate.safeParseAsync(user);
       if (!userCreate.success) {
         throw new ErrorValidation("Signup validation failed.");
@@ -215,7 +208,7 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      const userResponse = await UserPrivateResponse.omit({id: true}).safeParseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({ id: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -248,15 +241,15 @@ export default class UserController {
         // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
-      
-      const userResponse = await UserPublicResponse.omit({id: true}).safeParseAsync(user);
+
+      const userResponse = await UserPublicResponse.omit({ id: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed.");
       }
 
       res.status(200).json(userResponse.data);
     } catch (e) {
-      console.log(e.message)
+      console.log(e.message);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -275,7 +268,6 @@ export default class UserController {
    */
   static async resolveUserApprovals(req, res) {
     try {
-
       const approvals = UserApprovals.safeParse(req.body);
       if (!approvals.success) {
         throw new ErrorValidation("Approvals validation failed.");
