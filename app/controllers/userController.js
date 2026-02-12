@@ -21,6 +21,7 @@ import {
   HttpError,
 } from "../error/errors.js";
 import LoginToken from "../auth/token.js";
+import Password from "../auth/password.js";
 
 /**
  * UsersController Class
@@ -74,7 +75,7 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await bcrypt.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(req.body.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin(user);
       }
@@ -117,8 +118,8 @@ export default class UserController {
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      userCreate.data.password = await bcrypt.hash(userCreate.data.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(userCreate.data.email);
+      req.body.password = await Password.hash(req.boday.password, 10);
+      const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
