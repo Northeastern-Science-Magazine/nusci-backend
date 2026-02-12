@@ -1,12 +1,12 @@
 import * as z from "zod";
-import Category from "../enums/categories";
-import ArticleContent from "../enums/articleContent";
-import { UserPublicResponse } from "./user";
-import CommentStatus from "../enums/commentStatus";
-import PhotographyStatus from "../enums/photographyStatus";
-import ArticleStatus from "../enums/articleStatus";
-import WritingStatus from "../enums/writingStatus";
-import DesignStatus from "../enums/designStatus";
+import Category from "../enums/categories.js";
+import ArticleContent from "../enums/articleContent.js";
+import { UserPublicResponse } from "./user.js";
+import CommentStatus from "../enums/commentStatus.js";
+import PhotographyStatus from "../enums/photographyStatus.js";
+import ArticleStatus from "../enums/articleStatus.js";
+import WritingStatus from "../enums/writingStatus.js";
+import DesignStatus from "../enums/designStatus.js";
 
 export const Article = z.object({
   title: z.string(),
