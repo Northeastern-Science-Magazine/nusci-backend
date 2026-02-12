@@ -153,7 +153,6 @@ export class ArticleUpdate extends BaseModelUpdate {
     designers: { type: [string] },
     photographers: { type: [string] },
     approvingUser: { type: string },
-
     approvalTime: { type: date },
     modificationTime: { type: date, default: now, override: true },
   };
