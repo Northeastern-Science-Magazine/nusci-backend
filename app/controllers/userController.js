@@ -1,10 +1,10 @@
 import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import bcrypt from "bcryptjs"; // import bcrypt to hash passwords
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import Authorize from "../auth/authorization.js";
-import Accounts from "../models/enums/accounts.js";
 import AccountStatus from "../models/enums/accountStatus.js";
+import * as z from "zod";
+import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -16,11 +16,11 @@ import {
   ErrorUserNotFound,
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
+  ErrorValidation,
   HttpError,
 } from "../error/errors.js";
-import { string, date, array, integer } from "../models/validationSchemas/schemaTypes.js";
-import Validate from "../models/validationSchemas/validateSchema.js";
-import { userPublicResponse, userResponse } from "../models/validationSchemas/user.js";
+import LoginToken from "../auth/token.js";
+import Password from "../auth/password.js";
 
 /**
  * UsersController Class
@@ -40,13 +40,12 @@ export default class UserController {
    * @param {HTTP RES} res web response
    */
   static async login(req, res) {
-    console.log("HERE");
-    console.log(req.body);
     try {
-      Validate.incoming(req.body, {
-        email: { type: string, required: true },
-        password: { type: string, required: true },
-      });
+      // parse login request
+      if (!Login.safeParse(req.body)) {
+        throw new ErrorFailedLogin("Bad Request Body");
+      }
+
       if (req.cookies.token) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();
@@ -75,22 +74,15 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await bcrypt.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin();
+        throw new ErrorFailedLogin(user);
       }
       dotenvConfig(); // load .env variables
       // sign token and send it in response
-      const token = jwt.sign(
-        {
-          email: user.email,
-          roles: user.roles,
-        },
-        process.env.SERVER_TOKEN_KEY
-      );
+      LoginToken.generate(user, res, true);
 
       //Users are logged in for 1 hour
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {
@@ -114,46 +106,30 @@ export default class UserController {
    */
   static async signup(req, res) {
     try {
-      Validate.incoming(
-        req.body,
-        {
-          firstName: { type: string, required: true },
-          lastName: { type: string, required: true },
-          password: { type: string, required: true },
-          pronouns: { type: array, items: { type: string } },
-          graduationYear: { type: integer, required: true },
-          major: { type: string },
-          location: { type: string },
-          profileImage: { type: string },
-          bannerImage: { type: string },
-          bio: { type: string, required: true },
-          email: { type: string, required: true },
-          phone: { type: string },
-          roles: { type: array, items: { enum: Accounts.listr(), required: true } },
-          status: { enum: AccountStatus.listr(), required: true },
-          approvingUser: { const: undefined },
-          gameData: { const: undefined },
-          creationTime: { type: date, required: true },
-          modificationTime: { type: date, required: true },
-        },
-        { override: ["creationTime", "modificationTime"] }
-      );
+      let user = { ...req.body, creationTime: new Date(), modificationTime: new Date() };
+      const userCreate = await UserCreate.safeParseAsync(user);
+      if (!userCreate.success) {
+        throw new ErrorValidation("Signup validation failed.");
+      }
 
       // hash the password
       /**
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      req.body.password = await bcrypt.hash(req.body.password, 10);
+      req.body.password = await Password.hash(req.boday.password, 10);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
         throw new ErrorUserAlreadyExists();
       }
 
-      await UsersAccessor.createUser(req.body);
+      await UsersAccessor.createUser(userCreate.data);
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
+      if (e instanceof z.ZodError) {
+        throw new ErrorValidation("Signup request validation failed.");
+      }
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -227,8 +203,12 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      Validate.outgoing(user, userResponse);
-      res.status(200).json(user);
+      const userResponse = await UserPrivateResponse.omit({ id: true }).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(200).json(userResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -250,15 +230,21 @@ export default class UserController {
     try {
       const email = req.params.email;
       const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
+
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
         // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
 
-      Validate.outgoing(user, userPublicResponse);
-      res.status(200).json(user);
+      const userResponse = await UserPublicResponse.omit({ id: true }).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed.");
+      }
+
+      res.status(200).json(userResponse.data);
     } catch (e) {
+      console.log(e.message);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -277,17 +263,13 @@ export default class UserController {
    */
   static async resolveUserApprovals(req, res) {
     try {
-      Validate.incoming(req.body, {
-        approve: { type: array, items: { type: string } },
-        deny: { type: array, items: { type: string } },
-      });
-
-      if (!(req.body.approve && req.body.deny)) {
-        throw new ErrorValidation("No users given to resolve status for.");
+      const approvals = UserApprovals.safeParse(req.body);
+      if (!approvals.success) {
+        throw new ErrorValidation("Approvals validation failed.");
       }
 
-      const approveUsers = req.body.approve ?? [];
-      const denyUsers = req.body.deny ?? [];
+      const approveUsers = approvals.data.approve ?? [];
+      const denyUsers = approvals.data.deny ?? [];
       const allUsers = [...approveUsers, ...denyUsers];
 
       //check if the users given exists and are pending

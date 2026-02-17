@@ -41,14 +41,21 @@ export default class ArticlesAccessor {
    * getArticleBySlug method
    *
    * This method retrieves an article based on
-   * the given slug.
+   * the given slug with all related fields populated.
    *
    * @param {String} slug
    * @returns article
    */
   static async getArticleBySlug(slug) {
     await Connection.open();
-    const article = await Article.findOne({ slug: slug });
+    const article = await Article.findOne({ slug: slug })
+      //.populate("authors")
+      .populate("comments.user")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
     return article;
   }
 
@@ -320,11 +327,13 @@ export default class ArticlesAccessor {
    *
    * @param {*} search the term(s) to search for
    * @param {*} fields the field to search for
+   * @param {limit} numerical limit to the number of elements to return (optional)
+   * @param {query} json object of query we want (optional)
    */
-  static async fuzzySearchArticles(search, fields) {
+  static async fuzzySearchArticles(search, fields = ["title", "content"], limit, query) {
     await Connection.open();
 
-    const results = await Article.aggregate([
+    const pipeline = [
       {
         $search: {
           index: "article_text_index",
@@ -335,25 +344,124 @@ export default class ArticlesAccessor {
           },
         },
       },
-    ]);
+    ];
 
+    // Add additonal query if provided
+    if (query) {
+      pipeline.push({ $match: query });
+    }
+
+    // if no text provided, sort by publishDate
+    if (!search) {
+      pipeline.push({
+        $sort: { publishDate: -1 },
+      });
+    }
+
+    // Add limit if provided
+    if (limit && limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+    const results = await Article.aggregate(pipeline);
     return results;
+  }
+
+  /**
+   * searchArticlesWithText method
+   *
+   * Performs fuzzy text search on articles with optional filters and pagination.
+   * Uses MongoDB Atlas Search for text search functionality.
+   * Results are sorted by relevance score (not by date) to preserve search ranking.
+   *
+   * @param {string} textQuery the text to search for
+   * @param {object} query additional MongoDB query filters (e.g., categories)
+   * @param {number} limit maximum number of results to return (optional)
+   * @param {number} skip number of results to skip for pagination (optional, default: 0)
+   * @returns {object} object with results array and total count
+   */
+  static async searchArticlesWithText(textQuery, query = {}, limit, skip = 0) {
+    await Connection.open();
+
+    // Pipeline for getting results
+    const resultsPipeline = [
+      {
+        $search: {
+          index: "article_text_index",
+          text: {
+            query: textQuery,
+            path: ["title", "articleContent.content"],
+            fuzzy: {},
+          },
+        },
+      },
+    ];
+
+    // Add additional query filters if provided
+    if (Object.keys(query).length > 0) {
+      resultsPipeline.push({ $match: query });
+    }
+
+    // Note: We do NOT sort by date here because MongoDB Atlas Search
+    // already returns results sorted by relevance score. Sorting by date
+    // would override the search relevance ranking.
+
+    // Pipeline for counting total results (without skip/limit)
+    const countPipeline = [...resultsPipeline, { $count: "total" }];
+
+    // Add skip for pagination to results pipeline
+    if (skip > 0) {
+      resultsPipeline.push({ $skip: skip });
+    }
+
+    // Add limit if provided to results pipeline
+    if (limit !== undefined && limit > 0) {
+      resultsPipeline.push({ $limit: limit });
+    }
+
+    // Execute both pipelines in parallel
+    const [results, countResult] = await Promise.all([Article.aggregate(resultsPipeline), Article.aggregate(countPipeline)]);
+
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    return { results, total };
   }
 
   /**
    * searchArticles method
    *
-   * This method finds all articles that match the search query
+   * This method finds all articles that match the search query without text search.
+   * Supports pagination and sorting.
    *
-   * @param {query} json object of query we want
-   * @param {limit} numerical limit to the number of elements to return
+   * @param {object} query json object of query we want
+   * @param {number} limit numerical limit to the number of elements to return (optional)
+   * @param {number} skip number of results to skip for pagination (optional, default: 0)
+   * @param {number} sortOrder 1 for ascending, -1 for descending (optional, default: -1)
+   * @returns {object} object with results array and total count
    */
-  static async searchArticles(query, limit) {
+  static async searchArticles(query = {}, limit, skip = 0, sortOrder = -1) {
     await Connection.open();
-    if (limit <= 0) {
-      return [];
-    } else {
-      return await Article.find(query).limit(limit);
+
+    // Get total count (without pagination)
+    const total = await Article.countDocuments(query);
+
+    // Build query for results with pagination
+    let mongoQuery = Article.find(query);
+
+    // Apply sorting by approvalTime (or creationTime if approvalTime doesn't exist)
+    mongoQuery = mongoQuery.sort({ approvalTime: sortOrder, creationTime: sortOrder });
+
+    // Apply skip for pagination
+    if (skip > 0) {
+      mongoQuery = mongoQuery.skip(skip);
     }
+
+    // Apply limit if provided and valid
+    if (limit !== undefined && limit > 0) {
+      mongoQuery = mongoQuery.limit(limit);
+    }
+
+    const results = await mongoQuery.exec();
+
+    return { results, total };
   }
 }

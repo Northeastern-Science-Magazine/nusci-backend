@@ -39,10 +39,12 @@
     "mercedlogger": "^1.0.1",
     "mongodb": "^5.9.2",
     "mongoose": "^8.9.5",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.24.7",
+    "@types/bcryptjs": "^2.4.6",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
     "supertest": "^7.0.0"

@@ -2,8 +2,8 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse } from "../models/apiModels/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery } from "../error/errors.js";
+import { ArticleUpdate, ArticleResponse, ArticleSearchRequest } from "../models/zodSchemas/article.js";
+import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
@@ -13,6 +13,43 @@ import Utils from "./utils.js";
  * related to Articles.
  */
 export default class ArticleController {
+  /**
+   * getArticleBySlug method
+   *
+   * Handles the request to get a single article by its slug.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getArticleBySlug(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const article = await ArticlesAccessor.getArticleBySlug(slug);
+
+      if (!article) {
+        throw new ErrorArticleNotFound();
+      }
+
+      // Validate and construct an ArticleResponse instance
+      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      // if (!articleResponse.success) {
+      //   throw new ErrorValidation("Outgoing response validation failed");
+      // }
+
+      // Send the validated ArticleResponse
+
+      console.log(article);
+      res.status(200).json(article);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * updateStatus method
    *
@@ -25,19 +62,27 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
 
-      const updates = new ArticleUpdate(req.body);
+      // const updates = new ArticleUpdate(req.body);
 
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+      const updates = await ArticleUpdate.safeParseAsync(req.body);
+
+      if (!updates.success) {
+        throw new ErrorValidation("Incoming update validation failed");
+      }
+
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
       }
 
-      // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
       // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse);
+      res.status(200).json(updatedArticleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -58,17 +103,25 @@ export default class ArticleController {
   static async updateAuthors(req, res) {
     try {
       const { slug } = req.params;
-      const updates = new ArticleUpdate(req.body);
-      const authorIds = await Utils.getUserIdsByEmails(updates.authors);
-      updates.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates);
+
+      // const updates = new ArticleUpdate(req.body);
+      const updates = await ArticleUpdate.safeParseAsync(req.body);
+
+      if (!updates.success) {
+        throw new ErrorValidation("Validation failed.");
+      }
+
+      const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
+      updates.data.authors = authorIds;
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
       }
 
       // Validate and construct an ArticleResponse instance
-      const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
+      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
 
       res.status(200).json(updatedArticleResponse);
     } catch (e) {
@@ -119,54 +172,6 @@ export default class ArticleController {
   }
 
   /**
-   * Fuzzy searches for articles based on title
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async searchByTitle(req, res) {
-    try {
-      const search = req.query.search;
-
-      const fields = ["title"];
-
-      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
-
-      res.status(200).json(results);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
-   * Fuzzy searches for articles based on title and content
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async searchByTitleAndContent(req, res) {
-    try {
-      const search = req.query.search;
-
-      const fields = ["title", "articleContent.content"];
-
-      var results = await ArticlesAccessor.fuzzySearchArticles(search, fields);
-
-      res.status(200).json(results);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
    * resolveInternalComment Method
    *
    * This method resolves an internal comment given the mongoID of the comment.
@@ -188,89 +193,56 @@ export default class ArticleController {
       }
     }
   }
+
   /**
    * search Method
    *
-   * This method searches and returns all articles matching the given params
+   * Unified search method that supports both fuzzy text search and regular queries.
+   * Supports pagination, category filtering, and date sorting.
+   *
+   * Expected request body:
+   * - limit: number (optional, default: no limit)
+   * - skip: number (optional, default: 0)
+   * - textQuery: string (optional, triggers fuzzy search if provided)
+   * - categories: array of strings (optional, filters by categories)
+   * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
    * @param {HTTP RES} res web response object
-   * @param {function} next middleware function
    */
   static async search(req, res) {
-    async function getUserIdsByEmailsQuery(listOfEmails) {
-      if (!Array.isArray(listOfEmails)) {
-        throw new ErrorTypeOfQuery();
-      }
-      // returns ids of the user objects given as a list of emails
-      const allUsers = [];
-      for (let i = 0; i < listOfEmails.length; i++) {
-        const user = await UsersAccessor.getUserByEmail(listOfEmails[i]);
-        allUsers[i] = user._id;
-      }
-      return { $in: allUsers };
-    }
-
-    function numberTypeCheck(num) {
-      if (!Number.isNaN(Number(num))) {
-        return num;
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    function stringTypeCheck(str) {
-      if (typeof str === "string") {
-        return str;
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    function inQuery(cats) {
-      if (Array.isArray(cats)) {
-        return { $in: cats };
-      } else {
-        throw new ErrorTypeOfQuery();
-      }
-    }
-
-    const mapping = {
-      issueNumber: numberTypeCheck,
-      authors: getUserIdsByEmailsQuery,
-      editors: getUserIdsByEmailsQuery,
-      designers: getUserIdsByEmailsQuery,
-      photographers: getUserIdsByEmailsQuery,
-      slug: stringTypeCheck,
-      categories: inQuery,
-    };
-
     try {
+      // Validate request body with Zod schema
+      const validationResult = await ArticleSearchRequest.safeParseAsync(req.body || {});
+
+      if (!validationResult.success) {
+        throw new ErrorValidation("Search request validation failed");
+      }
+
+      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const sortOrder = sortBy === "asc" ? 1 : -1;
+
+      // Build query object for non-text search filters
       const query = {};
-      var limit;
-
-      for (const searchOption of Object.keys(mapping)) {
-        if (req.body.hasOwnProperty(searchOption)) {
-          query[searchOption] = await mapping[searchOption](req.body[searchOption]);
-        }
+      if (categories && categories.length > 0) {
+        query.categories = { $in: categories };
       }
 
-      if (req.body.hasOwnProperty("before") && req.body.hasOwnProperty("after")) {
-        query.$and = [{ approvalTime: { $gte: req.body.after } }, { approvalTime: { $lte: req.body.before } }];
-      } else if (req.body.hasOwnProperty("before")) {
-        query.approvalTime = { $lte: req.body.before };
-      } else if (req.body.hasOwnProperty("after")) {
-        query.approvalTime = { $gte: req.body.after };
+      // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
+      let searchResult;
+      if (textQuery && textQuery.trim().length > 0) {
+        // Use fuzzy search with textQuery (results sorted by relevance, not by date)
+        searchResult = await ArticlesAccessor.searchArticlesWithText(textQuery.trim(), query, limit, skip);
+      } else {
+        // Use regular search without text query
+        searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      // limits are not a part of query, thus handled separately
-      if (req.body.hasOwnProperty("limit")) {
-        limit = Number(req.body.limit);
-      }
-
-      // access the database and retrieve the matching articles
-      const matchingArticles = await ArticlesAccessor.searchArticles(query, limit);
-      res.status(200).json(matchingArticles);
+      // Return results with total count for pagination
+      res.status(200).json({
+        results: searchResult.results,
+        total: searchResult.total,
+      });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

@@ -23,7 +23,12 @@ const ArticleSchema = new Schema(
         content: { type: String, required: true },
       },
     ],
-    sources: [{ type: String }],
+    sources: [
+      {
+        text: { type: String, required: true },
+        href: { type: String, required: true },
+      },
+    ],
     link: { type: String },
     pageLength: { type: Number, required: true },
     comments: [
@@ -39,7 +44,7 @@ const ArticleSchema = new Schema(
     writingStatus: { type: String, enum: WritingStatus.listr(), required: true },
     designStatus: { type: String, enum: DesignStatus.listr(), required: true },
     photographyStatus: { type: String, enum: PhotographyStatus.listr(), required: true },
-    authors: [{ type: Schema.Types.ObjectId, ref: User }],
+    authors: [{ type: String }], // string for now, but later ref to a user
     editors: [{ type: Schema.Types.ObjectId, ref: User }],
     designers: [{ type: Schema.Types.ObjectId, ref: User }],
     photographers: [{ type: Schema.Types.ObjectId, ref: User }],
