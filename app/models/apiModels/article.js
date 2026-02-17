@@ -15,7 +15,14 @@ export class ArticleCreate extends BaseModel {
     issueNumber: { type: number },
     categories: { type: [string], enum: Category.listr(), required: true },
     articleContent: { type: array, default: [], override: true },
-    sources: { type: [string] },
+    sources: {
+      type: [
+        {
+          text: { type: string, required: true },
+          href: { type: string, required: true },
+        },
+      ],
+    },
     link: { type: string },
     pageLength: { type: number, required: true },
     comments: { type: array, default: [], override: true },
@@ -47,7 +54,14 @@ export class ArticleResponse extends BaseModel {
         },
       ],
     },
-    sources: { type: [string] },
+    sources: {
+      type: [
+        {
+          text: { type: string, required: true },
+          href: { type: string, required: true },
+        },
+      ],
+    },
     link: { type: string },
     pageLength: { type: number, required: true },
     comments: {
@@ -93,7 +107,14 @@ export class ArticlePublicResponse extends BaseModel {
         },
       ],
     },
-    sources: { type: [string] },
+    sources: {
+      type: [
+        {
+          text: { type: string, required: true },
+          href: { type: string, required: true },
+        },
+      ],
+    },
     pageLength: { type: number, required: true },
     comments: {
       type: [
@@ -134,7 +155,14 @@ export class ArticleUpdate extends BaseModelUpdate {
         },
       ],
     },
-    sources: { type: [string] },
+    sources: {
+      type: [
+        {
+          text: { type: string, required: true },
+          href: { type: string, required: true },
+        },
+      ],
+    },
     pageLength: { type: number },
     comments: {
       type: [

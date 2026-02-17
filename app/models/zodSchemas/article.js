@@ -13,7 +13,14 @@ export const Article = z.object({
   slug: z.string(),
   issueNumber: z.number().optional(),
   categories: z.array(z.enum(Category.listr())),
-  sources: z.array(z.string()).optional(),
+  sources: z
+    .array(
+      z.object({
+        text: z.string(),
+        href: z.string(),
+      })
+    )
+    .optional(),
   link: z.string().optional(),
   pageLength: z.number(),
   comments: z.array(

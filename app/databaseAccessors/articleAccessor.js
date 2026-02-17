@@ -41,14 +41,21 @@ export default class ArticlesAccessor {
    * getArticleBySlug method
    *
    * This method retrieves an article based on
-   * the given slug.
+   * the given slug with all related fields populated.
    *
    * @param {String} slug
    * @returns article
    */
   static async getArticleBySlug(slug) {
     await Connection.open();
-    const article = await Article.findOne({ slug: slug });
+    const article = await Article.findOne({ slug: slug })
+      //.populate("authors")
+      .populate("comments.user")
+      .populate("editors")
+      .populate("designers")
+      .populate("photographers")
+      .populate("approvingUser")
+      .exec();
     return article;
   }
 
@@ -370,12 +377,13 @@ export default class ArticlesAccessor {
    * @param {object} query additional MongoDB query filters (e.g., categories)
    * @param {number} limit maximum number of results to return (optional)
    * @param {number} skip number of results to skip for pagination (optional, default: 0)
-   * @returns {array} array of matching articles sorted by relevance
+   * @returns {object} object with results array and total count
    */
   static async searchArticlesWithText(textQuery, query = {}, limit, skip = 0) {
     await Connection.open();
 
-    const pipeline = [
+    // Pipeline for getting results
+    const resultsPipeline = [
       {
         $search: {
           index: "article_text_index",
@@ -390,25 +398,32 @@ export default class ArticlesAccessor {
 
     // Add additional query filters if provided
     if (Object.keys(query).length > 0) {
-      pipeline.push({ $match: query });
+      resultsPipeline.push({ $match: query });
     }
 
     // Note: We do NOT sort by date here because MongoDB Atlas Search
     // already returns results sorted by relevance score. Sorting by date
     // would override the search relevance ranking.
 
-    // Add skip for pagination
+    // Pipeline for counting total results (without skip/limit)
+    const countPipeline = [...resultsPipeline, { $count: "total" }];
+
+    // Add skip for pagination to results pipeline
     if (skip > 0) {
-      pipeline.push({ $skip: skip });
+      resultsPipeline.push({ $skip: skip });
     }
 
-    // Add limit if provided
+    // Add limit if provided to results pipeline
     if (limit !== undefined && limit > 0) {
-      pipeline.push({ $limit: limit });
+      resultsPipeline.push({ $limit: limit });
     }
 
-    const results = await Article.aggregate(pipeline);
-    return results;
+    // Execute both pipelines in parallel
+    const [results, countResult] = await Promise.all([Article.aggregate(resultsPipeline), Article.aggregate(countPipeline)]);
+
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    return { results, total };
   }
 
   /**
@@ -421,11 +436,15 @@ export default class ArticlesAccessor {
    * @param {number} limit numerical limit to the number of elements to return (optional)
    * @param {number} skip number of results to skip for pagination (optional, default: 0)
    * @param {number} sortOrder 1 for ascending, -1 for descending (optional, default: -1)
-   * @returns {array} array of matching articles
+   * @returns {object} object with results array and total count
    */
   static async searchArticles(query = {}, limit, skip = 0, sortOrder = -1) {
     await Connection.open();
-    
+
+    // Get total count (without pagination)
+    const total = await Article.countDocuments(query);
+
+    // Build query for results with pagination
     let mongoQuery = Article.find(query);
 
     // Apply sorting by approvalTime (or creationTime if approvalTime doesn't exist)
@@ -441,6 +460,8 @@ export default class ArticlesAccessor {
       mongoQuery = mongoQuery.limit(limit);
     }
 
-    return await mongoQuery.exec();
+    const results = await mongoQuery.exec();
+
+    return { results, total };
   }
 }

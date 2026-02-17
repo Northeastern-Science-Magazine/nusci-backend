@@ -5,7 +5,6 @@ import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse, ArticleSearchRequest } from "../models/zodSchemas/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
-import { ValidationError } from "jsonschema";
 
 /**
  * ArticleController Class
@@ -14,6 +13,43 @@ import { ValidationError } from "jsonschema";
  * related to Articles.
  */
 export default class ArticleController {
+  /**
+   * getArticleBySlug method
+   *
+   * Handles the request to get a single article by its slug.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getArticleBySlug(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const article = await ArticlesAccessor.getArticleBySlug(slug);
+
+      if (!article) {
+        throw new ErrorArticleNotFound();
+      }
+
+      // Validate and construct an ArticleResponse instance
+      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      // if (!articleResponse.success) {
+      //   throw new ErrorValidation("Outgoing response validation failed");
+      // }
+
+      // Send the validated ArticleResponse
+
+      console.log(article);
+      res.status(200).json(article);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * updateStatus method
    *
@@ -193,16 +229,20 @@ export default class ArticleController {
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
-      let results;
+      let searchResult;
       if (textQuery && textQuery.trim().length > 0) {
         // Use fuzzy search with textQuery (results sorted by relevance, not by date)
-        results = await ArticlesAccessor.searchArticlesWithText(textQuery.trim(), query, limit, skip);
+        searchResult = await ArticlesAccessor.searchArticlesWithText(textQuery.trim(), query, limit, skip);
       } else {
         // Use regular search without text query
-        results = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
+        searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      res.status(200).json(results);
+      // Return results with total count for pagination
+      res.status(200).json({
+        results: searchResult.results,
+        total: searchResult.total,
+      });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
