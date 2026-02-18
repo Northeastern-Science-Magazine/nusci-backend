@@ -3,3 +3,4 @@ coverage
 .database
 .env
 .DS_Store
+.env.prod
