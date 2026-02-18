@@ -12,7 +12,7 @@ export default [
     title: "Exploring the Future: AI Integration in Everyday Life",
     slug: "exploring-the-future-ai-integration-in-everyday-life",
     issueNumber: 1,
-    categories: ["technology", "science"],
+    categories: ["Technology"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -40,7 +40,9 @@ export default [
           "As we embrace AI in our daily lives, it's essential to prioritize transparency, accountability, and inclusivity in its development and deployment.",
       },
     ],
-    sources: ["NYTimes", "Hollywood Report"],
+    sources: [
+      { text: "NYTimes", href: null },
+      { text: "Hollywood Report", href: null }],
     link: "https://example.com/article-link",
     pageLength: 3,
     comments: [
@@ -80,7 +82,7 @@ export default [
     title: "Mark S. W. Sweess reflects on success, creativity, making mistakes and his time at Northeastern",
     slug: "mark-s-w-sweess-reflects-on-success-creativity-making-mistakes-and-his-time-at-northeastern",
     issueNumber: 4,
-    categories: ["technology"],
+    categories: ["Technology"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -106,7 +108,9 @@ export default [
         content: "Sweess' achievements would go on to define the modern tech industry as we know it today.",
       },
     ],
-    sources: ["YouTube", "Reddit"],
+    sources: [
+      {text: "YouTube", href: null},
+      {text: "Reddit", href: null} ],
     link: "https://example2.com/article-link",
     pageLength: 1,
     comments: [
@@ -162,7 +166,7 @@ export default [
     title: "World Death Rate Holding Steady at 100 Percent",
     slug: "world-death-rate-holding-steady-at-100-percent",
     issueNumber: 902,
-    categories: ["newsletter", "health"],
+    categories: ["Newsletter", "Health"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -188,7 +192,9 @@ export default [
           "In the most serious cases of death, the trauma inflicted upon these still-living victims of death may continue throughout their entire lives, until their own deaths.",
       },
     ],
-    sources: ["Onion", "YouTube"],
+    sources: [
+      {text: "Onion", href: null},
+      {text: "YouTube", href: null} ],
     link: "https://example3.com/article-link",
     pageLength: 2,
     comments: [
@@ -225,7 +231,7 @@ export default [
     title: "Discovery of Ancient Flying Machine Leaves Scientists Baffled",
     slug: "discovery-of-ancient-flying-machine-leaves-scientists-baffled",
     issueNumber: 89,
-    categories: ["science"],
+    categories: ["Philosophy"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -252,7 +258,9 @@ export default [
           "'This isn't just a game-changer; it's a paradigm shift in archaeology,' remarked Dr. Miguel Hernandez, a renowned expert in pre-Columbian cultures.",
       },
     ],
-    sources: ["National Geographic", "Scientific American"],
+    sources: [
+      {text: "National Geographic", href: null}, 
+      {text: "Scientific American", href: null} ],
     link: "https://example4.com/article-link",
     pageLength: 5,
     comments: [],
@@ -274,7 +282,7 @@ export default [
     title: "Archaeological Dig Uncovers Ancient Race Of Skeleton People",
     slug: "archaeological-dig-uncovers-ancient-race-of-skeleton-people",
     issueNumber: 29,
-    categories: ["biology"],
+    categories: ["Biology"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -301,7 +309,9 @@ export default [
           "the skeletons bear numerous similarities to humans, leading him to suspect that there may be an evolutionary link between the two species.",
       },
     ],
-    sources: ["The Economist", "NYTimes"],
+    sources: [
+      {text: "The Economist", href: null},
+      {text: "NYTimes", href: null} ],
     link: "https://example5.com/article-link",
     pageLength: 2,
     comments: [],
@@ -326,7 +336,7 @@ export default [
     title: "World Death Rate Holding Steady at 100 Percent",
     slug: "world-death-rate-holding-steady-at-100-percent-2",
     issueNumber: 3,
-    categories: ["newsletter", "health"],
+    categories: ["Newsletter", "Health"],
     articleContent: [
       {
         contentType: ArticleContent.BodyParagraph.type,
@@ -352,7 +362,9 @@ export default [
           "In the most serious cases of death, the trauma inflicted upon these still-living victims of death may continue throughout their entire lives, until their own deaths.",
       },
     ],
-    sources: ["Onion", "YouTube"],
+    sources: [
+      {text: "Onion", href: null},
+      {text: "YouTube", href: null} ],
     link: "https://example6.com/article-link",
     pageLength: 2,
     comments: [],
