@@ -26,7 +26,7 @@ const ArticleSchema = new Schema(
     sources: [
       {
         text: { type: String, required: true },
-        href: { type: String, required: true },
+        href: { type: String },
       },
     ],
     link: { type: String },
