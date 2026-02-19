@@ -21,6 +21,7 @@ const ArticleSchema = new Schema(
       {
         contentType: { type: String, enum: ArticleContent.listr(), required: true },
         content: { type: String, required: true },
+        href: { type: String }, 
       },
     ],
     sources: [

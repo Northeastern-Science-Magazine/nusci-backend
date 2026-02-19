@@ -4,6 +4,7 @@ export default class ArticleContent {
   static BodyParagraph = new ArticleContent("body_paragraph");
   static PullQuote = new ArticleContent("pull_quote");
   static Image = new ArticleContent("image");
+  static Link = new ArticleContent("link");
 
   /**
    * INTERNAL USE ONLY
@@ -32,7 +33,7 @@ export default class ArticleContent {
    * @returns {ArticleContent}
    */
   static toArticleContent(str) {
-    const articleContent = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const articleContent = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!articleContent) {
       throw new ErrorValidation("Invalid Article Content enum given.");
     }
