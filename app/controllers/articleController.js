@@ -5,7 +5,6 @@ import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import { ArticleUpdate, ArticleResponse } from "../models/zodSchemas/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
-import { ValidationError } from "jsonschema";
 
 /**
  * ArticleController Class
@@ -113,10 +112,13 @@ export default class ArticleController {
       const user = await UsersAccessor.getUserByEmail(email);
       const userID = user._id;
 
-      const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
+      const comment = InternalComment.safeParse({user: userID, comment: req.body.comment });
+      if (!comment.success) {
+        throw new ErrorValidation("Comment creation validation failed.")
+      }
 
       // modify the article with the new comment
-      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
 
       if (!updatedArticle) {
         throw new ErrorArticleNotFound();
