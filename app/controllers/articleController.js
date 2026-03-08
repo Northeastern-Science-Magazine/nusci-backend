@@ -24,8 +24,6 @@ export default class ArticleController {
   static async updateStatus(req, res) {
     try {
       const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
       
       const updates = await ArticleUpdate.safeParseAsync(req.body);
 
@@ -67,7 +65,6 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
 
-      // const updates = new ArticleUpdate(req.body);
       const updates = await ArticleUpdate.safeParseAsync(req.body);
 
       if(!updates.success) {
@@ -83,10 +80,12 @@ export default class ArticleController {
       }
 
       // Validate and construct an ArticleResponse instance
-      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
-      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
+      const updatedArticleResponse = ArticleResponse.safeParse(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+          throw new ErrorValidation("ArticleResponse creation failed.")
+      }
 
-      res.status(200).json(updatedArticleResponse);
+      res.status(200).json(updatedArticleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -124,10 +123,13 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      const finalArticle = new ArticleResponse(updatedArticle.toObject());
+      const finalArticle = ArticleResponse.safeParse(updatedArticle.toObject());
+      if (!finalArticle.success) {
+        throw new ErrorValidation("Final article response parsing failed.");
+      }
 
       //return updated article with new comment
-      res.status(201).json(finalArticle);
+      res.status(201).json(finalArticle.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

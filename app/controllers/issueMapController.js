@@ -1,18 +1,20 @@
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import {
   ErrorInvalidRequestBody,
-  ErrorUnexpected,
-  HttpError,
-  ErrorSectionNotFound,
   ErrorIssueMapNotFound,
+  ErrorSectionNotFound,
+  ErrorUnexpected,
+  ErrorValidation,
+  HttpError,
 } from "../error/errors.js";
+import Article from "../models/dbModels/article.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
-import Article from "../models/dbModels/article.js";
-import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import { IssueMapResponse } from "../models/zodSchemas/issueMap.js";
 
 /**
  * IssueMapController Class
@@ -68,7 +70,7 @@ export default class IssueMapController {
       const designerUsers = await fetchUsers(designers, "designers");
       const photographerUsers = await fetchUsers(photographers, "photographers");
 
-      const newArticle = {
+      const newArticle = Article.safeParse({
         title: articleSlug,
         slug: articleSlug,
         issueNumber,
@@ -87,9 +89,13 @@ export default class IssueMapController {
         sources: [],
         creationTime: new Date(),
         modificationTime: new Date(),
-      };
+      });
 
-      const createdArticle = await Article.create(newArticle);
+      if (!newArticle.success) {
+        throw new ErrorValidation("Article validation failed.");
+      }
+
+      const createdArticle = await Article.create(newArticle.data);
       const issueMap = await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber);
 
       if (!issueMap) {
@@ -110,8 +116,14 @@ export default class IssueMapController {
 
       issueMap.modificationTime = new Date();
       await issueMap.save();
+    
+      // do we want a public issue map response? this will mess up tests
+      const issueMapResponse = IssueMapResponse.safeParse(issueMap);
+      if (!issueMapResponse.success) {
+        throw new ErrorValidation("Issue map response creation failed.");
+      }
 
-      return res.status(200).json(issueMap);
+      return res.status(200).json(issueMapResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -139,7 +151,13 @@ export default class IssueMapController {
       }
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
-      res.status(200).json(updatedIssue);
+
+      const updatedIssueResponse = IssueMapResponse.safeParse(updatedIssue);
+      if (!updatedIssueResponse.success) {
+        throw new ErrorValidation("Issue map response validation failed.");
+      }
+
+      res.status(200).json(updatedIssueResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

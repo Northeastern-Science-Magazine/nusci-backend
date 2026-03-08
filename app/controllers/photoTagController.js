@@ -1,8 +1,8 @@
-import { PhotoTagCreate, PhotoTagResponse } from "../models/apiModels/photoTag.js";
+import { PhotoTagCreate, PhotoTagResponse } from "../models/zodSchemas/photoTag.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
 import { photoTagResponse } from "../models/validationSchemas/photoTag.js";
 import Validate from "../models/validationSchemas/validateSchema.js";
-import { ErrorDuplicateKey, ErrorUnexpected, ErrorPhotoTagNotFound, HttpError } from "../error/errors.js";
+import { ErrorDuplicateKey, ErrorUnexpected, ErrorPhotoTagNotFound, HttpError, ErrorValidation } from "../error/errors.js";
 import { userPublicResponse } from "../models/validationSchemas/user.js";
 
 /**
@@ -20,18 +20,27 @@ export default class PhotoTagController {
    */
   static async create(req, res) {
     try {
-      const tagCreate = new PhotoTagCreate(req.body);
-      const tagByName = await PhotoTagAccessor.getTagByName(tagCreate.tagName);
+      const tagCreate = PhotoTagCreate.safeParse(req.body);
+      
+      if (!tagCreate.success) {
+        throw new ErrorValidation("Photo tag creation failed.");
+      }
+
+      const tagByName = await PhotoTagAccessor.getTagByName(tagCreate.data.tagName);
 
       if (tagByName) {
         throw new ErrorDuplicateKey();
       }
 
-      const newTag = await PhotoTagAccessor.createPhotoTag(tagCreate);
+      const newTag = await PhotoTagAccessor.createPhotoTag(tagCreate.data);
       const populatedNewTag = await PhotoTagAccessor.getTagById(newTag._id);
-      const newTagResponse = new PhotoTagResponse(populatedNewTag.toObject());
+      const newTagResponse = PhotoTagResponse.safeParse(populatedNewTag.toObject());
 
-      res.status(201).json(newTagResponse);
+      if (!newTagResponse.success) {
+        throw new ErrorValidation("Photo tag response validation failed.");
+      }
+
+      res.status(201).json(newTagResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -58,8 +67,12 @@ export default class PhotoTagController {
         throw new ErrorPhotoTagNotFound();
       }
     
-      Validate.outgoing(photoTag, photoTagResponse);
-      res.status(200).json(photoTag);
+      const photoTagResponse = PhotoTagResponse.safeParse(photoTag);
+      if (!photoTagResponse.success) {
+        throw new ErrorValidation("Photo tag response validation failed.");
+      }
+
+      res.status(200).json(photoTagResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
