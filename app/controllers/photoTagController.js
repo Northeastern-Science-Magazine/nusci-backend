@@ -1,9 +1,6 @@
-import { PhotoTagCreate, PhotoTagResponse } from "../models/zodSchemas/photoTag.js";
 import PhotoTagAccessor from "../databaseAccessors/photoTagAccessor.js";
-import { photoTagResponse } from "../models/validationSchemas/photoTag.js";
-import Validate from "../models/validationSchemas/validateSchema.js";
-import { ErrorDuplicateKey, ErrorUnexpected, ErrorPhotoTagNotFound, HttpError, ErrorValidation } from "../error/errors.js";
-import { userPublicResponse } from "../models/validationSchemas/user.js";
+import { ErrorDuplicateKey, ErrorPhotoTagNotFound, ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
+import { PhotoTagCreate, PhotoTagResponse } from "../models/zodSchemas/photoTag.js";
 
 /**
  * PhotoTagController Class
