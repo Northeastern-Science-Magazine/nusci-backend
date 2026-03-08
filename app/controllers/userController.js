@@ -1,9 +1,11 @@
+import bcrypt from "bcrypt"; // import bcrypt to hash passwords
 import { config as dotenvConfig } from "dotenv";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import Authorize from "../auth/authorization.js";
-import AccountStatus from "../models/enums/accountStatus.js";
+import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import * as z from "zod";
-import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+import Authorize from "../auth/authorization.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import AccountStatus from "../models/enums/accountStatus.js";
+import { Login, UserApprovals, UserCreate, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
 
 import {
   ErrorFailedLogin,
@@ -19,8 +21,6 @@ import {
   ErrorValidation,
   HttpError,
 } from "../error/errors.js";
-import LoginToken from "../auth/token.js";
-import Password from "../auth/password.js";
 
 /**
  * UsersController Class
