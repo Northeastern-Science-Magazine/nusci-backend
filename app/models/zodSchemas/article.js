@@ -13,6 +13,17 @@ export const Article = z.object({
   slug: z.string(),
   issueNumber: z.number().optional(),
   categories: z.array(z.enum(Category.listr())),
+  articleContent: z
+    .array(
+      z.array(
+        z.object({
+          contentType: z.enum(ArticleContent.listr()),
+          content: z.string(),
+        })
+      )
+    )
+    .optional()
+    .default([]),
   sources: z
     .array(
       z.object({
@@ -45,17 +56,6 @@ export const Article = z.object({
 });
 
 export const ArticleResponse = Article.extend({
-  articleContent: z
-    .array(
-      z.array(
-        z.object({
-          contentType: z.enum(ArticleContent.listr()),
-          content: z.string(),
-        })
-      )
-    )
-    .optional()
-    .default([]),
   authors: z.array(UserPublicResponse).optional(),
   editors: z.array(UserPublicResponse).optional(),
   designers: z.array(UserPublicResponse).optional(),
@@ -67,17 +67,6 @@ export const ArticleResponse = Article.extend({
 });
 
 export const ArticlePublicResponse = Article.extend({
-  articleContent: z
-    .array(
-      z.array(
-        z.object({
-          contentType: z.enum(ArticleContent.listr()),
-          content: z.string(),
-        })
-      )
-    )
-    .optional()
-    .default([]),
   authors: z.array(UserPublicResponse).optional(),
   editors: z.array(UserPublicResponse).optional(),
   designers: z.array(UserPublicResponse).optional(),
