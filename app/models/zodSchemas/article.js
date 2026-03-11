@@ -47,10 +47,12 @@ export const Article = z.object({
 export const ArticleResponse = Article.extend({
   articleContent: z
     .array(
-      z.object({
-        contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
-      })
+      z.array(
+        z.object({
+          contentType: z.enum(ArticleContent.listr()),
+          content: z.string(),
+        })
+      )
     )
     .optional()
     .default([]),
@@ -67,10 +69,12 @@ export const ArticleResponse = Article.extend({
 export const ArticlePublicResponse = Article.extend({
   articleContent: z
     .array(
-      z.object({
-        contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
-      })
+      z.array(
+        z.object({
+          contentType: z.enum(ArticleContent.listr()),
+          content: z.string(),
+        })
+      )
     )
     .optional()
     .default([]),

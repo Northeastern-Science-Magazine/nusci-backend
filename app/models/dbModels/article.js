@@ -18,11 +18,13 @@ const ArticleSchema = new Schema(
     issueNumber: { type: Number },
     categories: [{ type: String, enum: Categories.listr(), required: true }],
     articleContent: [
-      {
-        contentType: { type: String, enum: ArticleContent.listr(), required: true },
-        content: { type: String, required: true },
-        href: { type: String }, 
-      },
+      [
+        {
+          contentType: { type: String, enum: ArticleContent.listr(), required: true },
+          content: { type: String, required: true },
+          href: { type: String },
+        },
+      ],
     ],
     sources: [
       {
