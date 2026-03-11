@@ -7,7 +7,8 @@ export default class LoginToken {
    * @param {HTTP RES} res
    * @param cookie boolean for adding a cookie
    */
-  static generate(user, res, cookie) {
+  static generate(user) {
+    // encode email and roles
     const token = jwt.sign(
       {
         email: user.email,
@@ -16,9 +17,6 @@ export default class LoginToken {
       process.env.SERVER_TOKEN_KEY
     );
 
-    // check if res is valid and a cookie is wanted
-    if (cookie && res) {
-      res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
-    }
+    return ["token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 }];
   }
 }
