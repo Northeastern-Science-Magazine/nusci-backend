@@ -49,7 +49,7 @@ export const Article = z.object({
   writingStatus: z.enum(WritingStatus.listr()),
   designStatus: z.enum(DesignStatus.listr()),
   photographyStatus: z.enum(PhotographyStatus.listr()),
-  authors: z.array(z.email()).optional(),
+  authors: z.array(z.string()).optional(),
   editors: z.array(z.email()).optional(),
   designers: z.array(z.email()).optional(),
   photographers: z.array(z.email()).optional(),

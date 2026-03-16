@@ -23,8 +23,12 @@ export default class ArticleController {
     try {
       const parsedArticle = await Article.safeParseAsync(req.body);
       if (!parsedArticle.success) {
-        throw new ErrorValidation("Malformed article data on submission.");
+        throw new ErrorValidation(
+          `Malformed article data on submission. Error: \n\n ${JSON.stringify(parsedArticle, null, 2)}`
+        );
       }
+      const newArticle = await ArticlesAccessor.createArticle(parsedArticle.data);
+      console.log(newArticle);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

@@ -7,7 +7,7 @@ import Accounts from "../models/enums/accounts.js";
 
 const articles = express.Router();
 
-articles.route("/create", ArticlesController.createArticle);
+articles.route("/create").post(ArticlesController.createArticle);
 articles.route("/slug/:slug").get(ArticlesController.getArticleBySlug); //get article by slug
 articles.route("/search").post(ArticlesController.search);
 //articles.route("/approved-by/:email"); //internal use only (aka. need an account)

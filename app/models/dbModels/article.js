@@ -52,9 +52,9 @@ const ArticleSchema = new Schema(
     designers: [{ type: Schema.Types.ObjectId, ref: User }],
     photographers: [{ type: Schema.Types.ObjectId, ref: User }],
     approvingUser: { type: Schema.Types.ObjectId, ref: User },
-    approvalTime: { type: Date },
-    creationTime: { type: Date, required: true },
-    modificationTime: { type: Date, required: true },
+    approvalTime: { type: Date, default: Date.now },
+    creationTime: { type: Date, required: true, default: Date.now },
+    modificationTime: { type: Date, required: true, default: Date.now },
   },
   {
     //saved to the collection "article"
