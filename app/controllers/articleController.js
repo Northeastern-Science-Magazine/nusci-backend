@@ -2,7 +2,7 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse, ArticleSearchRequest } from "../models/zodSchemas/article.js";
+import { ArticleUpdate, ArticleResponse, ArticleSearchRequest, Article } from "../models/zodSchemas/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
 
@@ -13,6 +13,30 @@ import Utils from "./utils.js";
  * related to Articles.
  */
 export default class ArticleController {
+  /**
+   *
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async createArticle(req, res) {
+    try {
+      const parsedArticle = await Article.safeParseAsync(req.body);
+      if (!parsedArticle.success) {
+        throw new ErrorValidation(
+          `Malformed article data on submission. Error: \n\n ${JSON.stringify(parsedArticle, null, 2)}`
+        );
+      }
+      const newArticle = await ArticlesAccessor.createArticle(parsedArticle.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   /**
    * getArticleBySlug method
    *

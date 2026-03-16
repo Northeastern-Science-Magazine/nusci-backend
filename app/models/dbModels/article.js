@@ -18,11 +18,13 @@ const ArticleSchema = new Schema(
     issueNumber: { type: Number },
     categories: [{ type: String, enum: Categories.listr(), required: true }],
     articleContent: [
-      {
-        contentType: { type: String, enum: ArticleContent.listr(), required: true },
-        content: { type: String, required: true },
-        href: { type: String }, 
-      },
+      [
+        {
+          contentType: { type: String, enum: ArticleContent.listr(), required: true },
+          content: { type: String, required: true },
+          href: { type: String },
+        },
+      ],
     ],
     sources: [
       {
@@ -50,9 +52,9 @@ const ArticleSchema = new Schema(
     designers: [{ type: Schema.Types.ObjectId, ref: User }],
     photographers: [{ type: Schema.Types.ObjectId, ref: User }],
     approvingUser: { type: Schema.Types.ObjectId, ref: User },
-    approvalTime: { type: Date },
-    creationTime: { type: Date, required: true },
-    modificationTime: { type: Date, required: true },
+    approvalTime: { type: Date, default: Date.now },
+    creationTime: { type: Date, required: true, default: Date.now },
+    modificationTime: { type: Date, required: true, default: Date.now },
   },
   {
     //saved to the collection "article"

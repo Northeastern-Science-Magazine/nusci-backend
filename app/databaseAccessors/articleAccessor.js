@@ -7,6 +7,13 @@ import Connection from "../db/connection.js";
  * Accesses the articles
  */
 export default class ArticlesAccessor {
+  static async createArticle(articleData) {
+    await Connection.open();
+    const article = new Article(articleData);
+    article.save();
+    return article;
+  }
+
   /**
    * getArticle method
    *

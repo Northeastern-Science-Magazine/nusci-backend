@@ -79,10 +79,9 @@ export default class UserController {
         throw new ErrorFailedLogin(user);
       }
       dotenvConfig(); // load .env variables
-      // sign token and send it in response
-      LoginToken.generate(user, res, true);
 
-      //Users are logged in for 1 hour
+      // sign token and send it in response
+      res.cookie(...LoginToken.generate(user));
       res.status(200).json({ message: "Login successful." });
     } catch (e) {
       if (e instanceof HttpError) {
