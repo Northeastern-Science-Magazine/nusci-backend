@@ -28,7 +28,6 @@ export default class ArticleController {
         );
       }
       const newArticle = await ArticlesAccessor.createArticle(parsedArticle.data);
-      console.log(newArticle);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

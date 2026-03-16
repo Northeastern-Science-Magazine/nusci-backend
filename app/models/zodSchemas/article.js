@@ -19,6 +19,7 @@ export const Article = z.object({
         z.object({
           contentType: z.enum(ArticleContent.listr()),
           content: z.string(),
+          href: z.string().optional(),
         })
       )
     )
