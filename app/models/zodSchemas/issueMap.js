@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { UserPublicResponse } from "./user";
-import { ArticlePublicResponse } from "./article";
+import { UserPublicResponse } from "./user.js";
+import { ArticlePublicResponse } from "./article.js";
 
 export const IssueMap = z.object({
     issueNumber: z.number(),
@@ -18,11 +18,11 @@ export const IssueMapResponse = IssueMap.extend({
         sectionName: z.string(),
         color: z.string(),
         creatingUser: UserPublicResponse,
-        articles: ArticlePublicResponse.default([]), // is this supposed to be an array of articleresponses?
+        articles: z.array(ArticlePublicResponse).default([]),
         creationTime: z.date(),
         modificationTime: z.date()
     })),
-    articles: ArticlePublicResponse.default([]),
+    articles: z.array(ArticlePublicResponse).default([]),
     creatingUser: UserPublicResponse,
     creationTime: z.date(),
     modificationTime: z.date()
@@ -34,10 +34,10 @@ export const IssueMapUpdate = z.object({
     sections: z.array(z.object({
         sectionName: z.string(),
         color: z.string(),
-        articles: z.array(),
+        articles: z.array(ArticlePublicResponse),
         modificationTime: z.date(),
     })),
-    articles: z.array(),
+    articles: z.array(ArticlePublicResponse),
     pages: z.number(),
     modificationTime: z.date().default(new Date())
 }).partial();

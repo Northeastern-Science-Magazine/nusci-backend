@@ -63,6 +63,4 @@ export const UserPrivateResponse = z.object({
   }),
 });
 
-export const UserPublicResponse = BaseUser.extend({
-  id: z.literal("/user/public/response"),
-});
+export const UserPublicResponse = BaseUser;
