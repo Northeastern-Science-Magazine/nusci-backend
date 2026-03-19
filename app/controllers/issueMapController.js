@@ -152,12 +152,7 @@ export default class IssueMapController {
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
 
-      const updatedIssueResponse = IssueMapResponse.safeParse(updatedIssue);
-      if (!updatedIssueResponse.success) {
-        throw new ErrorValidation("Issue map response validation failed.");
-      }
-
-      res.status(200).json(updatedIssueResponse.data);
+      res.status(200).json(updatedIssue);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
