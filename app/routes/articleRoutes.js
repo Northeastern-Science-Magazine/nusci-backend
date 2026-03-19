@@ -9,7 +9,7 @@ const articles = express.Router();
 
 articles.route("/create");
 articles.route("/slug/:slug"); //get article by slug
-articles.route("/search").get(ArticlesController.fuzzySearch);
+articles.route("/search").post(ArticlesController.fuzzySearch);
 articles.route("/approved-by/:email"); //internal use only (aka. need an account)
 
 /* Targeted Update Endpoints */

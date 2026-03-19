@@ -325,7 +325,6 @@ export default class ArticlesAccessor {
    */
   static async fuzzySearchArticles(search, fields, limit, query) {
     await Connection.open();
-
     const pipeline = [
       {
         $search: {
@@ -348,6 +347,7 @@ export default class ArticlesAccessor {
     if (limit && limit > 0) {
       pipeline.push({ $limit: limit });
     }
+
     const results = await Article.aggregate(pipeline);
     return results;
   }

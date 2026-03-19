@@ -1,7 +1,7 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
-import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
+import { injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -9,7 +9,6 @@ const showLog = __filename
   .splice(__filename.split(/[/\\]/).lastIndexOf("__tests__") + 1)
   .reduce((acc, key) => acc && acc[key], log);
 beforeEach(injectMockConnection);
-beforeEach(executeReset);
 afterAll(closeMockConnection);
 
 /*
@@ -19,26 +18,30 @@ As these tests will not pass in local environments, they are marked here as skip
 */
 describe("Search Articles", () => {
   /* In-file test data */
-  const validSearchQuery = "AI integration";
+  const validSearchQuery = "The Dark Side of Renewable Energy";
   const validSearchQuery2 = "Sweess";
   const validSearchQuery3 = "World";
   const InvalidSearchQuery = "NonexistentTopic";
   const InvalidSearchQuery2 = "ab23uyrbfvawoiu4grtREf982";
 
   test.skip("Valid fuzzy search query of title", async () => {
-    const response = await request(app).get(`/articles/search/title`).query({ search: validSearchQuery });
+    const response = await request(app).post(`/articles/search`).send({
+      search: validSearchQuery,
+      fields: "title",
+      limit: 10,
+    });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
     expect(response.body.length).toBeGreaterThan(0);
 
-    const response2 = await request(app).get(`/articles/search/title`).query({ search: validSearchQuery2 });
+    const response2 = await request(app).get(`/articles/search`).query({ search: validSearchQuery2 });
 
     showLog && console.log(response2.body);
     expect(response2.status).toBe(200);
     expect(response2.body.length).toBeGreaterThan(0);
 
-    const response3 = await request(app).get(`/articles/search/title`).query({ search: validSearchQuery3 });
+    const response3 = await request(app).get(`/articles/search`).query({ search: validSearchQuery3 });
 
     showLog && console.log(response3.body);
     expect(response3.status).toBe(200);

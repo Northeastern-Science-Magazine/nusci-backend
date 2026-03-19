@@ -152,7 +152,7 @@ export default class ArticleController {
     if (!body) {
       return {};
     }
-    
+
     async function getUserIdsByEmailsQuery(listOfEmails) {
       if (!Array.isArray(listOfEmails)) {
         throw new ErrorTypeOfQuery();
@@ -229,7 +229,7 @@ export default class ArticleController {
   static async fuzzySearch(req, res) {
     try {
       let limit;
-      const search = req.query.search;
+      const search = req.body.search;
       // finds the query parmeter
       const query = await ArticleController.buildSearchQuery(req.body);
       // what field (title, content, etc)
@@ -238,7 +238,6 @@ export default class ArticleController {
       if (req.body.hasOwnProperty("limit")) {
         limit = Number(req.body.limit);
       }
-
       let results = await ArticlesAccessor.fuzzySearchArticles(search, fields, limit, query);
       res.status(200).json(results);
     } catch (e) {
