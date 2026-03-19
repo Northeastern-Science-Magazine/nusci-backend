@@ -14,6 +14,7 @@ import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
+import { ArticleCreate } from "../models/zodSchemas/article.js";
 import { IssueMapResponse } from "../models/zodSchemas/issueMap.js";
 
 /**
@@ -34,22 +35,27 @@ export default class IssueMapController {
    */
   static async addAndCreateArticle(req, res) {
     try {
+      const article = await ArticleCreate.safeParseAsync(req.body);
+      if (!article.success) {
+        throw new ErrorInvalidRequestBody("Incoming article request validation failed.");
+      }
+
+      const existingArticle = await ArticlesAccessor.getArticleBySlug(req.body.slug);
+      if (existingArticle) {
+        throw new ErrorInvalidRequestBody(`An article with slug ${slug} already exists.`);
+      }
+
       const {
         articleSlug,
         issueNumber,
         pageLength,
-        authors = [],
-        editors = [],
-        designers = [],
-        photographers = [],
-        section = "",
-        categories = [],
-      } = req.body;
-
-      const existingArticle = await ArticlesAccessor.getArticleBySlug(articleSlug);
-      if (issueNumber < 0 || !articleSlug || pageLength < 0 || existingArticle) {
-        throw new ErrorInvalidRequestBody();
-      }
+        authors,
+        editors,
+        designers,
+        photographers,
+        section,
+        categories,
+      } = article.data;
 
       const articleStatus = ArticleStatus.Print;
       const designStatus = designers.length > 0 ? DesignStatus.Has_Designer : DesignStatus.Needs_Designer;
@@ -70,7 +76,9 @@ export default class IssueMapController {
       const designerUsers = await fetchUsers(designers, "designers");
       const photographerUsers = await fetchUsers(photographers, "photographers");
 
-      const newArticle = Article.safeParse({
+
+      // article creation object to be sent directly to database
+      const newArticle = {
         title: articleSlug,
         slug: articleSlug,
         issueNumber,
@@ -89,13 +97,9 @@ export default class IssueMapController {
         sources: [],
         creationTime: new Date(),
         modificationTime: new Date(),
-      });
+      };
 
-      if (!newArticle.success) {
-        throw new ErrorValidation("Article validation failed.");
-      }
-
-      const createdArticle = await Article.create(newArticle.data);
+      const createdArticle = await Article.create(newArticle);
       const issueMap = await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber);
 
       if (!issueMap) {
@@ -114,16 +118,12 @@ export default class IssueMapController {
         issueMap.articles.push(createdArticle._id);
       }
 
+      // issuemap return is insane
       issueMap.modificationTime = new Date();
       await issueMap.save();
-    
-      // do we want a public issue map response? this will mess up tests
-      const issueMapResponse = IssueMapResponse.safeParse(issueMap);
-      if (!issueMapResponse.success) {
-        throw new ErrorValidation("Issue map response creation failed.");
-      }
 
-      return res.status(200).json(issueMapResponse.data);
+      
+      return res.status(200).json(issueMap.toJSON());
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

@@ -1,9 +1,8 @@
+import Authorize from "../auth/authorization.js";
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import Authorize from "../auth/authorization.js";
-import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorTypeOfQuery, ErrorValidation } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorTypeOfQuery, ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
+import { ArticleResponse, ArticleUpdate } from "../models/zodSchemas/article.js";
 import Utils from "./utils.js";
 
 /**
@@ -80,6 +79,7 @@ export default class ArticleController {
       }
 
       // Validate and construct an ArticleResponse instance
+      const updatedArticleObj = updatedArticleData.toObject();
       const updatedArticleResponse = ArticleResponse.safeParse(updatedArticleData.toObject());
       if (!updatedArticleResponse.success) {
           throw new ErrorValidation("ArticleResponse creation failed.")

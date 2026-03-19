@@ -245,7 +245,7 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
       
-      const userResponse = await UserPublicResponse.omit({id: true}).safeParseAsync(user);
+      const userResponse = await UserPublicResponse.safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed.");
       }
