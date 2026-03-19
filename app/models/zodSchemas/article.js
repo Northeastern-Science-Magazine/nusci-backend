@@ -7,8 +7,17 @@ import PhotographyStatus from "../enums/photographyStatus.js";
 import ArticleStatus from "../enums/articleStatus.js";
 import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
+import Category from "../enums/categories.js";
+import ArticleContent from "../enums/articleContent.js";
+import { UserPublicResponse } from "./user.js";
+import CommentStatus from "../enums/commentStatus.js";
+import PhotographyStatus from "../enums/photographyStatus.js";
+import ArticleStatus from "../enums/articleStatus.js";
+import WritingStatus from "../enums/writingStatus.js";
+import DesignStatus from "../enums/designStatus.js";
 
-export const Article = z.object({
+// to remove ambiguity from dbmodel's Article
+export const ZodArticle = z.object({
   title: z.string(),
   slug: z.string(),
   issueNumber: z.number().optional(),
@@ -50,13 +59,22 @@ export const Article = z.object({
   writingStatus: z.enum(WritingStatus.listr()),
   designStatus: z.enum(DesignStatus.listr()),
   photographyStatus: z.enum(PhotographyStatus.listr()),
-  authors: z.array(z.string()).optional(),
-  editors: z.array(z.email()).optional(),
-  designers: z.array(z.email()).optional(),
-  photographers: z.array(z.email()).optional(),
+  authors: z.array(UserPublicResponse).optional(),
+  editors: z.array(UserPublicResponse).optional(),
+  designers: z.array(UserPublicResponse).optional(),
+  photographers: z.array(UserPublicResponse).optional(),
 });
 
-export const ArticleResponse = Article.extend({
+export const ArticleResponse = ZodArticle.extend({
+  articleContent: z
+    .array(
+      z.object({
+        contentType: z.enum(ArticleContent.listr()),
+        content: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
   authors: z.array(UserPublicResponse).optional(),
   editors: z.array(UserPublicResponse).optional(),
   designers: z.array(UserPublicResponse).optional(),
@@ -67,7 +85,16 @@ export const ArticleResponse = Article.extend({
   modificationTime: z.date(),
 });
 
-export const ArticlePublicResponse = Article.extend({
+export const ArticlePublicResponse = ZodArticle.extend({
+  articleContent: z
+    .array(
+      z.object({
+        contentType: z.enum(ArticleContent.listr()),
+        content: z.string(),
+      })
+    )
+    .optional()
+    .default([]),
   authors: z.array(UserPublicResponse).optional(),
   editors: z.array(UserPublicResponse).optional(),
   designers: z.array(UserPublicResponse).optional(),
@@ -77,7 +104,19 @@ export const ArticlePublicResponse = Article.extend({
   link: true,
 });
 
-export const ArticleUpdate = Article.extend({
+export const ArticleCreate = z.object({
+  articleSlug: z.string(),
+  issueNumber: z.number().refine((val) => val >= 0),
+  pageLength: z.number().refine((val) => val >= 0),
+  authors: z.array(z.email()).default([]),
+  editors: z.array(z.email()).default([]),
+  designers: z.array(z.email()).default([]),
+  photographers: z.array(z.email()).default([]),
+  section: z.string().default(""),
+  categories: z.array(z.string(Category.listr())).default([]),
+});
+
+export const ArticleUpdate = ZodArticle.extend({
   modificationTime: z.date().default(new Date()),
 })
   .omit({
