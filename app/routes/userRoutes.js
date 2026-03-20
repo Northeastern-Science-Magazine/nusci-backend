@@ -11,6 +11,8 @@ user.route("/login").post(UserController.login);
 // user.route("/signup").post(UserController.signup);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
+user.route("/email/forgot-password").post(UserController.sendOTP);
+user.route("/email/verify-otp").post(UserController.verifyMagicLink);
 // user.route("/resolve-status").put(Authorize.allow([Accounts.Admin]), UserController.resolveUserApprovals);
 // user.route("/update/:email");
 user.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);

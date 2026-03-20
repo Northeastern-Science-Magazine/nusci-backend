@@ -4,7 +4,7 @@ import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
 import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
-
+import crypto from "crypto";
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -17,10 +17,12 @@ import {
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
   ErrorValidation,
+  ErrorEmailNotFound,
   HttpError,
 } from "../error/errors.js";
 import LoginToken from "../auth/token.js";
 import Password from "../auth/password.js";
+import User from "../models/dbModels/user.js";
 
 /**
  * UsersController Class
@@ -382,5 +384,77 @@ export default class UserController {
   static logout(req, res) {
     res.clearCookie("token");
     res.status(200).json({ message: "Successfully logged out." });
+  }
+
+  /**
+   * Send the user a OTP with the given email
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  static async sendOTP(req, res) {
+    try {
+      const email = req.body.email;
+      if (!email) {
+        throw new ErrorEmailNotFound();
+      }
+      // make sure it is northeastern email
+      if (!/^[^\s@]+@northeastern\.edu$/.test(email)) {
+        throw new ErrorEmailNotFound();
+      }
+      const raw = crypto.randomBytes(32).toString("hex");
+      const expires = Date.now() + 15 * 60 * 1000;
+      // embed expiration into the token
+      const tokenWithExpiry = `${raw}.${expires}`;
+      const hash = crypto.createHash("sha256").update(tokenWithExpiry).digest("hex");
+
+      await UsersAccessor.setOTP({ email: email, otpToken: hash });
+      res.status(200).json();
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Verifies the OTP
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  static async verifyMagicLink(req, res) {
+    try {
+      const { token, email } = req.query;
+      if (!token || !email) {
+        throw new ErrorFailedLogin();
+      }
+
+      // make sure token has not expired
+      const [, expires] = token.split(".");
+      if (!expires || Date.now() > Number(expires)) {
+        throw new ErrorFailedLogin();
+      }
+
+      // get the hash to look up in db
+      const hash = crypto.createHash("sha256").update(token).digest("hex");
+
+      // otp is used, cannot be used again
+      const user = await UsersAccessor.findAndClearOTP(email, hash);
+      if (!user) {
+        throw new ErrorFailedLogin();
+      }
+
+      res.cookie(...LoginToken.generate(user));
+      res.status(200).json({ message: "Login successful." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 }
