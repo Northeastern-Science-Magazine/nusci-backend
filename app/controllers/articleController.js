@@ -2,7 +2,7 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
-import { ArticleUpdate, ArticleResponse, ArticleSearchRequest, Article } from "../models/zodSchemas/article.js";
+import { ArticleUpdate, ArticleResponse, ArticlePublicResponse, ArticleSearchRequest, Article } from "../models/zodSchemas/article.js";
 import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
 import Utils from "./utils.js";
 
@@ -55,16 +55,12 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      // Validate and construct an ArticleResponse instance
-      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      // if (!articleResponse.success) {
-      //   throw new ErrorValidation("Outgoing response validation failed");
-      // }
+      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      // Send the validated ArticleResponse
-
-      console.log(article);
-      res.status(200).json(article);
+      res.status(200).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -262,9 +258,21 @@ export default class ArticleController {
         searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
+      // Validate results with ArticlePublicResponse
+      const validatedResults = await Promise.all(
+        searchResult.results.map(async (result) => {
+          const obj = result.toObject ? result.toObject() : result;
+          const validated = await ArticlePublicResponse.safeParseAsync(obj);
+          if (!validated.success) {
+            throw new ErrorValidation("Search results validation failed");
+          }
+          return validated.data;
+        })
+      );
+
       // Return results with total count for pagination
       res.status(200).json({
-        results: searchResult.results,
+        results: validatedResults,
         total: searchResult.total,
       });
     } catch (e) {
