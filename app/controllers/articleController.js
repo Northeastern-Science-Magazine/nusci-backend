@@ -190,7 +190,7 @@ export default class ArticleController {
       }
 
       //return updated article with new comment
-      res.status(201).json(finalArticle);
+      res.status(201).json(finalArticle.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
