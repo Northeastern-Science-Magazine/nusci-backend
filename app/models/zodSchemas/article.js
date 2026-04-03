@@ -77,6 +77,8 @@ export const ArticlePublicResponse = Article.extend({
   link: true,
 });
 
+export const ArticlePublicListResponse = z.array(ArticlePublicResponse);
+
 export const ArticleUpdate = Article.extend({
   modificationTime: z.date().default(new Date()),
 })
