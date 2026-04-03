@@ -47,7 +47,7 @@ const ArticleSchema = new Schema(
     writingStatus: { type: String, enum: WritingStatus.listr(), required: true },
     designStatus: { type: String, enum: DesignStatus.listr(), required: true },
     photographyStatus: { type: String, enum: PhotographyStatus.listr(), required: true },
-    authors: [{ type: Schema.Types.ObjectId, ref: User}],
+    authors: [{ type: String}],
     editors: [{ type: Schema.Types.ObjectId, ref: User }],
     designers: [{ type: Schema.Types.ObjectId, ref: User }],
     photographers: [{ type: Schema.Types.ObjectId, ref: User }],

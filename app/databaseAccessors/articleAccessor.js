@@ -56,7 +56,7 @@ export default class ArticlesAccessor {
   static async getArticleBySlug(slug) {
     await Connection.open();
     const article = await Article.findOne({ slug: slug })
-      .populate("authors")
+      //.populate("authors")
       .populate("comments.user")
       .populate("editors")
       .populate("designers")
