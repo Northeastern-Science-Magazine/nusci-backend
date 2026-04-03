@@ -1,13 +1,11 @@
 import * as z from "zod";
-import EmailType from "../enums/emailType";
+import EmailType from "../enums/emailType.js";
 
 /* Schematics for email templates. Should match the resend templates (todo) */
 
 export const BaseEmail = z.object({
   type: z.enum(EmailType.listr()), // used to determine which template to assign
   to: z.array(z.email()), //one user or multiple
-  from: z.email().default("aggarwal.arus@northeastern.edu"),
-  subject: z.string(),
   // idk if i should put body here if we will make templatized emails
 });
 
@@ -38,4 +36,9 @@ export const InviteUserEmail = BaseEmail.extend({
 export const CustomEmail = BaseEmail.extend({
   type: z.literal(EmailType.Custom.toString()),
   customBody: z.string(),
+});
+
+// in the case of custom emails, should the custom html (if there is any) come from the frontend?
+export const OTPEmail = BaseEmail.extend({
+  type: z.literal(EmailType.OTP.toString()),
 });
