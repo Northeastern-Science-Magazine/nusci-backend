@@ -71,15 +71,15 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      // Validate and construct an ArticleResponse instance
-      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      if (!articleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
+      /** Will eventually need to do validation */
+      // // Validate and construct an ArticleResponse instance
+      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      // if (!articleResponse.success) {
+      //   throw new ErrorValidation("Outgoing response validation failed");
+      // }
 
       // Send the validated ArticleResponse
 
-      console.log(article);
       res.status(200).json(article);
     } catch (e) {
       if (e instanceof HttpError) {
