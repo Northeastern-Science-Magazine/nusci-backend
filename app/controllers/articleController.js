@@ -278,15 +278,16 @@ export default class ArticleController {
         searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      //
-      const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
-      if (!validateArticleResponse.success) {
-        throw new ErrorValidation("Search response validation failed");
-      }
+      /** Validation will need to remove pw and sensitive profile info... later I guess */
+      // const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
+      // console.log(validateArticleResponse);
+      // if (!validateArticleResponse.success) {
+      //   throw new ErrorValidation("Search response validation failed");
+      // }
 
       // Return results with total count for pagination
       res.status(200).json({
-        results: validateArticleResponse.data,
+        results: searchResult.results,
         total: searchResult.total,
       });
     } catch (e) {
