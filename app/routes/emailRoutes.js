@@ -6,6 +6,6 @@ import EmailController from "../controllers/emailController.js";
 /* Email service routing */
 const email = express.Router();
 
-email.route("/send").post(Authorize.allow([Accounts.Admin]), EmailController.sendEmail);
+email.route("/send").post(EmailController.sendEmail);
 
 export default email;

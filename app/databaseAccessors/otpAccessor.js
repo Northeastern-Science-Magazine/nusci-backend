@@ -12,7 +12,7 @@ export default class OTPAccessor {
 
   static async verifyOTPRecord(token) {
     await Connection.open();
-    const updatedOTP = await OTPModel.findOneAndUpdate({ token: OTPToken.hash(token) }, { used: true });
+    const updatedOTP = await OTPModel.findOneAndUpdate({ token: OTPToken.hash(token), used: false }, { used: true });
     let success;
     if (!updatedOTP) {
       success = false;

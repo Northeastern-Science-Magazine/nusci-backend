@@ -30,14 +30,14 @@ export class GenerateEmail {
 
   static async OTP(otpEmail) {
     const { token, hash } = OTPToken.generate();
-    await OTPAccessor.createOTPRecord(to[0], hash);
-    console.log(`https://nuscimagazine.com/otp/verify?token=${token}`);
+    await OTPAccessor.createOTPRecord(otpEmail.to[0], hash);
+    console.log(`${process.env.FRONTEND_URL}/otp/verify?token=${token}`);
     return {
       from: FROM,
       to: otpEmail.to,
       type: otpEmail.type,
       variables: {
-        url: `https://nuscimagazine.com/otp/verify?token=${token}`,
+        url: `${process.env.FRONTEND_URL}/otp/verify?token=${token}`,
       },
     };
   }

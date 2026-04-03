@@ -61,6 +61,6 @@ app.use("/issue-map", issueMapRouter);
 app.use("/photo", photoRouter);
 app.use("/phototag", photoTagRouter);
 app.use("/user", userRouter);
-app.use("/services/email", emailRouter);
+app.use("/email", emailRouter);
 
 export default app;

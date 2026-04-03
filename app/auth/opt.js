@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 export default class OTPToken {
-  static TOKEN_BYTES = 16; // 16 bytes = 32 hex chars
+  static TOKEN_BYTES = 32;
   static HASH_ALGO = "sha256";
 
   static generate() {

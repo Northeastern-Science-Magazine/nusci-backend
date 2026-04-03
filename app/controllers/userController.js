@@ -406,7 +406,7 @@ export default class UserController {
         throw new ErrorFailedLogin();
       }
 
-      const user = UsersAccessor.getUserByEmail(email);
+      const user = await UsersAccessor.getUserByEmail(email);
 
       if (!user) {
         throw new ErrorFailedLogin();

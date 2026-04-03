@@ -20,6 +20,8 @@ export default class EmailController {
     // Validate incoming
     const parsedEmail = EmailController.validateEmailRequestData(req.body);
 
+    console.log(parsedEmail);
+
     // Format email according to its type
     const email = await EmailController.generateEmailVariables(parsedEmail);
 
@@ -73,7 +75,7 @@ export default class EmailController {
       throw new ErrorValidation("Email schema validation failed.");
     }
 
-    return parsedEmail;
+    return parsedEmail.data;
   };
 
   static async generateEmailVariables(email) {

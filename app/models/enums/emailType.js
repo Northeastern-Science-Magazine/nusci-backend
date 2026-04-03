@@ -4,7 +4,7 @@ export default class EmailType {
   static Reminder = new EmailType("reminder");
   static Deadline = new EmailType("deadline");
   static Reset_Password = new EmailType("reset_password");
-  static Invite_User = new EmailType("invite-user");
+  static Invite_User = new EmailType("invite_user");
   static OTP = new EmailType("otp");
   static Custom = new EmailType("custom");
 
