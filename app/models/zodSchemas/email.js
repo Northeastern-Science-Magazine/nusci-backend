@@ -6,7 +6,6 @@ import EmailType from "../enums/emailType.js";
 export const BaseEmail = z.object({
   type: z.enum(EmailType.listr()), // used to determine which template to assign
   to: z.array(z.email()), //one user or multiple
-  // idk if i should put body here if we will make templatized emails
 });
 
 export const ReminderEmail = BaseEmail.extend({

@@ -247,45 +247,6 @@ export default class UsersAccessor {
     await newUser.save();
     return newUser;
   }
-
-  /**
-   * setOTP Method
-   *
-   * This method sets the otp token of a user.
-   *
-   * @param {Object} user
-   * @returns the newly created user
-   */
-  static async setOTP(user) {
-    await Connection.open();
-    const newUser = await User.updateOne(
-      { email: user.email },
-      {
-        $set: {
-          otpToken: user.otpToken,
-        },
-      }
-    );
-
-    return newUser;
-  }
-
-  /**
-   * findAndClearOTP Method
-   *
-   * This method finds an otp and clears it.
-   *
-   * @param {Object} user
-   * @param {*} hash hash of the token
-   */
-  static async findAndClearOTP(email, hash) {
-    await Connection.open();
-    return await User.findOneAndUpdate(
-      { email, otpToken: hash },
-      { $unset: { otpToken: "" } },
-      { new: false }
-    );
-  }
 }
 
 /**

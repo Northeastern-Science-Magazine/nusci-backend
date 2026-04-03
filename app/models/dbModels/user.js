@@ -25,7 +25,6 @@ const UserSchema = new Schema(
     gameData: { type: Schema.Types.ObjectId },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },
-    otpToken: {type: String, required: false}
   },
   {
     //saved to the collection "user"

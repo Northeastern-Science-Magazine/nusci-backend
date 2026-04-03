@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 import { ErrorUnexpected } from "../../error/errors.js";
+import OTPToken from "../../auth/opt.js";
+import OTPAccessor from "../../databaseAccessors/otpAccessor.js";
 
 // all emails should come from this domain. You guys can change it later if you want.
 const FROM = "NU Sci Magazine <noreply@nuscimagazine.com>";
@@ -26,12 +28,17 @@ export class GenerateEmail {
 
   static ResetPassword(resetPasswordEmail) {}
 
-  static OTP(otpEmail) {
+  static async OTP(otpEmail) {
+    const { token, hash } = OTPToken.generate();
+    await OTPAccessor.createOTPRecord(to[0], hash);
+    console.log(`https://nuscimagazine.com/otp/verify?token=${token}`);
     return {
-      from: otpEmail.from,
+      from: FROM,
       to: otpEmail.to,
       type: otpEmail.type,
-      variables: {},
+      variables: {
+        url: `https://nuscimagazine.com/otp/verify?token=${token}`,
+      },
     };
   }
 }

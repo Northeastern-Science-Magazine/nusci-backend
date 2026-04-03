@@ -21,13 +21,13 @@ export default class EmailController {
     const parsedEmail = EmailController.validateEmailRequestData(req.body);
 
     // Format email according to its type
-    const email = EmailController.generateEmailVariables(parsedEmail);
+    const email = await EmailController.generateEmailVariables(parsedEmail);
 
     // insert record into db
     await EmailAccessor.createEmail(email);
 
     // send email using Resend API
-    const response = await ResendEmail.sendEmail(email);
+    const response = await ResendEmail.sendEmailWithTemplate(email);
     res.json(response);
     res.status(200);
   }
@@ -76,7 +76,7 @@ export default class EmailController {
     return parsedEmail;
   };
 
-  static generateEmailVariables(email) {
+  static async generateEmailVariables(email) {
     let generatedEmailData;
 
     switch (EmailType.toEmailType(email.type)) {
@@ -96,7 +96,7 @@ export default class EmailController {
         generatedEmailData = GenerateEmail.ResetPassword(email);
         break;
       case EmailType.OTP:
-        generatedEmailData = GenerateEmail.OTP(email);
+        generatedEmailData = await GenerateEmail.OTP(email);
         break;
     }
     return generatedEmailData;
