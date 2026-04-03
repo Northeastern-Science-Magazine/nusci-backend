@@ -8,7 +8,5 @@ const email = express.Router();
 
 email.route("/send")
 .post(Authorize.allow(Accounts.Admin) , EmailService.sendEmail);
-email.route("/send-bulk")
-.post(Authorize.allow(Accounts.Admin), EmailService.sendEmailBulk);
 
 export default email;

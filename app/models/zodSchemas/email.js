@@ -4,38 +4,38 @@ import EmailType from "../enums/emailType";
 /* Schematics for email templates. Should match the resend templates (todo) */
 
 export const BaseEmail = z.object({
-    type: z.enum(EmailType.listr()), // used to determine which template to assign
-    to: z.union([z.email(), z.array(z.email())]), //one user or multiple
-    from: z.string().default("fill in from string, maybe put in .env?"),
-    subject: z.string(),
-    // idk if i should put body here if we will make templatized emails
+  type: z.enum(EmailType.listr()), // used to determine which template to assign
+  to: z.array(z.email()), //one user or multiple
+  from: z.email().default("aggarwal.arus@northeastern.edu"),
+  subject: z.string(),
+  // idk if i should put body here if we will make templatized emails
 });
 
 export const ReminderEmail = BaseEmail.extend({
-    type: z.literal(EmailType.Reminder.toString()),
-    reminderTitle: z.string(), // i.e: reminder: fill out form 
-    reminderDate: z.date().optional() // i.e: reminder: fill out form **by date**
+  type: z.literal(EmailType.Reminder.toString()),
+  reminderTitle: z.string(), // i.e: reminder: fill out form
+  reminderDate: z.date().optional(), // i.e: reminder: fill out form **by date**
 });
 
 export const ResetPasswordEmail = BaseEmail.extend({
-    type: z.literal(EmailType.Reset_Password.toString()),
-    resetUrl: z.string()
+  type: z.literal(EmailType.Reset_Password.toString()),
+  resetUrl: z.string(),
 });
 
 export const DeadlineEmail = BaseEmail.extend({
-    type: z.literal(EmailType.Deadline.toString()),
-    action: z.string(), // ex: *Fill out form* by *deadline*
-    deadline: z.date(),
-    actionUrl: z.string().optional(), // ex: <link href="actionurl"> fill out form </link>
-})
+  type: z.literal(EmailType.Deadline.toString()),
+  action: z.string(), // ex: *Fill out form* by *deadline*
+  deadline: z.date(),
+  actionUrl: z.string().optional(), // ex: <link href="actionurl"> fill out form </link>
+});
 
 export const InviteUserEmail = BaseEmail.extend({
-    type: z.literal(EmailType.Invite_User.toString()),
-    inviteUrl: z.string()
-})
+  type: z.literal(EmailType.Invite_User.toString()),
+  inviteUrl: z.string(),
+});
 
 // in the case of custom emails, should the custom html (if there is any) come from the frontend?
 export const CustomEmail = BaseEmail.extend({
-    type: z.literal(EmailType.Custom.toString()),
-    customBody: z.string()
+  type: z.literal(EmailType.Custom.toString()),
+  customBody: z.string(),
 });

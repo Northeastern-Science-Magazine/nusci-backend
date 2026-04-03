@@ -54,16 +54,15 @@ export default class EmailService {
         return obj;
       }, {});
 
-    // create the email object to use as payload
-    const emailObj = {
-      to: parsedEmail.data.to,
+    const email = {
+      to: parsedEmaill.data.to,
       from: parsedEmail.data.from,
       type: retrievedTemplate,
       subject: parsedEmail.data.subject,
       variables: emailVariables,
     };
 
-    return emailObj;
+    return email;
   };
 
   /**
@@ -78,6 +77,7 @@ export default class EmailService {
     // formatted email should contain users, id, variables
     const response = await this.sendEmailHelper(formattedEmail);
     res.json(response);
+    res.status(200);
   }
 
   /**
@@ -86,8 +86,7 @@ export default class EmailService {
    */
   static async sendEmailHelper(emailObj) {
     const { to, type, subject, variables } = emailObj;
-
-    const resend = new Resend("key here"); // should this be initialized within the method or in the class?
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     const settled = await Promise.allSettled(
       to.map(
