@@ -467,14 +467,7 @@ export default class ArticlesAccessor {
       mongoQuery = mongoQuery.limit(limit);
     }
 
-    const results = await mongoQuery
-      .populate("authors")
-      .populate("comments.user")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
-      .exec();
+    const results = await mongoQuery.exec();
 
     return { results, total };
   }
