@@ -7,6 +7,6 @@ import Accounts from "../models/enums/accounts";
 const email = express.Router();
 
 email.route("/send")
-.post(Authorize.allow(Accounts.Admin) , EmailService.sendEmail);
+.post(Authorize.allow([Accounts.Admin]), EmailService.sendEmail);
 
 export default email;

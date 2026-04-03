@@ -15,7 +15,11 @@ export default class EmailType {
         this.type = type;
     }
     
-    static toString() {
+    /***
+     * Email type to string
+     * @returns {String}
+     */
+    toString() {
         return this.type;
     }
 
@@ -31,7 +35,7 @@ export default class EmailType {
      * Lists email types in string value.
      */
     static listr() {
-        return this.list().map((type) => type.toString());
+        return Object.values(this).map((type) => type.toString());
     }
 
     /**
@@ -39,10 +43,12 @@ export default class EmailType {
      * @param {String} str the string of the email type to find.
      */
     static toEmailType(str) {
-        const emailType = this.list().find((type) => {type.toString() === str.toLowerCase()})
+
+        const emailType = Object.values(this).find((type) => type.toString() === str.toLowerCase())
         if (!emailType) {
             throw new ErrorValidation(`Type ${str} not found in email type enum.`);
         }
+        return emailType;
     }
 
 }   

@@ -17,7 +17,7 @@ describe("Send Email Tests", () => {
     const testReminderEmail = {
         type: 'reminder',
         from: 'aggarwal.arus@northeastern.edu',
-        to: 'rodriguezvazquez.a@northeastern.edu',
+        to: ['rodriguezvazquez.a@northeastern.edu'],
         subject: 'this is a test',
         reminderTitle: "Run for head of photography",
         reminderDate: new Date().toLocaleDateString()
@@ -25,7 +25,7 @@ describe("Send Email Tests", () => {
 
     test("Send reminder email successfully", async () => {
         const response = await request(app)
-      .patch(`/services/email/send`)
+      .post(`/services/email/send`)
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(testReminderEmail);
 

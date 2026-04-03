@@ -14,7 +14,7 @@ export const BaseEmail = z.object({
 export const ReminderEmail = BaseEmail.extend({
   type: z.literal(EmailType.Reminder.toString()),
   reminderTitle: z.string(), // i.e: reminder: fill out form
-  reminderDate: z.date().optional(), // i.e: reminder: fill out form **by date**
+  reminderDate: z.string().optional(), // i.e: reminder: fill out form **by date**
 });
 
 export const ResetPasswordEmail = BaseEmail.extend({
@@ -25,7 +25,7 @@ export const ResetPasswordEmail = BaseEmail.extend({
 export const DeadlineEmail = BaseEmail.extend({
   type: z.literal(EmailType.Deadline.toString()),
   action: z.string(), // ex: *Fill out form* by *deadline*
-  deadline: z.date(),
+  deadline: z.string(),
   actionUrl: z.string().optional(), // ex: <link href="actionurl"> fill out form </link>
 });
 

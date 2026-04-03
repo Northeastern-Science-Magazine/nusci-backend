@@ -18,11 +18,15 @@ export default class EmailService {
    * @returns {Object} the formatted email object
    */
   static formatEmail = (emailObj) => {
-    const retrievedTemplate = EmailType.listr().find((type) => type.toString() === template);
+    const types = EmailType.listr();
+    const template = types.find((type) => type === emailObj.type);
+    if (!template) {
+      throw new ErrorUnexpected(`Email template ${emailObj.template} not found.`);
+    }
+
     let templateSchema;
 
-    // is there an easier way to do this? template (str) -> Zod Schema
-    switch (retrievedTemplate) {
+    switch (EmailType.toEmailType(template)) {
       case EmailType.Custom:
         templateSchema = CustomEmail;
         break;
@@ -40,7 +44,7 @@ export default class EmailService {
         break;
     }
 
-    const parsedEmail = templateSchema.safeParse(email);
+    const parsedEmail = templateSchema.safeParse(emailObj);
     if (!parsedEmail.success) {
       throw new ErrorValidation("Email schema validation failed.");
     }
@@ -55,9 +59,9 @@ export default class EmailService {
       }, {});
 
     const email = {
-      to: parsedEmaill.data.to,
+      to: parsedEmail.data.to,
       from: parsedEmail.data.from,
-      type: retrievedTemplate,
+      type: emailObj.type,
       subject: parsedEmail.data.subject,
       variables: emailVariables,
     };
@@ -72,10 +76,10 @@ export default class EmailService {
    */
   static async sendEmail(req, res) {
     // parse incoming request body
-    const formattedEmail = this.formatEmail(req.body);
+    const formattedEmail = EmailService.formatEmail(req.body);
 
     // formatted email should contain users, id, variables
-    const response = await this.sendEmailHelper(formattedEmail);
+    const response = await EmailService.sendEmailHelper(formattedEmail);
     res.json(response);
     res.status(200);
   }
@@ -85,6 +89,7 @@ export default class EmailService {
    * @param {*} emailObj the formatted email object, which should already be validated.
    */
   static async sendEmailHelper(emailObj) {
+    try {
     const { to, type, subject, variables } = emailObj;
     const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -107,5 +112,10 @@ export default class EmailService {
     if (!settled) {
       throw new ErrorUnexpected("Email send failed.");
     }
+    return settled;
+  } catch (e) {
+    console.log(e);
+    throw new ErrorUnexpected("Email send not reached.");
   }
+}
 }
