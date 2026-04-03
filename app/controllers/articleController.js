@@ -55,12 +55,16 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      if (!articleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
+      // Validate and construct an ArticleResponse instance
+      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      // if (!articleResponse.success) {
+      //   throw new ErrorValidation("Outgoing response validation failed");
+      // }
 
-      res.status(200).json(articleResponse.data);
+      // Send the validated ArticleResponse
+
+      console.log(article);
+      res.status(200).json(article);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -258,21 +262,9 @@ export default class ArticleController {
         searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      // Validate results with ArticlePublicResponse
-      const validatedResults = await Promise.all(
-        searchResult.results.map(async (result) => {
-          const obj = result.toObject ? result.toObject() : result;
-          const validated = await ArticlePublicResponse.safeParseAsync(obj);
-          if (!validated.success) {
-            throw new ErrorValidation("Search results validation failed");
-          }
-          return validated.data;
-        })
-      );
-
       // Return results with total count for pagination
       res.status(200).json({
-        results: validatedResults,
+        results: searchResult.results,
         total: searchResult.total,
       });
     } catch (e) {
