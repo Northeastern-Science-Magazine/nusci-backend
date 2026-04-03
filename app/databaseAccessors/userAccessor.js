@@ -130,7 +130,7 @@ export default class UsersAccessor {
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
-  
+
   /**
    * getUserByRole Method
    *

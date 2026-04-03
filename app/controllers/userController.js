@@ -4,7 +4,7 @@ import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
 import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
-
+import crypto from "crypto";
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -17,10 +17,13 @@ import {
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
   ErrorValidation,
+  ErrorEmailNotFound,
   HttpError,
 } from "../error/errors.js";
 import LoginToken from "../auth/token.js";
 import Password from "../auth/password.js";
+import User from "../models/dbModels/user.js";
+import OTPAccessor from "../databaseAccessors/otpAccessor.js";
 
 /**
  * UsersController Class
@@ -382,5 +385,41 @@ export default class UserController {
   static logout(req, res) {
     res.clearCookie("token");
     res.status(200).json({ message: "Successfully logged out." });
+  }
+
+  /**
+   * Verifies the OTP
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  static async verifyOTPLink(req, res) {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        throw new ErrorFailedLogin();
+      }
+
+      const { success, email } = await OTPAccessor.verifyOTPRecord(token);
+
+      if (!success) {
+        throw new ErrorFailedLogin();
+      }
+
+      const user = await UsersAccessor.getUserByEmail(email);
+
+      if (!user) {
+        throw new ErrorFailedLogin();
+      }
+
+      res.cookie(...LoginToken.generate(user));
+      res.status(200).json({ message: "Login successful." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 }
