@@ -1,6 +1,6 @@
 {
   "name": "nusciwebsite",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The new Northeastern Science Magazine Website files",
   "main": "index.js",
   "type": "module",
