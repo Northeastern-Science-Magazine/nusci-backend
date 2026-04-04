@@ -17,6 +17,6 @@ export default class LoginToken {
       process.env.SERVER_TOKEN_KEY
     );
 
-    return ["token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 }];
+    return ["token", token, { httpOnly: true, maxAge: 14 * 24 * 60 * 60 * 1000 }];
   }
 }

@@ -15,7 +15,8 @@
     "reset": "node --no-deprecation setup/drop.js && node --no-deprecation setup/reseed.js",
     "reset-s": "node --no-deprecation setup/drop.js -s && node --no-deprecation setup/reseed.js -s",
     "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
-    "test": "jest"
+    "test": "jest",
+    "migration-04032026": "node migrations/04032026-1.js"
   },
   "repository": {
     "type": "git",
