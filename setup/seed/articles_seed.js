@@ -16,21 +16,21 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "As artificial intelligence continues to advance at an unprecedented pace, its integration into everyday life becomes more profound.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "From virtual assistants managing our schedules to predictive algorithms driving personalized recommendations, AI is reshaping the way we live, work, and interact with technology.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "However, with this integration comes ethical considerations and concerns about privacy, bias, and job displacement.",
         },
@@ -44,7 +44,7 @@ export default [
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "As we embrace AI in our daily lives, it's essential to prioritize transparency, accountability, and inclusivity in its development and deployment.",
         },
@@ -97,20 +97,20 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content: "Three decades later, Sweess looks back on the moments that have defined his path to notoriety.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "The Zippie data structure failed to take off upon Beta release, but years later in 1997, Sweess sold the rights to Oracle where it became a household name.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "“At the time, I certainly didn’t know where things would end up, but I had a great experience and I learned quite a bit about the music industry that I am really grateful for now,” Sweess says.",
         },
@@ -124,7 +124,7 @@ export default [
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content: "Sweess' achievements would go on to define the modern tech industry as we know it today.",
         },
       ],
@@ -192,21 +192,21 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "World Health Organization officials expressed disappointment Monday at the group's finding that, despite the enormous efforts of doctors, rescue workers and other medical professionals worldwide, the global death rate remains constant at 100 percent.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "Death, a metabolic affliction causing total shutdown of all life functions, has long been considered humanity's number one health concern.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content: "Responsible for 100 percent of all recorded fatalities worldwide, the condition has no cure.",
         },
       ],
@@ -218,7 +218,7 @@ export default [
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "In the most serious cases of death, the trauma inflicted upon these still-living victims of death may continue throughout their entire lives, until their own deaths.",
         },
@@ -268,21 +268,21 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "In a groundbreaking excavation near the foothills of the Andes Mountains, researchers unearthed what appears to be remnants of an ancient flying machine, challenging conventional beliefs about early human technology.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "Professor Elena Ramirez, lead archaeologist on the project, described the find as 'extraordinary' and 'unlike anything we've ever encountered.'",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "The machine, composed of lightweight metals and intricate mechanisms, suggests a level of engineering prowess far ahead of its time, prompting speculation about its potential use and origin.",
         },
@@ -331,21 +331,21 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "A team of British and Egyptian archaeologists made a stunning discovery Monday, unearthing several intact specimens of 'skeleton people'",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "“This is an incredible find,” said Dr. Christian Hutchins, Oxford University archaeologist and head of the dig team.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content: "Imagine: At one time, this entire area was filled with spooky, bony, walking skeletons.",
         },
       ],
@@ -396,21 +396,21 @@ export default [
     articleContent: [
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "World Health Organization officials expressed disappointment Monday at the group's finding that, despite the enormous efforts of doctors, rescue workers and other medical professionals worldwide, the global death rate remains constant at 100 percent.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "Death, a metabolic affliction causing total shutdown of all life functions, has long been considered humanity's number one health concern.",
         },
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content: "Responsible for 100 percent of all recorded fatalities worldwide, the condition has no cure.",
         },
       ],
@@ -422,7 +422,7 @@ export default [
       ],
       [
         {
-          contentType: ArticleContent.BodyParagraph.type,
+          contentType: ArticleContent.Text.type,
           content:
             "In the most serious cases of death, the trauma inflicted upon these still-living victims of death may continue throughout their entire lives, until their own deaths.",
         },

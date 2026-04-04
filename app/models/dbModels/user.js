@@ -18,7 +18,7 @@ const UserSchema = new Schema(
     bannerImage: { type: String },
     bio: { type: String },
     email: { type: String, required: true, unique: true },
-    phone: { type: String, unique: true },
+    phone: { type: String },
     roles: [{ type: String, enum: Accounts.listr(), required: true }],
     status: { type: String, enum: AccountStatus.listr(), required: true },
     approvingUser: { type: Schema.Types.ObjectId },

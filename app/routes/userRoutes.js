@@ -15,5 +15,6 @@ user.route("/verify-otp").post(UserController.verifyOTPLink);
 user.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
 // user.route("/me/update");
 user.route("/roles").get(UserController.getMyRoles);
+user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 
 export default user;

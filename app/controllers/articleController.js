@@ -37,7 +37,7 @@ export default class ArticleController {
       const articleData = parsedArticle.data;
 
       // gets all the author objects by list of emails provided upon article submission
-      const authors = await UsersAccessor.getUsersByEmails(articleData);
+      const authors = await UsersAccessor.getUsersByEmails(articleData.authors);
       articleData.authors = authors.map((author) => author._id);
 
       // TODO need to do this ^ for editors, etc, any other ref data
