@@ -127,6 +127,7 @@ export default class UsersAccessor {
 
   static async getUsersByEmails(emails) {
     await Connection.open();
+    console.log(emails);
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
