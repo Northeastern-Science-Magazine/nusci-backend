@@ -144,7 +144,7 @@ export default class UsersAccessor {
    */
   static async getUserByRole(role) {
     await Connection.open();
-    const users = await User.find({ roles: { $in: [role] } });
+    const users = await User.find({ roles: role });
     return users;
   }
 

@@ -24,6 +24,7 @@ import LoginToken from "../auth/token.js";
 import Password from "../auth/password.js";
 import User from "../models/dbModels/user.js";
 import OTPAccessor from "../databaseAccessors/otpAccessor.js";
+import Accounts from "../models/enums/accounts.js";
 
 /**
  * UsersController Class
@@ -414,6 +415,35 @@ export default class UserController {
 
       res.cookie(...LoginToken.generate(user));
       res.status(200).json({ message: "Login successful." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Gets a basic list of all users
+   * name (full)
+   * email
+   *
+   * Used for dropdowns etc in FE
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getBasicUserList(req, res) {
+    try {
+      const users = await UsersAccessor.getUserByRole(Accounts.Author.role);
+      const basicUsers = users.map((user) => {
+        return {
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+        };
+      });
+      res.status(200).json(basicUsers);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
