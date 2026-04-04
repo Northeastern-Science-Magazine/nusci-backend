@@ -56,7 +56,7 @@ export default class IssueMapController {
       const writingStatus = editors.length > 0 ? WritingStatus.Has_Editor : WritingStatus.Needs_Editor;
 
       const fetchUsers = async (emails, role) => {
-        const users = await UsersAccessor.getUsersByEmail(emails);
+        const users = await UsersAccessor.getUsersByEmails(emails);
         if (users.length !== emails.length) {
           throw new ErrorInvalidRequestBody(`Invalid ${role} emails`);
         }
