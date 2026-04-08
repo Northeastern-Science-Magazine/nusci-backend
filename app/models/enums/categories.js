@@ -22,6 +22,7 @@ export default class Category {
   static Technology = new Category("Technology");
   static Uncategorized = new Category("Uncategorized");
   static World = new Category("World");
+  static Interview = new Category("Interview");
 
   /**
    * INTERNAL USE ONLY
