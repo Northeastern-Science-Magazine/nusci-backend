@@ -24,15 +24,15 @@ export default class Authorize {
     return (req, res, next) => {
       dotenv.config();
       if (req.cookies.token) {
-        const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
-        if (payload) {
+        try {
+          const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
           const userRoles = payload.roles.map((role) => Accounts.toAccount(role));
           if (roles.some((element) => userRoles.includes(element))) {
             next();
           } else {
             new ErrorForbidden().throwHttp(req, res);
           }
-        } else {
+        } catch (error) {
           new ErrorForbidden().throwHttp(req, res);
         }
       } else {
@@ -48,7 +48,7 @@ export default class Authorize {
    * @param {HTTP REQ} req
    * @returns {String} Email
    */
-  static getEmail(req) {
+  static getEmail(req, res) {
     dotenv.config();
     if (req.cookies.token) {
       const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
