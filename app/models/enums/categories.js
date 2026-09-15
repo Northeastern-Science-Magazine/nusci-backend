@@ -26,7 +26,7 @@ export default class Category {
 
   /**
    * INTERNAL USE ONLY
-   * Construct a category enum
+   * Construct a category enum.
    *
    * @param {String} category
    */
