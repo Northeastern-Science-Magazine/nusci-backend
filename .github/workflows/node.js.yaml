@@ -32,15 +32,27 @@ jobs:
       - name: Build and Start Docker Compose
         run: docker compose up --build -d
 
-      # Step 4: Install NPM dependencies
+      # Step 4: Wait for MongoDB to accept connections before running tests
+      - name: Wait for MongoDB
+        run: |
+          for i in $(seq 1 30); do
+            docker compose exec -T mongodb mongosh --quiet --eval "db.adminCommand('ping')" \
+              -u "${{ vars.MONGODB_INITDB_ROOT_USERNAME }}" -p "${{ vars.MONGODB_INITDB_ROOT_PASSWORD }}" \
+              --authenticationDatabase admin && exit 0
+            sleep 2
+          done
+          echo "MongoDB did not become ready in time" >&2
+          exit 1
+
+      # Step 5: Install NPM dependencies
       - name: Install Dependencies
         run: npm ci
 
-      # Step 5: Run testing suite
+      # Step 6: Run testing suite
       - name: Run Tests
         run: npm run test
 
-      # Step 6: Tear down the services after the job is done
+      # Step 7: Tear down the services after the job is done
       - name: Tear Down Docker Compose Project
         if: always()
         run: docker compose down
