@@ -1,7 +1,7 @@
 import { ErrorValidation } from "../../error/errors.js";
 
 export default class ArticleContent {
-  static BodyParagraph = new ArticleContent("body_paragraph");
+  static Text = new ArticleContent("text");
   static PullQuote = new ArticleContent("pull_quote");
   static Image = new ArticleContent("image");
   static Link = new ArticleContent("link");

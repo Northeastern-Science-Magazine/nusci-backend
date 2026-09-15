@@ -11,10 +11,10 @@ user.route("/login").post(UserController.login);
 // user.route("/signup").post(UserController.signup);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
-// user.route("/resolve-status").put(Authorize.allow([Accounts.Admin]), UserController.resolveUserApprovals);
-// user.route("/update/:email");
+user.route("/verify-otp").post(UserController.verifyOTPLink);
 user.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
 // user.route("/me/update");
 user.route("/roles").get(UserController.getMyRoles);
+user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 
 export default user;

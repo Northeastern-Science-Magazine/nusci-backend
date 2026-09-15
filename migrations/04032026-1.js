@@ -1,17 +1,19 @@
 import mongoose from "mongoose";
-import ArticleStatus from "../enums/articleStatus.js";
-import WritingStatus from "../enums/writingStatus.js";
-import CommentStatus from "../enums/commentStatus.js";
-import DesignStatus from "../enums/designStatus.js";
-import PhotographyStatus from "../enums/photographyStatus.js";
-import ArticleContent from "../enums/articleContent.js";
-import Categories from "../enums/categories.js";
-import User from "./user.js";
+import MockConnection from "../tests/util/mockConnection.js";
+import User from "../app/models/dbModels/user.js";
+import Article from "../app/models/dbModels/article.js";
+import Categories from "../app/models/enums/categories.js";
+import ArticleContent from "../app/models/enums/articleContent.js";
+import CommentStatus from "../app/models/enums/commentStatus.js";
+import ArticleStatus from "../app/models/enums/articleStatus.js";
+import DesignStatus from "../app/models/enums/designStatus.js";
+import WritingStatus from "../app/models/enums/writingStatus.js";
+import PhotographyStatus from "../app/models/enums/photographyStatus.js";
 
 const Schema = mongoose.Schema;
 
 //article schema
-const ArticleSchema = new Schema(
+const OldArticleSchema = new Schema(
   {
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
@@ -47,7 +49,7 @@ const ArticleSchema = new Schema(
     writingStatus: { type: String, enum: WritingStatus.listr(), required: true },
     designStatus: { type: String, enum: DesignStatus.listr(), required: true },
     photographyStatus: { type: String, enum: PhotographyStatus.listr(), required: true },
-    authors: [{ type: Schema.Types.ObjectId, ref: User}],
+    authors: [{ type: String }],
     editors: [{ type: Schema.Types.ObjectId, ref: User }],
     designers: [{ type: Schema.Types.ObjectId, ref: User }],
     photographers: [{ type: Schema.Types.ObjectId, ref: User }],
@@ -63,9 +65,41 @@ const ArticleSchema = new Schema(
 );
 
 // Add a text index for title and articleContent.content
-ArticleSchema.index({ title: "text", "articleContent.content": "text" }, { name: "article_text_index" });
+OldArticleSchema.index({ title: "text", "articleContent.content": "text" }, { name: "article_text_index" });
 
 const db = mongoose.connection.useDb("articles");
-const Article = db.model("Articles", ArticleSchema);
+const OldArticle = db.model("Articles", OldArticleSchema);
 
-export default Article;
+async function migrate() {
+  await MockConnection.open();
+  let totalArticlesModified = 0;
+  let authorsWithArticles = 0;
+
+  const users = await User.find({});
+
+  for (const user of users) {
+    let articlesPerAuthor = 0;
+    const name = `${user.firstName} ${user.lastName}`;
+    const mongoId = user._id;
+
+    const articlesByAuthor = await OldArticle.find({ authors: name });
+    for (const article of articlesByAuthor) {
+      article.authors = [mongoId];
+      const newArticle = new Article(article);
+      newArticle.save();
+      articlesPerAuthor++;
+      totalArticlesModified++;
+    }
+
+    if (articlesPerAuthor > 0) {
+      authorsWithArticles++;
+    }
+
+    console.log(`${name}: ${articlesPerAuthor}`);
+  }
+
+  console.log("\nTotal Articles Modified: ", totalArticlesModified);
+  console.log("\nAuthors with Articles: ", authorsWithArticles);
+}
+
+await migrate();

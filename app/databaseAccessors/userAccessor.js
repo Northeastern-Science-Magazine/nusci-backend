@@ -125,12 +125,13 @@ export default class UsersAccessor {
     return user;
   }
 
-  static async getUsersByEmail(emails) {
+  static async getUsersByEmails(emails) {
     await Connection.open();
+    console.log(emails);
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
-  
+
   /**
    * getUserByRole Method
    *
@@ -144,7 +145,7 @@ export default class UsersAccessor {
    */
   static async getUserByRole(role) {
     await Connection.open();
-    const users = await User.find({ roles: { $in: [role] } });
+    const users = await User.find({ roles: role });
     return users;
   }
 

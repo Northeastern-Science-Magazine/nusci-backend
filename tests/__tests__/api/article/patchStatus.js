@@ -4,7 +4,6 @@ import ArticleStatus from "../../../../app/models/enums/articleStatus.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
-import * as z from "zod";
 
 const showLog = __filename
   .replace(".js", "")
