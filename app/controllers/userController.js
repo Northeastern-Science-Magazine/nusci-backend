@@ -3,7 +3,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
-import { Login, UserCreate, UserUpdate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+import { Login, UserCreate, SelfProfileUpdate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
 import crypto from "crypto";
 import {
   ErrorFailedLogin,
@@ -206,6 +206,10 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
+      }
+
       const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
@@ -234,7 +238,7 @@ export default class UserController {
     try {
       const email = Authorize.getEmail(req);
 
-      const update = await UserUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
+      const update = await SelfProfileUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
       if (!update.success) {
         throw new ErrorValidation("Update profile validation failed.");
       }
@@ -242,6 +246,10 @@ export default class UserController {
       const user = await UsersAccessor.updateUserByEmail(email, update.data).then((_) => _?.toObject());
       if (!user) {
         throw new ErrorUserNotFound();
+      }
+
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
       }
 
       const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);

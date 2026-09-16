@@ -39,4 +39,23 @@ describe("Update own profile tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(403);
   });
+
+  test("ignores attempts to self-escalate roles, status, approvingUser, or email", async () => {
+    const response = await request(app)
+      .patch("/user/me")
+      .send({
+        location: "Cambridge",
+        roles: ["admin"],
+        status: "approved",
+        approvingUser: "000000000000000000000000",
+        email: "vianna@newemail.com",
+      })
+      .set("Cookie", [`token=${tokens["vianna@vianna.com"]}`]);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.location).toBe("Cambridge");
+    expect(response.body.roles).toStrictEqual(["designer"]);
+    expect(response.body.email).toBe("vianna@vianna.com");
+  });
 });
