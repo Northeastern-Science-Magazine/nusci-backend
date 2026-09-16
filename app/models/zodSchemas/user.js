@@ -43,6 +43,25 @@ export const UserUpdate = BaseUser.extend({
   })
   .partial();
 
+// Fields a user is allowed to change about themselves. Excludes email, roles,
+// status, and approvingUser, which must never be self-editable.
+export const SelfProfileUpdate = BaseUser.pick({
+  firstName: true,
+  lastName: true,
+  pronouns: true,
+  graduationYear: true,
+  major: true,
+  location: true,
+  profileImage: true,
+  bannerImage: true,
+  bio: true,
+})
+  .extend({
+    phone: z.string(),
+    modificationTime: z.date().default(new Date()),
+  })
+  .partial();
+
 // approve and deny are supposed to be arrays of emails according to resolveUserApprovals docs, but tests only have usernames, so email-parsing is omitted
 export const UserApprovals = z.object({
   approve: z.array(z.string()).optional(),
@@ -58,7 +77,7 @@ export const UserPrivateResponse = BaseUser.extend({
   password: z.string(),
   phone: z.string().optional(),
   status: z.enum(AccountStatus.listr()),
-  approvingUser: z.undefined().optional(),
+  approvingUser: z.string().optional(),
 });
 
 export const UserPublicResponse = BaseUser.extend({
