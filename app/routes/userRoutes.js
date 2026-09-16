@@ -12,8 +12,10 @@ user.route("/login").post(UserController.login);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
 user.route("/verify-otp").post(UserController.verifyOTPLink);
-user.route("/me").get(Authorize.allow(Accounts.list()), UserController.getMyProfile);
-// user.route("/me/update");
+user
+  .route("/me")
+  .get(Authorize.allow(Accounts.list()), UserController.getMyProfile)
+  .patch(Authorize.allow(Accounts.list()), UserController.updateMyProfile);
 user.route("/roles").get(UserController.getMyRoles);
 user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 
