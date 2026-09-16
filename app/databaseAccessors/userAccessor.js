@@ -248,6 +248,22 @@ export default class UsersAccessor {
     await newUser.save();
     return newUser;
   }
+
+  /**
+   * updateUserByEmail Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given email and applies the given updates.
+   *
+   * @param {String} email
+   * @param {Object} updates
+   * @returns the updated user object.
+   */
+  static async updateUserByEmail(email, updates) {
+    await Connection.open();
+    const user = await User.findOneAndUpdate({ email: email }, updates, { new: true });
+    return user;
+  }
 }
 
 /**
