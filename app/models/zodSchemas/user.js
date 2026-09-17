@@ -53,14 +53,12 @@ export const UserDelete = z.object({
   email: z.email(),
 });
 
-export const UserPrivateResponse = z.object({
+export const UserPrivateResponse = BaseUser.extend({
   id: z.literal("/user/response"),
-  properties: BaseUser.extend({
-    password: z.string(),
-    phone: z.string().optional,
-    status: z.enum(AccountStatus.listr()),
-    approvingUser: z.undefined().optional(),
-  }),
+  password: z.string(),
+  phone: z.string().optional(),
+  status: z.enum(AccountStatus.listr()),
+  approvingUser: z.undefined().optional(),
 });
 
 export const UserPublicResponse = BaseUser.extend({
