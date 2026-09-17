@@ -3,7 +3,7 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
-import { Login, UserCreate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+import { Login, UserCreate, SelfProfileUpdate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
 import crypto from "crypto";
 import {
   ErrorFailedLogin,
@@ -206,7 +206,53 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true }).safeParseAsync(user);
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
+      }
+
+      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(200).json(userResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * updateMyProfile Method
+   *
+   * This method updates the profile of the logged-in user with the
+   * given fields and returns the updated profile.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   */
+  static async updateMyProfile(req, res) {
+    try {
+      const email = Authorize.getEmail(req);
+
+      const update = await SelfProfileUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
+      if (!update.success) {
+        throw new ErrorValidation("Update profile validation failed.");
+      }
+
+      const user = await UsersAccessor.updateUserByEmail(email, update.data).then((_) => _?.toObject());
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
+      }
+
+      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
