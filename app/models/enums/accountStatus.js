@@ -35,7 +35,7 @@ export default class AccountStatus {
    * @returns {AccountStatus}
    */
   static toAccountStatus(str) {
-    const accountStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const accountStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!accountStatus) {
       throw new ErrorValidation("Invalid Article Status enum given.");
     }

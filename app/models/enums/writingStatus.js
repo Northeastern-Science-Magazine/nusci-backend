@@ -38,7 +38,7 @@ export default class WritingStatus {
    * @returns {WritingStatus}
    */
   static toWritingStatus(str) {
-    const writingStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const writingStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!writingStatus) {
       throw new ErrorValidation("Invalid Writing Status enum given.");
     }

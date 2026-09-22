@@ -8,7 +8,6 @@ import { ErrorValidation } from "../../error/errors.js";
  *
  */
 
-
 export class BaseModel {
   constructor(json, schema) {
     this.validate(json, schema);
@@ -133,7 +132,6 @@ export class BaseModel {
     }
   }
 }
-
 
 export class BaseModelUpdate extends BaseModel {
   constructor(json, schema) {

@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import CommentStatus from "../../../../app/models/enums/commentStatus.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type CommentStatus", () => {
   test("toString Resolved", () => {
     expect(CommentStatus.Resolved.toString()).toStrictEqual("resolved");
@@ -43,7 +42,12 @@ describe("Tests for enumerated type CommentStatus", () => {
   });
 
   test("list CommentStatus", () => {
-    expect(CommentStatus.list()).toStrictEqual([CommentStatus.Resolved, CommentStatus.Unresolved, CommentStatus.Public, CommentStatus.Reason]);
+    expect(CommentStatus.list()).toStrictEqual([
+      CommentStatus.Resolved,
+      CommentStatus.Unresolved,
+      CommentStatus.Public,
+      CommentStatus.Reason,
+    ]);
   });
 
   test("listr CommentStatus", () => {

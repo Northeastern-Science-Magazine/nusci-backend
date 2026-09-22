@@ -35,7 +35,7 @@ export default class DesignStatus {
    * @returns {DesignStatus}
    */
   static toDesignStatus(str) {
-    const designStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const designStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!designStatus) {
       throw new ErrorValidation("Invalid Design Status enum given.");
     }
