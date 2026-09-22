@@ -7,7 +7,7 @@ export default class ArticleStatus {
   static Pending = new ArticleStatus("pending");
   static Print = new ArticleStatus("print");
   static Online = new ArticleStatus("online");
-  static Cancelled = new ArticleStatus("cancelled")
+  static Cancelled = new ArticleStatus("cancelled");
 
   /**
    * INTERNAL USE ONLY
@@ -30,7 +30,7 @@ export default class ArticleStatus {
    * @returns {ArticleStatus}
    */
   static toArticleStatus(str) {
-    const articleStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const articleStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!articleStatus) {
       throw new ErrorValidation("Invalid Article Status enum given.");
     }

@@ -3,7 +3,14 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
-import { Login, UserCreate, SelfProfileUpdate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+import {
+  Login,
+  UserCreate,
+  SelfProfileUpdate,
+  UserApprovals,
+  UserPrivateResponse,
+  UserPublicResponse,
+} from "../models/zodSchemas/user.js";
 import crypto from "crypto";
 import {
   ErrorFailedLogin,

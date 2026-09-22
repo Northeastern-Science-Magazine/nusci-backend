@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import Category from "../../../../app/models/enums/categories.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type Category", () => {
   test("toString ArtificialIntelligence", () => {
     expect(Category.ArtificialIntelligence.toString()).toStrictEqual("artificial_intelligence");

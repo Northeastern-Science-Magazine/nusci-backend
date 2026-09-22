@@ -48,7 +48,6 @@ export default class PhotoTagController {
    */
   static async getTagByName(req, res) {
     try {
-
       const tagName = req.params.tagName;
 
       const photoTag = await PhotoTagAccessor.getTagByName(tagName).then((_) => _?.toObject());
@@ -57,7 +56,7 @@ export default class PhotoTagController {
         // thrown due to null response from getTagByName when using .toObject() on null.
         throw new ErrorPhotoTagNotFound();
       }
-    
+
       Validate.outgoing(photoTag, photoTagResponse);
       res.status(200).json(photoTag);
     } catch (e) {

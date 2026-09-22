@@ -14,22 +14,22 @@ beforeEach(executeReset);
 afterAll(closeMockConnection);
 
 describe("Send Email Tests", () => {
-    const testReminderEmail = {
-        type: 'reminder',
-        from: 'aggarwal.arus@northeastern.edu',
-        to: ['rodriguezvazquez.a@northeastern.edu'],
-        subject: 'this is a test',
-        reminderTitle: "Run for head of photography",
-        reminderDate: new Date().toLocaleDateString()
-    }
+  const testReminderEmail = {
+    type: "reminder",
+    from: "aggarwal.arus@northeastern.edu",
+    to: ["rodriguezvazquez.a@northeastern.edu"],
+    subject: "this is a test",
+    reminderTitle: "Run for head of photography",
+    reminderDate: new Date().toLocaleDateString(),
+  };
 
-    test("Send reminder email successfully", async () => {
-        const response = await request(app)
+  test("Send reminder email successfully", async () => {
+    const response = await request(app)
       .post(`/services/email/send`)
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(testReminderEmail);
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    });
-})
+  });
+});

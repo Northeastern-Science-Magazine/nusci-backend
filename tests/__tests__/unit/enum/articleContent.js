@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import ArticleContent from "../../../../app/models/enums/articleContent.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type ArticleContent", () => {
   test("toString BodyParagraph", () => {
     expect(ArticleContent.BodyParagraph.toString()).toStrictEqual("body_paragraph");
