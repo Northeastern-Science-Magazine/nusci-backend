@@ -56,7 +56,7 @@ export default class ArticlesAccessor {
   static async getArticleBySlug(slug) {
     await Connection.open();
     const article = await Article.findOne({ slug: slug })
-      //.populate("authors")
+      .populate("authors")
       .populate("comments.user")
       .populate("editors")
       .populate("designers")
@@ -329,51 +329,6 @@ export default class ArticlesAccessor {
   }
 
   /**
-   *
-   * Search for articles with the given query and path
-   *
-   * @param {*} search the term(s) to search for
-   * @param {*} fields the field to search for
-   * @param {limit} numerical limit to the number of elements to return (optional)
-   * @param {query} json object of query we want (optional)
-   */
-  static async fuzzySearchArticles(search, fields = ["title", "content"], limit, query) {
-    await Connection.open();
-
-    const pipeline = [
-      {
-        $search: {
-          index: "article_text_index",
-          text: {
-            query: search,
-            path: fields,
-            fuzzy: {},
-          },
-        },
-      },
-    ];
-
-    // Add additonal query if provided
-    if (query) {
-      pipeline.push({ $match: query });
-    }
-
-    // if no text provided, sort by publishDate
-    if (!search) {
-      pipeline.push({
-        $sort: { publishDate: -1 },
-      });
-    }
-
-    // Add limit if provided
-    if (limit && limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
-    const results = await Article.aggregate(pipeline);
-    return results;
-  }
-
-  /**
    * searchArticlesWithText method
    *
    * Performs fuzzy text search on articles with optional filters and pagination.
@@ -425,6 +380,43 @@ export default class ArticlesAccessor {
       resultsPipeline.push({ $limit: limit });
     }
 
+    // populate authors in aggregation pipeline
+    resultsPipeline.push({
+      $lookup: {
+        from: "users",
+        let: { authorIds: "$authors" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $in: ["$_id", "$$authorIds"] },
+            },
+          },
+        ],
+        as: "authors",
+      },
+    });
+
+    resultsPipeline.push({
+      $addFields: {
+        authors: {
+          $map: {
+            input: "$authors",
+            as: "author",
+            in: {
+              $let: {
+                vars: {
+                  idx: {
+                    $indexOfArray: ["$authors", "$$author._id"],
+                  },
+                },
+                in: "$$author",
+              },
+            },
+          },
+        },
+      },
+    });
+
     // Execute both pipelines in parallel
     const [results, countResult] = await Promise.all([Article.aggregate(resultsPipeline), Article.aggregate(countPipeline)]);
 
@@ -466,6 +458,8 @@ export default class ArticlesAccessor {
     if (limit !== undefined && limit > 0) {
       mongoQuery = mongoQuery.limit(limit);
     }
+
+    mongoQuery = mongoQuery.populate("authors");
 
     const results = await mongoQuery.exec();
 

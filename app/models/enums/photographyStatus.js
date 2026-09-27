@@ -35,7 +35,7 @@ export default class PhotographyStatus {
    * @returns {PhotographyStatus}
    */
   static toPhotographyStatus(str) {
-    const photographyStatus = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const photographyStatus = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!photographyStatus) {
       throw new ErrorValidation("Invalid Photography Status enum given.");
     }

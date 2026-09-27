@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import AccountStatus from "../../../../app/models/enums/accountStatus.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type AccountStatus", () => {
   test("toString Pending", () => {
     expect(AccountStatus.Pending.toString()).toStrictEqual("pending");

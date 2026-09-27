@@ -1,12 +1,17 @@
 import { config as dotenvConfig } from "dotenv";
-import * as z from "zod";
-import Authorize from "../auth/authorization.js";
-import Password from "../auth/password.js";
-import LoginToken from "../auth/token.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
+import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
-import { Login, UserApprovals, UserCreate, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
-
+import * as z from "zod";
+import {
+  Login,
+  UserCreate,
+  SelfProfileUpdate,
+  UserApprovals,
+  UserPrivateResponse,
+  UserPublicResponse,
+} from "../models/zodSchemas/user.js";
+import crypto from "crypto";
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -19,8 +24,14 @@ import {
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
   ErrorValidation,
+  ErrorEmailNotFound,
   HttpError,
 } from "../error/errors.js";
+import LoginToken from "../auth/token.js";
+import Password from "../auth/password.js";
+import User from "../models/dbModels/user.js";
+import OTPAccessor from "../databaseAccessors/otpAccessor.js";
+import Accounts from "../models/enums/accounts.js";
 
 /**
  * UsersController Class
@@ -42,7 +53,7 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req.body).success) {
+      if (!Login.safeParse(req.body)) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
@@ -116,7 +127,7 @@ export default class UserController {
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      userCreate.data.password = await Password.hash(req.body.password, 10);
+      req.body.password = await Password.hash(req.boday.password, 10);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {
@@ -202,7 +213,53 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true }).safeParseAsync(user);
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
+      }
+
+      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(200).json(userResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * updateMyProfile Method
+   *
+   * This method updates the profile of the logged-in user with the
+   * given fields and returns the updated profile.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   */
+  static async updateMyProfile(req, res) {
+    try {
+      const email = Authorize.getEmail(req);
+
+      const update = await SelfProfileUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
+      if (!update.success) {
+        throw new ErrorValidation("Update profile validation failed.");
+      }
+
+      const user = await UsersAccessor.updateUserByEmail(email, update.data).then((_) => _?.toObject());
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      if (user.approvingUser) {
+        user.approvingUser = user.approvingUser.toString();
+      }
+
+      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -235,8 +292,8 @@ export default class UserController {
         // thrown due to null response from getUserByEmail when using .toObject() on null.
         throw new ErrorUserNotFound();
       }
-      
-      const userResponse = await UserPublicResponse.safeParseAsync(user);
+
+      const userResponse = await UserPublicResponse.omit({ id: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed.");
       }
@@ -382,5 +439,70 @@ export default class UserController {
   static logout(req, res) {
     res.clearCookie("token");
     res.status(200).json({ message: "Successfully logged out." });
+  }
+
+  /**
+   * Verifies the OTP
+   *
+   * @param {HTTP REQ} req
+   * @param {HTTP RES} res
+   */
+  static async verifyOTPLink(req, res) {
+    try {
+      const { token } = req.query;
+      if (!token) {
+        throw new ErrorFailedLogin();
+      }
+
+      const { success, email } = await OTPAccessor.verifyOTPRecord(token);
+
+      if (!success) {
+        throw new ErrorFailedLogin();
+      }
+
+      const user = await UsersAccessor.getUserByEmail(email);
+
+      if (!user) {
+        throw new ErrorFailedLogin();
+      }
+
+      res.cookie(...LoginToken.generate(user));
+      res.status(200).json({ message: "Login successful." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * Gets a basic list of all users
+   * name (full)
+   * email
+   *
+   * Used for dropdowns etc in FE
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getBasicUserList(req, res) {
+    try {
+      const users = await UsersAccessor.getUserByRole(Accounts.Author.role);
+      const basicUsers = users.map((user) => {
+        return {
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+        };
+      });
+      res.status(200).json(basicUsers);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 }

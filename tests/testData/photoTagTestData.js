@@ -1,4 +1,4 @@
-import { userResponseVianna } from "./userTestData.js"
+import { userResponseVianna } from "./userTestData.js";
 
 export const photoTagResponseNature = {
   tagName: "Nature",

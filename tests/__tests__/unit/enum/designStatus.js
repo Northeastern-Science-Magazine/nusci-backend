@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import DesignStatus from "../../../../app/models/enums/designStatus.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type DesignStatus", () => {
   test("toString Needs_Designer", () => {
     expect(DesignStatus.Needs_Designer.toString()).toStrictEqual("needs_designer");

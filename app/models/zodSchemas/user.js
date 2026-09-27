@@ -14,7 +14,7 @@ export const BaseUser = z.object({
   bannerImage: z.string().optional(),
   bio: z.string(),
   email: z.email(),
-  roles: z.array(z.enum(Accounts.listr())),
+  roles: z.string().array(Accounts.listr()),
   gameData: z.undefined().optional(),
   creationTime: z.date(),
   modificationTime: z.date(),
@@ -28,7 +28,7 @@ export const Login = z.object({
 export const UserCreate = BaseUser.extend({
   password: z.string(),
   phone: z.string().optional(),
-  status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending),
+  status: z.string(AccountStatus.listr()).default(AccountStatus.Pending),
   approvinguser: z.undefined().optional(),
 });
 
@@ -43,6 +43,25 @@ export const UserUpdate = BaseUser.extend({
   })
   .partial();
 
+// Fields a user is allowed to change about themselves. Excludes email, roles,
+// status, and approvingUser, which must never be self-editable.
+export const SelfProfileUpdate = BaseUser.pick({
+  firstName: true,
+  lastName: true,
+  pronouns: true,
+  graduationYear: true,
+  major: true,
+  location: true,
+  profileImage: true,
+  bannerImage: true,
+  bio: true,
+})
+  .extend({
+    phone: z.string(),
+    modificationTime: z.date().default(new Date()),
+  })
+  .partial();
+
 // approve and deny are supposed to be arrays of emails according to resolveUserApprovals docs, but tests only have usernames, so email-parsing is omitted
 export const UserApprovals = z.object({
   approve: z.array(z.string()).optional(),
@@ -53,16 +72,14 @@ export const UserDelete = z.object({
   email: z.email(),
 });
 
-
-// used to have id : /user/response
-export const UserPrivateResponse = z.object({
-  properties: BaseUser.extend({
-    password: z.string(),
-    phone: z.string().optional(),
-    status: z.enum(AccountStatus.listr()),
-    approvingUser: z.undefined().optional(),
-  }),
+export const UserPrivateResponse = BaseUser.extend({
+  id: z.literal("/user/response"),
+  password: z.string(),
+  phone: z.string().optional(),
+  status: z.enum(AccountStatus.listr()),
+  approvingUser: z.string().optional(),
 });
 
-// used to have id: /user/public/response
-export const UserPublicResponse = BaseUser;
+export const UserPublicResponse = BaseUser.extend({
+  id: z.literal("/user/public/response"),
+});
