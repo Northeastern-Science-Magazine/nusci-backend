@@ -6,8 +6,8 @@ export const IssueMap = z.object({
   issueNumber: z.number(),
   issueName: z.string(),
   sections: z
-    .array().default([]), // array of what
-  articles: z.array().optional(),
+    .array(z.any()).default([]), // array of what
+  articles: z.array(z.string()).optional(),
   pages: z.number(),
   creatingUser: z.string(), // will this ever map to something else like a fk
   creationTime: z.date().default(new Date()),
@@ -21,12 +21,12 @@ export const IssueMapResponse = IssueMap.extend({
       sectionName: z.string(),
       color: z.string(),
       creatingUser: UserPublicResponse,
-      articles: z.array().default([]),
+      articles: z.array(z.string()).default([]),
       creationTime: z.date(),
       modificationTime: z.date(),
     })
   ),
-  articles: z.array().default([]),
+  articles: z.array(z.string()).default([]),
   creatingUser: UserPublicResponse,
   creationTime: z.date(),
   modificationTime: z.date(),

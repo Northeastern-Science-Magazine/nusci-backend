@@ -2,7 +2,8 @@ import Authorize from "../auth/authorization.js";
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import { ErrorArticleNotFound, ErrorTypeOfQuery, ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
-import { ArticleResponse, ArticleUpdate } from "../models/zodSchemas/article.js";
+import { ArticleResponse, ArticleSearchRequest, ArticleUpdate, ZodArticle } from "../models/zodSchemas/article.js";
+import { InternalComment } from "../models/zodSchemas/internalComment.js";
 import Utils from "./utils.js";
 
 /**
@@ -20,7 +21,7 @@ export default class ArticleController {
    */
   static async createArticle(req, res) {
     try {
-      const parsedArticle = await Article.safeParseAsync(req.body);
+      const parsedArticle = await ZodArticle.safeParseAsync(req.body);
       if (!parsedArticle.success) {
         throw new ErrorValidation(
           `Malformed article data on submission. Error: \n\n ${JSON.stringify(parsedArticle, null, 2)}`

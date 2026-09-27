@@ -7,14 +7,6 @@ import PhotographyStatus from "../enums/photographyStatus.js";
 import ArticleStatus from "../enums/articleStatus.js";
 import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
-import Category from "../enums/categories.js";
-import ArticleContent from "../enums/articleContent.js";
-import { UserPublicResponse } from "./user.js";
-import CommentStatus from "../enums/commentStatus.js";
-import PhotographyStatus from "../enums/photographyStatus.js";
-import ArticleStatus from "../enums/articleStatus.js";
-import WritingStatus from "../enums/writingStatus.js";
-import DesignStatus from "../enums/designStatus.js";
 
 // to remove ambiguity from dbmodel's Article
 export const ZodArticle = z.object({
@@ -113,7 +105,7 @@ export const ArticleCreate = z.object({
   designers: z.array(z.email()).default([]),
   photographers: z.array(z.email()).default([]),
   section: z.string().default(""),
-  categories: z.array(z.string(Category.listr())).default([]),
+  categories: z.array(z.enum(Category.listr())).default([]),
 });
 
 export const ArticleUpdate = ZodArticle.extend({

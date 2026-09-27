@@ -1,8 +1,8 @@
-import bcrypt from "bcrypt"; // import bcrypt to hash passwords
 import { config as dotenvConfig } from "dotenv";
-import jwt from "jsonwebtoken"; // import jwt to sign tokens
 import * as z from "zod";
 import Authorize from "../auth/authorization.js";
+import Password from "../auth/password.js";
+import LoginToken from "../auth/token.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import { Login, UserApprovals, UserCreate, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
@@ -42,7 +42,7 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req.body)) {
+      if (!Login.safeParse(req.body).success) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
@@ -116,7 +116,7 @@ export default class UserController {
        * @TODO Password hashing should actually be deferred to FE. It is
        * generally unsafe to send unhashed passwords over HTTP
        */
-      req.body.password = await Password.hash(req.boday.password, 10);
+      userCreate.data.password = await Password.hash(req.body.password, 10);
       const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
 
       if (userByEmail) {

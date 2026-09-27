@@ -1,6 +1,6 @@
 import * as z from "zod";
-import { UserPublicResponse } from "./user";
-import { PhotoTagResponse } from "./photoTag";
+import { UserPublicResponse } from "./user.js";
+import { PhotoTagResponse } from "./photoTag.js";
 
 export const Photo = z.object({
     url: z.string(),
@@ -18,8 +18,8 @@ export const PhotoResponse = Photo.extend({
 });
 
 export const PhotoUpdate = z.object({
-    tags: z.string(),
-    photographers: z.string(),
+    tags: z.array(z.string()),
+    photographers: z.array(z.string()),
     photoTime: z.date(),
     rights: z.string(),
     modificationTime: z.date().default(new Date())

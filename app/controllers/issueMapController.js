@@ -40,9 +40,9 @@ export default class IssueMapController {
         throw new ErrorInvalidRequestBody("Incoming article request validation failed.");
       }
 
-      const existingArticle = await ArticlesAccessor.getArticleBySlug(req.body.slug);
+      const existingArticle = await ArticlesAccessor.getArticleBySlug(article.data.articleSlug);
       if (existingArticle) {
-        throw new ErrorInvalidRequestBody(`An article with slug ${slug} already exists.`);
+        throw new ErrorInvalidRequestBody(`An article with slug ${article.data.articleSlug} already exists.`);
       }
 
       const {

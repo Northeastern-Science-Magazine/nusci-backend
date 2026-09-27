@@ -14,7 +14,7 @@ export const BaseUser = z.object({
   bannerImage: z.string().optional(),
   bio: z.string(),
   email: z.email(),
-  roles: z.string().array(Accounts.listr()),
+  roles: z.array(z.enum(Accounts.listr())),
   gameData: z.undefined().optional(),
   creationTime: z.date(),
   modificationTime: z.date(),
@@ -28,7 +28,7 @@ export const Login = z.object({
 export const UserCreate = BaseUser.extend({
   password: z.string(),
   phone: z.string().optional(),
-  status: z.string(AccountStatus.listr()).default(AccountStatus.Pending),
+  status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending),
   approvinguser: z.undefined().optional(),
 });
 
@@ -58,7 +58,7 @@ export const UserDelete = z.object({
 export const UserPrivateResponse = z.object({
   properties: BaseUser.extend({
     password: z.string(),
-    phone: z.string().optional,
+    phone: z.string().optional(),
     status: z.enum(AccountStatus.listr()),
     approvingUser: z.undefined().optional(),
   }),
