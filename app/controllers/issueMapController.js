@@ -1,21 +1,18 @@
-import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import {
   ErrorInvalidRequestBody,
-  ErrorIssueMapNotFound,
-  ErrorSectionNotFound,
   ErrorUnexpected,
-  ErrorValidation,
   HttpError,
+  ErrorSectionNotFound,
+  ErrorIssueMapNotFound,
 } from "../error/errors.js";
-import Article from "../models/dbModels/article.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import DesignStatus from "../models/enums/designStatus.js";
 import PhotographyStatus from "../models/enums/photographyStatus.js";
 import WritingStatus from "../models/enums/writingStatus.js";
-import { ArticleCreate } from "../models/zodSchemas/article.js";
-import { IssueMapResponse } from "../models/zodSchemas/issueMap.js";
+import Article from "../models/dbModels/article.js";
+import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import UsersAccessor from "../databaseAccessors/userAccessor.js";
 
 /**
  * IssueMapController Class
@@ -35,27 +32,22 @@ export default class IssueMapController {
    */
   static async addAndCreateArticle(req, res) {
     try {
-      const article = await ArticleCreate.safeParseAsync(req.body);
-      if (!article.success) {
-        throw new ErrorInvalidRequestBody("Incoming article request validation failed.");
-      }
-
-      const existingArticle = await ArticlesAccessor.getArticleBySlug(article.data.articleSlug);
-      if (existingArticle) {
-        throw new ErrorInvalidRequestBody(`An article with slug ${article.data.articleSlug} already exists.`);
-      }
-
       const {
         articleSlug,
         issueNumber,
         pageLength,
-        authors,
-        editors,
-        designers,
-        photographers,
-        section,
-        categories,
-      } = article.data;
+        authors = [],
+        editors = [],
+        designers = [],
+        photographers = [],
+        section = "",
+        categories = [],
+      } = req.body;
+
+      const existingArticle = await ArticlesAccessor.getArticleBySlug(articleSlug);
+      if (issueNumber < 0 || !articleSlug || pageLength < 0 || existingArticle) {
+        throw new ErrorInvalidRequestBody();
+      }
 
       const articleStatus = ArticleStatus.Print;
       const designStatus = designers.length > 0 ? DesignStatus.Has_Designer : DesignStatus.Needs_Designer;
@@ -76,8 +68,6 @@ export default class IssueMapController {
       const designerUsers = await fetchUsers(designers, "designers");
       const photographerUsers = await fetchUsers(photographers, "photographers");
 
-
-      // article creation object to be sent directly to database
       const newArticle = {
         title: articleSlug,
         slug: articleSlug,
@@ -118,12 +108,10 @@ export default class IssueMapController {
         issueMap.articles.push(createdArticle._id);
       }
 
-      // issuemap return is insane
       issueMap.modificationTime = new Date();
       await issueMap.save();
 
-      
-      return res.status(200).json(issueMap.toJSON());
+      return res.status(200).json(issueMap);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -151,7 +139,6 @@ export default class IssueMapController {
       }
 
       const updatedIssue = await IssueMapAccessor.removeArticleFromIssue(issueNumber, articleSlug);
-
       res.status(200).json(updatedIssue);
     } catch (e) {
       if (e instanceof HttpError) {
