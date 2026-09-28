@@ -13,6 +13,7 @@ const config = {
   },
   moduleNameMapper: {
     "^../db/connection.js$": "<rootDir>/tests/util/mockConnection.js",
+    "^resend$": "<rootDir>/tests/util/mockResend.js",
   },
   rootDir: "./",
 };
