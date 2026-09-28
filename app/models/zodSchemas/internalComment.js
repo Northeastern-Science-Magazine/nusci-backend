@@ -8,3 +8,7 @@ export const InternalComment = z.object({
     creationTime: z.date().default(new Date()),
     modificationTime: z.date().default(new Date())
 })
+
+export const InternalCommentResolve = z.object({
+    commentId: z.string()
+})
