@@ -7,6 +7,7 @@ import { ErrorValidation } from "../../error/errors.js";
  * and provides static utility functions that API Models should have.
  *
  */
+
 export class BaseModel {
   constructor(json, schema) {
     this.validate(json, schema);
@@ -131,7 +132,6 @@ export class BaseModel {
     }
   }
 }
-
 
 export class BaseModelUpdate extends BaseModel {
   constructor(json, schema) {

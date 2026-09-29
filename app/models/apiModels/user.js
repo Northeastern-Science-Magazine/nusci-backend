@@ -110,6 +110,7 @@ export class UserUpdate extends BaseModelUpdate {
     approvingUser: { type: string },
     gameData: { type: empty },
     modificationTime: { type: date, default: now, override: true },
+    otpToken: { type: String, required: false },
   };
 
   constructor(json) {

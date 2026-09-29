@@ -125,12 +125,13 @@ export default class UsersAccessor {
     return user;
   }
 
-  static async getUsersByEmail(emails) {
+  static async getUsersByEmails(emails) {
     await Connection.open();
+    console.log(emails);
     const users = await User.find({ email: { $in: emails } });
     return users;
   }
-  
+
   /**
    * getUserByRole Method
    *
@@ -144,7 +145,7 @@ export default class UsersAccessor {
    */
   static async getUserByRole(role) {
     await Connection.open();
-    const users = await User.find({ roles: { $in: [role] } });
+    const users = await User.find({ roles: role });
     return users;
   }
 
@@ -246,6 +247,22 @@ export default class UsersAccessor {
     const newUser = new User(user);
     await newUser.save();
     return newUser;
+  }
+
+  /**
+   * updateUserByEmail Method
+   *
+   * This method retrieves the user MongoDB object from the
+   * database based on a given email and applies the given updates.
+   *
+   * @param {String} email
+   * @param {Object} updates
+   * @returns the updated user object.
+   */
+  static async updateUserByEmail(email, updates) {
+    await Connection.open();
+    const user = await User.findOneAndUpdate({ email: email }, updates, { new: true });
+    return user;
   }
 }
 

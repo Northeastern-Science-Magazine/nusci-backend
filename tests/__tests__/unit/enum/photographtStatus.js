@@ -2,7 +2,6 @@ import { log } from "../../../testConfig.js";
 import PhotographyStatus from "../../../../app/models/enums/photographyStatus.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
-
 describe("Tests for enumerated type PhotographyStatus", () => {
   test("toString No_Photo", () => {
     expect(PhotographyStatus.No_Photo.toString()).toStrictEqual("no_photo");
