@@ -289,16 +289,15 @@ export default class ArticleController {
         searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      /** Validation will need to remove pw and sensitive profile info... later I guess */
-      // const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
-      // console.log(validateArticleResponse);
-      // if (!validateArticleResponse.success) {
-      //   throw new ErrorValidation("Search response validation failed");
-      // }
+      // Strip sensitive fields (e.g. password) from results before sending
+      const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
+      if (!validateArticleResponse.success) {
+        throw new ErrorValidation("Search response validation failed");
+      }
 
       // Return results with total count for pagination
       res.status(200).json({
-        results: searchResult.results,
+        results: validateArticleResponse.data,
         total: searchResult.total,
       });
     } catch (e) {
