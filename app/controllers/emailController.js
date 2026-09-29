@@ -9,6 +9,7 @@ import {
 } from "../models/zodSchemas/email.js";
 import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import EmailType from "../models/enums/emailType.js";
+import { ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
 
 export default class EmailController {
   /**
@@ -17,21 +18,26 @@ export default class EmailController {
    * @param {Response} res
    */
   static async sendEmail(req, res) {
-    // Validate incoming
-    const parsedEmail = EmailController.validateEmailRequestData(req.body);
+    try {
+      // Validate incoming
+      const parsedEmail = EmailController.validateEmailRequestData(req.body);
 
-    console.log(parsedEmail);
+      // Format email according to its type
+      const email = await EmailController.generateEmailVariables(parsedEmail);
 
-    // Format email according to its type
-    const email = await EmailController.generateEmailVariables(parsedEmail);
+      // insert record into db
+      await EmailAccessor.createEmail(email);
 
-    // insert record into db
-    await EmailAccessor.createEmail(email);
-
-    // send email using Resend API
-    const response = await ResendEmail.sendEmailWithTemplate(email);
-    res.json(response);
-    res.status(200);
+      // send email using Resend API
+      const response = await ResendEmail.sendEmailWithTemplate(email);
+      res.status(200).json(response);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 
   /**
