@@ -2,16 +2,16 @@ import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
-import * as z from "zod";
 import {
   Login,
   UserCreate,
+  UserInvite,
+  UserSignup,
   SelfProfileUpdate,
   UserApprovals,
   UserPrivateResponse,
   UserPublicResponse,
 } from "../models/zodSchemas/user.js";
-import crypto from "crypto";
 import {
   ErrorFailedLogin,
   ErrorNotLoggedIn,
@@ -24,13 +24,14 @@ import {
   ErrorUserPendingLogin,
   ErrorUserStatusAlreadyResolved,
   ErrorValidation,
-  ErrorEmailNotFound,
+  ErrorInvalidInvite,
   HttpError,
 } from "../error/errors.js";
 import LoginToken from "../auth/token.js";
 import Password from "../auth/password.js";
-import User from "../models/dbModels/user.js";
 import OTPAccessor from "../databaseAccessors/otpAccessor.js";
+import EmailAccessor from "../databaseAccessors/emailAccessor.js";
+import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import Accounts from "../models/enums/accounts.js";
 
 /**
@@ -57,7 +58,8 @@ export default class UserController {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
-      if (req.cookies.token) {
+      // Only a valid token counts; an invalid cookie is overwritten by the new one.
+      if (Authorize.isLoggedIn(req)) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();
       }
@@ -104,42 +106,151 @@ export default class UserController {
   }
 
   /**
-   * apiPostSignUp Method
+   * sendInvites Method
    *
-   * This method adds a new user to the unregistered user
-   * collection in the user database. It accomplishes this
-   * by calling the user.accessor.js file and creating a new
-   * user with the existing req data.
+   * This method sends a single-use signup invite to each given
+   * email that does not already have an account.
    *
-   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP REQ} req web request object, contains the emails and roles to invite
+   * @param {HTTP RES} res web response object
+   */
+  static async sendInvites(req, res) {
+    try {
+      const invite = UserInvite.safeParse(req.body);
+      if (!invite.success) {
+        throw new ErrorValidation("Invite validation failed.");
+      }
+
+      const inviter = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      const invited = [];
+      const skipped = [];
+      const failed = [];
+
+      // Set removes duplicates so one request never sends someone two invites.
+      for (const email of new Set(invite.data.to)) {
+        try {
+          if (await UsersAccessor.getUserByEmail(email)) {
+            skipped.push(email);
+            continue;
+          }
+
+          const inviteEmail = await GenerateEmail.InviteUser({
+            to: [email],
+            roles: invite.data.roles,
+            invitedBy: inviter._id,
+          });
+          await ResendEmail.sendEmailWithTemplate(inviteEmail);
+          // The url holds the raw token, so it is left out of the stored record.
+          await EmailAccessor.createEmail({ ...inviteEmail, variables: {} });
+          invited.push(email);
+        } catch (e) {
+          // One failed address does not stop the rest of the list.
+          failed.push(email);
+        }
+      }
+
+      res.status(200).json({ invited: invited, skipped: skipped, failed: failed });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * getInvite Method
+   *
+   * This method returns the email an invite belongs to, so the
+   * signup page can show it. It does not use up the invite.
+   *
+   * @param {HTTP REQ} req web request object, contains the token query
+   * @param {HTTP RES} res web response object
+   */
+  static async getInvite(req, res) {
+    try {
+      const { token } = req.query;
+      // ?token=a&token=b arrives as an array, which cannot be hashed.
+      if (typeof token !== "string") {
+        throw new ErrorInvalidInvite();
+      }
+
+      const otpRecord = await OTPAccessor.findValidOTP(token, "invite");
+      if (!otpRecord) {
+        throw new ErrorInvalidInvite();
+      }
+
+      res.status(200).json({ email: otpRecord.email });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * signup Method
+   *
+   * This method creates an approved account from an invite and
+   * logs the new user in.
+   *
+   * @param {HTTP REQ} req web request object, contains the token, password, and name fields
    * @param {HTTP RES} res web response object
    */
   static async signup(req, res) {
     try {
-      let user = { ...req.body, creationTime: new Date(), modificationTime: new Date() };
-      const userCreate = await UserCreate.safeParseAsync(user);
-      if (!userCreate.success) {
+      const signup = UserSignup.safeParse(req.body);
+      if (!signup.success) {
         throw new ErrorValidation("Signup validation failed.");
       }
 
-      // hash the password
-      /**
-       * @TODO Password hashing should actually be deferred to FE. It is
-       * generally unsafe to send unhashed passwords over HTTP
-       */
-      req.body.password = await Password.hash(req.boday.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
+      // Only a valid token counts; an invalid cookie is overwritten by the new one.
+      if (Authorize.isLoggedIn(req)) {
+        throw new ErrorUserAlreadyLoggedIn();
+      }
 
-      if (userByEmail) {
+      const { token, password, firstName, lastName, graduationYear } = signup.data;
+      const invite = await OTPAccessor.verifyOTPRecord(token, "invite");
+      if (!invite.success) {
+        throw new ErrorInvalidInvite();
+      }
+
+      // The invite stays used here, since this email can no longer sign up anyway.
+      if (await UsersAccessor.getUserByEmail(invite.email)) {
         throw new ErrorUserAlreadyExists();
       }
 
-      await UsersAccessor.createUser(userCreate.data);
+      let user;
+      try {
+        const userCreate = UserCreate.safeParse({
+          firstName: firstName,
+          lastName: lastName,
+          graduationYear: graduationYear,
+          // Email, roles, and approver come from the invite, never the request body.
+          email: invite.email,
+          roles: [...invite.roles],
+          status: AccountStatus.Approved.toString(),
+          approvingUser: invite.invitedBy?.toString(),
+          password: await Password.hash(password, 10),
+          creationTime: new Date(),
+          modificationTime: new Date(),
+        });
+        if (!userCreate.success) {
+          throw new ErrorUnexpected("Invite produced an invalid user.");
+        }
+        user = await UsersAccessor.createUser(userCreate.data);
+      } catch (e) {
+        // Server-side failure, so give the invite back for a retry.
+        await OTPAccessor.releaseOTPRecord(token);
+        throw e;
+      }
+
+      res.cookie(...LoginToken.generate(user));
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        throw new ErrorValidation("Signup request validation failed.");
-      }
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -300,7 +411,6 @@ export default class UserController {
 
       res.status(200).json(userResponse.data);
     } catch (e) {
-      console.log(e.message);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -454,7 +564,7 @@ export default class UserController {
         throw new ErrorFailedLogin();
       }
 
-      const { success, email } = await OTPAccessor.verifyOTPRecord(token);
+      const { success, email } = await OTPAccessor.verifyOTPRecord(token, "login");
 
       if (!success) {
         throw new ErrorFailedLogin();

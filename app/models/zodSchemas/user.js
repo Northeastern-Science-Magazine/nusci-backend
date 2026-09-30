@@ -1,7 +1,6 @@
 import * as z from "zod";
 import Accounts from "../enums/accounts.js";
 import AccountStatus from "../enums/accountStatus.js";
-import { ErrorValidation } from "../../error/errors.js";
 
 export const BaseUser = z.object({
   firstName: z.string(),
@@ -26,10 +25,32 @@ export const Login = z.object({
 });
 
 export const UserCreate = BaseUser.extend({
+  bio: z.string().optional(),
   password: z.string(),
   phone: z.string().optional(),
-  status: z.string(AccountStatus.listr()).default(AccountStatus.Pending),
-  approvinguser: z.undefined().optional(),
+  // Defaults to "pending" (awaiting admin approval); invite signup passes "approved".
+  // Default must be the string, not the enum object, or Mongoose's enum check rejects it.
+  status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending.toString()),
+  // The inviting admin's user id, set on invite signup.
+  approvingUser: z.string().optional(),
+});
+
+// Roles an admin may assign. "none" is excluded because it means no role at all.
+const InviteRoles = Accounts.listr().filter((role) => role !== Accounts.None.toString());
+
+export const UserInvite = z.object({
+  to: z.array(z.email()).min(1),
+  roles: z.array(z.enum(InviteRoles)).min(1),
+});
+
+// Email, roles, and status come from the invite. Zod strips unknown keys,
+// so sending them in the body has no effect.
+export const UserSignup = z.object({
+  token: z.string().min(1),
+  password: z.string().min(8),
+  firstName: z.string(),
+  lastName: z.string(),
+  graduationYear: z.number(),
 });
 
 export const UserUpdate = BaseUser.extend({

@@ -8,7 +8,7 @@ export default class Password {
    * @returns hashed password
    */
   static async hash(password, salt) {
-    return await bcrypt(password, salt);
+    return await bcrypt.hash(password, salt);
   }
 
   /**

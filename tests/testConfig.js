@@ -13,9 +13,15 @@ export const log = {
     },
     user: {
       getEmail: false,
+      getInvite: false,
+      postInvite: false,
       postLogin: false,
+      postOTP: false,
       postSignup: false,
       putResolveUser: false,
+    },
+    email: {
+      postSendEmail: false,
     },
     article: {},
     issueMap: {

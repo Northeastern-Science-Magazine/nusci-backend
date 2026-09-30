@@ -6,6 +6,7 @@ import EmailController from "../controllers/emailController.js";
 /* Email service routing */
 const email = express.Router();
 
-email.route("/send").post(EmailController.sendEmail);
+// Admin-only so outside users can't send email from the NU Sci domain.
+email.route("/send").post(Authorize.allow([Accounts.Admin]), EmailController.sendEmail);
 
 export default email;

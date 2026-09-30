@@ -32,4 +32,31 @@ describe("Send Email Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
   });
+
+  test("should not send email when not logged in", async () => {
+    const response = await request(app).post(`/email/send`).send(testReminderEmail);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(403);
+  });
+
+  test("should not send email as an editor", async () => {
+    const response = await request(app)
+      .post(`/email/send`)
+      .set("Cookie", [`token=${tokens["noah@noah.com"]}`])
+      .send(testReminderEmail);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(403);
+  });
+
+  test("should not send invites through the email route", async () => {
+    const response = await request(app)
+      .post(`/email/send`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send({ type: "invite_user", to: ["invitee@northeastern.edu"], inviteUrl: "https://example.com" });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+  });
 });
