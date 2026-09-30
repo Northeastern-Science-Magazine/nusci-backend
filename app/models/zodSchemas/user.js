@@ -11,7 +11,8 @@ export const BaseUser = z.object({
   location: z.string().optional(),
   profileImage: z.string().optional(),
   bannerImage: z.string().optional(),
-  bio: z.string(),
+  // Optional because invited users sign up without one and add it later.
+  bio: z.string().optional(),
   email: z.email(),
   roles: z.string().array(Accounts.listr()),
   gameData: z.undefined().optional(),
@@ -25,7 +26,6 @@ export const Login = z.object({
 });
 
 export const UserCreate = BaseUser.extend({
-  bio: z.string().optional(),
   password: z.string(),
   phone: z.string().optional(),
   // Defaults to "pending" (awaiting admin approval); invite signup passes "approved".
