@@ -26,6 +26,9 @@ jobs:
           MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
           MONGODB_CONNECTION_STRING=${{ vars.MONGODB_CONNECTION_STRING }}
           MONGODB_TEST_CONNECTION_STRING=${{ vars.MONGODB_TEST_CONNECTION_STRING }}
+          AWS_REGION=us-east-1
+          S3_BUCKET_NAME=nusci-media
+          S3_KEY_PREFIX=dev
           EOF
 
       # Step 3: Build and Start Docker Compose with secrets as environment variables

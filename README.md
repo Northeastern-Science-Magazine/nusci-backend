@@ -188,6 +188,20 @@ npm -v
 ### 2. Open the Project in Visual Studio Code
 - Open the project directory in Visual Studio Code by either clicking "Open in Visual Studio Code" on Github Desktop, or launching Visual Studio Code, clicking "Open Folder", and navigating to the directory in which you cloned the project.
 - Add the ```.env``` file to the root directory. This will define our important secret keys we use for authentication, and initialization of the project.
+- Media uploads (magazine archive, images) go to the `nusci-media` S3 bucket and need these in your ```.env```:
+```properties
+AWS_REGION=us-east-1
+S3_BUCKET_NAME=nusci-media
+S3_KEY_PREFIX=dev # prod uses "prod" - keep local uploads out of prod/
+AWS_PROFILE=<your nusci AWS profile> # or AWS_ACCESS_KEY_ID + AWS_SECRET_ACCESS_KEY
+```
+  Prod uses the App Runner instance role, so local dev needs its own scoped credentials. Ask the heads of software & web for them. Tests don't need real credentials.
+- To test uploads without AWS credentials, run a local S3 stand-in alongside the usual containers. It needs the `AWS_REGION`, `S3_BUCKET_NAME` and `S3_KEY_PREFIX` lines above, but not `AWS_PROFILE`:
+```bash
+docker compose -f docker-compose.yaml -f docker-compose.s3.yaml up -d
+npm run s3-local # once: creates the bucket (versioning + CORS) and placeholder files for seeded issues
+```
+  Files are viewable in its console at http://localhost:9001 (`nusci-local` / `nusci-local-secret`).
 
 ### 3. Run the Initialization Commands
 - Open the terminal in VS Code and ensure that your current directory is the root of the project.
