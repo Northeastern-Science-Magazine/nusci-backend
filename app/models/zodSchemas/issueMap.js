@@ -7,7 +7,7 @@ export const IssueMap = z.object({
   issueName: z.string(),
   sections: z
     .array(z.any()).default([]), // array of what
-  articles: z.array(z.string()).optional(),
+  articles: z.array(z.string()).nullish(),
   pages: z.number(),
   creatingUser: z.string(), // will this ever map to something else like a fk
   creationTime: z.date().default(new Date()),

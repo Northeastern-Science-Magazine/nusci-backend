@@ -4,9 +4,9 @@ import { PhotoTagResponse } from "./photoTag.js";
 
 export const Photo = z.object({
     url: z.string(),
-    tags: z.array(z.string()).optional(),
-    photographers: z.array(z.string()).optional(),
-    photoTime: z.date().default(new Date()).optional(),
+    tags: z.array(z.string()).nullish(),
+    photographers: z.array(z.string()).nullish(),
+    photoTime: z.date().default(new Date()).nullish(),
     rights: z.string().default(""),
     creationTime: z.date().default(new Date()),
     modificationTime : z.date().default(new Date())
