@@ -29,7 +29,7 @@ import { IssueMapCreate, IssueMapUpdate } from "../models/zodSchemas/issueMap.js
 
 export default class IssueMapController {
   /**
-   * method to create a new, empty issue map.
+   * method to create a new issue map, optionally with sections.
    *
    * The creating user is taken from the logged in user's token.
    *
@@ -41,11 +41,11 @@ export default class IssueMapController {
       const parsedIssue = await IssueMapCreate.safeParseAsync(req.body);
       if (!parsedIssue.success) {
         throw new ErrorValidation(
-          "Issue number must be a positive whole number, issue name is required, and pages must be a non-negative whole number."
+          "Issue number must be a positive whole number, issue name is required, pages must be a non-negative whole number, and each section needs a unique name and a color."
         );
       }
 
-      const { issueNumber, issueName, pages } = parsedIssue.data;
+      const { issueNumber, issueName, pages, sections } = parsedIssue.data;
 
       if (await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber)) {
         throw new ErrorDuplicateKey(`Issue #${issueNumber} already exists.`);
@@ -64,14 +64,21 @@ export default class IssueMapController {
         issueNumber,
         issueName,
         pages,
-        sections: [],
+        sections: sections.map(({ sectionName, sectionColor }) => ({
+          sectionName,
+          color: sectionColor,
+          creatingUser: creatingUser._id,
+          articles: [],
+          creationTime: now,
+          modificationTime: now,
+        })),
         articles: [],
         creatingUser: creatingUser._id,
         creationTime: now,
         modificationTime: now,
       });
 
-      res.status(201).json(IssueMapController.toSummary(newIssue));
+      res.status(201).json(newIssue);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

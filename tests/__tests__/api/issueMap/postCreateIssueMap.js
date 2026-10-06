@@ -35,6 +35,34 @@ describe("Create issue map", () => {
     expect(response.body.creationTime).toBeDefined();
   });
 
+  test("Admin creates an issue with multiple sections", async () => {
+    const response = await createIssue({
+      ...validIssue,
+      sections: [
+        { sectionName: "Features", sectionColor: "#FF5733" },
+        { sectionName: "Opinion", sectionColor: "#3366FF" },
+      ],
+    });
+    showLog && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body.sections.map(({ sectionName, color }) => ({ sectionName, color }))).toStrictEqual([
+      { sectionName: "Features", color: "#FF5733" },
+      { sectionName: "Opinion", color: "#3366FF" },
+    ]);
+    response.body.sections.forEach((section) => {
+      expect(section.creatingUser).toBe("b00000000000000000000000");
+      expect(section.articles).toStrictEqual([]);
+      expect(section.creationTime).toBeDefined();
+    });
+  });
+
+  test("Different issues can reuse the same section name", async () => {
+    const sections = [{ sectionName: "Event Planning", sectionColor: "#33FF66" }];
+    const response = await createIssue({ ...validIssue, sections });
+    showLog && console.log(response.body);
+    expect(response.status).toBe(201);
+  });
+
   test("Multiple empty issues can be created", async () => {
     const first = await createIssue(validIssue);
     const second = await createIssue({ issueNumber: 4, issueName: "Fall 2027", pages: 0 });
@@ -58,6 +86,10 @@ describe("Create issue map", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(409);
     expect(response.body.message).toBe("Issue #1 already exists.");
+    const list = await request(app)
+      .get("/issue-map/all")
+      .set("Cookie", [`token=${adminToken}`]);
+    expect(list.body.map((issue) => issue.issueName)).not.toContain("Something New");
   });
 
   test("Duplicate issue name is rejected", async () => {
@@ -65,6 +97,10 @@ describe("Create issue map", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(409);
     expect(response.body.message).toBe('An issue named "Club Holiday Party" already exists.');
+    const list = await request(app)
+      .get("/issue-map/all")
+      .set("Cookie", [`token=${adminToken}`]);
+    expect(list.body.map((issue) => issue.issueNumber)).not.toContain(10);
   });
 
   test.each([
@@ -73,6 +109,15 @@ describe("Create issue map", () => {
     { issueNumber: 5, issueName: "   ", pages: 10 },
     { issueNumber: 5, issueName: "Negative Pages", pages: -1 },
     { issueName: "Missing Number", pages: 10 },
+    { ...validIssue, sections: [{ sectionName: "Features" }] },
+    { ...validIssue, sections: [{ sectionName: " ", sectionColor: "#FFFFFF" }] },
+    {
+      ...validIssue,
+      sections: [
+        { sectionName: "Features", sectionColor: "#FF5733" },
+        { sectionName: "Features", sectionColor: "#3366FF" },
+      ],
+    },
   ])("Invalid body is rejected: %o", async (body) => {
     const response = await createIssue(body);
     showLog && console.log(response.body);
