@@ -22,6 +22,53 @@ export default class IssueMapAccessor {
   }
 
   /**
+   * Create an issue
+   *
+   * @param {Object} issue - The issue to create
+   * @returns the created issue
+   */
+  static async createIssue(issue) {
+    await Connection.open();
+    const newIssue = await IssueMap.create(issue);
+    return newIssue;
+  }
+
+  /**
+   * Update an issue's fields. If the issue number changes, articles
+   * pointing at the old number are moved to the new one.
+   *
+   * @param {Number} issueNumber - The issue number to update
+   * @param {Object} updates - The fields to update
+   * @returns the updated issue
+   */
+  static async updateIssue(issueNumber, updates) {
+    await Connection.open();
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { issueNumber },
+      { ...updates, modificationTime: new Date() },
+      { new: true, runValidators: true }
+    );
+
+    if (updatedIssue && updates.issueNumber !== undefined && updates.issueNumber !== issueNumber) {
+      await Article.updateMany({ issueNumber }, { issueNumber: updates.issueNumber });
+    }
+
+    return updatedIssue;
+  }
+
+  /**
+   * Delete an issue
+   *
+   * @param {Number} issueNumber - The issue number to delete
+   * @returns the deleted issue
+   */
+  static async deleteIssue(issueNumber) {
+    await Connection.open();
+    const deletedIssue = await IssueMap.findOneAndDelete({ issueNumber });
+    return deletedIssue;
+  }
+
+  /**
    * Find issue by its ID
    *
    * @param {ObjectID} issueID - The ID of the issue
