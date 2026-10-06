@@ -21,6 +21,9 @@ export const log = {
     issueMap: {
       patchRemoveArticle: false,
       patchCreateAddArticleToMap: false,
+      postCreateIssueMap: false,
+      patchUpdateIssueMap: false,
+      deleteIssueMap: false,
     },
     photo: {},
     photoTag: {

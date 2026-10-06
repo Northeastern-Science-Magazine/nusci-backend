@@ -18,7 +18,8 @@
     "test": "jest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "migration-04032026-1": "node migrations/04032026-1.js"
+    "migration-04032026-1": "node migrations/04032026-1.js",
+    "migration-10052026-1": "node migrations/10052026-1.js"
   },
   "repository": {
     "type": "git",
