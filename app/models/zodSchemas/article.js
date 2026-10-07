@@ -43,8 +43,8 @@ export const Article = z.object({
         user: UserRefOrPublicResponse.nullish(),
         comment: z.string(),
         commentStatus: z.enum(CommentStatus.listr()),
-        creationTime: z.date(),
-        modificationTime: z.date(),
+        creationTime: z.coerce.date(),
+        modificationTime: z.coerce.date(),
       })
       .default([])
   ),
@@ -64,9 +64,9 @@ export const ArticleResponse = Article.extend({
   designers: z.array(UserRefOrPublicResponse).nullish(),
   photographers: z.array(UserRefOrPublicResponse).nullish(),
   approvingUser: UserRefOrPublicResponse.nullish(),
-  approvalTime: z.date().nullish(),
-  creationTime: z.date(),
-  modificationTime: z.date(),
+  approvalTime: z.coerce.date().nullish(),
+  creationTime: z.coerce.date(),
+  modificationTime: z.coerce.date(),
 });
 
 export const ArticlePublicResponse = Article.extend({

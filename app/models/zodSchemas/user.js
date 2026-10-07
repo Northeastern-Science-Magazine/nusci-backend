@@ -6,18 +6,17 @@ import { ErrorValidation } from "../../error/errors.js";
 export const BaseUser = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  pronouns: z.array(z.string()).default([]),
+  pronouns: z.array(z.string()).nullish().default([]),
   graduationYear: z.number(),
   major: z.string().nullish(),
   location: z.string().nullish(),
   profileImage: z.string().nullish(),
   bannerImage: z.string().nullish(),
-  bio: z.string(),
+  bio: z.string().nullish(),
   email: z.email(),
   roles: z.array(z.enum(Accounts.listr())),
-  gameData: z.undefined().nullish(),
-  creationTime: z.date(),
-  modificationTime: z.date(),
+  creationTime: z.coerce.date(),
+  modificationTime: z.coerce.date(),
 });
 
 export const Login = z.object({
