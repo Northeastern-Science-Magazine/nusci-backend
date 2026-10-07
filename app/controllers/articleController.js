@@ -4,6 +4,9 @@ import Authorize from "../auth/authorization.js";
 import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
 import {
   ArticleUpdate,
+  ArticleTitleUpdate,
+  ArticleContentUpdate,
+  ArticleAuthorsUpdate,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
@@ -144,13 +147,13 @@ export default class ArticleController {
     try {
       const { slug } = req.params;
 
-      // const updates = new ArticleUpdate(req.body);
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
+      const updates = await ArticleAuthorsUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
 
       if (!updates.success) {
-        throw new ErrorValidation("Validation failed.");
+        throw new ErrorValidation("Incoming update validation failed");
       }
 
+      // converts the given author emails into user IDs
       const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
       updates.data.authors = authorIds;
       const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
@@ -159,11 +162,96 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      // Validate and construct an ArticleResponse instance
-      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
-      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      res.status(200).json(updatedArticleResponse);
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * updateTitle method
+   *
+   * Handles the request to update the title of an article.
+   * The slug is intentionally left unchanged so that
+   * existing links to the article do not break.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async updateTitle(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const updates = await ArticleTitleUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
+
+      if (!updates.success) {
+        throw new ErrorValidation("Incoming update validation failed");
+      }
+
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
+
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * updateArticleContent method
+   *
+   * Handles the request to update the content of an article.
+   * The given content replaces the existing content in full.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async updateArticleContent(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const updates = await ArticleContentUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
+
+      if (!updates.success) {
+        throw new ErrorValidation("Incoming update validation failed");
+      }
+
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
+
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);

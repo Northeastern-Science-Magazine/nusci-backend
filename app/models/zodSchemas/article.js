@@ -8,23 +8,22 @@ import ArticleStatus from "../enums/articleStatus.js";
 import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
 
+const ArticleBody = z.array(
+  z.array(
+    z.object({
+      contentType: z.enum(ArticleContent.listr()),
+      content: z.string(),
+      href: z.string().optional(),
+    })
+  )
+);
+
 export const Article = z.object({
   title: z.string(),
   slug: z.string(),
   issueNumber: z.number().optional(),
   categories: z.array(z.enum(Category.listr())),
-  articleContent: z
-    .array(
-      z.array(
-        z.object({
-          contentType: z.enum(ArticleContent.listr()),
-          content: z.string(),
-          href: z.string().optional(),
-        })
-      )
-    )
-    .optional()
-    .default([]),
+  articleContent: ArticleBody.optional().default([]),
   sources: z
     .array(
       z.object({
@@ -86,6 +85,21 @@ export const ArticleUpdate = Article.extend({
     link: true,
   })
   .partial();
+
+export const ArticleTitleUpdate = z.object({
+  title: z.string().trim().min(1),
+  modificationTime: z.date(),
+});
+
+export const ArticleContentUpdate = z.object({
+  articleContent: ArticleBody,
+  modificationTime: z.date(),
+});
+
+export const ArticleAuthorsUpdate = z.object({
+  authors: z.array(z.string()),
+  modificationTime: z.date(),
+});
 
 export const ArticleDelete = z.object({
   slug: z.string(),
