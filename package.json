@@ -16,6 +16,8 @@
     "reset-s": "node --no-deprecation setup/drop.js -s && node --no-deprecation setup/reseed.js -s",
     "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
     "test": "jest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "migration-04032026-1": "node migrations/04032026-1.js"
   },
   "repository": {
@@ -49,6 +51,7 @@
     "@types/bcryptjs": "^2.4.6",
     "jest": "^29.7.0",
     "nodemon": "^3.1.4",
+    "prettier": "^3.9.8",
     "supertest": "^7.0.0"
   }
 }

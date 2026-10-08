@@ -3,7 +3,14 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import * as z from "zod";
-import { Login, UserCreate, SelfProfileUpdate, UserApprovals, UserPrivateResponse, UserPublicResponse } from "../models/zodSchemas/user.js";
+import {
+  Login,
+  UserCreate,
+  SelfProfileUpdate,
+  UserApprovals,
+  UserPrivateResponse,
+  UserPublicResponse,
+} from "../models/zodSchemas/user.js";
 import crypto from "crypto";
 import {
   ErrorFailedLogin,
@@ -210,7 +217,7 @@ export default class UserController {
         user.approvingUser = user.approvingUser.toString();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({ password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -252,7 +259,7 @@ export default class UserController {
         user.approvingUser = user.approvingUser.toString();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({ password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -286,7 +293,7 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      const userResponse = await UserPublicResponse.omit({ id: true }).safeParseAsync(user);
+      const userResponse = await UserPublicResponse.safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed.");
       }

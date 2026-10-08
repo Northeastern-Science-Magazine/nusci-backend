@@ -41,7 +41,7 @@ export default class Accounts {
    * @returns {Accounts}
    */
   static toAccount(str) {
-    const account = this.list().find(obj => obj.toString() === str.toLowerCase());
+    const account = this.list().find((obj) => obj.toString() === str.toLowerCase());
     if (!account) {
       throw new ErrorValidation("Invalid Accounts enum given.");
     }

@@ -44,4 +44,4 @@ export const userResponseVianna = {
   roles: ["designer"],
   creationTime: "2024-02-28T00:00:00.000Z",
   modificationTime: "2024-02-28T00:00:00.000Z",
-}
+};

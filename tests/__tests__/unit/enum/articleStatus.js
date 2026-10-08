@@ -42,7 +42,12 @@ describe("Tests for enumerated type ArticleStatus", () => {
   });
 
   test("list ArticleStatus", () => {
-    expect(ArticleStatus.list()).toStrictEqual([ArticleStatus.Pending, ArticleStatus.Print, ArticleStatus.Online, ArticleStatus.Cancelled]);
+    expect(ArticleStatus.list()).toStrictEqual([
+      ArticleStatus.Pending,
+      ArticleStatus.Print,
+      ArticleStatus.Online,
+      ArticleStatus.Cancelled,
+    ]);
   });
 
   test("listr ArticleStatus", () => {
