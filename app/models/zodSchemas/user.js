@@ -5,19 +5,18 @@ import AccountStatus from "../enums/accountStatus.js";
 export const BaseUser = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  pronouns: z.array(z.string()).default([]),
+  pronouns: z.array(z.string()).nullish().default([]),
   graduationYear: z.number(),
-  major: z.string().optional(),
-  location: z.string().optional(),
-  profileImage: z.string().optional(),
-  bannerImage: z.string().optional(),
+  major: z.string().nullish(),
+  location: z.string().nullish(),
+  profileImage: z.string().nullish(),
+  bannerImage: z.string().nullish(),
   // Optional because invited users sign up without one and add it later.
-  bio: z.string().optional(),
+  bio: z.string().optional().nullish(),
   email: z.email(),
-  roles: z.string().array(Accounts.listr()),
-  gameData: z.undefined().optional(),
-  creationTime: z.date(),
-  modificationTime: z.date(),
+  roles: z.array(z.enum(Accounts.listr())),
+  creationTime: z.coerce.date(),
+  modificationTime: z.coerce.date(),
 });
 
 export const Login = z.object({
@@ -85,8 +84,8 @@ export const SelfProfileUpdate = BaseUser.pick({
 
 // approve and deny are supposed to be arrays of emails according to resolveUserApprovals docs, but tests only have usernames, so email-parsing is omitted
 export const UserApprovals = z.object({
-  approve: z.array(z.string()).optional(),
-  deny: z.array(z.string()).optional(),
+  approve: z.array(z.string()).nullish(),
+  deny: z.array(z.string()).nullish(),
 });
 
 export const UserDelete = z.object({
@@ -94,13 +93,14 @@ export const UserDelete = z.object({
 });
 
 export const UserPrivateResponse = BaseUser.extend({
-  id: z.literal("/user/response"),
   password: z.string(),
-  phone: z.string().optional(),
+  phone: z.string().nullish(),
   status: z.enum(AccountStatus.listr()),
-  approvingUser: z.string().optional(),
+  // @TODO this is an unpopulated Mongoose ref, so it's actually an ObjectId, not a string.
+  // Works today only because both current callers (getMyProfile, updateMyProfile) manually
+  // call .toString() on it before validating. See app/models/zodSchemas/article.js's
+  // UserRefOrPublicResponse for the pattern to fix this properly if a new caller needs it.
+  approvingUser: z.string().nullish(),
 });
 
-export const UserPublicResponse = BaseUser.extend({
-  id: z.literal("/user/public/response"),
-});
+export const UserPublicResponse = BaseUser;

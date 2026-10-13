@@ -328,7 +328,7 @@ export default class UserController {
         user.approvingUser = user.approvingUser.toString();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({ password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -370,7 +370,7 @@ export default class UserController {
         user.approvingUser = user.approvingUser.toString();
       }
 
-      const userResponse = await UserPrivateResponse.omit({ id: true, password: true }).safeParseAsync(user);
+      const userResponse = await UserPrivateResponse.omit({ password: true }).safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
@@ -404,7 +404,7 @@ export default class UserController {
         throw new ErrorUserNotFound();
       }
 
-      const userResponse = await UserPublicResponse.omit({ id: true }).safeParseAsync(user);
+      const userResponse = await UserPublicResponse.safeParseAsync(user);
       if (!userResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed.");
       }

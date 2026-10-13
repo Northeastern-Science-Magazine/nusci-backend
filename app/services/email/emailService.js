@@ -60,7 +60,17 @@ export class GenerateEmail {
     };
   }
 
-  static Reminder(reminderEmail) {}
+  static Reminder(reminderEmail) {
+    return {
+      from: FROM,
+      to: reminderEmail.to,
+      type: reminderEmail.type,
+      variables: {
+        reminderTitle: reminderEmail.reminderTitle,
+        reminderDate: reminderEmail.reminderDate,
+      },
+    };
+  }
 
   static ResetPassword(resetPasswordEmail) {}
 
