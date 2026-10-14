@@ -25,7 +25,7 @@ describe("Send Email Tests", () => {
 
   test("Send reminder email successfully", async () => {
     const response = await request(app)
-      .post(`/services/email/send`)
+      .post(`/email/send`)
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send(testReminderEmail);
 

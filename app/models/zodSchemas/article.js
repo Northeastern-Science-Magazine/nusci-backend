@@ -1,4 +1,5 @@
 import * as z from "zod";
+import mongoose from "mongoose";
 import Category from "../enums/categories.js";
 import ArticleContent from "../enums/articleContent.js";
 import { UserPublicResponse } from "./user.js";
@@ -23,7 +24,7 @@ const ArticleUser = UserPublicResponse.omit({ id: true });
 export const Article = z.object({
   title: z.string(),
   slug: z.string(),
-  issueNumber: z.number().optional(),
+  issueNumber: z.number().nullish(),
   categories: z.array(z.enum(Category.listr())),
   articleContent: ArticleBody.optional().default([]),
   sources: z
@@ -33,17 +34,17 @@ export const Article = z.object({
         href: z.string().nullable(),
       })
     )
-    .optional(),
-  link: z.string().optional(),
+    .nullish(),
+  link: z.string().nullish(),
   pageLength: z.number(),
   comments: z.array(
     z
       .object({
-        user: ArticleUser.optional(),
+        user: ArticleUser.nullish(),
         comment: z.string(),
         commentStatus: z.enum(CommentStatus.listr()),
-        creationTime: z.date(),
-        modificationTime: z.date(),
+        creationTime: z.coerce.date(),
+        modificationTime: z.coerce.date(),
       })
       .default([])
   ),
@@ -51,10 +52,10 @@ export const Article = z.object({
   writingStatus: z.enum(WritingStatus.listr()),
   designStatus: z.enum(DesignStatus.listr()),
   photographyStatus: z.enum(PhotographyStatus.listr()),
-  authors: z.array(z.string()).optional(),
-  editors: z.array(z.email()).optional(),
-  designers: z.array(z.email()).optional(),
-  photographers: z.array(z.email()).optional(),
+  authors: z.array(z.string()).nullish(),
+  editors: z.array(z.email()).nullish(),
+  designers: z.array(z.email()).nullish(),
+  photographers: z.array(z.email()).nullish(),
 });
 
 export const ArticleResponse = Article.extend({
@@ -108,9 +109,9 @@ export const ArticleDelete = z.object({
 });
 
 export const ArticleSearchRequest = z.object({
-  limit: z.number().int().nonnegative().optional(),
+  limit: z.number().int().nonnegative().nullish(),
   skip: z.number().int().nonnegative().default(0),
-  textQuery: z.string().optional(),
-  categories: z.array(z.enum(Category.listr())).optional(),
+  textQuery: z.string().nullish(),
+  categories: z.array(z.enum(Category.listr())).nullish(),
   sortBy: z.enum(["asc", "desc"]).default("desc"),
 });
