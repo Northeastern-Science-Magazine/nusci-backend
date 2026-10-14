@@ -28,7 +28,7 @@ export const Article = z.object({
     .array(
       z.object({
         text: z.string(),
-        href: z.string(),
+        href: z.string().nullable(),
       })
     )
     .optional(),
@@ -37,7 +37,7 @@ export const Article = z.object({
   comments: z.array(
     z
       .object({
-        user: UserPublicResponse.optional(),
+        user: ArticleUser.optional(),
         comment: z.string(),
         commentStatus: z.enum(CommentStatus.listr()),
         creationTime: z.date(),
@@ -56,22 +56,22 @@ export const Article = z.object({
 });
 
 export const ArticleResponse = Article.extend({
-  authors: z.array(UserPublicResponse).optional(),
-  editors: z.array(UserPublicResponse).optional(),
-  designers: z.array(UserPublicResponse).optional(),
-  photographers: z.array(UserPublicResponse).optional(),
-  approvingUser: UserPublicResponse.optional(),
+  authors: z.array(ArticleUser).optional(),
+  editors: z.array(ArticleUser).optional(),
+  designers: z.array(ArticleUser).optional(),
+  photographers: z.array(ArticleUser).optional(),
+  approvingUser: ArticleUser.optional(),
   approvalTime: z.date().optional(),
   creationTime: z.date(),
   modificationTime: z.date(),
 });
 
 export const ArticlePublicResponse = Article.extend({
-  authors: z.array(UserPublicResponse).optional(),
-  editors: z.array(UserPublicResponse).optional(),
-  designers: z.array(UserPublicResponse).optional(),
-  photographers: z.array(UserPublicResponse).optional(),
-  approvingUser: UserPublicResponse.optional(),
+  authors: z.array(ArticleUser).optional(),
+  editors: z.array(ArticleUser).optional(),
+  designers: z.array(ArticleUser).optional(),
+  photographers: z.array(ArticleUser).optional(),
+  approvingUser: ArticleUser.optional(),
 }).omit({
   link: true,
 });

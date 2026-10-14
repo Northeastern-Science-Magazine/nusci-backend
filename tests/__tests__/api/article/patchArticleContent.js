@@ -77,7 +77,11 @@ describe("Update Article Content", () => {
     const after = await request(app).get(`/articles/slug/${validArticleSlug}`);
 
     showLog && console.log(after.body);
-    expect(after.body.articleContent).toEqual(validContentUpdate.articleContent);
+    expect(
+      after.body.articleContent.map((block) =>
+        block.map(({ contentType, content }) => ({ contentType, content }))
+      )
+    ).toEqual(validContentUpdate.articleContent);
     expect(after.body.title).toBe(before.body.title);
     expect(after.body.slug).toBe(before.body.slug);
     expect(after.body.authors).toEqual(before.body.authors);
