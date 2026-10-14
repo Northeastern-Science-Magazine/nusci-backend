@@ -2,9 +2,11 @@
 export const log = {
   api: {
     article: {
+      patchArticleContent: false,
       patchAuthors: false,
       patchResolveComment: false,
       patchStatus: false,
+      patchTitle: false,
       postCommentCreate: false,
       getSearch: false,
     },
@@ -17,7 +19,6 @@ export const log = {
       postSignup: false,
       putResolveUser: false,
     },
-    article: {},
     issueMap: {
       patchRemoveArticle: false,
       patchCreateAddArticleToMap: false,

@@ -9,24 +9,24 @@ import ArticleStatus from "../enums/articleStatus.js";
 import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
 
-// Mongoose returns an unpopulated ref as an ObjectId instance, not a string;
-// only a populated ref is a full UserPublicResponse-shaped object.
-const UserRefOrPublicResponse = z.union([z.string(), z.instanceof(mongoose.Types.ObjectId), UserPublicResponse]);
+const ArticleBody = z.array(
+  z.array(
+    z.object({
+      contentType: z.enum(ArticleContent.listr()),
+      content: z.string(),
+      href: z.string().optional(),
+    })
+  )
+);
+
+const ArticleUser = UserPublicResponse.omit({ id: true });
 
 export const Article = z.object({
   title: z.string(),
   slug: z.string(),
   issueNumber: z.number().nullish(),
   categories: z.array(z.enum(Category.listr())),
-  articleContent: z.array(
-    z.array(
-      z.object({
-        contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
-        href: z.string().nullish(),
-      })
-    )
-  ),
+  articleContent: ArticleBody.optional().default([]),
   sources: z
     .array(
       z.object({
@@ -40,7 +40,7 @@ export const Article = z.object({
   comments: z.array(
     z
       .object({
-        user: UserRefOrPublicResponse.nullish(),
+        user: ArticleUser.nullish(),
         comment: z.string(),
         commentStatus: z.enum(CommentStatus.listr()),
         creationTime: z.coerce.date(),
@@ -59,22 +59,22 @@ export const Article = z.object({
 });
 
 export const ArticleResponse = Article.extend({
-  authors: z.array(UserRefOrPublicResponse).nullish(),
-  editors: z.array(UserRefOrPublicResponse).nullish(),
-  designers: z.array(UserRefOrPublicResponse).nullish(),
-  photographers: z.array(UserRefOrPublicResponse).nullish(),
-  approvingUser: UserRefOrPublicResponse.nullish(),
-  approvalTime: z.coerce.date().nullish(),
-  creationTime: z.coerce.date(),
-  modificationTime: z.coerce.date(),
+  authors: z.array(ArticleUser).optional(),
+  editors: z.array(ArticleUser).optional(),
+  designers: z.array(ArticleUser).optional(),
+  photographers: z.array(ArticleUser).optional(),
+  approvingUser: ArticleUser.optional(),
+  approvalTime: z.date().optional(),
+  creationTime: z.date(),
+  modificationTime: z.date(),
 });
 
 export const ArticlePublicResponse = Article.extend({
-  authors: z.array(UserRefOrPublicResponse).nullish(),
-  editors: z.array(UserRefOrPublicResponse).nullish(),
-  designers: z.array(UserRefOrPublicResponse).nullish(),
-  photographers: z.array(UserRefOrPublicResponse).nullish(),
-  approvingUser: UserRefOrPublicResponse.nullish(),
+  authors: z.array(ArticleUser).optional(),
+  editors: z.array(ArticleUser).optional(),
+  designers: z.array(ArticleUser).optional(),
+  photographers: z.array(ArticleUser).optional(),
+  approvingUser: ArticleUser.optional(),
 }).omit({
   link: true,
 });
@@ -88,6 +88,21 @@ export const ArticleUpdate = Article.extend({
     link: true,
   })
   .partial();
+
+export const ArticleTitleUpdate = z.object({
+  title: z.string().trim().min(1),
+  modificationTime: z.date(),
+});
+
+export const ArticleContentUpdate = z.object({
+  articleContent: ArticleBody,
+  modificationTime: z.date(),
+});
+
+export const ArticleAuthorsUpdate = z.object({
+  authors: z.array(z.string()),
+  modificationTime: z.date(),
+});
 
 export const ArticleDelete = z.object({
   slug: z.string(),

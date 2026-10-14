@@ -52,4 +52,37 @@ describe("Update Article Authors", () => {
     expect(response.status).toBe(404);
     expect(response.body.error).toBeDefined();
   });
+
+  test("should update article authors successfully as an author", async () => {
+    const response = await request(app)
+      .patch(`/articles/authors/${validArticleSlug}`)
+      .set("Cookie", [`token=${tokens["jasmine@jasmine.com"]}`])
+      .send(validAuthorsUpdate);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect({ authors: response.body.authors.map((author) => author.email) }).toEqual(validAuthorsUpdate);
+  });
+
+  test("should fail to update article authors due to missing authors", async () => {
+    const response = await request(app)
+      .patch(`/articles/authors/${validArticleSlug}`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send({});
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.body.error).toBeDefined();
+  });
+
+  test("should fail to update article authors due to invalid permissions", async () => {
+    const response = await request(app)
+      .patch(`/articles/authors/${validArticleSlug}`)
+      .set("Cookie", [`token=${tokens["vianna@vianna.com"]}`])
+      .send(validAuthorsUpdate);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(403);
+    expect(response.body.error).toBeDefined();
+  });
 });
