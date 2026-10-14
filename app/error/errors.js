@@ -57,6 +57,14 @@ export class ErrorTypeOfQuery extends HttpError {
   }
 }
 
+// One message for unknown, used, and expired invites, so the response
+// doesn't reveal which tokens exist.
+export class ErrorInvalidInvite extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Invite link is invalid or expired.", message: this.message });
+  }
+}
+
 /**
  * 403 Errors
  *

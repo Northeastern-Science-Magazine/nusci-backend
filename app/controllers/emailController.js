@@ -1,12 +1,5 @@
 import EmailAccessor from "../databaseAccessors/emailAccessor.js";
-import {
-  CustomEmail,
-  DeadlineEmail,
-  InviteUserEmail,
-  ReminderEmail,
-  ResetPasswordEmail,
-  OTPEmail,
-} from "../models/zodSchemas/email.js";
+import { CustomEmail, DeadlineEmail, ReminderEmail, ResetPasswordEmail, OTPEmail } from "../models/zodSchemas/email.js";
 import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import EmailType from "../models/enums/emailType.js";
 import { ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
@@ -50,7 +43,7 @@ export default class EmailController {
     const types = EmailType.listr();
     const template = types.find((type) => type === emailObj.type);
     if (!template) {
-      throw new ErrorUnexpected(`Email template ${emailObj.template} not found.`);
+      throw new ErrorUnexpected(`Email template ${emailObj.type} not found.`);
     }
 
     let templateSchema;
@@ -63,8 +56,8 @@ export default class EmailController {
         templateSchema = DeadlineEmail;
         break;
       case EmailType.Invite_User:
-        templateSchema = InviteUserEmail;
-        break;
+        // Invites need roles and one token per recipient, which only /user/invite handles.
+        throw new ErrorValidation("Use POST /user/invite to send invites.");
       case EmailType.Reminder:
         templateSchema = ReminderEmail;
         break;
@@ -93,9 +86,6 @@ export default class EmailController {
         break;
       case EmailType.Deadline:
         generatedEmailData = GenerateEmail.Deadline(email);
-        break;
-      case EmailType.Invite_User:
-        generatedEmailData = GenerateEmail.InviteUser(email);
         break;
       case EmailType.Reminder:
         generatedEmailData = GenerateEmail.Reminder(email);
