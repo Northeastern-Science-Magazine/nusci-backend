@@ -47,8 +47,8 @@ export const UserInvite = z.object({
 export const UserSignup = z.object({
   token: z.string().min(1),
   password: z.string().min(8),
-  firstName: z.string(),
-  lastName: z.string(),
+  firstName: z.string().trim().min(1),
+  lastName: z.string().trim().min(1),
   graduationYear: z.number(),
 });
 

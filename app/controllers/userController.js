@@ -140,8 +140,7 @@ export default class UserController {
             invitedBy: inviter._id,
           });
           await ResendEmail.sendEmailWithTemplate(inviteEmail);
-          // The url holds the raw token, so it is left out of the stored record.
-          await EmailAccessor.createEmail({ ...inviteEmail, variables: {} });
+          await UserController.saveInviteRecord(inviteEmail);
           invited.push(email);
         } catch (e) {
           // One failed address does not stop the rest of the list.
@@ -156,6 +155,22 @@ export default class UserController {
       } else {
         new ErrorUnexpected(e.message).throwHttp(req, res);
       }
+    }
+  }
+
+  /**
+   * saveInviteRecord Method
+   *
+   * This method saves a record of a sent invite email and never throws.
+   *
+   * @param {Object} inviteEmail the invite email that was sent
+   */
+  static async saveInviteRecord(inviteEmail) {
+    try {
+      // The url holds the raw token, so it is left out of the stored record.
+      await EmailAccessor.createEmail({ ...inviteEmail, variables: {} });
+    } catch (e) {
+      // The invite is already sent, so a failed record is not a failed send.
     }
   }
 
@@ -218,13 +233,13 @@ export default class UserController {
         throw new ErrorInvalidInvite();
       }
 
-      // The invite stays used here, since this email can no longer sign up anyway.
-      if (await UsersAccessor.getUserByEmail(invite.email)) {
-        throw new ErrorUserAlreadyExists();
-      }
-
       let user;
       try {
+        // The invite stays used here, since this email can no longer sign up anyway.
+        if (await UsersAccessor.getUserByEmail(invite.email)) {
+          throw new ErrorUserAlreadyExists();
+        }
+
         const userCreate = UserCreate.safeParse({
           firstName: firstName,
           lastName: lastName,
@@ -243,9 +258,13 @@ export default class UserController {
         }
         user = await UsersAccessor.createUser(userCreate.data);
       } catch (e) {
-        // Server-side failure, so give the invite back for a retry.
-        await OTPAccessor.releaseOTPRecord(token);
-        throw e;
+        // 11000 is MongoDB's duplicate key error
+        const alreadyExists = e instanceof ErrorUserAlreadyExists || e.code === 11000;
+        // An existing account keeps the invite used; any other failure is server-side
+        if (!alreadyExists) {
+          await OTPAccessor.releaseOTPRecord(token);
+        }
+        throw e.code === 11000 ? new ErrorUserAlreadyExists() : e;
       }
 
       res.cookie(...LoginToken.generate(user));
