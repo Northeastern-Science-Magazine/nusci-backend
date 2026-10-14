@@ -18,6 +18,8 @@ const ArticleBody = z.array(
   )
 );
 
+const ArticleUser = UserPublicResponse.omit({ id: true });
+
 export const Article = z.object({
   title: z.string(),
   slug: z.string(),
