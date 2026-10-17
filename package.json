@@ -13,6 +13,7 @@
     "reseed-s": "node --no-deprecation setup/reseed.js -s",
     "reseed-silent": "node --no-deprecation setup/reseed.js --silent",
     "reset": "node --no-deprecation setup/drop.js && node --no-deprecation setup/reseed.js",
+    "s3-local": "node --no-deprecation setup/s3Local.js",
     "reset-s": "node --no-deprecation setup/drop.js -s && node --no-deprecation setup/reseed.js -s",
     "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
     "test": "jest",
@@ -31,6 +32,8 @@
   },
   "homepage": "https://github.com/Northeastern-Science-Magazine/nusci-website#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1143.0",
+    "@aws-sdk/s3-request-presigner": "^3.1143.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
