@@ -89,6 +89,31 @@ export const ArticleUpdate = Article.extend({
   })
   .partial();
 
+/**
+ * Targeted update schemas
+ *
+ * Each schema only accepts the field its endpoint is allowed to change,
+ * so one endpoint can never modify unrelated parts of an article.
+ * The required field is not optional and has no default, so a request
+ * that omits it fails validation instead of overwriting existing data.
+ *
+ * modificationTime is expected to be set by the controller at request time.
+ */
+export const ArticleTitleUpdate = z.object({
+  title: z.string().trim().min(1),
+  modificationTime: z.date(),
+});
+
+export const ArticleContentUpdate = z.object({
+  articleContent: Article.shape.articleContent,
+  modificationTime: z.date(),
+});
+
+export const ArticleAuthorsUpdate = z.object({
+  authors: z.array(z.string()),
+  modificationTime: z.date(),
+});
+
 export const ArticleDelete = z.object({
   slug: z.string(),
 });
