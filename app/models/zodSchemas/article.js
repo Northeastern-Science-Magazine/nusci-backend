@@ -9,24 +9,24 @@ import ArticleStatus from "../enums/articleStatus.js";
 import WritingStatus from "../enums/writingStatus.js";
 import DesignStatus from "../enums/designStatus.js";
 
-const ArticleBody = z.array(
-  z.array(
-    z.object({
-      contentType: z.enum(ArticleContent.listr()),
-      content: z.string(),
-      href: z.string().optional(),
-    })
-  )
-);
-
-const ArticleUser = UserPublicResponse.omit({ id: true });
+// Mongoose returns an unpopulated ref as an ObjectId instance, not a string;
+// only a populated ref is a full UserPublicResponse-shaped object.
+const UserRefOrPublicResponse = z.union([z.string(), z.instanceof(mongoose.Types.ObjectId), UserPublicResponse]);
 
 export const Article = z.object({
   title: z.string(),
   slug: z.string(),
   issueNumber: z.number().nullish(),
   categories: z.array(z.enum(Category.listr())),
-  articleContent: ArticleBody.optional().default([]),
+  articleContent: z.array(
+    z.array(
+      z.object({
+        contentType: z.enum(ArticleContent.listr()),
+        content: z.string(),
+        href: z.string().nullish(),
+      })
+    )
+  ),
   sources: z
     .array(
       z.object({
@@ -40,7 +40,7 @@ export const Article = z.object({
   comments: z.array(
     z
       .object({
-        user: ArticleUser.nullish(),
+        user: UserRefOrPublicResponse.nullish(),
         comment: z.string(),
         commentStatus: z.enum(CommentStatus.listr()),
         creationTime: z.coerce.date(),
@@ -59,22 +59,22 @@ export const Article = z.object({
 });
 
 export const ArticleResponse = Article.extend({
-  authors: z.array(ArticleUser).optional(),
-  editors: z.array(ArticleUser).optional(),
-  designers: z.array(ArticleUser).optional(),
-  photographers: z.array(ArticleUser).optional(),
-  approvingUser: ArticleUser.optional(),
-  approvalTime: z.date().optional(),
-  creationTime: z.date(),
-  modificationTime: z.date(),
+  authors: z.array(UserRefOrPublicResponse).nullish(),
+  editors: z.array(UserRefOrPublicResponse).nullish(),
+  designers: z.array(UserRefOrPublicResponse).nullish(),
+  photographers: z.array(UserRefOrPublicResponse).nullish(),
+  approvingUser: UserRefOrPublicResponse.nullish(),
+  approvalTime: z.coerce.date().nullish(),
+  creationTime: z.coerce.date(),
+  modificationTime: z.coerce.date(),
 });
 
 export const ArticlePublicResponse = Article.extend({
-  authors: z.array(ArticleUser).optional(),
-  editors: z.array(ArticleUser).optional(),
-  designers: z.array(ArticleUser).optional(),
-  photographers: z.array(ArticleUser).optional(),
-  approvingUser: ArticleUser.optional(),
+  authors: z.array(UserRefOrPublicResponse).nullish(),
+  editors: z.array(UserRefOrPublicResponse).nullish(),
+  designers: z.array(UserRefOrPublicResponse).nullish(),
+  photographers: z.array(UserRefOrPublicResponse).nullish(),
+  approvingUser: UserRefOrPublicResponse.nullish(),
 }).omit({
   link: true,
 });
@@ -89,13 +89,23 @@ export const ArticleUpdate = Article.extend({
   })
   .partial();
 
+/**
+ * Targeted update schemas
+ *
+ * Each schema only accepts the field its endpoint is allowed to change,
+ * so one endpoint can never modify unrelated parts of an article.
+ * The required field is not optional and has no default, so a request
+ * that omits it fails validation instead of overwriting existing data.
+ *
+ * modificationTime is expected to be set by the controller at request time.
+ */
 export const ArticleTitleUpdate = z.object({
   title: z.string().trim().min(1),
   modificationTime: z.date(),
 });
 
 export const ArticleContentUpdate = z.object({
-  articleContent: ArticleBody,
+  articleContent: Article.shape.articleContent,
   modificationTime: z.date(),
 });
 
