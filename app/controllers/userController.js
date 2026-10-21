@@ -310,6 +310,44 @@ export default class UserController {
   }
 
   /**
+   * getPublicUsersByRole Method
+   *
+   * This method retrieves the public profiles of all approved
+   * users with the given role, sorted by last then first name.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   */
+  static async getPublicUsersByRole(req, res) {
+    try {
+      const account = Accounts.toAccount(req.params.role);
+      if (account === Accounts.None) {
+        throw new ErrorValidation("Invalid Accounts enum given.");
+      }
+
+      const users = await UsersAccessor.getUserByRole(account.role);
+      const approvedUsers = users
+        .map((user) => user.toObject())
+        .filter((user) => user.status === AccountStatus.Approved.status)
+        .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
+
+      const usersResponse = await UserPublicResponse.array().safeParseAsync(approvedUsers);
+      if (!usersResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed.");
+      }
+
+      res.status(200).json(usersResponse.data);
+    } catch (e) {
+      console.log(e.message);
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * resolveUserApprovals Method
    *
    * This method updates the status of lists of pending users to deny or approve them.

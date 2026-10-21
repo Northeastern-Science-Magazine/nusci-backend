@@ -11,6 +11,7 @@ user.route("/login").post(UserController.login);
 // user.route("/signup").post(UserController.signup);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
+user.route("/role/:role").get(UserController.getPublicUsersByRole);
 user.route("/verify-otp").post(UserController.verifyOTPLink);
 user
   .route("/me")
