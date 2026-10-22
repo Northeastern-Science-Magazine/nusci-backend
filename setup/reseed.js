@@ -35,6 +35,7 @@ async function reseed(setupData) {
  * @param {JSON} documents
  */
 async function createDocuments(schema, documents) {
+  await schema.syncIndexes();
   for (const doc of documents) {
     await schema.create(doc);
   }
