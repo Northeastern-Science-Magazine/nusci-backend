@@ -1,4 +1,6 @@
 import crypto from "crypto";
+import fs from "fs";
+import { pipeline } from "stream/promises";
 import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import MediaFolder from "../../models/enums/mediaFolder.js";
@@ -136,6 +138,21 @@ export default class S3Service {
     if (!folder.contentTypes.includes(contentType)) {
       throw new ErrorValidation(`Content type ${contentType} is not allowed in ${folder.toString()}.`);
     }
+    return S3Service.newKey(folder, contentType);
+  }
+
+  /**
+   * Builds a new, unique key without checking the folder's content types.
+   * Only for files the server creates itself (i.e. generated archive covers).
+   *
+   * @param {MediaFolder} folder
+   * @param {String} contentType
+   * @returns {String} the key
+   */
+  static newKey(folder, contentType) {
+    if (!EXTENSIONS[contentType]) {
+      throw new ErrorUnexpected(`No file extension known for ${contentType}.`);
+    }
     return `${S3Service.folderPrefix(folder)}${crypto.randomUUID()}.${EXTENSIONS[contentType]}`;
   }
 
@@ -167,6 +184,33 @@ export default class S3Service {
   static async createDownloadUrl(key) {
     const command = new GetObjectCommand({ Bucket: S3Service.bucket(), Key: key });
     return getSignedUrl(S3Service.presignClient(), command, { expiresIn: DOWNLOAD_URL_EXPIRY_SECONDS });
+  }
+
+  /**
+   * Uploads a file the server created to a new key in the given folder.
+   *
+   * @param {MediaFolder} folder
+   * @param {String} contentType
+   * @param {Buffer} body
+   * @returns {Promise<String>} the new key
+   */
+  static async putObject(folder, contentType, body) {
+    const key = S3Service.newKey(folder, contentType);
+    await S3Service.client().send(
+      new PutObjectCommand({ Bucket: S3Service.bucket(), Key: key, Body: body, ContentType: contentType })
+    );
+    return key;
+  }
+
+  /**
+   * Streams an object to a file on disk, so large files never sit in memory.
+   *
+   * @param {String} key
+   * @param {String} filePath
+   */
+  static async downloadToFile(key, filePath) {
+    const object = await S3Service.client().send(new GetObjectCommand({ Bucket: S3Service.bucket(), Key: key }));
+    await pipeline(object.Body, fs.createWriteStream(filePath));
   }
 
   /**

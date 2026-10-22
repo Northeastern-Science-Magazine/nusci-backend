@@ -2,6 +2,7 @@ import ArchivedIssueAccessor from "../databaseAccessors/archivedIssueAccessor.js
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import S3Service from "../services/s3/s3Service.js";
+import PdfCoverService from "../services/pdf/pdfCoverService.js";
 import MediaFolder from "../models/enums/mediaFolder.js";
 import { ArchivedIssueCreate, ArchivedIssueResponse } from "../models/zodSchemas/archivedIssue.js";
 import {
@@ -20,8 +21,9 @@ import {
  * related to archived (print) issues, whose PDFs and covers live in S3.
  *
  * Upload flow:
- * 1. POST /media/upload-url for the PDF (and cover), PUT each file to its uploadUrl
- * 2. POST /archive with the returned keys to save the issue
+ * 1. POST /media/upload-url for the PDF, PUT the file to its uploadUrl
+ * 2. POST /archive with the returned key to save the issue,
+ *    which renders the PDF's first page as its cover
  */
 export default class ArchivedIssueController {
   /**
@@ -62,7 +64,8 @@ export default class ArchivedIssueController {
   }
 
   /**
-   * Saves an archived issue after its files have been uploaded to S3.
+   * Saves an archived issue after its PDF has been uploaded to S3,
+   * rendering the PDF's first page as the cover.
    *
    * @param {Request} req
    * @param {Response} res
@@ -73,31 +76,27 @@ export default class ArchivedIssueController {
       if (!parsed.success) {
         throw new ErrorValidation("Archived issue validation failed.");
       }
-      const { issueNumber, title, publicationDate, pdfKey, coverKey } = parsed.data;
+      const { issueNumber, title, pdfKey } = parsed.data;
 
       if (await ArchivedIssueAccessor.getArchivedIssueByNumber(issueNumber)) {
         throw new ErrorDuplicateKey(`Issue ${issueNumber} is already archived.`);
       }
 
-      // the files must have actually been uploaded, and be the right kind of file
+      // the PDF must have actually been uploaded, and be the right kind of file
       await ArchivedIssueController.verifyUpload(pdfKey, ["application/pdf"]);
-      if (coverKey) {
-        await ArchivedIssueController.verifyUpload(
-          coverKey,
-          MediaFolder.Archive.contentTypes.filter((type) => type.startsWith("image/"))
-        );
-      }
 
       const user = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
       if (!user) {
         throw new ErrorUserNotFound();
       }
 
+      // last, since it's the slow step: download the PDF and render its first page
+      const coverKey = await PdfCoverService.createCover(pdfKey);
+
       const now = new Date();
       const issue = await ArchivedIssueAccessor.createArchivedIssue({
         issueNumber,
         title,
-        publicationDate,
         pdfKey,
         coverKey,
         creatingUser: user._id,
@@ -174,9 +173,8 @@ export default class ArchivedIssueController {
     const response = ArchivedIssueResponse.safeParse({
       issueNumber: issue.issueNumber,
       title: issue.title,
-      publicationDate: issue.publicationDate,
       pdfUrl: await S3Service.createDownloadUrl(issue.pdfKey),
-      coverUrl: issue.coverKey ? await S3Service.createDownloadUrl(issue.coverKey) : null,
+      coverUrl: await S3Service.createDownloadUrl(issue.coverKey),
     });
     if (!response.success) {
       throw new ErrorValidation("Outgoing response validation failed.");

@@ -9,9 +9,8 @@ const ArchivedIssueSchema = new Schema(
   {
     issueNumber: { type: Number, required: true },
     title: { type: String, required: true },
-    publicationDate: { type: Date, required: true },
     pdfKey: { type: String, required: true }, // S3 key, i.e. prod/archive/<uuid>.pdf
-    coverKey: { type: String }, // S3 key of the cover image, i.e. prod/archive/<uuid>.png
+    coverKey: { type: String, required: true }, // S3 key of the cover rendered from the PDF's first page, i.e. prod/archive/<uuid>.jpg
     creatingUser: { type: Schema.Types.ObjectId, ref: "Users", required: true },
     creationTime: { type: Date, required: true },
     modificationTime: { type: Date, required: true },

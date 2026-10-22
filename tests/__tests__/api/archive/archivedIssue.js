@@ -2,6 +2,8 @@ import request from "supertest";
 import { S3Client, HeadObjectCommand } from "@aws-sdk/client-s3";
 import app from "../../../../app/app.js";
 import ArchivedIssue from "../../../../app/models/dbModels/archivedIssue.js";
+import PdfCoverService from "../../../../app/services/pdf/pdfCoverService.js";
+import { ErrorValidation } from "../../../../app/error/errors.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
@@ -29,11 +31,16 @@ const send = jest.spyOn(S3Client.prototype, "send").mockImplementation(async (co
   throw new Error(`Unexpected S3 command ${command.constructor.name}`);
 });
 
+// rendering needs the real PDF (and pdftoppm), it has its own unit tests
+const renderedCoverKey = `${process.env.S3_KEY_PREFIX}/archive/rendered-cover.jpg`;
+const createCover = jest.spyOn(PdfCoverService, "createCover");
+
 beforeEach(injectMockConnection);
 beforeEach(executeReset);
 beforeEach(() => {
   bucket = {};
   send.mockClear();
+  createCover.mockReset().mockResolvedValue(renderedCoverKey);
 });
 afterAll(closeMockConnection);
 
@@ -51,8 +58,9 @@ describe("Get archived issues", () => {
     expect(response.body.map((issue) => issue.issueNumber)).toStrictEqual([60, 59]);
     expect(response.body[0].pdfUrl).toContain("X-Amz-Signature=");
     expect(response.body[0].coverUrl).toContain("X-Amz-Signature=");
-    expect(response.body[1].coverUrl).toBeNull();
+    expect(response.body[1].coverUrl).toContain("00000000-0000-0000-0000-000000000059.png");
     expect(response.body[0].pdfKey).toBeUndefined();
+    expect(response.body[0].publicationDate).toBeUndefined();
   });
 
   test("gets an archived issue by number", async () => {
@@ -83,17 +91,14 @@ describe("Create archived issue", () => {
   const newIssue = {
     issueNumber: 61,
     title: "Issue 61: Beyond",
-    publicationDate: "2025-12-01",
     pdfKey: archiveKey("issue-61.pdf"),
-    coverKey: archiveKey("issue-61.png"),
   };
 
   beforeEach(() => {
     bucket[newIssue.pdfKey] = { ContentType: "application/pdf", ContentLength: 5_000_000 };
-    bucket[newIssue.coverKey] = { ContentType: "image/png", ContentLength: 200_000 };
   });
 
-  test("admin archives an uploaded issue", async () => {
+  test("admin archives an uploaded issue, with its first page as the cover", async () => {
     const response = await request(app).post("/archive").set("Cookie", admin).send(newIssue);
 
     showLog && console.log(response.body);
@@ -101,19 +106,36 @@ describe("Create archived issue", () => {
     expect(response.body.issueNumber).toBe(61);
     expect(response.body.title).toBe("Issue 61: Beyond");
     expect(response.body.pdfUrl).toContain("issue-61.pdf");
-    expect(response.body.coverUrl).toContain("issue-61.png");
+    expect(response.body.coverUrl).toContain("rendered-cover.jpg");
+    expect(createCover).toHaveBeenCalledWith(newIssue.pdfKey);
+
+    const record = await ArchivedIssue.findOne({ issueNumber: 61 });
+    expect(record.coverKey).toBe(renderedCoverKey);
 
     const list = await request(app).get("/archive");
     expect(list.body.map((issue) => issue.issueNumber)).toStrictEqual([61, 60, 59]);
   });
 
-  test("editor archives an issue without a cover", async () => {
-    const { coverKey, ...withoutCover } = newIssue;
-    const response = await request(app).post("/archive").set("Cookie", editor).send(withoutCover);
+  test("editor archives an issue, ignoring a cover and date sent by the client", async () => {
+    const response = await request(app)
+      .post("/archive")
+      .set("Cookie", editor)
+      .send({ ...newIssue, coverKey: archiveKey("client-cover.png"), publicationDate: "2025-12-01" });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);
-    expect(response.body.coverUrl).toBeNull();
+    expect(response.body.coverUrl).toContain("rendered-cover.jpg");
+    expect(response.body.publicationDate).toBeUndefined();
+  });
+
+  test("reject a PDF whose first page can't be rendered", async () => {
+    createCover.mockRejectedValue(new ErrorValidation("Couldn't read the first page of the PDF."));
+    const response = await request(app).post("/archive").set("Cookie", admin).send(newIssue);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    const get = await request(app).get("/archive/61");
+    expect(get.status).toBe(404);
   });
 
   test("reject when not logged in", async () => {
@@ -134,6 +156,7 @@ describe("Create archived issue", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(409);
+    expect(createCover).not.toHaveBeenCalled();
   });
 
   test("reject a PDF that was never uploaded", async () => {
@@ -144,6 +167,7 @@ describe("Create archived issue", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
+    expect(createCover).not.toHaveBeenCalled();
   });
 
   test("reject a key outside the archive folder", async () => {
@@ -159,20 +183,12 @@ describe("Create archived issue", () => {
   });
 
   test("reject a PDF key that points at an image", async () => {
+    const image = archiveKey("issue-61.png");
+    bucket[image] = { ContentType: "image/png", ContentLength: 200_000 };
     const response = await request(app)
       .post("/archive")
       .set("Cookie", admin)
-      .send({ ...newIssue, pdfKey: newIssue.coverKey });
-
-    showLog && console.log(response.body);
-    expect(response.status).toBe(400);
-  });
-
-  test("reject a cover that is a PDF", async () => {
-    const response = await request(app)
-      .post("/archive")
-      .set("Cookie", admin)
-      .send({ ...newIssue, coverKey: newIssue.pdfKey });
+      .send({ ...newIssue, pdfKey: image });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
@@ -222,7 +238,7 @@ describe("Delete archived issue", () => {
   test("a deleted issue number can be archived again", async () => {
     await request(app).delete("/archive/60").set("Cookie", admin);
 
-    const reupload = { issueNumber: 60, title: "Issue 60", publicationDate: "2025-04-01", pdfKey: archiveKey("redo.pdf") };
+    const reupload = { issueNumber: 60, title: "Issue 60", pdfKey: archiveKey("redo.pdf") };
     bucket[reupload.pdfKey] = { ContentType: "application/pdf", ContentLength: 5_000_000 };
     const response = await request(app).post("/archive").set("Cookie", admin).send(reupload);
 

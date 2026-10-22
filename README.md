@@ -202,6 +202,7 @@ docker compose -f docker-compose.yaml -f docker-compose.s3.yaml up -d
 npm run s3-local # once: creates the bucket (versioning + CORS) and placeholder files for seeded issues
 ```
   Files are viewable in its console at http://localhost:9001 (`nusci-local` / `nusci-local-secret`).
+- Archived issue covers are rendered from the PDF's first page with `pdftoppm`, which the Dockerfile installs. If your `nusci-backend` image predates this, rebuild it with `docker compose build app`. To run the cover tests outside Docker, install poppler (`brew install poppler` on macOS); they're skipped without it.
 
 ### 3. Run the Initialization Commands
 - Open the terminal in VS Code and ensure that your current directory is the root of the project.

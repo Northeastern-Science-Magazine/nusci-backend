@@ -1,3 +1,8 @@
+import fs from "fs/promises";
+import os from "os";
+import path from "path";
+import { Readable } from "stream";
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import S3Service from "../../../../app/services/s3/s3Service.js";
 import MediaFolder from "../../../../app/models/enums/mediaFolder.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
@@ -26,6 +31,13 @@ describe("S3Service key tests", () => {
   test("rejects content types the folder doesn't allow", () => {
     expect(() => S3Service.buildKey(MediaFolder.Images, "application/pdf")).toThrow(ErrorValidation);
     expect(() => S3Service.buildKey(MediaFolder.Archive, "text/html")).toThrow(ErrorValidation);
+    // archive covers are rendered by the server, not uploaded
+    expect(() => S3Service.buildKey(MediaFolder.Archive, "image/png")).toThrow(ErrorValidation);
+  });
+
+  test("builds keys for server-made files regardless of the folder's upload types", () => {
+    expect(S3Service.newKey(MediaFolder.Archive, "image/jpeg")).toMatch(/^dev\/archive\/[0-9a-f-]{36}\.jpg$/);
+    expect(() => S3Service.newKey(MediaFolder.Archive, "text/html")).toThrow();
   });
 
   test("checks keys belong to a folder", () => {
@@ -86,6 +98,52 @@ describe("S3Service endpoint tests", () => {
     const S3 = await loadService();
     const url = await S3.createDownloadUrl("dev/archive/a.pdf");
     expect(url).toMatch(/^http:\/\/localhost:9000\/nusci-media\/dev\/archive\/a\.pdf\?/);
+  });
+});
+
+describe("S3Service server-side file tests", () => {
+  const env = { ...process.env };
+  let send;
+
+  beforeEach(() => {
+    process.env.AWS_REGION = "us-east-1";
+    process.env.S3_BUCKET_NAME = "nusci-media";
+    process.env.S3_KEY_PREFIX = "dev";
+    process.env.AWS_ACCESS_KEY_ID = "test";
+    process.env.AWS_SECRET_ACCESS_KEY = "test";
+    send = jest.spyOn(S3Client.prototype, "send");
+  });
+  afterEach(() => {
+    send.mockRestore();
+  });
+  afterAll(() => {
+    process.env = env;
+  });
+
+  test("putObject uploads to a new key and returns it", async () => {
+    send.mockResolvedValue({});
+    const body = Buffer.from("cover");
+    const key = await S3Service.putObject(MediaFolder.Archive, "image/jpeg", body);
+
+    expect(key).toMatch(/^dev\/archive\/[0-9a-f-]{36}\.jpg$/);
+    const command = send.mock.calls[0][0];
+    expect(command).toBeInstanceOf(PutObjectCommand);
+    expect(command.input).toStrictEqual({ Bucket: "nusci-media", Key: key, Body: body, ContentType: "image/jpeg" });
+  });
+
+  test("downloadToFile streams the object to disk", async () => {
+    send.mockResolvedValue({ Body: Readable.from([Buffer.from("%PDF-"), Buffer.from("1.4")]) });
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "s3-test-"));
+    try {
+      const file = path.join(dir, "issue.pdf");
+      await S3Service.downloadToFile("dev/archive/a.pdf", file);
+
+      expect(send.mock.calls[0][0]).toBeInstanceOf(GetObjectCommand);
+      expect(send.mock.calls[0][0].input).toStrictEqual({ Bucket: "nusci-media", Key: "dev/archive/a.pdf" });
+      expect(await fs.readFile(file, "utf8")).toBe("%PDF-1.4");
+    } finally {
+      await fs.rm(dir, { recursive: true, force: true });
+    }
   });
 });
 

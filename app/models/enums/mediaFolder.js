@@ -10,7 +10,8 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
  * along with the content types and max size it accepts.
  */
 export default class MediaFolder {
-  static Archive = new MediaFolder("archive", ["application/pdf", ...IMAGE_TYPES], 250 * 1024 * 1024);
+  // covers are rendered from the PDF by the server, so clients only upload PDFs here
+  static Archive = new MediaFolder("archive", ["application/pdf"], 250 * 1024 * 1024);
   static Images = new MediaFolder("images", IMAGE_TYPES, 25 * 1024 * 1024);
 
   /**
