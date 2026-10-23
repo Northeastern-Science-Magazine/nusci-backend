@@ -27,12 +27,12 @@ describe("Delete issue map", () => {
     await request(app)
       .post("/issue-map/create")
       .set("Cookie", [`token=${adminToken}`])
-      .send({ issueNumber: 3, issueName: "Spring 2027", pages: 40 });
+      .send({ issueNumber: 5, issueName: "Spring 2027", pages: 40 });
 
-    const response = await deleteIssue(3);
+    const response = await deleteIssue(5);
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.issueNumber).toBe(3);
+    expect(response.body.issueNumber).toBe(5);
 
     const list = await request(app)
       .get("/issue-map/all")
@@ -45,6 +45,19 @@ describe("Delete issue map", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(409);
     expect(response.body.message).toBe("Issue #1 still contains 3 articles. Remove them before deleting the issue.");
+  });
+
+  test("Issue referenced only by an article's issue number cannot be deleted", async () => {
+    // seeded article a00000000000000000000005 has issueNumber 3 but is not in any issue map
+    await request(app)
+      .post("/issue-map/create")
+      .set("Cookie", [`token=${adminToken}`])
+      .send({ issueNumber: 3, issueName: "Spring 2027", pages: 40 });
+
+    const response = await deleteIssue(3);
+    showLog && console.log(response.body);
+    expect(response.status).toBe(409);
+    expect(response.body.message).toBe("Issue #3 still contains 1 article. Remove them before deleting the issue.");
   });
 
   test("Deleting a missing issue returns not found", async () => {

@@ -154,9 +154,12 @@ export default class IssueMapController {
         throw new ErrorIssueMapNotFound(`Issue #${issueNumber} does not exist.`);
       }
 
+      // articles can reference an issue by number without being in the map's lists
+      const articlesWithIssueNumber = await ArticlesAccessor.getArticleByIssueNumber(issueNumber);
       const articleCount = new Set([
         ...issue.articles.map(String),
         ...issue.sections.flatMap((section) => section.articles.map(String)),
+        ...articlesWithIssueNumber.map((article) => String(article._id)),
       ]).size;
       if (articleCount > 0) {
         throw new ErrorIssueMapNotEmpty(
