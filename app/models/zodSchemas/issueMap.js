@@ -1,12 +1,10 @@
 import * as z from "zod";
 import { UserPublicResponse } from "./user.js";
-import { ArticlePublicResponse } from "./article.js";
 
 export const IssueMap = z.object({
   issueNumber: z.number(),
   issueName: z.string(),
-  sections: z
-    .array(z.any()).default([]), // array of what
+  sections: z.array(z.any()).default([]), // array of what
   articles: z.array(z.string()).nullish(),
   pages: z.number(),
   creatingUser: z.string(), // will this ever map to something else like a fk
@@ -32,23 +30,29 @@ export const IssueMapResponse = IssueMap.extend({
   modificationTime: z.date(),
 });
 
-export const IssueMapUpdate = z
-  .object({
-    issueNumber: z.number(),
-    issueName: z.string(),
-    sections: z.array(
+const IssueMapFields = z.object({
+  issueNumber: z.number().int().positive(),
+  issueName: z.string().trim().min(1),
+  pages: z.number().int().nonnegative(),
+});
+
+export const IssueMapCreate = IssueMapFields.extend({
+  sections: z
+    .array(
       z.object({
-        sectionName: z.string(),
-        color: z.string(),
-        articles: z.array(ArticlePublicResponse),
-        modificationTime: z.date(),
+        sectionName: z.string().trim().min(1),
+        sectionColor: z.string().trim().min(1),
       })
-    ),
-    articles: z.array(ArticlePublicResponse),
-    pages: z.number(),
-    modificationTime: z.date().default(new Date()),
-  })
-  .partial();
+    )
+    .default([])
+    .refine((sections) => new Set(sections.map((s) => s.sectionName)).size === sections.length, {
+      message: "Section names must be unique within an issue.",
+    }),
+});
+
+export const IssueMapUpdate = IssueMapFields.partial().refine((update) => Object.keys(update).length > 0, {
+  message: "At least one field must be updated.",
+});
 
 export const IssueMapDelete = z.object({
   issueNumber: z.number(),
