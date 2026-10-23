@@ -22,6 +22,17 @@ export default class IssueMapAccessor {
   }
 
   /**
+   * Get all issue numbers, newest first
+   *
+   * @returns array of issue numbers
+   */
+  static async getAllIssueNumbers() {
+    await Connection.open();
+    const issues = await IssueMap.find({}, { issueNumber: 1, _id: 0 }).sort({ issueNumber: -1 });
+    return issues.map((issue) => issue.issueNumber);
+  }
+
+  /**
    * Create an issue
    *
    * @param {Object} issue - The issue to create

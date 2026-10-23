@@ -198,6 +198,26 @@ export default class IssueMapController {
     }
   }
 
+  /**
+   * method to list all issue numbers, newest first. Public, so it
+   * only exposes the numbers.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getAllIssueNumbers(req, res) {
+    try {
+      const issueNumbers = await IssueMapAccessor.getAllIssueNumbers();
+      res.status(200).json(issueNumbers);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   static parseIssueNumber(param) {
     const issueNumber = Number(param);
     if (!Number.isInteger(issueNumber) || issueNumber <= 0) {
