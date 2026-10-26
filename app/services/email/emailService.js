@@ -5,7 +5,7 @@ import OTPAccessor from "../../databaseAccessors/otpAccessor.js";
 import EmailType from "../../models/enums/emailType.js";
 
 // all emails should come from this domain. You guys can change it later if you want.
-const FROM = "NU Sci Magazine <noreply@nuscimagazine.com>";
+const FROM = "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>";
 
 // Invites last 7 days; login links keep the 15-minute default.
 const INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
