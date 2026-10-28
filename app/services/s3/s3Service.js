@@ -176,6 +176,15 @@ export default class S3Service {
   }
 
   /**
+   * How long presigned download URLs stay valid.
+   *
+   * @returns {Number} seconds
+   */
+  static downloadUrlExpiry() {
+    return DOWNLOAD_URL_EXPIRY_SECONDS;
+  }
+
+  /**
    * Generates a presigned GET URL for an existing object.
    *
    * @param {String} key
