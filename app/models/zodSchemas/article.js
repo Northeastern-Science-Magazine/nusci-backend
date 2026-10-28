@@ -114,6 +114,30 @@ export const ArticleAuthorsUpdate = z.object({
   modificationTime: z.date(),
 });
 
+export const ArticleCategoriesUpdate = z.object({
+  categories: Article.shape.categories.min(1),
+  modificationTime: z.date(),
+});
+
+export const ArticleSourcesUpdate = z.object({
+  sources: z.array(
+    z.object({
+      text: z.string(),
+      href: z.string().nullable(),
+    })
+  ),
+  modificationTime: z.date(),
+});
+
+/**
+ * The issue number is changed by moving the article between issue maps,
+ * which also keeps the article's own issue number in sync, so there is
+ * no modificationTime for the controller to set here.
+ */
+export const ArticleIssueNumberUpdate = z.object({
+  issueNumber: z.number().int().positive(),
+});
+
 export const ArticleDelete = z.object({
   slug: z.string(),
 });

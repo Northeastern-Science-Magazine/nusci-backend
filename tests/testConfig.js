@@ -3,8 +3,11 @@ export const log = {
   api: {
     article: {
       patchArticleContent: false,
+      patchCategories: false,
       patchAuthors: false,
       patchResolveComment: false,
+      patchIssueNumber: false,
+      patchSources: false,
       patchStatus: false,
       patchTitle: false,
       postCommentCreate: false,

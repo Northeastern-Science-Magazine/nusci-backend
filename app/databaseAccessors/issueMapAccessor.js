@@ -2,7 +2,7 @@ import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, ErrorIssueMapNotFound } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -158,6 +158,88 @@ export default class IssueMapAccessor {
       { $pull: { articles: article._id } },
       { new: true }
     );
+
+    return updatedIssue;
+  }
+
+  /**
+   * Find and add article to given issue
+   *
+   * @param {Number} issueNumber - Issue number to add to
+   * @param {String} articleSlug - Article slug to add
+   * @returns the updated issues
+   */
+  static async addArticleToIssue(issueNumber, articleSlug) {
+    await Connection.open();
+
+    const article = await Article.findOne({ slug: articleSlug });
+    if (!article) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    const existingIssue = await IssueMap.findOne({
+      issueNumber: issueNumber,
+      articles: article._id,
+    });
+
+    //article slug exists, but not in this issue
+    if (!existingIssue) {
+      throw new ErrorInvalidArticleAndIssueCombination();
+    }
+
+    //update the article to the issue using object id
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { issueNumber: issueNumber },
+      { $addToSet: { articles: article._id } },
+      { new: true }
+    );
+
+    return updatedIssue;
+  }
+
+    /**
+   * Find an article and move it from the issue it is currently in to the given issue
+   *
+   * @param {Number} issueNumber - Issue number to move the article to
+   * @param {String} articleSlug - Article slug to move
+   * @returns the updated issue the article was moved to
+   */
+  static async moveArticleToIssue(issueNumber, articleSlug) {
+    await Connection.open();
+
+    const article = await Article.findOne({ slug: articleSlug });
+    if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    //the issue the article is currently in
+    const currentIssue = await IssueMap.findOne({ articles: article._id });
+
+    //article slug exists, but is not in any issue
+    if (!currentIssue) {
+      throw new ErrorInvalidArticleAndIssueCombination();
+    }
+
+    const destinationIssue = await IssueMap.findOne({ issueNumber: issueNumber });
+    if (!destinationIssue) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    //article is already in the requested issue, nothing to move
+    if (currentIssue._id.equals(destinationIssue._id)) {
+      return destinationIssue;
+    }
+
+    //add before removing
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { _id: destinationIssue._id },
+      { $addToSet: { articles: article._id } },
+      { new: true }
+    );
+    await IssueMap.updateOne({ _id: currentIssue._id }, { $pull: { articles: article._id } });
+
+    //keep the article's own issue number in sync
+    await Article.updateOne({ _id: article._id }, { issueNumber: issueNumber });
 
     return updatedIssue;
   }

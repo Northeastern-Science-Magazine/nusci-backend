@@ -23,6 +23,9 @@ articles.route("/search").post(ArticlesController.search);
 articles.route("/title/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateTitle); //update the title of a given article
 articles.route("/content/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateArticleContent); //update the content of a given article
 articles.route("/authors/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateAuthors); //update the list of authors to this article,
+articles.route("/categories/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateCategories); //update the categories of a given article
+articles.route("/sources/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateSources); //update the sources of a given article
+articles.route("/issue-number/:slug").patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.updateIssueNumber); //move a given article to a different issue
 // articles.route("/editors/:slug"); //update the list of editor to this article,
 // articles.route("/designers/:slug"); //update the list of designer to this article,
 // articles.route("/photographers/:slug"); //update the list of photographer to this article
