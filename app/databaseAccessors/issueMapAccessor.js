@@ -238,8 +238,16 @@ export default class IssueMapAccessor {
     );
     await IssueMap.updateOne({ _id: currentIssue._id }, { $pull: { articles: article._id } });
 
-    //keep the article's own issue number in sync
-    await Article.updateOne({ _id: article._id }, { issueNumber: issueNumber });
+    // keep the article's issue number and last-modified time in sync.
+    await Article.updateOne(
+      { _id: article._id },
+      {
+        $set: {
+          issueNumber,
+          modificationTime: new Date(),
+        },
+      }
+    );
 
     return updatedIssue;
   }

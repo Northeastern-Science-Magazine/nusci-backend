@@ -1,4 +1,5 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
@@ -7,6 +8,9 @@ import {
   ArticleTitleUpdate,
   ArticleContentUpdate,
   ArticleAuthorsUpdate,
+  ArticleCategoriesUpdate,
+  ArticleSourcesUpdate,
+  ArticleIssueNumberUpdate,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
