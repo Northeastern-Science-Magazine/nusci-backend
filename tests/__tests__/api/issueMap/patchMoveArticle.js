@@ -122,7 +122,7 @@ describe("Move article between issue maps", () => {
     expect(errorMessage).toStrictEqual("Article not found.");
   });
 
-  test("Invalid article move due to article not being in any issue map", async () => {
+  test("should move an article that is not in any issue map into the given issue", async () => {
     await IssueMapAccessor.removeArticleFromIssue(1, validArticleSlugFromIssue1);
 
     const response = await request(app)
@@ -130,10 +130,25 @@ describe("Move article between issue maps", () => {
       .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
       .send({ issueNumber: 2, articleSlug: validArticleSlugFromIssue1 });
 
-    showLog && console.log(response);
-    expect(response.status).toBe(404);
-    const errorMessage = JSON.parse(response.text).error;
-    expect(errorMessage).toStrictEqual("Invalid combination of article slug and issue number.");
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.articles).toStrictEqual(articleObjectIdsInIssue2AfterMove);
+    const movedArticle = await ArticlesAccessor.getArticleBySlug(validArticleSlugFromIssue1);
+    expect(movedArticle.issueNumber).toBe(2);
+  });
+
+  test("should remove the article from its original issue map's sections", async () => {
+    const response = await request(app)
+      .patch(`/issue-map/move-article`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send({ issueNumber: 2, articleSlug: validArticleSlugFromIssue1 });
+    expect(response.status).toBe(200);
+
+    const originalIssue = await IssueMapAccessor.getIssueMapByIssueNumber(1);
+    showLog && console.log(originalIssue.sections);
+    expect(originalIssue.sections.flatMap((section) => section.articles.map(String))).not.toContain(
+      "a00000000000000000000000"
+    );
   });
 
   test("Invalid article move due to empty request body", async () => {

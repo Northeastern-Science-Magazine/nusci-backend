@@ -90,6 +90,24 @@ describe("Edit Article", () => {
     expect(destinationIssue.articles.map(String)).toContain(articleObjectId);
   });
 
+  test("should edit an article that is not in any issue map and add it to the new issue", async () => {
+    // take the article out of issue 1 entirely, like an article made with the submission form
+    await IssueMapAccessor.removeArticleFromIssue(1, validArticleSlug);
+    const issue1 = await IssueMapAccessor.getIssueMapByIssueNumber(1);
+    issue1.sections.forEach((section) => section.articles.pull(articleObjectId));
+    await issue1.save();
+
+    const response = await edit({ title: validEdit.title, issueNumber: 2 }, "ethan@ethan.com");
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.title).toBe(validEdit.title);
+    expect(response.body.issueNumber).toBe(2);
+
+    const destinationIssue = await IssueMapAccessor.getIssueMapByIssueNumber(2);
+    expect(destinationIssue.articles.map(String)).toContain(articleObjectId);
+  });
+
   test.each([
     ["an empty body", {}],
     ["an unknown field", { articleStatus: "Print" }],
