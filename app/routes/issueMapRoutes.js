@@ -11,6 +11,8 @@ issueMap.route("/all").get(Authorize.allow([Accounts.Admin]), IssueMapController
 issueMap.route("/all-issue-numbers").get(IssueMapController.getAllIssueNumbers); //list all issue numbers (public)
 // issueMap.route("/remove-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.removeArticle); //remove an article from an issue map
 // issueMap.route("/add-and-create-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.addAndCreateArticle);
+issueMap.route("/add-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.addArticle); //add an article to an issue map
+issueMap.route("/move-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.moveArticle); //move an article from its current issue map to another
 issueMap
   .route("/:issueNumber")
   .patch(Authorize.allow([Accounts.Admin]), IssueMapController.update) //update an issue map
