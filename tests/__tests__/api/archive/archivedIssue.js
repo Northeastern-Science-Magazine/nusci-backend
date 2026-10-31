@@ -116,10 +116,10 @@ describe("Create archived issue", () => {
     expect(list.body.map((issue) => issue.issueNumber)).toStrictEqual([61, 60, 59]);
   });
 
-  test("editor archives an issue, ignoring a cover and date sent by the client", async () => {
+  test("admin archives an issue, ignoring a cover and date sent by the client", async () => {
     const response = await request(app)
       .post("/archive")
-      .set("Cookie", editor)
+      .set("Cookie", admin)
       .send({ ...newIssue, coverKey: archiveKey("client-cover.png"), publicationDate: "2025-12-01" });
 
     showLog && console.log(response.body);
@@ -143,8 +143,13 @@ describe("Create archived issue", () => {
     expect(response.status).toBe(403);
   });
 
-  test("reject roles other than admin and editor", async () => {
+  test("reject roles other than admin", async () => {
     const response = await request(app).post("/archive").set("Cookie", author).send(newIssue);
+    expect(response.status).toBe(403);
+  });
+
+  test("reject editor", async () => {
+    const response = await request(app).post("/archive").set("Cookie", editor).send(newIssue);
     expect(response.status).toBe(403);
   });
 
@@ -238,7 +243,7 @@ describe("Delete archived issue", () => {
   });
 
   test("keeps the deleted issue's record so it can be restored", async () => {
-    await request(app).delete("/archive/60").set("Cookie", editor);
+    await request(app).delete("/archive/60").set("Cookie", admin);
 
     const record = await ArchivedIssue.findOne({ issueNumber: 60 });
     expect(record.deleted).toBe(true);
@@ -272,7 +277,12 @@ describe("Delete archived issue", () => {
     expect(response.status).toBe(404);
   });
 
-  test("reject roles other than admin and editor", async () => {
+  test("reject editor deleting an issue", async () => {
+    const response = await request(app).delete("/archive/60").set("Cookie", editor);
+    expect(response.status).toBe(403);
+  });
+
+  test("reject roles other than admin", async () => {
     const response = await request(app).delete("/archive/60").set("Cookie", author);
     expect(response.status).toBe(403);
 

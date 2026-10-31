@@ -43,6 +43,16 @@ describe("Presigned upload URL tests", () => {
     expect(response.body.key).toMatch(new RegExp(`^${process.env.S3_KEY_PREFIX}/images/.+\\.png$`));
   });
 
+  test("reject editor requesting a PDF upload URL", async () => {
+    const response = await request(app)
+      .post("/media/upload-url")
+      .set("Cookie", [`token=${tokens["noah@noah.com"]}`])
+      .send(pdfRequest);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(403);
+  });
+
   test("every request gets a unique key", async () => {
     const [first, second] = await Promise.all(
       [1, 2].map(() =>
