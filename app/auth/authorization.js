@@ -22,23 +22,60 @@ export default class Authorize {
    */
   static allow(roles) {
     return (req, res, next) => {
-      dotenv.config();
-      if (req.cookies.token) {
-        const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
-        if (payload) {
-          const userRoles = payload.roles.map((role) => Accounts.toAccount(role));
-          if (roles.some((element) => userRoles.includes(element))) {
-            next();
-          } else {
-            new ErrorForbidden().throwHttp(req, res);
-          }
-        } else {
-          new ErrorForbidden().throwHttp(req, res);
-        }
+      let payload;
+      try {
+        payload = Authorize.verifyToken(req);
+      } catch (e) {
+        // Clear an invalid cookie so the browser stops sending it and the user can log in again.
+        res.clearCookie("token");
+        return e.throwHttp(req, res);
+      }
+
+      const userRoles = payload.roles.map((role) => Accounts.toAccount(role));
+      if (roles.some((element) => userRoles.includes(element))) {
+        next();
       } else {
-        new ErrorNotLoggedIn().throwHttp(req, res);
+        new ErrorForbidden().throwHttp(req, res);
       }
     };
+  }
+
+  /**
+   * verifyToken method
+   *
+   * Returns the payload of the currently signed in user's token.
+   *
+   * @param {HTTP REQ} req
+   * @returns {Object} token payload { email, roles }
+   */
+  static verifyToken(req) {
+    dotenv.config();
+    if (!req.cookies.token) {
+      throw new ErrorNotLoggedIn();
+    }
+    try {
+      return jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
+    } catch (e) {
+      // jwt.verify throws on an invalid or tampered token; it never returns a falsy payload.
+      throw new ErrorNotLoggedIn();
+    }
+  }
+
+  /**
+   * isLoggedIn method
+   *
+   * Returns whether the request carries a valid login token.
+   *
+   * @param {HTTP REQ} req
+   * @returns {Boolean} true only for a valid token
+   */
+  static isLoggedIn(req) {
+    try {
+      Authorize.verifyToken(req);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   /**
@@ -49,17 +86,7 @@ export default class Authorize {
    * @returns {String} Email
    */
   static getEmail(req) {
-    dotenv.config();
-    if (req.cookies.token) {
-      const payload = jwt.verify(req.cookies.token, process.env.SERVER_TOKEN_KEY);
-      if (payload) {
-        return payload.email;
-      } else {
-        new ErrorFailedLogin().throwHttp(req, res);
-      }
-    } else {
-      new ErrorNotLoggedIn().throwHttp(req, res);
-    }
+    return Authorize.verifyToken(req).email;
   }
 
   /**
