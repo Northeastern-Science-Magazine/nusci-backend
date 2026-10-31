@@ -89,7 +89,7 @@ describe("S3Service endpoint tests", () => {
     process.env.S3_ENDPOINT = "http://minio:9000";
     process.env.S3_PUBLIC_ENDPOINT = "http://localhost:9000";
     const S3 = await loadService();
-    const { uploadUrl } = await S3.createUploadUrl(MediaFolder.Archive, "application/pdf");
+    const { uploadUrl } = await S3.createUploadUrl(MediaFolder.Archive, "application/pdf", 1024);
     expect(uploadUrl).toMatch(/^http:\/\/localhost:9000\/nusci-media\/dev\/archive\//);
   });
 
@@ -98,6 +98,13 @@ describe("S3Service endpoint tests", () => {
     const S3 = await loadService();
     const url = await S3.createDownloadUrl("dev/archive/a.pdf");
     expect(url).toMatch(/^http:\/\/localhost:9000\/nusci-media\/dev\/archive\/a\.pdf\?/);
+  });
+
+  test("upload URLs sign the content type and length", async () => {
+    const S3 = await loadService();
+    const { uploadUrl } = await S3.createUploadUrl(MediaFolder.Images, "image/png", 1024);
+    const signed = new URL(uploadUrl).searchParams.get("X-Amz-SignedHeaders").split(";");
+    expect(signed).toEqual(expect.arrayContaining(["content-length", "content-type"]));
   });
 });
 
@@ -129,6 +136,11 @@ describe("S3Service server-side file tests", () => {
     const command = send.mock.calls[0][0];
     expect(command).toBeInstanceOf(PutObjectCommand);
     expect(command.input).toStrictEqual({ Bucket: "nusci-media", Key: key, Body: body, ContentType: "image/jpeg" });
+  });
+
+  test("getObjectInfo treats a 403 as missing", async () => {
+    send.mockRejectedValue(Object.assign(new Error("Forbidden"), { $metadata: { httpStatusCode: 403 } }));
+    expect(await S3Service.getObjectInfo("dev/archive/missing.pdf")).toBeNull();
   });
 
   test("downloadToFile streams the object to disk", async () => {

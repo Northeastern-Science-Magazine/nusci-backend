@@ -42,7 +42,7 @@ export default class MediaController {
         throw new ErrorValidation(`File exceeds the ${folder.maxBytes / (1024 * 1024)}MB limit.`);
       }
 
-      const upload = await S3Service.createUploadUrl(folder, contentType);
+      const upload = await S3Service.createUploadUrl(folder, contentType, size);
       res.status(200).json({ ...upload, contentType });
     } catch (e) {
       if (e instanceof HttpError) {
