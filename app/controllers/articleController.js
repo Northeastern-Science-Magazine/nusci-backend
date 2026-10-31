@@ -1,15 +1,23 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
-import { InternalCommentCreate } from "../models/apiModels/internalComment.js";
+import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
 import {
   ArticleUpdate,
+  ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
   Article,
 } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
+import {
+  ErrorArticleNotFound,
+  ErrorIssueMapNotFound,
+  ErrorUnexpected,
+  HttpError,
+  ErrorValidation,
+} from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
@@ -90,7 +98,77 @@ export default class ArticleController {
     }
   }
 
+ 
+
   /**
+   * editArticle method
+   *
+   * Handles the request to edit an article from the article edit page.
+   * Any subset of title, content, authors, categories, sources, and
+   * issue number can be changed in one request. The slug is intentionally
+   * left unchanged so that existing links to the article do not break.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async editArticle(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const edit = await ArticleEdit.safeParseAsync(req.body);
+
+      if (!edit.success) {
+        throw new ErrorValidation("Incoming edit validation failed");
+      }
+
+      const { issueNumber, ...fields } = edit.data;
+
+      // converts the given author emails into user IDs, throws before anything is written
+      if (fields.authors) {
+        fields.authors = await Utils.getUserIdsByEmails(fields.authors);
+      }
+
+      // throws if the article or the issue map does not exist, before anything is written
+      if (!(await ArticlesAccessor.getArticleBySlug(slug))) {
+        throw new ErrorArticleNotFound();
+      }
+      if (issueNumber !== undefined && !(await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber))) {
+        throw new ErrorIssueMapNotFound();
+      }
+
+      // the fields and issue number are saved together in one write, with one modification time
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, {
+        ...fields,
+        ...(issueNumber !== undefined && { issueNumber }),
+        modificationTime: new Date(),
+      });
+
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
+
+      // the article already has its new issue number, so only the issue maps are updated here
+      if (issueNumber !== undefined) {
+        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug, { syncArticle: false });
+      }
+
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+ /**
    * updateStatus method
    *
    * Handles the request to update the status of an article.
@@ -133,47 +211,6 @@ export default class ArticleController {
   }
 
   /**
-   * updateAuthors method
-   *
-   * Handles the request to update the list of authors for an article.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateAuthors(req, res) {
-    try {
-      const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Validation failed.");
-      }
-
-      const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
-      updates.data.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      // Validate and construct an ArticleResponse instance
-      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
-      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
-
-      res.status(200).json(updatedArticleResponse);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
    * addInternalComment Method
    *
    * This method adds an internal, unresolved comment to the given article.
@@ -189,19 +226,25 @@ export default class ArticleController {
       const user = await UsersAccessor.getUserByEmail(email);
       const userID = user._id;
 
-      const comment = new InternalCommentCreate({ user: userID, comment: req.body.comment });
+      const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
+      if (!comment.success) {
+        throw new ErrorValidation("Comment creation validation failed.");
+      }
 
       // modify the article with the new comment
-      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment);
+      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
 
       if (!updatedArticle) {
         throw new ErrorArticleNotFound();
       }
 
-      const finalArticle = new ArticleResponse(updatedArticle.toObject());
+      const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
+      if (!finalArticle.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
       //return updated article with new comment
-      res.status(201).json(finalArticle);
+      res.status(201).json(finalArticle.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -222,8 +265,13 @@ export default class ArticleController {
    */
   static async resolveInternalComment(req, res, next) {
     try {
+      const resolve = await InternalCommentResolve.safeParseAsync(req.body);
+      if (!resolve.success) {
+        throw new ErrorValidation("Comment resolve validation failed.");
+      }
+
       // modify the comment status
-      const a = await ArticlesAccessor.resolveCommentById(req.body.commentId);
+      const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
       res.status(201).json({});
     } catch (e) {
       if (e instanceof HttpError) {
@@ -278,16 +326,15 @@ export default class ArticleController {
         searchResult = await ArticlesAccessor.searchArticles(query, limit, skip, sortOrder);
       }
 
-      /** Validation will need to remove pw and sensitive profile info... later I guess */
-      // const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
-      // console.log(validateArticleResponse);
-      // if (!validateArticleResponse.success) {
-      //   throw new ErrorValidation("Search response validation failed");
-      // }
+      // Strip sensitive fields (e.g. password) from results before sending
+      const validateArticleResponse = await ArticlePublicListResponse.safeParseAsync(searchResult.results);
+      if (!validateArticleResponse.success) {
+        throw new ErrorValidation("Search response validation failed");
+      }
 
       // Return results with total count for pagination
       res.status(200).json({
-        results: searchResult.results,
+        results: validateArticleResponse.data,
         total: searchResult.total,
       });
     } catch (e) {

@@ -14,7 +14,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("create and add article to issue map", () => {
+// route is commented out in issueMapRoutes.js
+describe.skip("create and add article to issue map", () => {
   /* In-file testing data */
   const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";
   const validSectionName = "Event Planning";

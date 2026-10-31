@@ -13,7 +13,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Remove article from issue map", () => {
+// route is commented out in issueMapRoutes.js
+describe.skip("Remove article from issue map", () => {
   /* In-file test data */
   const validArticleSlugFromIssue1 = "exploring-the-future-ai-integration-in-everyday-life";
   const validArticleSlugFromIssue2 = "discovery-of-ancient-flying-machine-leaves-scientists-baffled";

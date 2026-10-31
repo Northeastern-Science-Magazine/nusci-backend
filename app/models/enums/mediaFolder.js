@@ -14,7 +14,7 @@ const SIGNED_IN = Accounts.list().filter((account) => account !== Accounts.None)
  */
 export default class MediaFolder {
   // covers are rendered from the PDF by the server, so clients only upload PDFs here
-  static Archive = new MediaFolder("archive", ["application/pdf"], 250 * 1024 * 1024, [Accounts.Admin, Accounts.Editor]);
+  static Archive = new MediaFolder("archive", ["application/pdf"], 250 * 1024 * 1024, [Accounts.Admin]);
   // article images, profile pictures and banners, so anyone signed in can upload
   static Images = new MediaFolder("images", IMAGE_TYPES, 25 * 1024 * 1024, SIGNED_IN);
 

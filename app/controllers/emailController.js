@@ -1,14 +1,8 @@
 import EmailAccessor from "../databaseAccessors/emailAccessor.js";
-import {
-  CustomEmail,
-  DeadlineEmail,
-  InviteUserEmail,
-  ReminderEmail,
-  ResetPasswordEmail,
-  OTPEmail,
-} from "../models/zodSchemas/email.js";
+import { CustomEmail, DeadlineEmail, ReminderEmail, ResetPasswordEmail, OTPEmail } from "../models/zodSchemas/email.js";
 import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import EmailType from "../models/enums/emailType.js";
+import { ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
 
 export default class EmailController {
   /**
@@ -17,21 +11,26 @@ export default class EmailController {
    * @param {Response} res
    */
   static async sendEmail(req, res) {
-    // Validate incoming
-    const parsedEmail = EmailController.validateEmailRequestData(req.body);
+    try {
+      // Validate incoming
+      const parsedEmail = EmailController.validateEmailRequestData(req.body);
 
-    console.log(parsedEmail);
+      // Format email according to its type
+      const email = await EmailController.generateEmailVariables(parsedEmail);
 
-    // Format email according to its type
-    const email = await EmailController.generateEmailVariables(parsedEmail);
+      // insert record into db
+      await EmailAccessor.createEmail(email);
 
-    // insert record into db
-    await EmailAccessor.createEmail(email);
-
-    // send email using Resend API
-    const response = await ResendEmail.sendEmailWithTemplate(email);
-    res.json(response);
-    res.status(200);
+      // send email using Resend API
+      const response = await ResendEmail.sendEmailWithTemplate(email);
+      res.status(200).json(response);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 
   /**
@@ -44,7 +43,7 @@ export default class EmailController {
     const types = EmailType.listr();
     const template = types.find((type) => type === emailObj.type);
     if (!template) {
-      throw new ErrorUnexpected(`Email template ${emailObj.template} not found.`);
+      throw new ErrorUnexpected(`Email template ${emailObj.type} not found.`);
     }
 
     let templateSchema;
@@ -57,8 +56,8 @@ export default class EmailController {
         templateSchema = DeadlineEmail;
         break;
       case EmailType.Invite_User:
-        templateSchema = InviteUserEmail;
-        break;
+        // Invites need roles and one token per recipient, which only /user/invite handles.
+        throw new ErrorValidation("Use POST /user/invite to send invites.");
       case EmailType.Reminder:
         templateSchema = ReminderEmail;
         break;
@@ -87,9 +86,6 @@ export default class EmailController {
         break;
       case EmailType.Deadline:
         generatedEmailData = GenerateEmail.Deadline(email);
-        break;
-      case EmailType.Invite_User:
-        generatedEmailData = GenerateEmail.InviteUser(email);
         break;
       case EmailType.Reminder:
         generatedEmailData = GenerateEmail.Reminder(email);

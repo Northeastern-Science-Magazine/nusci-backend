@@ -158,20 +158,26 @@ export default class S3Service {
 
   /**
    * Generates a presigned PUT URL for a new object in the given folder.
-   * The browser must send the same Content-Type header when uploading.
+   * Content-Type and Content-Length are signed, so S3 rejects an upload
+   * whose type or size differs from what was requested.
    *
    * @param {MediaFolder} folder
    * @param {String} contentType
+   * @param {Number} size file size in bytes
    * @returns {Promise<{ key: String, uploadUrl: String, expiresIn: Number }>}
    */
-  static async createUploadUrl(folder, contentType) {
+  static async createUploadUrl(folder, contentType, size) {
     const key = S3Service.buildKey(folder, contentType);
     const command = new PutObjectCommand({
       Bucket: S3Service.bucket(),
       Key: key,
       ContentType: contentType,
+      ContentLength: size,
     });
-    const uploadUrl = await getSignedUrl(S3Service.presignClient(), command, { expiresIn: UPLOAD_URL_EXPIRY_SECONDS });
+    const uploadUrl = await getSignedUrl(S3Service.presignClient(), command, {
+      expiresIn: UPLOAD_URL_EXPIRY_SECONDS,
+      signableHeaders: new Set(["content-type", "content-length"]),
+    });
     return { key, uploadUrl, expiresIn: UPLOAD_URL_EXPIRY_SECONDS };
   }
 
@@ -233,7 +239,9 @@ export default class S3Service {
       const head = await S3Service.client().send(new HeadObjectCommand({ Bucket: S3Service.bucket(), Key: key }));
       return { contentType: head.ContentType, contentLength: head.ContentLength };
     } catch (e) {
-      if (e?.name === "NotFound" || e?.$metadata?.httpStatusCode === 404) {
+      // without s3:ListBucket, S3 answers 403 instead of 404 for a missing key
+      const status = e?.$metadata?.httpStatusCode;
+      if (e?.name === "NotFound" || status === 404 || status === 403) {
         return null;
       }
       throw e;

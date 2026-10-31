@@ -94,15 +94,25 @@ export default class ArchivedIssueController {
       const coverKey = await PdfCoverService.createCover(pdfKey);
 
       const now = new Date();
-      const issue = await ArchivedIssueAccessor.createArchivedIssue({
-        issueNumber,
-        title,
-        pdfKey,
-        coverKey,
-        creatingUser: user._id,
-        creationTime: now,
-        modificationTime: now,
-      });
+      let issue;
+      try {
+        issue = await ArchivedIssueAccessor.createArchivedIssue({
+          issueNumber,
+          title,
+          pdfKey,
+          coverKey,
+          creatingUser: user._id,
+          creationTime: now,
+          modificationTime: now,
+        });
+      } catch (e) {
+        // 11000 is MongoDB's duplicate key error: a concurrent request
+        // archived the same issue number after the check above
+        if (e?.code === 11000) {
+          throw new ErrorDuplicateKey(`Issue ${issueNumber} is already archived.`);
+        }
+        throw e;
+      }
 
       res.status(201).json(await ArchivedIssueController.toResponse(issue));
     } catch (e) {
