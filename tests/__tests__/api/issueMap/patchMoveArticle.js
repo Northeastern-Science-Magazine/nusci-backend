@@ -123,10 +123,7 @@ describe("Move article between issue maps", () => {
   });
 
   test("Invalid article move due to article not being in any issue map", async () => {
-    await request(app)
-      .patch(`/issue-map/remove-article`)
-      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
-      .send({ issueNumber: 1, articleSlug: validArticleSlugFromIssue1 });
+    await IssueMapAccessor.removeArticleFromIssue(1, validArticleSlugFromIssue1);
 
     const response = await request(app)
       .patch(`/issue-map/move-article`)

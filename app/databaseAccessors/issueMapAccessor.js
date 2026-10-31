@@ -288,13 +288,13 @@ export default class IssueMapAccessor {
       return destinationIssue;
     }
 
-    //add before removing
+    //remove before adding, since an article can only be in one issue at a time
+    await IssueMap.updateOne({ _id: currentIssue._id }, { $pull: { articles: article._id } });
     const updatedIssue = await IssueMap.findOneAndUpdate(
       { _id: destinationIssue._id },
       { $addToSet: { articles: article._id } },
       { new: true }
     );
-    await IssueMap.updateOne({ _id: currentIssue._id }, { $pull: { articles: article._id } });
 
     // keep the article's issue number and last-modified time in sync.
     await Article.updateOne(
