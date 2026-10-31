@@ -159,6 +159,19 @@ describe("Create archived issue", () => {
     expect(createCover).not.toHaveBeenCalled();
   });
 
+  test("reject duplicate issue number archived concurrently", async () => {
+    // another request saves issue 61 while this one is rendering its cover
+    createCover.mockImplementation(async () => {
+      const { _id, ...existing } = (await ArchivedIssue.findOne({ issueNumber: 60 })).toObject();
+      await ArchivedIssue.create({ ...existing, issueNumber: 61 });
+      return renderedCoverKey;
+    });
+    const response = await request(app).post("/archive").set("Cookie", admin).send(newIssue);
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(409);
+  });
+
   test("reject a PDF that was never uploaded", async () => {
     const response = await request(app)
       .post("/archive")
