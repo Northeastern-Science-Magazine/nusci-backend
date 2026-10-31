@@ -89,7 +89,7 @@ export default class UserController {
        */
       const decrypted = await Password.compare(req.body.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin(user);
+        throw new ErrorFailedLogin();
       }
       dotenvConfig(); // load .env variables
 

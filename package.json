@@ -17,8 +17,7 @@
     "reset-silent": "node --no-deprecation setup/drop.js --silent && node --no-deprecation setup/reseed.js --silent",
     "test": "jest",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "migration-04032026-1": "node migrations/04032026-1.js"
+    "format:check": "prettier --check ."
   },
   "repository": {
     "type": "git",

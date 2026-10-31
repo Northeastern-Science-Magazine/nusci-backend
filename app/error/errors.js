@@ -167,6 +167,12 @@ export class ErrorDuplicateKey extends HttpError {
   }
 }
 
+export class ErrorIssueMapNotEmpty extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Issue Map still contains articles.", message: this.message });
+  }
+}
+
 /**
  * 500 Errors
  *

@@ -2,9 +2,14 @@
 export const log = {
   api: {
     article: {
+      patchArticleContent: false,
+      patchCategories: false,
       patchAuthors: false,
       patchResolveComment: false,
+      patchIssueNumber: false,
+      patchSources: false,
       patchStatus: false,
+      patchTitle: false,
       postCommentCreate: false,
       getSearch: false,
     },
@@ -23,10 +28,13 @@ export const log = {
     email: {
       postSendEmail: false,
     },
-    article: {},
     issueMap: {
       patchRemoveArticle: false,
       patchCreateAddArticleToMap: false,
+      postCreateIssueMap: false,
+      patchUpdateIssueMap: false,
+      deleteIssueMap: false,
+      getAllIssueNumbers: false,
     },
     photo: {},
     photoTag: {
