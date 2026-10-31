@@ -7,6 +7,10 @@ import MediaController from "../controllers/mediaController.js";
 
 const media = express.Router();
 
-media.route("/upload-url").post(Authorize.allow([Accounts.Admin, Accounts.Editor]), MediaController.createUploadUrl); //presigned upload URL
+// each folder decides which of these roles can upload to it
+const SIGNED_IN = Accounts.list().filter((account) => account !== Accounts.None);
+
+media.route("/upload-url").post(Authorize.allow(SIGNED_IN), MediaController.createUploadUrl); //presigned upload URL
+media.route("/download-url").get(MediaController.getDownloadUrl); //presigned download URL for an image
 
 export default media;

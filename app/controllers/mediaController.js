@@ -1,8 +1,7 @@
 import S3Service from "../services/s3/s3Service.js";
 import MediaFolder from "../models/enums/mediaFolder.js";
-import Accounts from "../models/enums/accounts.js";
 import Authorize from "../auth/authorization.js";
-import { UploadUrlRequest } from "../models/zodSchemas/media.js";
+import { DownloadUrlRequest, UploadUrlRequest } from "../models/zodSchemas/media.js";
 import { ErrorForbidden, ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
 
 /**
@@ -30,11 +29,9 @@ export default class MediaController {
       const { contentType, size } = parsed.data;
       const folder = MediaFolder.toMediaFolder(parsed.data.folder);
 
-      const userRoles = Authorize.verifyToken(req).roles.map((role) => Accounts.toAccount(role));
-      if (!folder.roles.some((role) => userRoles.includes(role))) {
+      if (!folder.canUpload(Authorize.getRoles(req))) {
         throw new ErrorForbidden();
       }
-
       if (!folder.contentTypes.includes(contentType)) {
         throw new ErrorValidation(`Content type ${contentType} is not allowed in ${folder.toString()}.`);
       }
@@ -45,11 +42,48 @@ export default class MediaController {
       const upload = await S3Service.createUploadUrl(folder, contentType, size);
       res.status(200).json({ ...upload, contentType });
     } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
+      MediaController.handleError(e, req, res);
+    }
+  }
+
+  /**
+   * Generates a short lived URL to download an uploaded image.
+   * Images are public (article images, profile pictures), so no login is needed,
+   * but only keys in the images folder are served: archive files go through /archive.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getDownloadUrl(req, res) {
+    try {
+      const parsed = DownloadUrlRequest.safeParse(req.query);
+      if (!parsed.success) {
+        throw new ErrorValidation("Download URL request validation failed.");
       }
+
+      const { key } = parsed.data;
+      if (!S3Service.isKeyInFolder(key, MediaFolder.Images)) {
+        throw new ErrorValidation(`Key ${key} is not in the images folder.`);
+      }
+
+      res.status(200).json({ url: await S3Service.createDownloadUrl(key), expiresIn: S3Service.downloadUrlExpiry() });
+    } catch (e) {
+      MediaController.handleError(e, req, res);
+    }
+  }
+
+  /**
+   * Sends the HTTP response for an error.
+   *
+   * @param {Error} e
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static handleError(e, req, res) {
+    if (e instanceof HttpError) {
+      e.throwHttp(req, res);
+    } else {
+      new ErrorUnexpected(e.message).throwHttp(req, res);
     }
   }
 }

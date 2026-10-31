@@ -169,4 +169,13 @@ describe("MediaFolder enum tests", () => {
   test("listr", () => {
     expect(MediaFolder.listr()).toStrictEqual(["archive", "images"]);
   });
+
+  test("canUpload", () => {
+    expect(MediaFolder.Archive.canUpload(["admin"])).toBe(true);
+    expect(MediaFolder.Archive.canUpload(["editor"])).toBe(false);
+    expect(MediaFolder.Archive.canUpload(["author", "photographer"])).toBe(false);
+    expect(MediaFolder.Images.canUpload(["author"])).toBe(true);
+    expect(MediaFolder.Images.canUpload(["none"])).toBe(false);
+    expect(MediaFolder.Images.canUpload([])).toBe(false);
+  });
 });

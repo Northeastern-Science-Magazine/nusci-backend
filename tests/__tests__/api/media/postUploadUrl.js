@@ -73,7 +73,20 @@ describe("Presigned upload URL tests", () => {
     expect(response.status).toBe(403);
   });
 
-  test("reject roles other than admin and editor", async () => {
+  test("any signed in role gets an image upload URL", async () => {
+    for (const email of ["jasmine@jasmine.com", "jiajia@jiajia.com", "vianna@vianna.com"]) {
+      const response = await request(app)
+        .post("/media/upload-url")
+        .set("Cookie", [`token=${tokens[email]}`])
+        .send({ folder: "images", contentType: "image/jpeg", size: 1024 });
+
+      showLog && console.log(response.body);
+      expect(response.status).toBe(200);
+      expect(response.body.key).toMatch(new RegExp(`^${process.env.S3_KEY_PREFIX}/images/.+\\.jpg$`));
+    }
+  });
+
+  test("reject archive uploads from roles other than admin", async () => {
     const response = await request(app)
       .post("/media/upload-url")
       .set("Cookie", [`token=${tokens["jasmine@jasmine.com"]}`])
