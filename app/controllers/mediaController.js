@@ -1,7 +1,9 @@
 import S3Service from "../services/s3/s3Service.js";
 import MediaFolder from "../models/enums/mediaFolder.js";
+import Accounts from "../models/enums/accounts.js";
+import Authorize from "../auth/authorization.js";
 import { UploadUrlRequest } from "../models/zodSchemas/media.js";
-import { ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
+import { ErrorForbidden, ErrorUnexpected, ErrorValidation, HttpError } from "../error/errors.js";
 
 /**
  * MediaController Class
@@ -27,6 +29,11 @@ export default class MediaController {
 
       const { contentType, size } = parsed.data;
       const folder = MediaFolder.toMediaFolder(parsed.data.folder);
+
+      const userRoles = Authorize.verifyToken(req).roles.map((role) => Accounts.toAccount(role));
+      if (!folder.roles.some((role) => userRoles.includes(role))) {
+        throw new ErrorForbidden();
+      }
 
       if (!folder.contentTypes.includes(contentType)) {
         throw new ErrorValidation(`Content type ${contentType} is not allowed in ${folder.toString()}.`);

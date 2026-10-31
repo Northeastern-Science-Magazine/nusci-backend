@@ -10,10 +10,10 @@ const archive = express.Router();
 archive
   .route("/")
   .get(ArchivedIssueController.getAll) //list all archived issues
-  .post(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArchivedIssueController.create); //archive an uploaded issue
+  .post(Authorize.allow([Accounts.Admin]), ArchivedIssueController.create); //archive an uploaded issue
 archive
   .route("/:issueNumber")
   .get(ArchivedIssueController.getByNumber) //get an archived issue
-  .delete(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArchivedIssueController.delete); //delete an archived issue and its files
+  .delete(Authorize.allow([Accounts.Admin]), ArchivedIssueController.delete); //delete an archived issue and its files
 
 export default archive;
