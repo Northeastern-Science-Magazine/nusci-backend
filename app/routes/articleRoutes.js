@@ -7,9 +7,6 @@ import Accounts from "../models/enums/accounts.js";
 
 const articles = express.Router();
 
-/* Roles allowed to upload articles. Permission to upload an article is also permission to edit it. */
-const uploadRoles = [Accounts.Admin, Accounts.Editor, Accounts.Author];
-
 articles.route("/create").post(ArticlesController.createArticle);
 articles.route("/slug/:slug").get(ArticlesController.getArticleBySlug); //get article by slug
 articles.route("/search").post(ArticlesController.search);
@@ -20,20 +17,14 @@ articles.route("/search").post(ArticlesController.search);
 // articles.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
 // articles.route("/design-status/:slug"); //update the design status of a given article
 // articles.route("/photography-status/:slug"); //update the photography status of a given article
-articles.route("/title/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateTitle); //update the title of a given article
-articles.route("/content/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateArticleContent); //update the content of a given article
-articles.route("/authors/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateAuthors); //update the list of authors to this article,
-articles.route("/categories/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateCategories); //update the categories of a given article
-articles.route("/sources/:slug").patch(Authorize.allow(uploadRoles), ArticlesController.updateSources); //update the sources of a given article
-articles.route("/issue-number/:slug").patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.updateIssueNumber); //move a given article to a different issue
 // articles.route("/editors/:slug"); //update the list of editor to this article,
 // articles.route("/designers/:slug"); //update the list of designer to this article,
 // articles.route("/photographers/:slug"); //update the list of photographer to this article
 
 // articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
 
-// idea: update is when updating article content, categories, sources, etc, but not metadata about an article
-// articles.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
+// edit is for article content, categories, sources, etc, but not metadata about an article
+articles.route("/edit/:slug").patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.editArticle); //edit any of an article's title, content, authors, categories, sources, and issue number
 // articles.route("/delete/:slug"); //delete an article
 
 // articles

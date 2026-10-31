@@ -5,12 +5,7 @@ import Authorize from "../auth/authorization.js";
 import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
 import {
   ArticleUpdate,
-  ArticleTitleUpdate,
-  ArticleContentUpdate,
-  ArticleAuthorsUpdate,
-  ArticleCategoriesUpdate,
-  ArticleSourcesUpdate,
-  ArticleIssueNumberUpdate,
+  ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
@@ -98,40 +93,53 @@ export default class ArticleController {
   }
 
  
+
   /**
-   * updateIssueNumber method
+   * editArticle method
    *
-   * Handles the request to change the issue an article belongs to.
-   * Moves the article to the given issue map, which also keeps
-   * the article's own issue number in sync.
+   * Handles the request to edit an article from the article edit page.
+   * Any subset of title, content, authors, categories, sources, and
+   * issue number can be changed in one request. The slug is intentionally
+   * left unchanged so that existing links to the article do not break.
    *
    * @param {Request} req
    * @param {Response} res
    */
-  static async updateIssueNumber(req, res) {
+  static async editArticle(req, res) {
     try {
       const { slug } = req.params;
- 
-      const updates = await ArticleIssueNumberUpdate.safeParseAsync(req.body);
- 
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
+
+      const edit = await ArticleEdit.safeParseAsync(req.body);
+
+      if (!edit.success) {
+        throw new ErrorValidation("Incoming edit validation failed");
       }
- 
-      // throws if the article or the issue map does not exist
-      await IssueMapAccessor.moveArticleToIssue(updates.data.issueNumber, slug);
- 
-      const updatedArticleData = await ArticlesAccessor.getArticleBySlug(slug);
- 
+
+      const { issueNumber, ...fields } = edit.data;
+
+      // converts the given author emails into user IDs, throws before anything is written
+      if (fields.authors) {
+        fields.authors = await Utils.getUserIdsByEmails(fields.authors);
+      }
+
+      // throws if the article or the issue map does not exist, before anything is written
+      if (issueNumber !== undefined) {
+        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug);
+      }
+
+      const updatedArticleData = Object.keys(fields).length
+        ? await ArticlesAccessor.updateArticle(slug, { ...fields, modificationTime: new Date() })
+        : await ArticlesAccessor.getArticleBySlug(slug);
+
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
       }
- 
+
       const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
       if (!updatedArticleResponse.success) {
         throw new ErrorValidation("Outgoing response validation failed");
       }
- 
+
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse.data);
     } catch (e) {
@@ -142,7 +150,6 @@ export default class ArticleController {
       }
     }
   }
-
 
  /**
    * updateStatus method
@@ -185,134 +192,6 @@ export default class ArticleController {
       }
     }
   }
-
-  /**
-   * updateAuthors method
-   *
-   * Handles the request to update the list of authors for an article.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateAuthors(req, res) {
-    try {
-      const { slug } = req.params;
-
-      const updates = await ArticleAuthorsUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
-
-      // converts the given author emails into user IDs
-      const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
-      updates.data.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
-   * updateTitle method
-   *
-   * Handles the request to update the title of an article.
-   * The slug is intentionally left unchanged so that
-   * existing links to the article do not break.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateTitle(req, res) {
-    try {
-      const { slug } = req.params;
-
-      const updates = await ArticleTitleUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
-
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
-   * updateArticleContent method
-   *
-   * Handles the request to update the content of an article.
-   * The given content replaces the existing content in full.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateArticleContent(req, res) {
-    try {
-      const { slug } = req.params;
-
-      const updates = await ArticleContentUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
-
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-
 
   /**
    * addInternalComment Method
@@ -449,87 +328,4 @@ export default class ArticleController {
       }
     }
   }
-
-    /**
-   * updateCategories method
-   *
-   * Handles the request to update the categories of an article.
-   * The given categories replace the existing categories in full.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateCategories(req, res) {
-    try {
-      const { slug } = req.params;
- 
-      const updates = await ArticleCategoriesUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
- 
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
- 
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
- 
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
- 
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
- 
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-    /**
-   * updateSources method
-   *
-   * Handles the request to update the sources of an article.
-   * The given sources replace the existing sources in full.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateSources(req, res) {
-    try {
-      const { slug } = req.params;
- 
-      const updates = await ArticleSourcesUpdate.safeParseAsync({ ...req.body, modificationTime: new Date() });
- 
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
- 
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
- 
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
- 
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
- 
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
 }

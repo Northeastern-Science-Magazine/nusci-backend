@@ -90,53 +90,32 @@ export const ArticleUpdate = Article.extend({
   .partial();
 
 /**
- * Targeted update schemas
+ * ArticleEdit schema
  *
- * Each schema only accepts the field its endpoint is allowed to change,
- * so one endpoint can never modify unrelated parts of an article.
- * The required field is not optional and has no default, so a request
- * that omits it fails validation instead of overwriting existing data.
+ * Accepts any subset of the fields an admin or editor can change from the
+ * article edit page, but at least one. Unknown fields (statuses, slug,
+ * approvals, etc.) are rejected so this endpoint can never modify unrelated
+ * parts of an article.
  *
- * modificationTime is expected to be set by the controller at request time.
+ * modificationTime is set by the controller at request time.
  */
-export const ArticleTitleUpdate = z.object({
-  title: z.string().trim().min(1),
-  modificationTime: z.date(),
-});
-
-export const ArticleContentUpdate = z.object({
-  articleContent: Article.shape.articleContent,
-  modificationTime: z.date(),
-});
-
-export const ArticleAuthorsUpdate = z.object({
-  authors: z.array(z.string()),
-  modificationTime: z.date(),
-});
-
-export const ArticleCategoriesUpdate = z.object({
-  categories: Article.shape.categories.min(1),
-  modificationTime: z.date(),
-});
-
-export const ArticleSourcesUpdate = z.object({
-  sources: z.array(
-    z.object({
-      text: z.string(),
-      href: z.string().nullable(),
-    })
-  ),
-  modificationTime: z.date(),
-});
-
-/**
- * The issue number is changed by moving the article between issue maps,
- * which also keeps the article's own issue number in sync, so there is
- * no modificationTime for the controller to set here.
- */
-export const ArticleIssueNumberUpdate = z.object({
-  issueNumber: z.number().int().positive(),
-});
+export const ArticleEdit = z
+  .object({
+    title: z.string().trim().min(1),
+    articleContent: Article.shape.articleContent,
+    authors: z.array(z.string()),
+    categories: Article.shape.categories.min(1),
+    sources: z.array(
+      z.object({
+        text: z.string(),
+        href: z.string().nullable(),
+      })
+    ),
+    issueNumber: z.number().int().positive(),
+  })
+  .partial()
+  .strict()
+  .refine((edit) => Object.keys(edit).length > 0, { message: "At least one field must be edited" });
 
 export const ArticleDelete = z.object({
   slug: z.string(),
