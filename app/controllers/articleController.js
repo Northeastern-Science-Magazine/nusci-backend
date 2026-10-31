@@ -11,7 +11,13 @@ import {
   ArticleSearchRequest,
   Article,
 } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
+import {
+  ErrorArticleNotFound,
+  ErrorIssueMapNotFound,
+  ErrorUnexpected,
+  HttpError,
+  ErrorValidation,
+} from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
@@ -123,16 +129,27 @@ export default class ArticleController {
       }
 
       // throws if the article or the issue map does not exist, before anything is written
-      if (issueNumber !== undefined) {
-        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug);
+      if (!(await ArticlesAccessor.getArticleBySlug(slug))) {
+        throw new ErrorArticleNotFound();
+      }
+      if (issueNumber !== undefined && !(await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber))) {
+        throw new ErrorIssueMapNotFound();
       }
 
-      const updatedArticleData = Object.keys(fields).length
-        ? await ArticlesAccessor.updateArticle(slug, { ...fields, modificationTime: new Date() })
-        : await ArticlesAccessor.getArticleBySlug(slug);
+      // the fields and issue number are saved together in one write, with one modification time
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, {
+        ...fields,
+        ...(issueNumber !== undefined && { issueNumber }),
+        modificationTime: new Date(),
+      });
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
+      }
+
+      // the article already has its new issue number, so only the issue maps are updated here
+      if (issueNumber !== undefined) {
+        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug, { syncArticle: false });
       }
 
       const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
