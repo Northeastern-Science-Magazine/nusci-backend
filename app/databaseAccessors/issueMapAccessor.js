@@ -260,9 +260,11 @@ export default class IssueMapAccessor {
    *
    * @param {Number} issueNumber - Issue number to move the article to
    * @param {String} articleSlug - Article slug to move
+   * @param {Object} [options]
+   * @param {Boolean} [options.syncArticle=true] - Also update the article's issue number and modification time
    * @returns the updated issue the article was moved to
    */
-  static async moveArticleToIssue(issueNumber, articleSlug) {
+  static async moveArticleToIssue(issueNumber, articleSlug, { syncArticle = true } = {}) {
     await Connection.open();
 
     const article = await Article.findOne({ slug: articleSlug });
@@ -270,31 +272,34 @@ export default class IssueMapAccessor {
       throw new ErrorArticleNotFound();
     }
 
-    //the issue the article is currently in
-    const currentIssue = await IssueMap.findOne({ articles: article._id });
-
-    //article slug exists, but is not in any issue
-    if (!currentIssue) {
-      throw new ErrorInvalidArticleAndIssueCombination();
-    }
-
     const destinationIssue = await IssueMap.findOne({ issueNumber: issueNumber });
     if (!destinationIssue) {
       throw new ErrorIssueMapNotFound();
     }
 
-    //article is already in the requested issue, nothing to move
-    if (currentIssue._id.equals(destinationIssue._id)) {
+    //article is already in the requested issue (top level or a section), nothing to move
+    const inDestination =
+      destinationIssue.articles.some((id) => id.equals(article._id)) ||
+      destinationIssue.sections.some((section) => section.articles.some((id) => id.equals(article._id)));
+    if (inDestination) {
       return destinationIssue;
     }
 
-    //remove before adding, since an article can only be in one issue at a time
-    await IssueMap.updateOne({ _id: currentIssue._id }, { $pull: { articles: article._id } });
+    //remove from every other issue (top level and sections) before adding, since an
+    //article can only be in one issue at a time. articles in no issue are just added.
+    await IssueMap.updateMany(
+      { _id: { $ne: destinationIssue._id } },
+      { $pull: { articles: article._id, "sections.$[].articles": article._id } }
+    );
     const updatedIssue = await IssueMap.findOneAndUpdate(
       { _id: destinationIssue._id },
       { $addToSet: { articles: article._id } },
       { new: true }
     );
+
+    if (!syncArticle) {
+      return updatedIssue;
+    }
 
     // keep the article's issue number and last-modified time in sync.
     await Article.updateOne(
