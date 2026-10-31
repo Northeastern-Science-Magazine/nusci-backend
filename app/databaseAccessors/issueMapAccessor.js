@@ -232,25 +232,31 @@ export default class IssueMapAccessor {
 
     const article = await Article.findOne({ slug: articleSlug });
     if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    const destinationIssue = await IssueMap.findOne({ issueNumber: issueNumber });
+    if (!destinationIssue) {
       throw new ErrorIssueMapNotFound();
     }
 
+    //article is already in an issue, it has to be moved instead
     const existingIssue = await IssueMap.findOne({
-      issueNumber: issueNumber,
-      articles: article._id,
+      $or: [{ articles: article._id }, { "sections.articles": article._id }],
     });
-
-    //article slug exists, but not in this issue
-    if (!existingIssue) {
+    if (existingIssue) {
       throw new ErrorInvalidArticleAndIssueCombination();
     }
 
     //update the article to the issue using object id
     const updatedIssue = await IssueMap.findOneAndUpdate(
-      { issueNumber: issueNumber },
+      { _id: destinationIssue._id },
       { $addToSet: { articles: article._id } },
       { new: true }
     );
+
+    // keep the article's issue number and last-modified time in sync.
+    await Article.updateOne({ _id: article._id }, { $set: { issueNumber, modificationTime: new Date() } });
 
     return updatedIssue;
   }
