@@ -57,6 +57,14 @@ export class ErrorTypeOfQuery extends HttpError {
   }
 }
 
+// One message for unknown, used, and expired invites, so the response
+// doesn't reveal which tokens exist.
+export class ErrorInvalidInvite extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Invite link is invalid or expired.", message: this.message });
+  }
+}
+
 /**
  * 403 Errors
  *
@@ -162,6 +170,12 @@ export class ErrorUserStatusAlreadyResolved extends HttpError {
 export class ErrorDuplicateKey extends HttpError {
   throwHttp(req, res) {
     res.status(409).json({ error: "Entry has duplicate key in entry.", message: this.message });
+  }
+}
+
+export class ErrorIssueMapNotEmpty extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Issue Map still contains articles.", message: this.message });
   }
 }
 

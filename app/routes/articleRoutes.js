@@ -17,15 +17,14 @@ articles.route("/search").post(ArticlesController.search);
 // articles.route("/writing-status/:slug"); //update the writing status of a given article (cannot set to eic approved)
 // articles.route("/design-status/:slug"); //update the design status of a given article
 // articles.route("/photography-status/:slug"); //update the photography status of a given article
-// articles.route("/authors/:slug").patch(Authorize.allow([Accounts.Admin]), ArticlesController.updateAuthors); //update the list of authors to this article,
 // articles.route("/editors/:slug"); //update the list of editor to this article,
 // articles.route("/designers/:slug"); //update the list of designer to this article,
 // articles.route("/photographers/:slug"); //update the list of photographer to this article
 
 // articles.route("/admin-approve/:slug"); // EIC/admin approve an article to go live into the site.
 
-// idea: update is when updating article content, categories, sources, etc, but not metadata about an article
-// articles.route("/update/:slug"); //update an article -- need to clarify what 'update' and 'who' can update
+// edit is for article content, categories, sources, etc, but not metadata about an article
+articles.route("/edit/:slug").patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.editArticle); //edit any of an article's title, content, authors, categories, sources, and issue number
 // articles.route("/delete/:slug"); //delete an article
 
 // articles
