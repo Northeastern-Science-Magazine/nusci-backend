@@ -13,6 +13,7 @@ import {
 } from "../models/zodSchemas/article.js";
 import {
   ErrorArticleNotFound,
+  ErrorDuplicateKey,
   ErrorIssueMapNotFound,
   ErrorUnexpected,
   HttpError,
@@ -50,7 +51,25 @@ export default class ArticleController {
 
       // TODO need to do this ^ for editors, etc, any other ref data
 
-      const newArticle = await ArticlesAccessor.createArticle(articleData);
+      const duplicateMessage = `An article titled "${articleData.title}" already exists.`;
+      if (await ArticlesAccessor.getArticleBySlug(articleData.slug)) {
+        throw new ErrorDuplicateKey(duplicateMessage);
+      }
+
+      let newArticle;
+      try {
+        newArticle = await ArticlesAccessor.createArticle(articleData);
+      } catch (e) {
+        // 11000 is MongoDB's duplicate key error: a concurrent request
+        // created the same slug after the check above
+        if (e?.code === 11000) {
+          throw new ErrorDuplicateKey(duplicateMessage);
+        }
+        if (e?.name === "ValidationError") {
+          throw new ErrorValidation(e.message);
+        }
+        throw e;
+      }
       res.status(200).json(newArticle);
     } catch (e) {
       if (e instanceof HttpError) {
