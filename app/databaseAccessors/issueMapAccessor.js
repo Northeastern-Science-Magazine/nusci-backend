@@ -33,6 +33,16 @@ export default class IssueMapAccessor {
   }
 
   /**
+   * Count the issues that have at least one article
+   *
+   * @returns number of issues with articles
+   */
+  static async countIssuesWithArticles() {
+    await Connection.open();
+    return await IssueMap.countDocuments({ "articles.0": { $exists: true } });
+  }
+
+  /**
    * Create an issue
    *
    * @param {Object} issue - The issue to create
