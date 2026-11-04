@@ -270,13 +270,16 @@ export default class ArticleController {
         throw new ErrorValidation("Search request validation failed");
       }
 
-      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const { limit, skip, textQuery, categories, issueNumber, sortBy } = validationResult.data;
       const sortOrder = sortBy === "asc" ? 1 : -1;
 
       // Build query object for non-text search filters
       const query = {};
       if (categories && categories.length > 0) {
         query.categories = { $in: categories };
+      }
+      if (issueNumber) {
+        query.issueNumber = issueNumber;
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
