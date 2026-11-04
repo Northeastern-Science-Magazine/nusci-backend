@@ -361,4 +361,61 @@ export default class IssueMapController {
       }
     }
   }
+
+    /**
+   * method to add an article to the issue map.
+   *
+   * Adds an article from the issue map.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async addArticle(req, res) {
+    try {
+      const issueNumber = req.body.issueNumber;
+      const articleSlug = req.body.articleSlug;
+
+      if (!issueNumber || !articleSlug) {
+        throw new ErrorInvalidRequestBody();
+      }
+
+      const updatedIssue = await IssueMapAccessor.addArticleToIssue(issueNumber, articleSlug);
+      res.status(200).json(updatedIssue);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+    /**
+   * method to move an article to a different issue map.
+   *
+   * Removes the article from the issue map it is in and adds it to the given issue map.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async moveArticle(req, res) {
+    try {
+      const issueNumber = req.body.issueNumber;
+      const articleSlug = req.body.articleSlug;
+
+      if (!issueNumber || !articleSlug) {
+        throw new ErrorInvalidRequestBody();
+      }
+
+      const updatedIssue = await IssueMapAccessor.moveArticleToIssue(issueNumber, articleSlug);
+      res.status(200).json(updatedIssue);
+    } catch (e) {
+      console.error(e);
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
 }

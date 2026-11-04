@@ -2,7 +2,7 @@ import IssueMap from "../models/dbModels/issueMap.js";
 import Article from "../models/dbModels/article.js";
 import Connection from "../db/connection.js";
 import mongoose from "mongoose";
-import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination } from "../error/errors.js";
+import { ErrorArticleNotFound, ErrorInvalidArticleAndIssueCombination, ErrorIssueMapNotFound } from "../error/errors.js";
 
 /**
  * IssueMap Accessor Class
@@ -215,6 +215,107 @@ export default class IssueMapAccessor {
       { issueNumber: issueNumber },
       { $pull: { articles: article._id } },
       { new: true }
+    );
+
+    return updatedIssue;
+  }
+
+  /**
+   * Find and add article to given issue
+   *
+   * @param {Number} issueNumber - Issue number to add to
+   * @param {String} articleSlug - Article slug to add
+   * @returns the updated issues
+   */
+  static async addArticleToIssue(issueNumber, articleSlug) {
+    await Connection.open();
+
+    const article = await Article.findOne({ slug: articleSlug });
+    if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    const destinationIssue = await IssueMap.findOne({ issueNumber: issueNumber });
+    if (!destinationIssue) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    //article is already in an issue, it has to be moved instead
+    const existingIssue = await IssueMap.findOne({
+      $or: [{ articles: article._id }, { "sections.articles": article._id }],
+    });
+    if (existingIssue) {
+      throw new ErrorInvalidArticleAndIssueCombination();
+    }
+
+    //update the article to the issue using object id
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { _id: destinationIssue._id },
+      { $addToSet: { articles: article._id } },
+      { new: true }
+    );
+
+    // keep the article's issue number and last-modified time in sync.
+    await Article.updateOne({ _id: article._id }, { $set: { issueNumber, modificationTime: new Date() } });
+
+    return updatedIssue;
+  }
+
+    /**
+   * Find an article and move it from the issue it is currently in to the given issue
+   *
+   * @param {Number} issueNumber - Issue number to move the article to
+   * @param {String} articleSlug - Article slug to move
+   * @param {Object} [options]
+   * @param {Boolean} [options.syncArticle=true] - Also update the article's issue number and modification time
+   * @returns the updated issue the article was moved to
+   */
+  static async moveArticleToIssue(issueNumber, articleSlug, { syncArticle = true } = {}) {
+    await Connection.open();
+
+    const article = await Article.findOne({ slug: articleSlug });
+    if (!article) {
+      throw new ErrorArticleNotFound();
+    }
+
+    const destinationIssue = await IssueMap.findOne({ issueNumber: issueNumber });
+    if (!destinationIssue) {
+      throw new ErrorIssueMapNotFound();
+    }
+
+    //article is already in the requested issue (top level or a section), nothing to move
+    const inDestination =
+      destinationIssue.articles.some((id) => id.equals(article._id)) ||
+      destinationIssue.sections.some((section) => section.articles.some((id) => id.equals(article._id)));
+    if (inDestination) {
+      return destinationIssue;
+    }
+
+    //remove from every other issue (top level and sections) before adding, since an
+    //article can only be in one issue at a time. articles in no issue are just added.
+    await IssueMap.updateMany(
+      { _id: { $ne: destinationIssue._id } },
+      { $pull: { articles: article._id, "sections.$[].articles": article._id } }
+    );
+    const updatedIssue = await IssueMap.findOneAndUpdate(
+      { _id: destinationIssue._id },
+      { $addToSet: { articles: article._id } },
+      { new: true }
+    );
+
+    if (!syncArticle) {
+      return updatedIssue;
+    }
+
+    // keep the article's issue number and last-modified time in sync.
+    await Article.updateOne(
+      { _id: article._id },
+      {
+        $set: {
+          issueNumber,
+          modificationTime: new Date(),
+        },
+      }
     );
 
     return updatedIssue;
