@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { ErrorUnexpected } from "../../error/errors.js";
 import OTPToken from "../../auth/opt.js";
 import OTPAccessor from "../../databaseAccessors/otpAccessor.js";
+import EmailType from "../../models/enums/emailType.js";
 
 // all emails should come from this domain. You guys can change it later if you want.
 const FROM = "NU Sci Magazine <noreply@nuscimagazine.com>";
@@ -51,6 +52,21 @@ export class GenerateEmail {
       },
     };
   }
+
+  static ArticlePitch(pitch, recipients) {
+    return {
+      from: FROM,
+      to: recipients,
+      type: EmailType.Article_Pitch.toString(),
+      variables: {
+        name: pitch.name,
+        email: pitch.email,
+        topic: pitch.topic,
+        draftUrl: pitch.draftUrl || "No draft provided.",
+      },
+    };
+  }
+
 }
 
 export class ResendEmail {
