@@ -293,6 +293,7 @@ export default class ArticleController {
    * - skip: number (optional, default: 0)
    * - textQuery: string (optional, triggers fuzzy search if provided)
    * - categories: array of strings (optional, filters by categories)
+   * - issueNumber: number (optional, positive integer, filters to one issue)
    * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
