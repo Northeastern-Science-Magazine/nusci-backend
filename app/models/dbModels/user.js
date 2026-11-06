@@ -9,9 +9,11 @@ const UserSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    password: { type: String, required: true },
+    // An author an editor adds before they sign up has no password or graduation
+    // year until they accept their invite (see UserController.createAuthor).
+    password: { type: String },
     pronouns: { type: [String] },
-    graduationYear: { type: Number, required: true },
+    graduationYear: { type: Number },
     major: { type: String },
     location: { type: String },
     profileImage: { type: String },

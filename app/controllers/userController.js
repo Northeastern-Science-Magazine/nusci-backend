@@ -3,7 +3,9 @@ import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
 import {
+  AuthorCreate,
   Login,
+  PlaceholderUserCreate,
   UserCreate,
   UserInvite,
   UserSignup,
@@ -81,6 +83,10 @@ export default class UserController {
       if (user.status == AccountStatus.Denied.toString()) {
         throw new ErrorUserDeniedLogin();
       }
+      // An author an editor added has no password until they sign up from their invite.
+      if (!user.password) {
+        throw new ErrorFailedLogin();
+      }
       //check if password matches
       /**
        * @TODO unhashed passwords should not be sent over HTTP
@@ -129,7 +135,10 @@ export default class UserController {
       // Set removes duplicates so one request never sends someone two invites.
       for (const email of new Set(invite.data.to)) {
         try {
-          if (await UsersAccessor.getUserByEmail(email)) {
+          // An author an editor added (no password yet) can still be invited,
+          // so an admin can resend an invite that failed to send.
+          const existing = await UsersAccessor.getUserByEmail(email);
+          if (existing?.password) {
             skipped.push(email);
             continue;
           }
@@ -175,6 +184,80 @@ export default class UserController {
   }
 
   /**
+   * createAuthor Method
+   *
+   * This method lets an editor add an author who has no account yet, so
+   * they can be credited on an article right away. It saves an approved
+   * author account with no password and emails them a signup invite;
+   * signing up from it finishes that same account.
+   *
+   * @param {HTTP REQ} req web request object, contains firstName, lastName, and email
+   * @param {HTTP RES} res web response object
+   */
+  static async createAuthor(req, res) {
+    try {
+      const author = AuthorCreate.safeParse(req.body);
+      if (!author.success) {
+        throw new ErrorValidation("Author validation failed.");
+      }
+
+      const { firstName, lastName } = author.data;
+      const email = author.data.email.toLowerCase();
+      if (await UsersAccessor.getUserByEmail(email)) {
+        throw new ErrorUserAlreadyExists();
+      }
+
+      const creator = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      if (!creator) {
+        throw new ErrorUserNotFound();
+      }
+      const placeholder = PlaceholderUserCreate.safeParse({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        roles: [Accounts.Author.toString()],
+        status: AccountStatus.Approved.toString(),
+        approvingUser: creator._id.toString(),
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      });
+      if (!placeholder.success) {
+        throw new ErrorUnexpected("Author produced an invalid user.");
+      }
+
+      try {
+        await UsersAccessor.createUser(placeholder.data);
+      } catch (e) {
+        // 11000 is MongoDB's duplicate key error
+        throw e.code === 11000 ? new ErrorUserAlreadyExists() : e;
+      }
+
+      // The account is what the article needs, so a failed email is reported, not thrown.
+      // An admin can resend it from the invite page.
+      let invited = true;
+      try {
+        const inviteEmail = await GenerateEmail.InviteUser({
+          to: [email],
+          roles: [Accounts.Author.toString()],
+          invitedBy: creator._id,
+        });
+        await ResendEmail.sendEmailWithTemplate(inviteEmail);
+        await UserController.saveInviteRecord(inviteEmail);
+      } catch (e) {
+        invited = false;
+      }
+
+      res.status(201).json({ name: `${firstName} ${lastName}`, email: email, invited: invited });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * getInvite Method
    *
    * This method returns the email an invite belongs to, so the
@@ -194,6 +277,17 @@ export default class UserController {
       const otpRecord = await OTPAccessor.findValidOTP(token, "invite");
       if (!otpRecord) {
         throw new ErrorInvalidInvite();
+      }
+
+      // Prefill the name an editor entered when they added this author.
+      const placeholder = await UsersAccessor.getUserByEmail(otpRecord.email);
+      if (placeholder && !placeholder.password) {
+        res.status(200).json({
+          email: otpRecord.email,
+          firstName: placeholder.firstName,
+          lastName: placeholder.lastName,
+        });
+        return;
       }
 
       res.status(200).json({ email: otpRecord.email });
@@ -235,28 +329,47 @@ export default class UserController {
 
       let user;
       try {
+        const existing = await UsersAccessor.getUserByEmail(invite.email);
         // The invite stays used here, since this email can no longer sign up anyway.
-        if (await UsersAccessor.getUserByEmail(invite.email)) {
+        if (existing?.password) {
           throw new ErrorUserAlreadyExists();
         }
 
-        const userCreate = UserCreate.safeParse({
-          firstName: firstName,
-          lastName: lastName,
-          graduationYear: graduationYear,
-          // Email, roles, and approver come from the invite, never the request body.
-          email: invite.email,
-          roles: [...invite.roles],
-          status: AccountStatus.Approved.toString(),
-          approvingUser: invite.invitedBy?.toString(),
-          password: await Password.hash(password, 10),
-          creationTime: new Date(),
-          modificationTime: new Date(),
-        });
-        if (!userCreate.success) {
-          throw new ErrorUnexpected("Invite produced an invalid user.");
+        if (existing) {
+          // An editor added this author already, so finish that account instead of
+          // making a new one. It keeps its articles, and gains the invite's roles.
+          user = await UsersAccessor.claimPlaceholderUser(invite.email, {
+            firstName: firstName,
+            lastName: lastName,
+            graduationYear: graduationYear,
+            roles: [...new Set([...existing.roles, ...invite.roles])],
+            status: AccountStatus.Approved.toString(),
+            password: await Password.hash(password, 10),
+            modificationTime: new Date(),
+          });
+          // Someone else finished signing up for it in the meantime.
+          if (!user) {
+            throw new ErrorUserAlreadyExists();
+          }
+        } else {
+          const userCreate = UserCreate.safeParse({
+            firstName: firstName,
+            lastName: lastName,
+            graduationYear: graduationYear,
+            // Email, roles, and approver come from the invite, never the request body.
+            email: invite.email,
+            roles: [...invite.roles],
+            status: AccountStatus.Approved.toString(),
+            approvingUser: invite.invitedBy?.toString(),
+            password: await Password.hash(password, 10),
+            creationTime: new Date(),
+            modificationTime: new Date(),
+          });
+          if (!userCreate.success) {
+            throw new ErrorUnexpected("Invite produced an invalid user.");
+          }
+          user = await UsersAccessor.createUser(userCreate.data);
         }
-        user = await UsersAccessor.createUser(userCreate.data);
       } catch (e) {
         // 11000 is MongoDB's duplicate key error
         const alreadyExists = e instanceof ErrorUserAlreadyExists || e.code === 11000;
@@ -591,7 +704,8 @@ export default class UserController {
 
       const user = await UsersAccessor.getUserByEmail(email);
 
-      if (!user) {
+      // An author an editor added must sign up from their invite first.
+      if (!user || !user.password) {
         throw new ErrorFailedLogin();
       }
 
