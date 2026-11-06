@@ -36,15 +36,19 @@ describe("Search articles by issue number", () => {
   });
 
   test("Combines with the category filter", async () => {
-    const all = await search({});
-    const inIssue = await search({ issueNumber: 4 });
-    const category = inIssue.body.results[0].categories[0];
+    // Technology is also in issue 1, so only the issue 4 article should match
+    const match = await search({ issueNumber: 4, categories: ["Technology"] });
+    showLog && console.log(match.body);
+    expect(match.status).toBe(200);
+    expect(match.body.total).toBe(1);
+    expect(match.body.results[0].issueNumber).toBe(4);
+    expect(match.body.results[0].categories).toContain("Technology");
 
-    const response = await search({ issueNumber: 4, categories: [category] });
-    showLog && console.log(response.body);
-    expect(response.status).toBe(200);
-    expect(response.body.results.every((article) => article.issueNumber === 4)).toBe(true);
-    expect(response.body.total).toBeLessThan(all.body.total);
+    // Health exists in other issues but not issue 4
+    const noMatch = await search({ issueNumber: 4, categories: ["Health"] });
+    showLog && console.log(noMatch.body);
+    expect(noMatch.status).toBe(200);
+    expect(noMatch.body.total).toBe(0);
   });
 
   test("Rejects a non-numeric issue number", async () => {
