@@ -10,6 +10,7 @@ const articles = express.Router();
 articles.route("/create").post(ArticlesController.createArticle);
 articles.route("/slug/:slug").get(ArticlesController.getArticleBySlug); //get article by slug
 articles.route("/search").post(ArticlesController.search);
+articles.route("/count").get(ArticlesController.getPublishedCount); //number of published articles (public)
 //articles.route("/approved-by/:email"); //internal use only (aka. need an account)
 
 /* Targeted Update Endpoints */

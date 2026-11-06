@@ -218,6 +218,26 @@ export default class IssueMapController {
     }
   }
 
+  /**
+   * method to count the issues that have at least one article.
+   * Public, so it only exposes the count.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getPublishedIssueCount(req, res) {
+    try {
+      const count = await IssueMapAccessor.countIssuesWithArticles();
+      res.status(200).json({ count });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
   static parseIssueNumber(param) {
     const issueNumber = Number(param);
     if (!Number.isInteger(issueNumber) || issueNumber <= 0) {

@@ -62,6 +62,28 @@ export default class ArticleController {
   }
 
   /**
+   * getPublishedCount method
+   *
+   * Handles the request to get the number of published
+   * (print or online) articles. Public.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getPublishedCount(req, res) {
+    try {
+      const count = await ArticlesAccessor.countPublishedArticles();
+      res.status(200).json({ count });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * getArticleBySlug method
    *
    * Handles the request to get a single article by its slug.
