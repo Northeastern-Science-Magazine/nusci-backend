@@ -126,5 +126,6 @@ export const ArticleSearchRequest = z.object({
   skip: z.number().int().nonnegative().default(0),
   textQuery: z.string().nullish(),
   categories: z.array(z.enum(Category.listr())).nullish(),
+  issueNumber: z.number().int().positive().nullish(),
   sortBy: z.enum(["asc", "desc"]).default("desc"),
 });

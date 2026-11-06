@@ -315,6 +315,7 @@ export default class ArticleController {
    * - skip: number (optional, default: 0)
    * - textQuery: string (optional, triggers fuzzy search if provided)
    * - categories: array of strings (optional, filters by categories)
+   * - issueNumber: number (optional, positive integer, filters to one issue)
    * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
@@ -329,13 +330,16 @@ export default class ArticleController {
         throw new ErrorValidation("Search request validation failed");
       }
 
-      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const { limit, skip, textQuery, categories, issueNumber, sortBy } = validationResult.data;
       const sortOrder = sortBy === "asc" ? 1 : -1;
 
       // Build query object for non-text search filters
       const query = {};
       if (categories && categories.length > 0) {
         query.categories = { $in: categories };
+      }
+      if (issueNumber) {
+        query.issueNumber = issueNumber;
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
