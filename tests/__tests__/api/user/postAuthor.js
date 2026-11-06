@@ -26,10 +26,15 @@ const editorCookie = [`token=${tokens["noah@noah.com"]}`];
 const adminCookie = [`token=${tokens["ethan@ethan.com"]}`];
 const newAuthor = { firstName: "Jane", lastName: "Doe", email: "doe.j@northeastern.edu" };
 
-/** The raw invite token from the most recent mocked invite email */
+/**
+ * The raw invite token from the most recent mocked invite email.
+ * The base lets the link parse when FRONTEND_URL isn't set (e.g. in CI).
+ * Call it before request(app), since supertest opens a server that only
+ * closes once the request is sent, and a throw in between leaves it open.
+ */
 const sentInviteToken = () => {
   const calls = ResendEmail.sendEmailWithTemplate.mock.calls;
-  return new URL(calls[calls.length - 1][0].variables.url).searchParams.get("token");
+  return new URL(calls[calls.length - 1][0].variables.url, "http://localhost").searchParams.get("token");
 };
 
 describe("Create Author Tests", () => {
@@ -169,7 +174,8 @@ describe("Added Author Signup Tests", () => {
 
   test("should prefill the name on the invite", async () => {
     await request(app).post("/user/author").set("Cookie", editorCookie).send(newAuthor);
-    const response = await request(app).get("/user/invite").query({ token: sentInviteToken() });
+    const token = sentInviteToken();
+    const response = await request(app).get("/user/invite").query({ token: token });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
@@ -180,8 +186,9 @@ describe("Added Author Signup Tests", () => {
     await request(app).post("/user/author").set("Cookie", editorCookie).send(newAuthor);
     const before = await UsersAccessor.getUserByEmail(newAuthor.email);
 
+    const token = sentInviteToken();
     const response = await request(app).post("/user/signup").send({
-      token: sentInviteToken(),
+      token: token,
       password: "newpassword",
       firstName: "Janet",
       lastName: "Doe",
@@ -211,8 +218,9 @@ describe("Added Author Signup Tests", () => {
       .send({ to: [newAuthor.email], roles: [Accounts.Editor.toString()] });
     expect(invite.body.invited).toEqual([newAuthor.email]);
 
+    const token = sentInviteToken();
     const response = await request(app).post("/user/signup").send({
-      token: sentInviteToken(),
+      token: token,
       password: "newpassword",
       firstName: "Jane",
       lastName: "Doe",
