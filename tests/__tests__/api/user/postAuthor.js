@@ -101,6 +101,17 @@ describe("Create Author Tests", () => {
     expect(ResendEmail.sendEmailWithTemplate).not.toHaveBeenCalled();
   });
 
+  test("should not create an author whose email matches an account in a different case", async () => {
+    const response = await request(app)
+      .post("/user/author")
+      .set("Cookie", editorCookie)
+      .send({ ...newAuthor, email: "Raisa@Raisa.com" });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(409);
+    expect(ResendEmail.sendEmailWithTemplate).not.toHaveBeenCalled();
+  });
+
   test("should not create the same author twice", async () => {
     await request(app).post("/user/author").set("Cookie", editorCookie).send(newAuthor);
     const response = await request(app).post("/user/author").set("Cookie", editorCookie).send(newAuthor);

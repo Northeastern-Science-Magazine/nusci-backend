@@ -201,12 +201,16 @@ export default class UserController {
         throw new ErrorValidation("Author validation failed.");
       }
 
-      const { firstName, lastName, email } = author.data;
+      const { firstName, lastName } = author.data;
+      const email = author.data.email.toLowerCase();
       if (await UsersAccessor.getUserByEmail(email)) {
         throw new ErrorUserAlreadyExists();
       }
 
       const creator = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      if (!creator) {
+        throw new ErrorUserNotFound();
+      }
       const placeholder = PlaceholderUserCreate.safeParse({
         firstName: firstName,
         lastName: lastName,
@@ -347,28 +351,25 @@ export default class UserController {
           if (!user) {
             throw new ErrorUserAlreadyExists();
           }
-          res.cookie(...LoginToken.generate(user));
-          res.status(201).json({ message: "Signup successful." });
-          return;
+        } else {
+          const userCreate = UserCreate.safeParse({
+            firstName: firstName,
+            lastName: lastName,
+            graduationYear: graduationYear,
+            // Email, roles, and approver come from the invite, never the request body.
+            email: invite.email,
+            roles: [...invite.roles],
+            status: AccountStatus.Approved.toString(),
+            approvingUser: invite.invitedBy?.toString(),
+            password: await Password.hash(password, 10),
+            creationTime: new Date(),
+            modificationTime: new Date(),
+          });
+          if (!userCreate.success) {
+            throw new ErrorUnexpected("Invite produced an invalid user.");
+          }
+          user = await UsersAccessor.createUser(userCreate.data);
         }
-
-        const userCreate = UserCreate.safeParse({
-          firstName: firstName,
-          lastName: lastName,
-          graduationYear: graduationYear,
-          // Email, roles, and approver come from the invite, never the request body.
-          email: invite.email,
-          roles: [...invite.roles],
-          status: AccountStatus.Approved.toString(),
-          approvingUser: invite.invitedBy?.toString(),
-          password: await Password.hash(password, 10),
-          creationTime: new Date(),
-          modificationTime: new Date(),
-        });
-        if (!userCreate.success) {
-          throw new ErrorUnexpected("Invite produced an invalid user.");
-        }
-        user = await UsersAccessor.createUser(userCreate.data);
       } catch (e) {
         // 11000 is MongoDB's duplicate key error
         const alreadyExists = e instanceof ErrorUserAlreadyExists || e.code === 11000;
