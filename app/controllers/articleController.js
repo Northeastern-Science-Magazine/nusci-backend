@@ -2,6 +2,7 @@ import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
+import Accounts from "../models/enums/accounts.js";
 import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
 import {
   ArticleUpdate,
@@ -28,7 +29,12 @@ import Utils from "./utils.js";
  */
 export default class ArticleController {
   /**
+   * createArticle method
    *
+   * Handles the request to create an article. The authors, editors,
+   * photographers, and designers are given as emails; each must belong
+   * to an existing user with the matching role, and is stored as that
+   * user's ID.
    *
    * @param {Request} req
    * @param {Response} res
@@ -44,14 +50,36 @@ export default class ArticleController {
 
       const articleData = parsedArticle.data;
 
-      // gets all the author objects by list of emails provided upon article submission
-      const authors = await UsersAccessor.getUsersByEmails(articleData.authors);
-      articleData.authors = authors.map((author) => author._id);
+      // converts each list of emails into user IDs, throws before anything is written
+      const referenceFields = [
+        ["authors", Accounts.Author],
+        ["editors", Accounts.Editor],
+        ["photographers", Accounts.Photographer],
+        ["designers", Accounts.Designer],
+      ];
+      for (const [field, role] of referenceFields) {
+        if (articleData[field]) {
+          articleData[field] = await Utils.getUserIdsByEmailsWithRole(articleData[field], role, field);
+        }
+      }
 
-      // TODO need to do this ^ for editors, etc, any other ref data
+      let newArticle;
+      try {
+        newArticle = await ArticlesAccessor.createArticle(articleData);
+      } catch (e) {
+        // duplicate key, the slug is the only unique field on an article
+        if (e.code === 11000) {
+          throw new ErrorValidation(`An article with the slug "${articleData.slug}" already exists.`);
+        }
+        throw e;
+      }
 
-      const newArticle = await ArticlesAccessor.createArticle(articleData);
-      res.status(200).json(newArticle);
+      const articleResponse = await ArticleResponse.safeParseAsync(newArticle.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(201).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
