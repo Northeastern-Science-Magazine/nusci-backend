@@ -73,58 +73,58 @@ export default class PitchController {
 
   static async submitPitch(req, res) {
     try {
-        const parsed = PitchSubmission.safeParse(req.body);
+      const parsed = PitchSubmission.safeParse(req.body);
 
-        if (!parsed.success) {
+      if (!parsed.success) {
         throw new ErrorValidation(parsed.error.issues[0].message);
-        }
+      }
 
-        const settings = await PitchAccessor.getSettings();
+      const settings = await PitchAccessor.getSettings();
 
-        if (!settings?.recipientIds.length) {
+      if (!settings?.recipientIds.length) {
         throw new ErrorUnexpected(
-            "Pitch submissions are temporarily unavailable. Please try again later."
+          "Pitch submissions are temporarily unavailable. Please try again later."
         );
-        }
+      }
 
-        const selectedIds = new Set(
+      const selectedIds = new Set(
         settings.recipientIds.map((id) => id.toString())
-        );
+      );
 
-        const eligibleRecipients = await PitchAccessor.getEligibleRecipients();
+      const eligibleRecipients = await PitchAccessor.getEligibleRecipients();
 
-        const recipients = eligibleRecipients
+      const recipients = eligibleRecipients
         .filter((user) => selectedIds.has(user._id.toString()))
         .map((user) => user.email);
 
-        if (!recipients.length) {
+      if (!recipients.length) {
         throw new ErrorUnexpected(
-            "Pitch submissions are temporarily unavailable. Please try again later."
+          "Pitch submissions are temporarily unavailable. Please try again later."
         );
-        }
+      }
 
-        const email = GenerateEmail.ArticlePitch(parsed.data, recipients);
+      const email = GenerateEmail.ArticlePitch(parsed.data, recipients);
 
-        await ResendEmail.sendEmailWithTemplate(email);
+      await ResendEmail.sendEmailWithTemplate(email);
 
-        // A logging failure should not make a successfully sent pitch
-        // appear to have failed, which could lead to duplicate submissions.
-        try {
+      // A logging failure should not make a sent pitch appear to have failed.
+      try {
         await EmailAccessor.createEmail(email);
-        } catch (logError) {
+      } catch (logError) {
         console.error("Failed to record pitch email:", logError.message);
-        }
+      }
 
-        res.status(200).json({
+      res.status(200).json({
         message: "Thank you for your pitch! We will reach out via email.",
-        });
+      });
     } catch (e) {
-        console.error("Pitch submission failed:", e);
-        if (e instanceof HttpError) {
+      console.error("Pitch submission failed:", e);
+
+      if (e instanceof HttpError) {
         e.throwHttp(req, res);
-        } else {
+      } else {
         new ErrorUnexpected(e.message).throwHttp(req, res);
-        }
+      }
     }
-    }
+  }
 }

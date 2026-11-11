@@ -85,6 +85,7 @@ export class ResendEmail {
       });
 
       if (error) {
+        console.error("Resend email send failed:", error);
         throw new ErrorUnexpected("Email send failed.");
       }
 
