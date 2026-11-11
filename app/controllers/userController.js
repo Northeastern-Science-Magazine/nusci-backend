@@ -5,6 +5,7 @@ import AccountStatus from "../models/enums/accountStatus.js";
 import {
   AuthorCreate,
   Login,
+  OTPRequest,
   PlaceholderUserCreate,
   UserCreate,
   UserInvite,
@@ -35,6 +36,7 @@ import OTPAccessor from "../databaseAccessors/otpAccessor.js";
 import EmailAccessor from "../databaseAccessors/emailAccessor.js";
 import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import Accounts from "../models/enums/accounts.js";
+import EmailType from "../models/enums/emailType.js";
 
 /**
  * UsersController Class
@@ -149,7 +151,7 @@ export default class UserController {
             invitedBy: inviter._id,
           });
           await ResendEmail.sendEmailWithTemplate(inviteEmail);
-          await UserController.saveInviteRecord(inviteEmail);
+          await UserController.saveEmailRecord(inviteEmail);
           invited.push(email);
         } catch (e) {
           // One failed address does not stop the rest of the list.
@@ -168,18 +170,18 @@ export default class UserController {
   }
 
   /**
-   * saveInviteRecord Method
+   * saveEmailRecord Method
    *
-   * This method saves a record of a sent invite email and never throws.
+   * This method saves a record of a sent invite or OTP email and never throws.
    *
-   * @param {Object} inviteEmail the invite email that was sent
+   * @param {Object} sentEmail the email that was sent
    */
-  static async saveInviteRecord(inviteEmail) {
+  static async saveEmailRecord(sentEmail) {
     try {
       // The url holds the raw token, so it is left out of the stored record.
-      await EmailAccessor.createEmail({ ...inviteEmail, variables: {} });
+      await EmailAccessor.createEmail({ ...sentEmail, variables: {} });
     } catch (e) {
-      // The invite is already sent, so a failed record is not a failed send.
+      // The email is already sent, so a failed record is not a failed send.
     }
   }
 
@@ -242,7 +244,7 @@ export default class UserController {
           invitedBy: creator._id,
         });
         await ResendEmail.sendEmailWithTemplate(inviteEmail);
-        await UserController.saveInviteRecord(inviteEmail);
+        await UserController.saveEmailRecord(inviteEmail);
       } catch (e) {
         invited = false;
       }
@@ -684,6 +686,44 @@ export default class UserController {
   }
 
   /**
+   * requestOTP Method
+   *
+   * This method emails a one-time link to the given email if it
+   * belongs to an approved account that has signed up.
+   *
+   * @param {HTTP REQ} req web request object, contains the email
+   * @param {HTTP RES} res web response object
+   */
+  static async requestOTP(req, res) {
+    try {
+      const otpRequest = OTPRequest.safeParse(req.body);
+      if (!otpRequest.success) {
+        throw new ErrorValidation("OTP request validation failed.");
+      }
+
+      const email = otpRequest.data.email.toLowerCase();
+      const user = await UsersAccessor.getUserByEmail(email);
+
+      // Only accounts that can log in get a link: approved, with a password from signup.
+      if (user?.password && user.status == AccountStatus.Approved.toString()) {
+        await OTPAccessor.invalidateLoginOTPs(email);
+        const otpEmail = await GenerateEmail.OTP({ to: [email], type: EmailType.OTP.toString() });
+        await ResendEmail.sendEmailWithTemplate(otpEmail);
+        await UserController.saveEmailRecord(otpEmail);
+      }
+
+      // The same response for every email, so it doesn't reveal which ones have accounts.
+      res.status(200).json({ message: "If an account exists for this email, a link was sent." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * Verifies the OTP
    *
    * @param {HTTP REQ} req
@@ -707,6 +747,16 @@ export default class UserController {
       // An author an editor added must sign up from their invite first.
       if (!user || !user.password) {
         throw new ErrorFailedLogin();
+      }
+      // The same status checks as the password login, so a link can't get around them.
+      if (user.status == AccountStatus.Pending.toString()) {
+        throw new ErrorUserPendingLogin();
+      }
+      if (user.status == AccountStatus.Deactivated.toString()) {
+        throw new ErrorUserDeactivatedLogin();
+      }
+      if (user.status == AccountStatus.Denied.toString()) {
+        throw new ErrorUserDeniedLogin();
       }
 
       res.cookie(...LoginToken.generate(user));

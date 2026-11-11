@@ -2,6 +2,9 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import otpTokens from "../../../testData/otpTestData.js";
 import { log } from "../../../testConfig.js";
+import AccountStatus from "../../../../app/models/enums/accountStatus.js";
+import User from "../../../../app/models/dbModels/user.js";
+import MockConnection from "../../../util/mockConnection.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
@@ -51,5 +54,16 @@ describe("Verify OTP Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
+  });
+
+  test("should not login a deactivated user with a valid token", async () => {
+    // Opens the test database first, since no request has opened it yet.
+    await MockConnection.open();
+    await User.updateOne({ email: "ethan@ethan.com" }, { status: AccountStatus.Deactivated.toString() });
+    const response = await request(app).post("/user/verify-otp").query({ token: otpTokens.validLogin });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.headers["set-cookie"]).toBeUndefined();
   });
 });

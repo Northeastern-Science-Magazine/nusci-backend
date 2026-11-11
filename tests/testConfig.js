@@ -22,6 +22,7 @@ export const log = {
       postInvite: false,
       postLogin: false,
       postOTP: false,
+      postRequestOTP: false,
       postSignup: false,
       putResolveUser: false,
     },

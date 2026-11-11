@@ -37,7 +37,7 @@ export class GenerateEmail {
    */
   static async InviteUser(inviteUserEmail) {
     const { to, roles, invitedBy } = inviteUserEmail;
-    // One recipient per call so each person gets their own token (OTP shares one token across `to`).
+    // One recipient per call so each person gets their own token.
     if (to.length !== 1) {
       throw new ErrorUnexpected("InviteUser takes exactly one recipient.");
     }
@@ -75,6 +75,11 @@ export class GenerateEmail {
   static ResetPassword(resetPasswordEmail) {}
 
   static async OTP(otpEmail) {
+    // One recipient per call, since the token logs in as the one address it is saved for.
+    if (otpEmail.to.length !== 1) {
+      throw new ErrorUnexpected("OTP takes exactly one recipient.");
+    }
+
     const { token, hash } = OTPToken.generate();
     await OTPAccessor.createOTPRecord(otpEmail.to[0], hash);
     return {
