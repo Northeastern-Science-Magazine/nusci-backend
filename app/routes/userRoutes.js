@@ -13,6 +13,7 @@ user
   .route("/invite")
   .post(Authorize.allow([Accounts.Admin]), UserController.sendInvites)
   .get(UserController.getInvite);
+user.route("/author").post(Authorize.allow([Accounts.Admin, Accounts.Editor]), UserController.createAuthor);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
 user.route("/verify-otp").post(UserController.verifyOTPLink);

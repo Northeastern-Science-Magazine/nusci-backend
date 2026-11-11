@@ -9,6 +9,7 @@ const issueMap = express.Router();
 issueMap.route("/create").post(Authorize.allow([Accounts.Admin]), IssueMapController.create); //create an issue map
 issueMap.route("/all").get(Authorize.allow([Accounts.Admin]), IssueMapController.getAllIssues); //list all issue maps
 issueMap.route("/all-issue-numbers").get(IssueMapController.getAllIssueNumbers); //list all issue numbers (public)
+issueMap.route("/count").get(IssueMapController.getPublishedIssueCount); //number of issues with articles (public)
 // issueMap.route("/remove-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.removeArticle); //remove an article from an issue map
 // issueMap.route("/add-and-create-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.addAndCreateArticle);
 issueMap.route("/add-article").patch(Authorize.allow([Accounts.Admin]), IssueMapController.addArticle); //add an article to an issue map

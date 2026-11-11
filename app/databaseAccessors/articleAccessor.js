@@ -1,4 +1,5 @@
 import Article from "../models/dbModels/article.js";
+import ArticleStatus from "../models/enums/articleStatus.js";
 import Connection from "../db/connection.js";
 
 /**
@@ -168,6 +169,21 @@ export default class ArticlesAccessor {
     await Connection.open();
     const articles = await Article.find({ articleStatus: articleStatus });
     return articles;
+  }
+
+  /**
+   * countPublishedArticles method
+   *
+   * This method counts the articles that have been
+   * published, either in print or online.
+   *
+   * @returns number of published articles
+   */
+  static async countPublishedArticles() {
+    await Connection.open();
+    return await Article.countDocuments({
+      articleStatus: { $in: [ArticleStatus.Print.toString(), ArticleStatus.Online.toString()] },
+    });
   }
 
   /**

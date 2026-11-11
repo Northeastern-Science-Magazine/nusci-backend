@@ -263,6 +263,22 @@ export default class UsersAccessor {
     const user = await User.findOneAndUpdate({ email: email }, updates, { new: true });
     return user;
   }
+
+  /**
+   * claimPlaceholderUser Method
+   *
+   * This method applies the given updates to the account an editor
+   * created for this email, only while it still has no password.
+   *
+   * @param {String} email
+   * @param {Object} updates
+   * @returns the updated user, or null if there is no unclaimed account
+   */
+  static async claimPlaceholderUser(email, updates) {
+    await Connection.open();
+    const user = await User.findOneAndUpdate({ email: email, password: { $in: [null, ""] } }, updates, { new: true });
+    return user;
+  }
 }
 
 /**

@@ -62,6 +62,28 @@ export default class ArticleController {
   }
 
   /**
+   * getPublishedCount method
+   *
+   * Handles the request to get the number of published
+   * (print or online) articles. Public.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getPublishedCount(req, res) {
+    try {
+      const count = await ArticlesAccessor.countPublishedArticles();
+      res.status(200).json({ count });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * getArticleBySlug method
    *
    * Handles the request to get a single article by its slug.
@@ -293,6 +315,7 @@ export default class ArticleController {
    * - skip: number (optional, default: 0)
    * - textQuery: string (optional, triggers fuzzy search if provided)
    * - categories: array of strings (optional, filters by categories)
+   * - issueNumber: number (optional, positive integer, filters to one issue)
    * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
@@ -307,13 +330,16 @@ export default class ArticleController {
         throw new ErrorValidation("Search request validation failed");
       }
 
-      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const { limit, skip, textQuery, categories, issueNumber, sortBy } = validationResult.data;
       const sortOrder = sortBy === "asc" ? 1 : -1;
 
       // Build query object for non-text search filters
       const query = {};
       if (categories && categories.length > 0) {
         query.categories = { $in: categories };
+      }
+      if (issueNumber) {
+        query.issueNumber = issueNumber;
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search
