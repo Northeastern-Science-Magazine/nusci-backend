@@ -15,6 +15,21 @@ export default class EmailController {
       // Validate incoming
       const parsedEmail = EmailController.validateEmailRequestData(req.body);
 
+      // A login link logs in as the one address its token is saved for, so OTP sends one email
+      // per recipient. Other types have nothing per person, so they send one email to the whole list.
+      if (parsedEmail.type === EmailType.OTP.toString()) {
+        const responses = [];
+        // A failed send stops the loop with an error; recipients before it already have their links.
+        for (const to of parsedEmail.to) {
+          const otpEmail = await GenerateEmail.OTP({ ...parsedEmail, to: [to] });
+          // The url holds the raw token, so it is left out of the stored record.
+          await EmailAccessor.createEmail({ ...otpEmail, variables: {} });
+          responses.push(await ResendEmail.sendEmailWithTemplate(otpEmail));
+        }
+        res.status(200).json(responses);
+        return;
+      }
+
       // Format email according to its type
       const email = await EmailController.generateEmailVariables(parsedEmail);
 
