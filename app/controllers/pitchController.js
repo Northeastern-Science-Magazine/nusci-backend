@@ -68,11 +68,7 @@ export default class PitchController {
         throw new ErrorUnexpected("Pitch submissions are temporarily unavailable. Please try again later.");
       }
 
-      const selectedIds = new Set(settings.recipientIds.map((id) => id.toString()));
-
-      const eligibleRecipients = await PitchAccessor.getEligibleRecipients();
-
-      const recipients = eligibleRecipients.filter((user) => selectedIds.has(user._id.toString())).map((user) => user.email);
+      const recipients = (await PitchAccessor.getSelectedRecipients(settings.recipientIds)).map((user) => user.email);
 
       if (!recipients.length) {
         throw new ErrorUnexpected("Pitch submissions are temporarily unavailable. Please try again later.");

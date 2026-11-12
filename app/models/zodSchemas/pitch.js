@@ -18,17 +18,10 @@ export const PitchSubmission = z.object({
     .min(1, "Please describe your article idea.")
     .max(10000),
 
-  // Users often paste links without a protocol (e.g. "docs.google.com/..."),
-  // so default to https:// before validating.
   draftUrl: z
     .string()
     .trim()
     .max(2048, "Your draft link is too long.")
-    .transform((url) =>
-      url && !/^[a-z][a-z0-9+.-]*:/i.test(url)
-        ? `https://${url}`
-        : url
-    )
     .pipe(
       z.union([
         z.literal(""),
