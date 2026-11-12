@@ -155,6 +155,40 @@ export default class ArticleController {
  
 
   /**
+   * deleteArticle method
+   *
+   * Handles the request to delete an article by its slug.
+   * The article is also removed from every issue map that
+   * references it, both from the issue's article list and
+   * from its sections. Admin only (see the route).
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async deleteArticle(req, res) {
+    try {
+      const { articleSlug } = req.params;
+
+      const article = await ArticlesAccessor.getArticleBySlug(articleSlug);
+
+      if (!article) {
+        throw new ErrorArticleNotFound();
+      }
+
+      await ArticlesAccessor.deleteArticleBySlug(articleSlug);
+      await IssueMapAccessor.removeArticleFromAllIssues(article._id);
+
+      res.status(204).send();
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * editArticle method
    *
    * Handles the request to edit an article from the article edit page.

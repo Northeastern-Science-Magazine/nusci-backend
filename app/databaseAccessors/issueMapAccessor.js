@@ -330,4 +330,15 @@ export default class IssueMapAccessor {
 
     return updatedIssue;
   }
+
+  /**
+   * Remove an article from every issue map that references it,
+   * both from the top-level article list and from every section.
+   *
+   * @param {ObjectId} articleId - The article to remove
+   */
+  static async removeArticleFromAllIssues(articleId) {
+    await Connection.open();
+    await IssueMap.updateMany({}, { $pull: { articles: articleId, "sections.$[].articles": articleId } });
+  }
 }

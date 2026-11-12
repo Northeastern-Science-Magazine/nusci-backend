@@ -26,7 +26,9 @@ articles.route("/count").get(ArticlesController.getPublishedCount); //number of 
 
 // edit is for article content, categories, sources, etc, but not metadata about an article
 articles.route("/edit/:slug").patch(Authorize.allow([Accounts.Admin, Accounts.Editor]), ArticlesController.editArticle); //edit any of an article's title, content, authors, categories, sources, and issue number
-// articles.route("/delete/:slug"); //delete an article
+articles
+  .route("/delete/:articleSlug")
+  .delete(Authorize.allow([Accounts.Admin]), ArticlesController.deleteArticle); //delete an article
 
 // articles
 // .route("/add-internal-comment/:slug") //editor or admin can add an internal comment to the given article
