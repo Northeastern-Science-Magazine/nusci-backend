@@ -4,9 +4,6 @@ import OTPToken from "../../auth/opt.js";
 import OTPAccessor from "../../databaseAccessors/otpAccessor.js";
 import EmailType from "../../models/enums/emailType.js";
 
-// all emails should come from this domain. You guys can change it later if you want.
-const FROM = "NU Sci Magazine <noreply@nuscimagazine.com>";
-
 /**
  * Returns an email in the following format:
 
@@ -27,7 +24,7 @@ export class GenerateEmail {
 
   static Reminder(reminderEmail) {
     return {
-      from: FROM,
+      from: "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>",
       to: reminderEmail.to,
       type: reminderEmail.type,
       variables: {
@@ -44,7 +41,7 @@ export class GenerateEmail {
     await OTPAccessor.createOTPRecord(otpEmail.to[0], hash);
     console.log(`${process.env.FRONTEND_URL}/otp/verify?token=${token}`);
     return {
-      from: FROM,
+      from: "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>",
       to: otpEmail.to,
       type: otpEmail.type,
       variables: {
@@ -55,7 +52,7 @@ export class GenerateEmail {
 
   static ArticlePitch(pitch, recipients) {
     return {
-      from: FROM,
+      from: "NU Sci Magazine <pitch@no-reply.nuscimagazine.com>",
       to: recipients,
       type: EmailType.Article_Pitch.toString(),
       variables: {
@@ -66,7 +63,6 @@ export class GenerateEmail {
       },
     };
   }
-
 }
 
 export class ResendEmail {
@@ -91,6 +87,7 @@ export class ResendEmail {
 
       return data;
     } catch (e) {
+      if (e instanceof ErrorUnexpected) throw e;
       console.log(e);
       throw new ErrorUnexpected("Email send not reached.");
     }

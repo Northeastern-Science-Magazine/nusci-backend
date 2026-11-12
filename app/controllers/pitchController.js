@@ -1,18 +1,8 @@
 import PitchAccessor from "../databaseAccessors/pitchAccessor.js";
-import {
-  ErrorValidation,
-  ErrorUnexpected,
-  HttpError,
-} from "../error/errors.js";
-import {
-  PitchSubmission,
-  PitchSettingsUpdate,
-} from "../models/zodSchemas/pitch.js";
+import { ErrorValidation, ErrorUnexpected, HttpError } from "../error/errors.js";
+import { PitchSubmission, PitchSettingsUpdate } from "../models/zodSchemas/pitch.js";
 import EmailAccessor from "../databaseAccessors/emailAccessor.js";
-import {
-  GenerateEmail,
-  ResendEmail,
-} from "../services/email/emailService.js";
+import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 
 export default class PitchController {
   static async getSettings(req, res) {
@@ -22,8 +12,7 @@ export default class PitchController {
 
       res.status(200).json({
         eligibleRecipients,
-        recipientIds:
-          settings?.recipientIds.map((id) => id.toString()) ?? [],
+        recipientIds: settings?.recipientIds.map((id) => id.toString()) ?? [],
       });
     } catch (e) {
       if (e instanceof HttpError) {
@@ -42,19 +31,13 @@ export default class PitchController {
         throw new ErrorValidation(parsed.error.issues[0].message);
       }
 
-      const recipientIds = [
-        ...new Set(parsed.data.recipientIds.map((id) => id.toLowerCase())),
-      ];
+      const recipientIds = [...new Set(parsed.data.recipientIds.map((id) => id.toLowerCase()))];
 
       const eligibleRecipients = await PitchAccessor.getEligibleRecipients();
-      const eligibleIds = new Set(
-        eligibleRecipients.map((user) => user._id.toString())
-      );
+      const eligibleIds = new Set(eligibleRecipients.map((user) => user._id.toString()));
 
       if (!recipientIds.every((id) => eligibleIds.has(id))) {
-        throw new ErrorValidation(
-          "Recipients must be admins graduating this year or later."
-        );
+        throw new ErrorValidation("Recipients must be admins graduating this year or later.");
       }
 
       const settings = await PitchAccessor.updateSettings(recipientIds);
@@ -82,25 +65,17 @@ export default class PitchController {
       const settings = await PitchAccessor.getSettings();
 
       if (!settings?.recipientIds.length) {
-        throw new ErrorUnexpected(
-          "Pitch submissions are temporarily unavailable. Please try again later."
-        );
+        throw new ErrorUnexpected("Pitch submissions are temporarily unavailable. Please try again later.");
       }
 
-      const selectedIds = new Set(
-        settings.recipientIds.map((id) => id.toString())
-      );
+      const selectedIds = new Set(settings.recipientIds.map((id) => id.toString()));
 
       const eligibleRecipients = await PitchAccessor.getEligibleRecipients();
 
-      const recipients = eligibleRecipients
-        .filter((user) => selectedIds.has(user._id.toString()))
-        .map((user) => user.email);
+      const recipients = eligibleRecipients.filter((user) => selectedIds.has(user._id.toString())).map((user) => user.email);
 
       if (!recipients.length) {
-        throw new ErrorUnexpected(
-          "Pitch submissions are temporarily unavailable. Please try again later."
-        );
+        throw new ErrorUnexpected("Pitch submissions are temporarily unavailable. Please try again later.");
       }
 
       const email = GenerateEmail.ArticlePitch(parsed.data, recipients);
