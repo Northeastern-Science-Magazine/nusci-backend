@@ -345,6 +345,20 @@ export default class ArticlesAccessor {
   }
 
   /**
+   * deleteArticleBySlug method
+   *
+   * Deletes the article with the given slug.
+   *
+   * @param {String} slug
+   * @returns the deleted article, or null if there was none
+   */
+  static async deleteArticleBySlug(slug) {
+    await Connection.open();
+    const article = await Article.findOneAndDelete({ slug: slug });
+    return article;
+  }
+
+  /**
    * searchArticlesWithText method
    *
    * Performs fuzzy text search on articles with optional filters and pagination.
