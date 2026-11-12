@@ -14,6 +14,7 @@ import {
 } from "../models/zodSchemas/article.js";
 import {
   ErrorArticleNotFound,
+  ErrorDuplicateKey,
   ErrorIssueMapNotFound,
   ErrorUnexpected,
   HttpError,
@@ -68,8 +69,11 @@ export default class ArticleController {
         newArticle = await ArticlesAccessor.createArticle(articleData);
       } catch (e) {
         // duplicate key, the slug is the only unique field on an article
-        if (e.code === 11000) {
-          throw new ErrorValidation(`An article with the slug "${articleData.slug}" already exists.`);
+        if (e?.code === 11000) {
+          throw new ErrorDuplicateKey(`An article with the slug "${articleData.slug}" already exists.`);
+        }
+        if (e?.name === "ValidationError") {
+          throw new ErrorValidation(e.message);
         }
         throw e;
       }

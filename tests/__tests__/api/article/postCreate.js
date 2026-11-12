@@ -145,8 +145,18 @@ describe("Create Article", () => {
     );
 
     showLog && console.log(response.body);
+    expect(response.status).toBe(409);
+    expect(response.body.message).toContain("exploring-the-future-ai-integration-in-everyday-life");
+  });
+
+  test("should fail to create an article with an empty content segment", async () => {
+    const response = await create(
+      { ...validArticle, articleContent: [[{ contentType: ArticleContent.Text.type, content: "" }]] },
+      "ethan@ethan.com"
+    );
+
+    showLog && console.log(response.body);
     expect(response.status).toBe(400);
-    expect(response.body.error).toBeDefined();
   });
 
   test("should fail to create an article with malformed data", async () => {
