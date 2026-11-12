@@ -7,6 +7,7 @@ export default class EmailType {
   static Invite_User = new EmailType("invite_user");
   static OTP = new EmailType("otp");
   static Custom = new EmailType("custom");
+  static Article_Pitch = new EmailType("article_pitch");
 
   /**
    * Email type enum constructor

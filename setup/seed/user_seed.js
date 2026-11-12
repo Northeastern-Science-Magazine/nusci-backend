@@ -61,7 +61,7 @@ export default [
   {
     _id: new mongoose.Types.ObjectId("b00000000000000000000003"),
     firstName: "Arushi",
-    lastName: "A",
+    lastName: "Aggarwal",
     password: "$2a$10$Hqwbxn2u3iYHFbGTamAbnOyGJf0WL4p2VocQpmnteweyBy3XKF.5u", // 12345
     graduationYear: 2027,
     major: "Computer Science",
@@ -69,9 +69,9 @@ export default [
     profileImage: "https://example.com/profile.jpg",
     bannerImage: "https://example.com/banner.jpg",
     bio: "Teaching & Technical Assistant",
-    email: "arushi@arushi.com",
+    email: "aggarwal.arus@northeastern.edu",
     phone: "90231851",
-    roles: [Accounts.Developer.toString()],
+    roles: [Accounts.Admin.toString()],
     status: AccountStatus.Approved.status,
     approvingUser: new mongoose.Types.ObjectId("b00000000000000000000001"),
     creationTime: new Date("2024-02-28"),
