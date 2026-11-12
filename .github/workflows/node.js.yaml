@@ -26,6 +26,9 @@ jobs:
           MONGODB_INITDB_PORT=${{ vars.MONGODB_INITDB_PORT }}
           MONGODB_CONNECTION_STRING=${{ vars.MONGODB_CONNECTION_STRING }}
           MONGODB_TEST_CONNECTION_STRING=${{ vars.MONGODB_TEST_CONNECTION_STRING }}
+          AWS_REGION=us-east-1
+          S3_BUCKET_NAME=nusci-media
+          S3_KEY_PREFIX=dev
           EOF
 
       # Step 3: Build and Start Docker Compose with secrets as environment variables
@@ -44,9 +47,11 @@ jobs:
           echo "MongoDB did not become ready in time" >&2
           exit 1
 
-      # Step 5: Install NPM dependencies
+      # Step 5: Install NPM dependencies, and pdftoppm for the archive cover tests
       - name: Install Dependencies
-        run: npm ci
+        run: |
+          npm ci
+          sudo apt-get update && sudo apt-get install -y poppler-utils
 
       # Step 6: Run testing suite
       - name: Run Tests

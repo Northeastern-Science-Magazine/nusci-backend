@@ -1,15 +1,23 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
+import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
 import {
   ArticleUpdate,
+  ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
   Article,
 } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
+import {
+  ErrorArticleNotFound,
+  ErrorIssueMapNotFound,
+  ErrorUnexpected,
+  HttpError,
+  ErrorValidation,
+} from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
@@ -44,6 +52,28 @@ export default class ArticleController {
 
       const newArticle = await ArticlesAccessor.createArticle(articleData);
       res.status(200).json(newArticle);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * getPublishedCount method
+   *
+   * Handles the request to get the number of published
+   * (print or online) articles. Public.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getPublishedCount(req, res) {
+    try {
+      const count = await ArticlesAccessor.countPublishedArticles();
+      res.status(200).json({ count });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -90,7 +120,77 @@ export default class ArticleController {
     }
   }
 
+ 
+
   /**
+   * editArticle method
+   *
+   * Handles the request to edit an article from the article edit page.
+   * Any subset of title, content, authors, categories, sources, and
+   * issue number can be changed in one request. The slug is intentionally
+   * left unchanged so that existing links to the article do not break.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async editArticle(req, res) {
+    try {
+      const { slug } = req.params;
+
+      const edit = await ArticleEdit.safeParseAsync(req.body);
+
+      if (!edit.success) {
+        throw new ErrorValidation("Incoming edit validation failed");
+      }
+
+      const { issueNumber, ...fields } = edit.data;
+
+      // converts the given author emails into user IDs, throws before anything is written
+      if (fields.authors) {
+        fields.authors = await Utils.getUserIdsByEmails(fields.authors);
+      }
+
+      // throws if the article or the issue map does not exist, before anything is written
+      if (!(await ArticlesAccessor.getArticleBySlug(slug))) {
+        throw new ErrorArticleNotFound();
+      }
+      if (issueNumber !== undefined && !(await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber))) {
+        throw new ErrorIssueMapNotFound();
+      }
+
+      // the fields and issue number are saved together in one write, with one modification time
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, {
+        ...fields,
+        ...(issueNumber !== undefined && { issueNumber }),
+        modificationTime: new Date(),
+      });
+
+      if (!updatedArticleData) {
+        throw new ErrorArticleNotFound();
+      }
+
+      // the article already has its new issue number, so only the issue maps are updated here
+      if (issueNumber !== undefined) {
+        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug, { syncArticle: false });
+      }
+
+      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+      if (!updatedArticleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      // Send the validated ArticleResponse
+      res.status(200).json(updatedArticleResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+ /**
    * updateStatus method
    *
    * Handles the request to update the status of an article.
@@ -123,47 +223,6 @@ export default class ArticleController {
 
       // Send the validated ArticleResponse
       res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
-
-  /**
-   * updateAuthors method
-   *
-   * Handles the request to update the list of authors for an article.
-   *
-   * @param {Request} req
-   * @param {Response} res
-   */
-  static async updateAuthors(req, res) {
-    try {
-      const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Validation failed.");
-      }
-
-      const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
-      updates.data.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      // Validate and construct an ArticleResponse instance
-      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
-      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
-
-      res.status(200).json(updatedArticleResponse);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -256,6 +315,7 @@ export default class ArticleController {
    * - skip: number (optional, default: 0)
    * - textQuery: string (optional, triggers fuzzy search if provided)
    * - categories: array of strings (optional, filters by categories)
+   * - issueNumber: number (optional, positive integer, filters to one issue)
    * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
@@ -270,13 +330,16 @@ export default class ArticleController {
         throw new ErrorValidation("Search request validation failed");
       }
 
-      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const { limit, skip, textQuery, categories, issueNumber, sortBy } = validationResult.data;
       const sortOrder = sortBy === "asc" ? 1 : -1;
 
       // Build query object for non-text search filters
       const query = {};
       if (categories && categories.length > 0) {
         query.categories = { $in: categories };
+      }
+      if (issueNumber) {
+        query.issueNumber = issueNumber;
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search

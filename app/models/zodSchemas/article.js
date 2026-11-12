@@ -89,6 +89,34 @@ export const ArticleUpdate = Article.extend({
   })
   .partial();
 
+/**
+ * ArticleEdit schema
+ *
+ * Accepts any subset of the fields an admin or editor can change from the
+ * article edit page, but at least one. Unknown fields (statuses, slug,
+ * approvals, etc.) are rejected so this endpoint can never modify unrelated
+ * parts of an article.
+ *
+ * modificationTime is set by the controller at request time.
+ */
+export const ArticleEdit = z
+  .object({
+    title: z.string().trim().min(1),
+    articleContent: Article.shape.articleContent,
+    authors: z.array(z.string()),
+    categories: Article.shape.categories.min(1),
+    sources: z.array(
+      z.object({
+        text: z.string(),
+        href: z.string().nullable(),
+      })
+    ),
+    issueNumber: z.number().int().positive(),
+  })
+  .partial()
+  .strict()
+  .refine((edit) => Object.keys(edit).length > 0, { message: "At least one field must be edited" });
+
 export const ArticleDelete = z.object({
   slug: z.string(),
 });
@@ -98,5 +126,6 @@ export const ArticleSearchRequest = z.object({
   skip: z.number().int().nonnegative().default(0),
   textQuery: z.string().nullish(),
   categories: z.array(z.enum(Category.listr())).nullish(),
+  issueNumber: z.number().int().positive().nullish(),
   sortBy: z.enum(["asc", "desc"]).default("desc"),
 });

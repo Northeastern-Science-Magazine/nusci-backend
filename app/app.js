@@ -11,6 +11,8 @@ import photoTagRouter from "./routes/photoTagRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import emailRouter from "./routes/emailRoutes.js";
 import pitchRouter from "./routes/pitchRoutes.js";
+import mediaRouter from "./routes/mediaRoutes.js";
+import archivedIssueRouter from "./routes/archivedIssueRoutes.js";
 
 /**
  * This file controls the express server and
@@ -64,5 +66,7 @@ app.use("/phototag", photoTagRouter);
 app.use("/user", userRouter);
 app.use("/email", emailRouter);
 app.use("/pitch", pitchRouter);
+app.use("/media", mediaRouter);
+app.use("/archive", archivedIssueRouter);
 
 export default app;

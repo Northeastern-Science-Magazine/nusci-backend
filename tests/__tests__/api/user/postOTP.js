@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
+import otpTokens from "../../../testData/otpTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
@@ -12,79 +13,41 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Send OTP Tests", () => {
-  test("should send OTP for valid northeastern email", async () => {
-    const response = await request(app).post("/user/email/forgot-password").send({
-      email: "ethan@northeastern.edu",
-    });
+describe("Verify OTP Tests", () => {
+  test("should login with a valid login token", async () => {
+    const response = await request(app).post("/user/verify-otp").query({ token: otpTokens.validLogin });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Login successful.");
+    expect(response.headers["set-cookie"]).toBeDefined();
   });
 
-  test("should not send OTP when email is missing", async () => {
-    const response = await request(app).post("/user/email/forgot-password").send({});
-
-    showLog && console.log(response.body);
-    expect(response.status).toBe(404);
-  });
-
-  test("should not send OTP for non-northeastern email", async () => {
-    const response = await request(app).post("/user/email/forgot-password").send({
-      email: "ethan@ethan.com",
-    });
-
-    showLog && console.log(response.body);
-    expect(response.status).toBe(404);
-  });
-});
-
-describe("Verify OTP Tests", () => {
-  test("should not verify OTP when token is missing", async () => {
-    const response = await request(app).post("/user/email/verify-otp").query({
-      email: "raisa@northeastern.edu",
-    });
+  test("should not login twice with the same token", async () => {
+    await request(app).post("/user/verify-otp").query({ token: otpTokens.validLogin });
+    const response = await request(app).post("/user/verify-otp").query({ token: otpTokens.validLogin });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
 
-  test("should not verify OTP when email is missing", async () => {
-    const response = await request(app).post("/user/email/verify-otp").query({
-      token: "sometoken.9999999999999",
-    });
+  test("should not login with an expired token", async () => {
+    const response = await request(app).post("/user/verify-otp").query({ token: otpTokens.expiredLogin });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
 
-  test("should not verify OTP when token has no expiry", async () => {
-    const response = await request(app).post("/user/email/verify-otp").query({
-      token: "sometokenwithoutdot",
-      email: "raisa@northeastern.edu",
-    });
+  test("should not login with an invite token", async () => {
+    // raisa@raisa.com has an account, so only the purpose check stops this login.
+    const response = await request(app).post("/user/verify-otp").query({ token: otpTokens.existingUserInvite });
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
 
-  test("should not verify OTP when token is expired", async () => {
-    const expiredToken = `someraw.${Date.now() - 1000}`;
-    const response = await request(app).post("/user/email/verify-otp").query({
-      token: expiredToken,
-      email: "raisa@northeastern.edu",
-    });
-
-    showLog && console.log(response.body);
-    expect(response.status).toBe(400);
-  });
-
-  test("should not verify OTP when token hash is not in database", async () => {
-    const futureToken = `someraw.${Date.now() + 15 * 60 * 1000}`;
-    const response = await request(app).post("/user/email/verify-otp").query({
-      token: futureToken,
-      email: "raisa@northeastern.edu",
-    });
+  test("should not login when token is missing", async () => {
+    const response = await request(app).post("/user/verify-otp");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
