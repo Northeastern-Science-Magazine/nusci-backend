@@ -22,7 +22,7 @@ export const Article = z.object({
     z.array(
       z.object({
         contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
+        content: z.string().min(1),
         href: z.string().nullish(),
       })
     )

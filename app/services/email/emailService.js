@@ -4,9 +4,6 @@ import OTPToken from "../../auth/opt.js";
 import OTPAccessor from "../../databaseAccessors/otpAccessor.js";
 import EmailType from "../../models/enums/emailType.js";
 
-// all emails should come from this domain. You guys can change it later if you want.
-const FROM = "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>";
-
 // Invites last 7 days; login links keep the 15-minute default.
 const INVITE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -51,7 +48,7 @@ export class GenerateEmail {
     });
 
     return {
-      from: FROM,
+      from: "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>",
       to: to,
       type: EmailType.Invite_User.toString(),
       variables: {
@@ -62,7 +59,7 @@ export class GenerateEmail {
 
   static Reminder(reminderEmail) {
     return {
-      from: FROM,
+      from: "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>",
       to: reminderEmail.to,
       type: reminderEmail.type,
       variables: {
@@ -78,11 +75,25 @@ export class GenerateEmail {
     const { token, hash } = OTPToken.generate();
     await OTPAccessor.createOTPRecord(otpEmail.to[0], hash);
     return {
-      from: FROM,
+      from: "NU Sci Magazine <sign-up@no-reply.nuscimagazine.com>",
       to: otpEmail.to,
       type: otpEmail.type,
       variables: {
         url: `${process.env.FRONTEND_URL}/otp/verify?token=${token}`,
+      },
+    };
+  }
+
+  static ArticlePitch(pitch, recipients) {
+    return {
+      from: "NU Sci Magazine <pitch@no-reply.nuscimagazine.com>",
+      to: recipients,
+      type: EmailType.Article_Pitch.toString(),
+      variables: {
+        name: pitch.name,
+        email: pitch.email,
+        topic: pitch.topic,
+        draftUrl: pitch.draftUrl || "No draft provided.",
       },
     };
   }
@@ -104,11 +115,13 @@ export class ResendEmail {
       });
 
       if (error) {
+        console.error("Resend email send failed:", error);
         throw new ErrorUnexpected("Email send failed.");
       }
 
       return data;
     } catch (e) {
+      if (e instanceof ErrorUnexpected) throw e;
       throw new ErrorUnexpected("Email send not reached.");
     }
   }

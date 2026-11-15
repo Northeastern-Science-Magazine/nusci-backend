@@ -11,6 +11,7 @@ export const log = {
       patchStatus: false,
       patchTitle: false,
       postCommentCreate: false,
+      postCreate: false,
       getSearch: false,
     },
     default: {
