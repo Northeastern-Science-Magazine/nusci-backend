@@ -12,6 +12,7 @@ import userRouter from "./routes/userRoutes.js";
 import emailRouter from "./routes/emailRoutes.js";
 import mediaRouter from "./routes/mediaRoutes.js";
 import archivedIssueRouter from "./routes/archivedIssueRoutes.js";
+import pitchRouter from "./routes/pitchRoutes.js";
 
 /**
  * This file controls the express server and
@@ -66,5 +67,6 @@ app.use("/user", userRouter);
 app.use("/email", emailRouter);
 app.use("/media", mediaRouter);
 app.use("/archive", archivedIssueRouter);
+app.use("/pitch", pitchRouter);
 
 export default app;

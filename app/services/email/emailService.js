@@ -91,6 +91,21 @@ export class GenerateEmail {
       },
     };
   }
+
+  static ArticlePitch(pitch, recipients) {
+    return {
+      from: FROM,
+      to: recipients,
+      type: EmailType.Article_Pitch.toString(),
+      variables: {
+        name: pitch.name,
+        email: pitch.email,
+        topic: pitch.topic,
+        draftUrl: pitch.draftUrl || "No draft provided.",
+      },
+    };
+  }
+
 }
 
 export class ResendEmail {
@@ -109,6 +124,7 @@ export class ResendEmail {
       });
 
       if (error) {
+        console.error("Resend email send failed:", error);
         throw new ErrorUnexpected("Email send failed.");
       }
 
