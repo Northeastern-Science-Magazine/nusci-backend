@@ -64,6 +64,17 @@ export const UserSignup = z.object({
   graduationYear: z.number(),
 });
 
+// A logged-in user changing their own password. The minimum length matches signup.
+export const PasswordChange = z
+  .object({
+    currentPassword: z.string().min(1),
+    newPassword: z.string().min(8),
+  })
+  .refine((change) => change.newPassword !== change.currentPassword, {
+    message: "New password must be different from the current password.",
+    path: ["newPassword"],
+  });
+
 export const UserUpdate = BaseUser.extend({
   phone: z.string(),
   status: z.enum(AccountStatus.listr()).default(AccountStatus.Pending),

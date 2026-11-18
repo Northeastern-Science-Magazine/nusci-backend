@@ -5,6 +5,7 @@ import AccountStatus from "../models/enums/accountStatus.js";
 import {
   AuthorCreate,
   Login,
+  PasswordChange,
   PlaceholderUserCreate,
   UserCreate,
   UserInvite,
@@ -16,6 +17,7 @@ import {
 } from "../models/zodSchemas/user.js";
 import {
   ErrorFailedLogin,
+  ErrorIncorrectPassword,
   ErrorNotLoggedIn,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
@@ -508,6 +510,48 @@ export default class UserController {
       }
 
       res.status(200).json(userResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * changeMyPassword Method
+   *
+   * Changes the logged-in user's password after checking their current one.
+   * Existing login cookies stay valid until they expire.
+   *
+   * @param {HTTP REQ} req web request object, contains currentPassword and newPassword
+   * @param {HTTP RES} res web response object
+   */
+  static async changeMyPassword(req, res) {
+    try {
+      const change = PasswordChange.safeParse(req.body);
+      if (!change.success) {
+        throw new ErrorValidation(change.error.issues[0]?.message ?? "Password change validation failed.");
+      }
+      const { currentPassword, newPassword } = change.data;
+
+      const email = Authorize.getEmail(req);
+      const user = await UsersAccessor.getUserByEmail(email);
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      if (!user.password || !(await Password.compare(currentPassword, user.password))) {
+        throw new ErrorIncorrectPassword();
+      }
+
+      await UsersAccessor.updateUserByEmail(email, {
+        password: await Password.hash(newPassword, 10),
+        modificationTime: new Date(),
+      });
+
+      res.status(200).json({ message: "Password updated." });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
