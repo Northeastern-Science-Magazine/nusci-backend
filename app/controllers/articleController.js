@@ -133,16 +133,14 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      /** Will eventually need to do validation */
-      // // Validate and construct an ArticleResponse instance
-      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      // if (!articleResponse.success) {
-      //   throw new ErrorValidation("Outgoing response validation failed");
-      // }
+      // Validate the response so private user fields (password hashes, phone
+      // numbers, account status) never leave this public endpoint.
+      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      // Send the validated ArticleResponse
-
-      res.status(200).json(article);
+      res.status(200).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
