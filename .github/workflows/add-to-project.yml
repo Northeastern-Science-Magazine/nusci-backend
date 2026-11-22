@@ -1,0 +1,14 @@
+name: Add PRs to project
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v2.0.1
+        with:
+          project-url: https://github.com/orgs/Northeastern-Science-Magazine/projects/7
+          github-token: ${{ secrets.NUSCI_ADD_TO_PROJECT }}
