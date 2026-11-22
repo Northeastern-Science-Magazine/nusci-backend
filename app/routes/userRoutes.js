@@ -22,6 +22,8 @@ user
   .get(Authorize.allow(Accounts.list()), UserController.getMyProfile)
   .patch(Authorize.allow(Accounts.list()), UserController.updateMyProfile);
 user.route("/roles").get(UserController.getMyRoles);
+user.route("/roles/:email").patch(Authorize.allow([Accounts.Admin]), UserController.updateUserRoles);
 user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
+user.route("/list/roles").get(Authorize.allow([Accounts.Admin]), UserController.getUserRoleList);
 
 export default user;

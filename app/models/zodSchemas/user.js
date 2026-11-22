@@ -100,6 +100,11 @@ export const UserApprovals = z.object({
   deny: z.array(z.string()).nullish(),
 });
 
+// An admin replacing another user's roles. A user always keeps at least one.
+export const UserRolesUpdate = z.object({
+  roles: z.array(z.enum(InviteRoles)).min(1),
+});
+
 export const UserDelete = z.object({
   email: z.email(),
 });
@@ -116,3 +121,11 @@ export const UserPrivateResponse = BaseUser.extend({
 });
 
 export const UserPublicResponse = BaseUser;
+
+// Only what the admin roles page needs about each user.
+export const UserRolesResponse = BaseUser.pick({
+  firstName: true,
+  lastName: true,
+  email: true,
+  roles: true,
+});

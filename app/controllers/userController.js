@@ -13,9 +13,12 @@ import {
   UserApprovals,
   UserPrivateResponse,
   UserPublicResponse,
+  UserRolesResponse,
+  UserRolesUpdate,
 } from "../models/zodSchemas/user.js";
 import {
   ErrorFailedLogin,
+  ErrorForbidden,
   ErrorNotLoggedIn,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
@@ -740,6 +743,80 @@ export default class UserController {
         };
       });
       res.status(200).json(basicUsers);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * getUserRoleList Method
+   *
+   * This method lists every approved user and their roles,
+   * sorted by last name, for admins managing roles.
+   *
+   * @param {HTTP REQ} req web request object
+   * @param {HTTP RES} res web response object
+   */
+  static async getUserRoleList(req, res) {
+    try {
+      const users = (await UsersAccessor.getUserByStatus(AccountStatus.Approved.toString()))
+        .map((user) => user.toObject())
+        .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
+
+      const usersResponse = await UserRolesResponse.array().safeParseAsync(users);
+      if (!usersResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed.");
+      }
+
+      res.status(200).json(usersResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * updateUserRoles Method
+   *
+   * This method replaces the roles of the user with the given email.
+   * Admins can change anyone's roles except their own.
+   *
+   * @param {HTTP REQ} req web request object, contains the email param and the new roles
+   * @param {HTTP RES} res web response object
+   */
+  static async updateUserRoles(req, res) {
+    try {
+      const email = req.params.email;
+      if (email.toLowerCase() === Authorize.getEmail(req).toLowerCase()) {
+        throw new ErrorForbidden("Admins cannot change their own roles.");
+      }
+
+      const update = UserRolesUpdate.safeParse(req.body);
+      if (!update.success) {
+        throw new ErrorValidation("Roles update validation failed.");
+      }
+
+      const user = await UsersAccessor.updateUserByEmail(email, {
+        roles: [...new Set(update.data.roles)],
+        modificationTime: new Date(),
+      }).then((_) => _?.toObject());
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      const userResponse = await UserRolesResponse.safeParseAsync(user);
+      if (!userResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed.");
+      }
+
+      res.status(200).json(userResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
