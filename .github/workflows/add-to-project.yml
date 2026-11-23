@@ -7,8 +7,30 @@ on:
 jobs:
   add-to-project:
     runs-on: ubuntu-latest
+    env:
+      OWNER: Northeastern-Science-Magazine
+      PROJECT_NUMBER: 7
     steps:
       - uses: actions/add-to-project@v2.0.1
+        id: add
         with:
           project-url: https://github.com/orgs/Northeastern-Science-Magazine/projects/7
           github-token: ${{ secrets.NUSCI_ADD_TO_PROJECT }}
+
+      - name: Set status to In review
+        env:
+          GH_TOKEN: ${{ secrets.NUSCI_ADD_TO_PROJECT }}
+          ITEM_ID: ${{ steps.add.outputs.itemId }}
+        run: |
+          set -euo pipefail
+          project_id=$(gh project view "$PROJECT_NUMBER" --owner "$OWNER" --format json --jq .id)
+          field_id=$(gh project field-list "$PROJECT_NUMBER" --owner "$OWNER" --format json \
+            --jq '.fields[] | select(.name == "Status") | .id')
+          option_id=$(gh project field-list "$PROJECT_NUMBER" --owner "$OWNER" --format json \
+            --jq '.fields[] | select(.name == "Status") | .options[] | select(.name | ascii_downcase == "in review") | .id')
+          if [ -z "$field_id" ] || [ -z "$option_id" ]; then
+            echo "Could not find Status field or 'In review' option on project $PROJECT_NUMBER" >&2
+            exit 1
+          fi
+          gh project item-edit --project-id "$project_id" --id "$ITEM_ID" \
+            --field-id "$field_id" --single-select-option-id "$option_id"
