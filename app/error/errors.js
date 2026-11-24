@@ -57,6 +57,12 @@ export class ErrorTypeOfQuery extends HttpError {
   }
 }
 
+export class ErrorIncorrectPassword extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Current password is incorrect.", message: this.message });
+  }
+}
+
 // One message for unknown, used, and expired invites, so the response
 // doesn't reveal which tokens exist.
 export class ErrorInvalidInvite extends HttpError {
