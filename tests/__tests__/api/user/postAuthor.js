@@ -257,4 +257,17 @@ describe("Added Author Signup Tests", () => {
     const user = await UsersAccessor.getUserByEmail(newAuthor.email);
     expect(await Password.compare("newpassword", user.password)).toBe(true);
   });
+
+  test("should store a mixed-case, padded author email in lowercase", async () => {
+    const response = await request(app)
+      .post("/user/author")
+      .set("Cookie", editorCookie)
+      .send({ ...newAuthor, email: "  Doe.J@Northeastern.edu " });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(201);
+    expect(response.body.email).toBe("doe.j@northeastern.edu");
+    const user = await UsersAccessor.getUserByEmail("doe.j@northeastern.edu");
+    expect(user.email).toBe("doe.j@northeastern.edu");
+  });
 });
