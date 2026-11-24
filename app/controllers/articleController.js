@@ -1,10 +1,7 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import Authorize from "../auth/authorization.js";
-import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
+import Accounts from "../models/enums/accounts.js";
 import {
-  ArticleUpdate,
   ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
@@ -13,6 +10,7 @@ import {
 } from "../models/zodSchemas/article.js";
 import {
   ErrorArticleNotFound,
+  ErrorDuplicateKey,
   ErrorIssueMapNotFound,
   ErrorUnexpected,
   HttpError,
@@ -28,7 +26,12 @@ import Utils from "./utils.js";
  */
 export default class ArticleController {
   /**
+   * createArticle method
    *
+   * Handles the request to create an article. The authors, editors,
+   * photographers, and designers are given as emails; each must belong
+   * to an existing user with the matching role, and is stored as that
+   * user's ID.
    *
    * @param {Request} req
    * @param {Response} res
@@ -44,14 +47,39 @@ export default class ArticleController {
 
       const articleData = parsedArticle.data;
 
-      // gets all the author objects by list of emails provided upon article submission
-      const authors = await UsersAccessor.getUsersByEmails(articleData.authors);
-      articleData.authors = authors.map((author) => author._id);
+      // converts each list of emails into user IDs, throws before anything is written
+      const referenceFields = [
+        ["authors", Accounts.Author],
+        ["editors", Accounts.Editor],
+        ["photographers", Accounts.Photographer],
+        ["designers", Accounts.Designer],
+      ];
+      for (const [field, role] of referenceFields) {
+        if (articleData[field]) {
+          articleData[field] = await Utils.getUserIdsByEmailsWithRole(articleData[field], role, field);
+        }
+      }
 
-      // TODO need to do this ^ for editors, etc, any other ref data
+      let newArticle;
+      try {
+        newArticle = await ArticlesAccessor.createArticle(articleData);
+      } catch (e) {
+        // duplicate key, the slug is the only unique field on an article
+        if (e?.code === 11000) {
+          throw new ErrorDuplicateKey(`An article with the slug "${articleData.slug}" already exists.`);
+        }
+        if (e?.name === "ValidationError") {
+          throw new ErrorValidation(e.message);
+        }
+        throw e;
+      }
 
-      const newArticle = await ArticlesAccessor.createArticle(articleData);
-      res.status(200).json(newArticle);
+      const articleResponse = await ArticleResponse.safeParseAsync(newArticle.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(201).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -101,16 +129,14 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      /** Will eventually need to do validation */
-      // // Validate and construct an ArticleResponse instance
-      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      // if (!articleResponse.success) {
-      //   throw new ErrorValidation("Outgoing response validation failed");
-      // }
+      // Validate the response so private user fields (password hashes, phone
+      // numbers, account status) never leave this public endpoint.
+      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      // Send the validated ArticleResponse
-
-      res.status(200).json(article);
+      res.status(200).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -119,8 +145,6 @@ export default class ArticleController {
       }
     }
   }
-
- 
 
   /**
    * editArticle method
@@ -190,7 +214,7 @@ export default class ArticleController {
     }
   }
 
- /**
+  /**
    * updateStatus method
    *
    * Handles the request to update the status of an article.
@@ -198,39 +222,39 @@ export default class ArticleController {
    * @param {Request} req
    * @param {Response} res
    */
-  static async updateStatus(req, res) {
-    try {
-      const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
-
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
-
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async updateStatus(req, res) {
+  //   try {
+  //     const { slug } = req.params;
+  //
+  //     // const updates = new ArticleUpdate(req.body);
+  //
+  //     const updates = await ArticleUpdate.safeParseAsync(req.body);
+  //
+  //     if (!updates.success) {
+  //       throw new ErrorValidation("Incoming update validation failed");
+  //     }
+  //
+  //     const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+  //
+  //     if (!updatedArticleData) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+  //     if (!updatedArticleResponse.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     // Send the validated ArticleResponse
+  //     res.status(200).json(updatedArticleResponse.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * addInternalComment Method
@@ -241,40 +265,40 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async addInternalComment(req, res, next) {
-    try {
-      //comment validation
-      const email = Authorize.getEmail(req);
-      const user = await UsersAccessor.getUserByEmail(email);
-      const userID = user._id;
-
-      const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
-      if (!comment.success) {
-        throw new ErrorValidation("Comment creation validation failed.");
-      }
-
-      // modify the article with the new comment
-      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
-
-      if (!updatedArticle) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
-      if (!finalArticle.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      //return updated article with new comment
-      res.status(201).json(finalArticle.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async addInternalComment(req, res, next) {
+  //   try {
+  //     //comment validation
+  //     const email = Authorize.getEmail(req);
+  //     const user = await UsersAccessor.getUserByEmail(email);
+  //     const userID = user._id;
+  //
+  //     const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
+  //     if (!comment.success) {
+  //       throw new ErrorValidation("Comment creation validation failed.");
+  //     }
+  //
+  //     // modify the article with the new comment
+  //     const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
+  //
+  //     if (!updatedArticle) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
+  //     if (!finalArticle.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     //return updated article with new comment
+  //     res.status(201).json(finalArticle.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * resolveInternalComment Method
@@ -285,24 +309,24 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async resolveInternalComment(req, res, next) {
-    try {
-      const resolve = await InternalCommentResolve.safeParseAsync(req.body);
-      if (!resolve.success) {
-        throw new ErrorValidation("Comment resolve validation failed.");
-      }
-
-      // modify the comment status
-      const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
-      res.status(201).json({});
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveInternalComment(req, res, next) {
+  //   try {
+  //     const resolve = await InternalCommentResolve.safeParseAsync(req.body);
+  //     if (!resolve.success) {
+  //       throw new ErrorValidation("Comment resolve validation failed.");
+  //     }
+  //
+  //     // modify the comment status
+  //     const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
+  //     res.status(201).json({});
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * search Method

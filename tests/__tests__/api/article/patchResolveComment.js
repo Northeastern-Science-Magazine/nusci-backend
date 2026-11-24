@@ -13,7 +13,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Article Resolve Internal Comment Tests", () => {
+// route is commented out in articleRoutes.js
+describe.skip("Article Resolve Internal Comment Tests", () => {
   test("valid comment resolve (admin)", async () => {
     const response = await request(app)
       .patch("/articles/resolve-internal-comment")

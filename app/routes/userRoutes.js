@@ -22,6 +22,7 @@ user
   .route("/me")
   .get(Authorize.allow(Accounts.list()), UserController.getMyProfile)
   .patch(Authorize.allow(Accounts.list()), UserController.updateMyProfile);
+user.route("/me/password").patch(Authorize.allow(Accounts.list()), UserController.changeMyPassword);
 user.route("/roles").get(UserController.getMyRoles);
 user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 

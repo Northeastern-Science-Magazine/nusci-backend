@@ -5,18 +5,20 @@ import AccountStatus from "../models/enums/accountStatus.js";
 import {
   AuthorCreate,
   Login,
+  NormalizedEmail,
+  PasswordChange,
   OTPRequest,
   PlaceholderUserCreate,
   UserCreate,
   UserInvite,
   UserSignup,
   SelfProfileUpdate,
-  UserApprovals,
   UserPrivateResponse,
   UserPublicResponse,
 } from "../models/zodSchemas/user.js";
 import {
   ErrorFailedLogin,
+  ErrorIncorrectPassword,
   ErrorNotLoggedIn,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
@@ -25,7 +27,6 @@ import {
   ErrorUserDeniedLogin,
   ErrorUserNotFound,
   ErrorUserPendingLogin,
-  ErrorUserStatusAlreadyResolved,
   ErrorValidation,
   ErrorInvalidInvite,
   HttpError,
@@ -58,7 +59,8 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req.body)) {
+      const login = Login.safeParse(req.body);
+      if (!login.success) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
@@ -68,7 +70,7 @@ export default class UserController {
         throw new ErrorUserAlreadyLoggedIn();
       }
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByEmail(req.body.email);
+      const user = await UsersAccessor.getUserByEmail(login.data.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
@@ -95,7 +97,7 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await Password.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(login.data.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
@@ -203,8 +205,7 @@ export default class UserController {
         throw new ErrorValidation("Author validation failed.");
       }
 
-      const { firstName, lastName } = author.data;
-      const email = author.data.email.toLowerCase();
+      const { firstName, lastName, email } = author.data;
       if (await UsersAccessor.getUserByEmail(email)) {
         throw new ErrorUserAlreadyExists();
       }
@@ -520,6 +521,48 @@ export default class UserController {
   }
 
   /**
+   * changeMyPassword Method
+   *
+   * Changes the logged-in user's password after checking their current one.
+   * Existing login cookies stay valid until they expire.
+   *
+   * @param {HTTP REQ} req web request object, contains currentPassword and newPassword
+   * @param {HTTP RES} res web response object
+   */
+  static async changeMyPassword(req, res) {
+    try {
+      const change = PasswordChange.safeParse(req.body);
+      if (!change.success) {
+        throw new ErrorValidation(change.error.issues[0]?.message ?? "Password change validation failed.");
+      }
+      const { currentPassword, newPassword } = change.data;
+
+      const email = Authorize.getEmail(req);
+      const user = await UsersAccessor.getUserByEmail(email);
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      if (!user.password || !(await Password.compare(currentPassword, user.password))) {
+        throw new ErrorIncorrectPassword();
+      }
+
+      await UsersAccessor.updateUserByEmail(email, {
+        password: await Password.hash(newPassword, 10),
+        modificationTime: new Date(),
+      });
+
+      res.status(200).json({ message: "Password updated." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * getPublicProfile Method
    *
    * This method retrieves the public profile of a user by their email.
@@ -529,8 +572,11 @@ export default class UserController {
    */
   static async getPublicUserByEmail(req, res) {
     try {
-      const email = req.params.email;
-      const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
+      const parsedEmail = NormalizedEmail.safeParse(req.params.email);
+      if (!parsedEmail.success) {
+        throw new ErrorUserNotFound();
+      }
+      const user = await UsersAccessor.getUserByEmail(parsedEmail.data).then((_) => _?.toObject());
 
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
@@ -561,49 +607,49 @@ export default class UserController {
    * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
    */
-  static async resolveUserApprovals(req, res) {
-    try {
-      const approvals = UserApprovals.safeParse(req.body);
-      if (!approvals.success) {
-        throw new ErrorValidation("Approvals validation failed.");
-      }
-
-      const approveUsers = approvals.data.approve ?? [];
-      const denyUsers = approvals.data.deny ?? [];
-      const allUsers = [...approveUsers, ...denyUsers];
-
-      //check if the users given exists and are pending
-      for (const email of allUsers) {
-        //check if the user exists and is pending
-        try {
-          const user = await UsersAccessor.getUserByEmail(email);
-          if (user.status !== AccountStatus.Pending.toString()) {
-            throw new ErrorUserStatusAlreadyResolved();
-          }
-        } catch (e) {
-          throw new ErrorUserNotFound();
-        }
-      }
-
-      //approve the users
-      for (const email of approveUsers) {
-        await UsersAccessor.approveUserByEmail(email);
-      }
-
-      //deny the users
-      for (const email of denyUsers) {
-        await UsersAccessor.denyUserByEmail(email);
-      }
-
-      res.status(201).json({ message: "All users resolved successfully." });
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveUserApprovals(req, res) {
+  //   try {
+  //     const approvals = UserApprovals.safeParse(req.body);
+  //     if (!approvals.success) {
+  //       throw new ErrorValidation("Approvals validation failed.");
+  //     }
+  //
+  //     const approveUsers = approvals.data.approve ?? [];
+  //     const denyUsers = approvals.data.deny ?? [];
+  //     const allUsers = [...approveUsers, ...denyUsers];
+  //
+  //     //check if the users given exists and are pending
+  //     for (const email of allUsers) {
+  //       //check if the user exists and is pending
+  //       try {
+  //         const user = await UsersAccessor.getUserByEmail(email);
+  //         if (user.status !== AccountStatus.Pending.toString()) {
+  //           throw new ErrorUserStatusAlreadyResolved();
+  //         }
+  //       } catch (e) {
+  //         throw new ErrorUserNotFound();
+  //       }
+  //     }
+  //
+  //     //approve the users
+  //     for (const email of approveUsers) {
+  //       await UsersAccessor.approveUserByEmail(email);
+  //     }
+  //
+  //     //deny the users
+  //     for (const email of denyUsers) {
+  //       await UsersAccessor.denyUserByEmail(email);
+  //     }
+  //
+  //     res.status(201).json({ message: "All users resolved successfully." });
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * @TODO FIX
@@ -680,10 +726,10 @@ export default class UserController {
    * @param {HTTP REQ} req
    * @param {HTTP RES} res
    */
-  static logout(req, res) {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Successfully logged out." });
-  }
+  // static logout(req, res) {
+  //   res.clearCookie("token");
+  //   res.status(200).json({ message: "Successfully logged out." });
+  // }
 
   /**
    * requestOTP Method

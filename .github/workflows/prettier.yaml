@@ -28,7 +28,14 @@ jobs:
         run: npx prettier --write .
 
       - name: Commit and Push Formatting Changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "style: auto-format with prettier"
-          branch: ${{ github.event.pull_request.head.ref }}
+        # Plain git instead of a third-party action: the repo's Actions policy
+        # only allows GitHub-owned actions, so third-party ones fail at startup.
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -am "style: auto-format with prettier"
+            git push origin "HEAD:$HEAD_REF"
+          fi

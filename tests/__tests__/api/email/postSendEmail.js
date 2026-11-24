@@ -97,4 +97,32 @@ describe("Send Email Tests", () => {
     expect(record).not.toBeNull();
     expect(record.variables?.url).toBeUndefined();
   });
+
+  const adminSend = (body) =>
+    request(app)
+      .post(`/email/send`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(body);
+
+  test("unknown email type returns 500", async () => {
+    const response = await adminSend({ ...testReminderEmail, type: "not_a_type" });
+
+    expect(response.status).toBe(500);
+    expect(response.body.message).toBe("Email template not_a_type not found.");
+  });
+
+  test("email missing required fields fails validation", async () => {
+    const response = await adminSend({ type: "reminder", to: ["rodriguezvazquez.a@northeastern.edu"] });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Email schema validation failed.");
+  });
+
+  test("send failure returns 500", async () => {
+    const send = jest.spyOn(ResendEmail, "sendEmailWithTemplate").mockRejectedValue(new Error("resend down"));
+    const response = await adminSend(testReminderEmail);
+    send.mockRestore();
+
+    expect(response.status).toBe(500);
+  });
 });

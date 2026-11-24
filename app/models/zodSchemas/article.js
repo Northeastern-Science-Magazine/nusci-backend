@@ -2,7 +2,7 @@ import * as z from "zod";
 import mongoose from "mongoose";
 import Category from "../enums/categories.js";
 import ArticleContent from "../enums/articleContent.js";
-import { UserPublicResponse } from "./user.js";
+import { NormalizedEmail, UserPublicResponse } from "./user.js";
 import CommentStatus from "../enums/commentStatus.js";
 import PhotographyStatus from "../enums/photographyStatus.js";
 import ArticleStatus from "../enums/articleStatus.js";
@@ -22,7 +22,7 @@ export const Article = z.object({
     z.array(
       z.object({
         contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
+        content: z.string().min(1),
         href: z.string().nullish(),
       })
     )
@@ -53,9 +53,9 @@ export const Article = z.object({
   designStatus: z.enum(DesignStatus.listr()),
   photographyStatus: z.enum(PhotographyStatus.listr()),
   authors: z.array(z.string()).nullish(),
-  editors: z.array(z.email()).nullish(),
-  designers: z.array(z.email()).nullish(),
-  photographers: z.array(z.email()).nullish(),
+  editors: z.array(NormalizedEmail).nullish(),
+  designers: z.array(NormalizedEmail).nullish(),
+  photographers: z.array(NormalizedEmail).nullish(),
 });
 
 export const ArticleResponse = Article.extend({

@@ -18,6 +18,18 @@ export default class PitchAccessor {
       .lean();
   }
 
+  static async getSelectedRecipients(recipientIds) {
+    await Connection.open();
+
+    return User.find({
+      _id: { $in: recipientIds },
+      roles: Accounts.Admin.toString(),
+      graduationYear: { $gte: new Date().getFullYear() },
+    })
+      .select("email")
+      .lean();
+  }
+
   static async getSettings() {
     await Connection.open();
 

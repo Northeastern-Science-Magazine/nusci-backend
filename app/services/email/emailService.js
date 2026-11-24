@@ -126,6 +126,7 @@ export class ResendEmail {
 
       return data;
     } catch (e) {
+      if (e instanceof ErrorUnexpected) throw e;
       throw new ErrorUnexpected("Email send not reached.");
     }
   }
