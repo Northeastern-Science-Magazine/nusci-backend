@@ -43,6 +43,14 @@ describe("Request OTP Tests", () => {
     expect(sentEmail.type).toBe("otp");
   });
 
+  test("should normalize the email before looking up the account", async () => {
+    const response = await request(app).post("/user/otp").send({ email: "  Ethan@Ethan.com " });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(ResendEmail.sendEmailWithTemplate.mock.calls[0][0].to).toEqual(["ethan@ethan.com"]);
+  });
+
   test("should log in with the emailed link", async () => {
     await request(app).post("/user/otp").send({ email: "ethan@ethan.com" });
     const token = ResendEmail.sendEmailWithTemplate.mock.calls[0][0].variables.url.split("token=")[1];

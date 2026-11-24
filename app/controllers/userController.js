@@ -747,7 +747,7 @@ export default class UserController {
         throw new ErrorValidation("OTP request validation failed.");
       }
 
-      const email = otpRequest.data.email.toLowerCase();
+      const email = otpRequest.data.email;
       const user = await UsersAccessor.getUserByEmail(email);
 
       // Only accounts that can log in get a link: approved, with a password from signup.

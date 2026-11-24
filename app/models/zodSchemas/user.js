@@ -30,7 +30,7 @@ export const Login = z.object({
 });
 
 export const OTPRequest = z.object({
-  email: z.email(),
+  email: NormalizedEmail,
 });
 
 export const UserCreate = BaseUser.extend({
