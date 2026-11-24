@@ -30,6 +30,22 @@ export const userResponseRaisa = {
   modificationTime: "2024-02-27T00:00:00.000Z",
 };
 
+export const userResponseArushi = {
+  firstName: "Arushi",
+  lastName: "Aggarwal",
+  pronouns: [],
+  graduationYear: 2027,
+  major: "Computer Science",
+  location: "Boston",
+  profileImage: "https://example.com/profile.jpg",
+  bannerImage: "https://example.com/banner.jpg",
+  bio: "Teaching & Technical Assistant",
+  email: "aggarwal.arus@northeastern.edu",
+  roles: ["admin"],
+  creationTime: "2024-02-28T00:00:00.000Z",
+  modificationTime: "2024-02-28T00:00:00.000Z",
+};
+
 export const userResponseVianna = {
   firstName: "Vianna",
   lastName: "W",
