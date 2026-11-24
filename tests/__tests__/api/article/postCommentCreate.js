@@ -13,7 +13,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Article Internal Comment Tests", () => {
+// route is commented out in articleRoutes.js
+describe.skip("Article Internal Comment Tests", () => {
   test("valid create comment (admin)", async () => {
     const response = await request(app)
       .post("/articles/add-internal-comment/world-death-rate-holding-steady-at-100-percent-2")

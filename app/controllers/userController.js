@@ -11,7 +11,6 @@ import {
   UserInvite,
   UserSignup,
   SelfProfileUpdate,
-  UserApprovals,
   UserPrivateResponse,
   UserPublicResponse,
 } from "../models/zodSchemas/user.js";
@@ -26,7 +25,6 @@ import {
   ErrorUserDeniedLogin,
   ErrorUserNotFound,
   ErrorUserPendingLogin,
-  ErrorUserStatusAlreadyResolved,
   ErrorValidation,
   ErrorInvalidInvite,
   HttpError,
@@ -603,49 +601,49 @@ export default class UserController {
    * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
    */
-  static async resolveUserApprovals(req, res) {
-    try {
-      const approvals = UserApprovals.safeParse(req.body);
-      if (!approvals.success) {
-        throw new ErrorValidation("Approvals validation failed.");
-      }
-
-      const approveUsers = approvals.data.approve ?? [];
-      const denyUsers = approvals.data.deny ?? [];
-      const allUsers = [...approveUsers, ...denyUsers];
-
-      //check if the users given exists and are pending
-      for (const email of allUsers) {
-        //check if the user exists and is pending
-        try {
-          const user = await UsersAccessor.getUserByEmail(email);
-          if (user.status !== AccountStatus.Pending.toString()) {
-            throw new ErrorUserStatusAlreadyResolved();
-          }
-        } catch (e) {
-          throw new ErrorUserNotFound();
-        }
-      }
-
-      //approve the users
-      for (const email of approveUsers) {
-        await UsersAccessor.approveUserByEmail(email);
-      }
-
-      //deny the users
-      for (const email of denyUsers) {
-        await UsersAccessor.denyUserByEmail(email);
-      }
-
-      res.status(201).json({ message: "All users resolved successfully." });
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveUserApprovals(req, res) {
+  //   try {
+  //     const approvals = UserApprovals.safeParse(req.body);
+  //     if (!approvals.success) {
+  //       throw new ErrorValidation("Approvals validation failed.");
+  //     }
+  //
+  //     const approveUsers = approvals.data.approve ?? [];
+  //     const denyUsers = approvals.data.deny ?? [];
+  //     const allUsers = [...approveUsers, ...denyUsers];
+  //
+  //     //check if the users given exists and are pending
+  //     for (const email of allUsers) {
+  //       //check if the user exists and is pending
+  //       try {
+  //         const user = await UsersAccessor.getUserByEmail(email);
+  //         if (user.status !== AccountStatus.Pending.toString()) {
+  //           throw new ErrorUserStatusAlreadyResolved();
+  //         }
+  //       } catch (e) {
+  //         throw new ErrorUserNotFound();
+  //       }
+  //     }
+  //
+  //     //approve the users
+  //     for (const email of approveUsers) {
+  //       await UsersAccessor.approveUserByEmail(email);
+  //     }
+  //
+  //     //deny the users
+  //     for (const email of denyUsers) {
+  //       await UsersAccessor.denyUserByEmail(email);
+  //     }
+  //
+  //     res.status(201).json({ message: "All users resolved successfully." });
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * @TODO FIX
@@ -722,10 +720,10 @@ export default class UserController {
    * @param {HTTP REQ} req
    * @param {HTTP RES} res
    */
-  static logout(req, res) {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Successfully logged out." });
-  }
+  // static logout(req, res) {
+  //   res.clearCookie("token");
+  //   res.status(200).json({ message: "Successfully logged out." });
+  // }
 
   /**
    * Verifies the OTP

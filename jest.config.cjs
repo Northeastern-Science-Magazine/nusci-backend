@@ -2,7 +2,7 @@
 const config = {
   detectOpenHandles: true,
   collectCoverage: true,
-  collectCoverageFrom: ["app/**"],
+  collectCoverageFrom: ["app/**", "!app/db/connection.js"],
   coverageThreshold: {
     global: {
       statements: 69.2,

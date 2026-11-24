@@ -50,7 +50,7 @@ export default class Category {
    * @returns {Cateogory}
    */
   static toCategory(str) {
-    const category = this.list().find((obj) => obj.toString() === str.toLowerCase());
+    const category = this.list().find((obj) => obj.toString().toLowerCase() === str.toLowerCase());
     if (!category) {
       throw new ErrorValidation("Invalid Category enum given.");
     }

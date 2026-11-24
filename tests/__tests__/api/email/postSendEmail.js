@@ -2,6 +2,7 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
+import { ResendEmail } from "../../../../app/services/email/emailService.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
 const showLog = __filename
@@ -58,5 +59,33 @@ describe("Send Email Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
+  });
+
+  const adminSend = (body) =>
+    request(app)
+      .post(`/email/send`)
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send(body);
+
+  test("unknown email type returns 500", async () => {
+    const response = await adminSend({ ...testReminderEmail, type: "not_a_type" });
+
+    expect(response.status).toBe(500);
+    expect(response.body.message).toBe("Email template not_a_type not found.");
+  });
+
+  test("email missing required fields fails validation", async () => {
+    const response = await adminSend({ type: "reminder", to: ["rodriguezvazquez.a@northeastern.edu"] });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("Email schema validation failed.");
+  });
+
+  test("send failure returns 500", async () => {
+    const send = jest.spyOn(ResendEmail, "sendEmailWithTemplate").mockRejectedValue(new Error("resend down"));
+    const response = await adminSend(testReminderEmail);
+    send.mockRestore();
+
+    expect(response.status).toBe(500);
   });
 });

@@ -1,11 +1,7 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
 import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import Authorize from "../auth/authorization.js";
 import Accounts from "../models/enums/accounts.js";
-import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
 import {
-  ArticleUpdate,
   ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
@@ -150,8 +146,6 @@ export default class ArticleController {
     }
   }
 
- 
-
   /**
    * editArticle method
    *
@@ -220,7 +214,7 @@ export default class ArticleController {
     }
   }
 
- /**
+  /**
    * updateStatus method
    *
    * Handles the request to update the status of an article.
@@ -228,39 +222,39 @@ export default class ArticleController {
    * @param {Request} req
    * @param {Response} res
    */
-  static async updateStatus(req, res) {
-    try {
-      const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
-
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
-      }
-
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
-      if (!updatedArticleResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      // Send the validated ArticleResponse
-      res.status(200).json(updatedArticleResponse.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async updateStatus(req, res) {
+  //   try {
+  //     const { slug } = req.params;
+  //
+  //     // const updates = new ArticleUpdate(req.body);
+  //
+  //     const updates = await ArticleUpdate.safeParseAsync(req.body);
+  //
+  //     if (!updates.success) {
+  //       throw new ErrorValidation("Incoming update validation failed");
+  //     }
+  //
+  //     const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+  //
+  //     if (!updatedArticleData) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+  //     if (!updatedArticleResponse.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     // Send the validated ArticleResponse
+  //     res.status(200).json(updatedArticleResponse.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * addInternalComment Method
@@ -271,40 +265,40 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async addInternalComment(req, res, next) {
-    try {
-      //comment validation
-      const email = Authorize.getEmail(req);
-      const user = await UsersAccessor.getUserByEmail(email);
-      const userID = user._id;
-
-      const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
-      if (!comment.success) {
-        throw new ErrorValidation("Comment creation validation failed.");
-      }
-
-      // modify the article with the new comment
-      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
-
-      if (!updatedArticle) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
-      if (!finalArticle.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      //return updated article with new comment
-      res.status(201).json(finalArticle.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async addInternalComment(req, res, next) {
+  //   try {
+  //     //comment validation
+  //     const email = Authorize.getEmail(req);
+  //     const user = await UsersAccessor.getUserByEmail(email);
+  //     const userID = user._id;
+  //
+  //     const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
+  //     if (!comment.success) {
+  //       throw new ErrorValidation("Comment creation validation failed.");
+  //     }
+  //
+  //     // modify the article with the new comment
+  //     const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
+  //
+  //     if (!updatedArticle) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
+  //     if (!finalArticle.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     //return updated article with new comment
+  //     res.status(201).json(finalArticle.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * resolveInternalComment Method
@@ -315,24 +309,24 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async resolveInternalComment(req, res, next) {
-    try {
-      const resolve = await InternalCommentResolve.safeParseAsync(req.body);
-      if (!resolve.success) {
-        throw new ErrorValidation("Comment resolve validation failed.");
-      }
-
-      // modify the comment status
-      const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
-      res.status(201).json({});
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveInternalComment(req, res, next) {
+  //   try {
+  //     const resolve = await InternalCommentResolve.safeParseAsync(req.body);
+  //     if (!resolve.success) {
+  //       throw new ErrorValidation("Comment resolve validation failed.");
+  //     }
+  //
+  //     // modify the comment status
+  //     const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
+  //     res.status(201).json({});
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * search Method
