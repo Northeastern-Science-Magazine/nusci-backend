@@ -5,6 +5,7 @@ import AccountStatus from "../models/enums/accountStatus.js";
 import {
   AuthorCreate,
   Login,
+  NormalizedEmail,
   PasswordChange,
   PlaceholderUserCreate,
   UserCreate,
@@ -56,7 +57,8 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req.body)) {
+      const login = Login.safeParse(req.body);
+      if (!login.success) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
@@ -66,7 +68,7 @@ export default class UserController {
         throw new ErrorUserAlreadyLoggedIn();
       }
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByEmail(req.body.email);
+      const user = await UsersAccessor.getUserByEmail(login.data.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
@@ -93,7 +95,7 @@ export default class UserController {
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await Password.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(login.data.password, user.password);
       if (!decrypted) {
         throw new ErrorFailedLogin();
       }
@@ -201,8 +203,7 @@ export default class UserController {
         throw new ErrorValidation("Author validation failed.");
       }
 
-      const { firstName, lastName } = author.data;
-      const email = author.data.email.toLowerCase();
+      const { firstName, lastName, email } = author.data;
       if (await UsersAccessor.getUserByEmail(email)) {
         throw new ErrorUserAlreadyExists();
       }
@@ -569,8 +570,11 @@ export default class UserController {
    */
   static async getPublicUserByEmail(req, res) {
     try {
-      const email = req.params.email;
-      const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
+      const parsedEmail = NormalizedEmail.safeParse(req.params.email);
+      if (!parsedEmail.success) {
+        throw new ErrorUserNotFound();
+      }
+      const user = await UsersAccessor.getUserByEmail(parsedEmail.data).then((_) => _?.toObject());
 
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
