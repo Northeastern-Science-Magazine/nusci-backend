@@ -29,6 +29,10 @@ export const Login = z.object({
   password: z.string(),
 });
 
+export const OTPRequest = z.object({
+  email: NormalizedEmail,
+});
+
 export const UserCreate = BaseUser.extend({
   password: z.string(),
   phone: z.string().optional(),
