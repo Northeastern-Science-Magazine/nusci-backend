@@ -3,6 +3,8 @@ import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 import { userResponseRaisa, userResponseEthan } from "../../../testData/userTestData.js";
+import User from "../../../../app/models/dbModels/user.js";
+import AccountStatus from "../../../../app/models/enums/accountStatus.js";
 
 const showLog = __filename
   .replace(".js", "")
@@ -16,6 +18,7 @@ afterAll(closeMockConnection);
 const PRIVATE_FIELDS = ["password", "phone", "status", "approvingUser", "_id"];
 
 describe("Get Users By Role Tests", () => {
+  // Kayla is a pending admin, so this also checks that non-approved users are excluded
   test("get approved admins, sorted by last name", async () => {
     const response = await request(app).get("/user/role/admin");
 
@@ -24,12 +27,24 @@ describe("Get Users By Role Tests", () => {
     expect(response.body).toStrictEqual([userResponseRaisa, userResponseEthan]);
   });
 
-  test("pending users are excluded (Kayla is a pending admin)", async () => {
+  test("an invalid stored user is skipped instead of failing the listing", async () => {
+    // insert through the raw collection so mongoose validation doesn't block the bad email
+    await User.collection.insertOne({
+      ...userResponseEthan,
+      firstName: "Bad",
+      lastName: "Email",
+      email: "not-an-email",
+      creationTime: new Date(userResponseEthan.creationTime),
+      modificationTime: new Date(userResponseEthan.modificationTime),
+      password: "password",
+      status: AccountStatus.Approved.status,
+    });
+
     const response = await request(app).get("/user/role/admin");
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body.map((user) => user.email)).not.toContain("kayla@kayla.com");
+    expect(response.body).toStrictEqual([userResponseRaisa, userResponseEthan]);
   });
 
   test("get approved editors", async () => {
