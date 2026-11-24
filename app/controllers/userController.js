@@ -2,18 +2,23 @@ import { config as dotenvConfig } from "dotenv";
 import UsersAccessor from "../databaseAccessors/userAccessor.js";
 import Authorize from "../auth/authorization.js";
 import AccountStatus from "../models/enums/accountStatus.js";
-import * as z from "zod";
 import {
+  AuthorCreate,
   Login,
+  NormalizedEmail,
+  PasswordChange,
+  OTPRequest,
+  PlaceholderUserCreate,
   UserCreate,
+  UserInvite,
+  UserSignup,
   SelfProfileUpdate,
-  UserApprovals,
   UserPrivateResponse,
   UserPublicResponse,
 } from "../models/zodSchemas/user.js";
-import crypto from "crypto";
 import {
   ErrorFailedLogin,
+  ErrorIncorrectPassword,
   ErrorNotLoggedIn,
   ErrorUnexpected,
   ErrorUserAlreadyExists,
@@ -22,16 +27,17 @@ import {
   ErrorUserDeniedLogin,
   ErrorUserNotFound,
   ErrorUserPendingLogin,
-  ErrorUserStatusAlreadyResolved,
   ErrorValidation,
-  ErrorEmailNotFound,
+  ErrorInvalidInvite,
   HttpError,
 } from "../error/errors.js";
 import LoginToken from "../auth/token.js";
 import Password from "../auth/password.js";
-import User from "../models/dbModels/user.js";
 import OTPAccessor from "../databaseAccessors/otpAccessor.js";
+import EmailAccessor from "../databaseAccessors/emailAccessor.js";
+import { GenerateEmail, ResendEmail } from "../services/email/emailService.js";
 import Accounts from "../models/enums/accounts.js";
+import EmailType from "../models/enums/emailType.js";
 
 /**
  * UsersController Class
@@ -53,16 +59,18 @@ export default class UserController {
   static async login(req, res) {
     try {
       // parse login request
-      if (!Login.safeParse(req.body)) {
+      const login = Login.safeParse(req.body);
+      if (!login.success) {
         throw new ErrorFailedLogin("Bad Request Body");
       }
 
-      if (req.cookies.token) {
+      // Only a valid token counts; an invalid cookie is overwritten by the new one.
+      if (Authorize.isLoggedIn(req)) {
         // already logged in
         throw new ErrorUserAlreadyLoggedIn();
       }
       // check if the user exists and is approved
-      const user = await UsersAccessor.getUserByEmail(req.body.email);
+      const user = await UsersAccessor.getUserByEmail(login.data.email);
       if (!user) {
         //doesn't exist (use generic message)
         throw new ErrorFailedLogin();
@@ -79,15 +87,19 @@ export default class UserController {
       if (user.status == AccountStatus.Denied.toString()) {
         throw new ErrorUserDeniedLogin();
       }
+      // An author an editor added has no password until they sign up from their invite.
+      if (!user.password) {
+        throw new ErrorFailedLogin();
+      }
       //check if password matches
       /**
        * @TODO unhashed passwords should not be sent over HTTP
        * We need to change the login flow to accept a hashed PW from FE,
        * and decrypt both here to verify using same key.
        */
-      const decrypted = await Password.compare(req.body.password, user.password);
+      const decrypted = await Password.compare(login.data.password, user.password);
       if (!decrypted) {
-        throw new ErrorFailedLogin(user);
+        throw new ErrorFailedLogin();
       }
       dotenvConfig(); // load .env variables
 
@@ -104,42 +116,276 @@ export default class UserController {
   }
 
   /**
-   * apiPostSignUp Method
+   * sendInvites Method
    *
-   * This method adds a new user to the unregistered user
-   * collection in the user database. It accomplishes this
-   * by calling the user.accessor.js file and creating a new
-   * user with the existing req data.
+   * This method sends a single-use signup invite to each given
+   * email that does not already have an account.
    *
-   * @param {HTTP REQ} req web request information for signup
+   * @param {HTTP REQ} req web request object, contains the emails and roles to invite
+   * @param {HTTP RES} res web response object
+   */
+  static async sendInvites(req, res) {
+    try {
+      const invite = UserInvite.safeParse(req.body);
+      if (!invite.success) {
+        throw new ErrorValidation("Invite validation failed.");
+      }
+
+      const inviter = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      const invited = [];
+      const skipped = [];
+      const failed = [];
+
+      // Set removes duplicates so one request never sends someone two invites.
+      for (const email of new Set(invite.data.to)) {
+        try {
+          // An author an editor added (no password yet) can still be invited,
+          // so an admin can resend an invite that failed to send.
+          const existing = await UsersAccessor.getUserByEmail(email);
+          if (existing?.password) {
+            skipped.push(email);
+            continue;
+          }
+
+          const inviteEmail = await GenerateEmail.InviteUser({
+            to: [email],
+            roles: invite.data.roles,
+            invitedBy: inviter._id,
+          });
+          await ResendEmail.sendEmailWithTemplate(inviteEmail);
+          await UserController.saveEmailRecord(inviteEmail);
+          invited.push(email);
+        } catch (e) {
+          // One failed address does not stop the rest of the list.
+          failed.push(email);
+        }
+      }
+
+      res.status(200).json({ invited: invited, skipped: skipped, failed: failed });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * saveEmailRecord Method
+   *
+   * This method saves a record of a sent invite or OTP email and never throws.
+   *
+   * @param {Object} sentEmail the email that was sent
+   */
+  static async saveEmailRecord(sentEmail) {
+    try {
+      // The url holds the raw token, so it is left out of the stored record.
+      await EmailAccessor.createEmail({ ...sentEmail, variables: {} });
+    } catch (e) {
+      // The email is already sent, so a failed record is not a failed send.
+    }
+  }
+
+  /**
+   * createAuthor Method
+   *
+   * This method lets an editor add an author who has no account yet, so
+   * they can be credited on an article right away. It saves an approved
+   * author account with no password and emails them a signup invite;
+   * signing up from it finishes that same account.
+   *
+   * @param {HTTP REQ} req web request object, contains firstName, lastName, and email
+   * @param {HTTP RES} res web response object
+   */
+  static async createAuthor(req, res) {
+    try {
+      const author = AuthorCreate.safeParse(req.body);
+      if (!author.success) {
+        throw new ErrorValidation("Author validation failed.");
+      }
+
+      const { firstName, lastName, email } = author.data;
+      if (await UsersAccessor.getUserByEmail(email)) {
+        throw new ErrorUserAlreadyExists();
+      }
+
+      const creator = await UsersAccessor.getUserIdByEmail(Authorize.getEmail(req));
+      if (!creator) {
+        throw new ErrorUserNotFound();
+      }
+      const placeholder = PlaceholderUserCreate.safeParse({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        roles: [Accounts.Author.toString()],
+        status: AccountStatus.Approved.toString(),
+        approvingUser: creator._id.toString(),
+        creationTime: new Date(),
+        modificationTime: new Date(),
+      });
+      if (!placeholder.success) {
+        throw new ErrorUnexpected("Author produced an invalid user.");
+      }
+
+      try {
+        await UsersAccessor.createUser(placeholder.data);
+      } catch (e) {
+        // 11000 is MongoDB's duplicate key error
+        throw e.code === 11000 ? new ErrorUserAlreadyExists() : e;
+      }
+
+      // The account is what the article needs, so a failed email is reported, not thrown.
+      // An admin can resend it from the invite page.
+      let invited = true;
+      try {
+        const inviteEmail = await GenerateEmail.InviteUser({
+          to: [email],
+          roles: [Accounts.Author.toString()],
+          invitedBy: creator._id,
+        });
+        await ResendEmail.sendEmailWithTemplate(inviteEmail);
+        await UserController.saveEmailRecord(inviteEmail);
+      } catch (e) {
+        invited = false;
+      }
+
+      res.status(201).json({ name: `${firstName} ${lastName}`, email: email, invited: invited });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * getInvite Method
+   *
+   * This method returns the email an invite belongs to, so the
+   * signup page can show it. It does not use up the invite.
+   *
+   * @param {HTTP REQ} req web request object, contains the token query
+   * @param {HTTP RES} res web response object
+   */
+  static async getInvite(req, res) {
+    try {
+      const { token } = req.query;
+      // ?token=a&token=b arrives as an array, which cannot be hashed.
+      if (typeof token !== "string") {
+        throw new ErrorInvalidInvite();
+      }
+
+      const otpRecord = await OTPAccessor.findValidOTP(token, "invite");
+      if (!otpRecord) {
+        throw new ErrorInvalidInvite();
+      }
+
+      // Prefill the name an editor entered when they added this author.
+      const placeholder = await UsersAccessor.getUserByEmail(otpRecord.email);
+      if (placeholder && !placeholder.password) {
+        res.status(200).json({
+          email: otpRecord.email,
+          firstName: placeholder.firstName,
+          lastName: placeholder.lastName,
+        });
+        return;
+      }
+
+      res.status(200).json({ email: otpRecord.email });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * signup Method
+   *
+   * This method creates an approved account from an invite and
+   * logs the new user in.
+   *
+   * @param {HTTP REQ} req web request object, contains the token, password, and name fields
    * @param {HTTP RES} res web response object
    */
   static async signup(req, res) {
     try {
-      let user = { ...req.body, creationTime: new Date(), modificationTime: new Date() };
-      const userCreate = await UserCreate.safeParseAsync(user);
-      if (!userCreate.success) {
+      const signup = UserSignup.safeParse(req.body);
+      if (!signup.success) {
         throw new ErrorValidation("Signup validation failed.");
       }
 
-      // hash the password
-      /**
-       * @TODO Password hashing should actually be deferred to FE. It is
-       * generally unsafe to send unhashed passwords over HTTP
-       */
-      req.body.password = await Password.hash(req.boday.password, 10);
-      const userByEmail = await UsersAccessor.getUserByEmail(req.body.email);
-
-      if (userByEmail) {
-        throw new ErrorUserAlreadyExists();
+      // Only a valid token counts; an invalid cookie is overwritten by the new one.
+      if (Authorize.isLoggedIn(req)) {
+        throw new ErrorUserAlreadyLoggedIn();
       }
 
-      await UsersAccessor.createUser(userCreate.data);
+      const { token, password, firstName, lastName, graduationYear } = signup.data;
+      const invite = await OTPAccessor.verifyOTPRecord(token, "invite");
+      if (!invite.success) {
+        throw new ErrorInvalidInvite();
+      }
+
+      let user;
+      try {
+        const existing = await UsersAccessor.getUserByEmail(invite.email);
+        // The invite stays used here, since this email can no longer sign up anyway.
+        if (existing?.password) {
+          throw new ErrorUserAlreadyExists();
+        }
+
+        if (existing) {
+          // An editor added this author already, so finish that account instead of
+          // making a new one. It keeps its articles, and gains the invite's roles.
+          user = await UsersAccessor.claimPlaceholderUser(invite.email, {
+            firstName: firstName,
+            lastName: lastName,
+            graduationYear: graduationYear,
+            roles: [...new Set([...existing.roles, ...invite.roles])],
+            status: AccountStatus.Approved.toString(),
+            password: await Password.hash(password, 10),
+            modificationTime: new Date(),
+          });
+          // Someone else finished signing up for it in the meantime.
+          if (!user) {
+            throw new ErrorUserAlreadyExists();
+          }
+        } else {
+          const userCreate = UserCreate.safeParse({
+            firstName: firstName,
+            lastName: lastName,
+            graduationYear: graduationYear,
+            // Email, roles, and approver come from the invite, never the request body.
+            email: invite.email,
+            roles: [...invite.roles],
+            status: AccountStatus.Approved.toString(),
+            approvingUser: invite.invitedBy?.toString(),
+            password: await Password.hash(password, 10),
+            creationTime: new Date(),
+            modificationTime: new Date(),
+          });
+          if (!userCreate.success) {
+            throw new ErrorUnexpected("Invite produced an invalid user.");
+          }
+          user = await UsersAccessor.createUser(userCreate.data);
+        }
+      } catch (e) {
+        // 11000 is MongoDB's duplicate key error
+        const alreadyExists = e instanceof ErrorUserAlreadyExists || e.code === 11000;
+        // An existing account keeps the invite used; any other failure is server-side
+        if (!alreadyExists) {
+          await OTPAccessor.releaseOTPRecord(token);
+        }
+        throw e.code === 11000 ? new ErrorUserAlreadyExists() : e;
+      }
+
+      res.cookie(...LoginToken.generate(user));
       res.status(201).json({ message: "Signup successful." });
     } catch (e) {
-      if (e instanceof z.ZodError) {
-        throw new ErrorValidation("Signup request validation failed.");
-      }
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -275,6 +521,48 @@ export default class UserController {
   }
 
   /**
+   * changeMyPassword Method
+   *
+   * Changes the logged-in user's password after checking their current one.
+   * Existing login cookies stay valid until they expire.
+   *
+   * @param {HTTP REQ} req web request object, contains currentPassword and newPassword
+   * @param {HTTP RES} res web response object
+   */
+  static async changeMyPassword(req, res) {
+    try {
+      const change = PasswordChange.safeParse(req.body);
+      if (!change.success) {
+        throw new ErrorValidation(change.error.issues[0]?.message ?? "Password change validation failed.");
+      }
+      const { currentPassword, newPassword } = change.data;
+
+      const email = Authorize.getEmail(req);
+      const user = await UsersAccessor.getUserByEmail(email);
+      if (!user) {
+        throw new ErrorUserNotFound();
+      }
+
+      if (!user.password || !(await Password.compare(currentPassword, user.password))) {
+        throw new ErrorIncorrectPassword();
+      }
+
+      await UsersAccessor.updateUserByEmail(email, {
+        password: await Password.hash(newPassword, 10),
+        modificationTime: new Date(),
+      });
+
+      res.status(200).json({ message: "Password updated." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
    * getPublicProfile Method
    *
    * This method retrieves the public profile of a user by their email.
@@ -284,8 +572,11 @@ export default class UserController {
    */
   static async getPublicUserByEmail(req, res) {
     try {
-      const email = req.params.email;
-      const user = await UsersAccessor.getUserByEmail(email).then((_) => _?.toObject());
+      const parsedEmail = NormalizedEmail.safeParse(req.params.email);
+      if (!parsedEmail.success) {
+        throw new ErrorUserNotFound();
+      }
+      const user = await UsersAccessor.getUserByEmail(parsedEmail.data).then((_) => _?.toObject());
 
       if (!user) {
         //return the user not found error here: or else ErrorValidation will also be
@@ -300,7 +591,6 @@ export default class UserController {
 
       res.status(200).json(userResponse.data);
     } catch (e) {
-      console.log(e.message);
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
       } else {
@@ -357,49 +647,49 @@ export default class UserController {
    * @param {HTTP REQ} req web request object, contains 2 lists of emails to approve or deny.
    * @param {HTTP RES} res web response object.
    */
-  static async resolveUserApprovals(req, res) {
-    try {
-      const approvals = UserApprovals.safeParse(req.body);
-      if (!approvals.success) {
-        throw new ErrorValidation("Approvals validation failed.");
-      }
-
-      const approveUsers = approvals.data.approve ?? [];
-      const denyUsers = approvals.data.deny ?? [];
-      const allUsers = [...approveUsers, ...denyUsers];
-
-      //check if the users given exists and are pending
-      for (const email of allUsers) {
-        //check if the user exists and is pending
-        try {
-          const user = await UsersAccessor.getUserByEmail(email);
-          if (user.status !== AccountStatus.Pending.toString()) {
-            throw new ErrorUserStatusAlreadyResolved();
-          }
-        } catch (e) {
-          throw new ErrorUserNotFound();
-        }
-      }
-
-      //approve the users
-      for (const email of approveUsers) {
-        await UsersAccessor.approveUserByEmail(email);
-      }
-
-      //deny the users
-      for (const email of denyUsers) {
-        await UsersAccessor.denyUserByEmail(email);
-      }
-
-      res.status(201).json({ message: "All users resolved successfully." });
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveUserApprovals(req, res) {
+  //   try {
+  //     const approvals = UserApprovals.safeParse(req.body);
+  //     if (!approvals.success) {
+  //       throw new ErrorValidation("Approvals validation failed.");
+  //     }
+  //
+  //     const approveUsers = approvals.data.approve ?? [];
+  //     const denyUsers = approvals.data.deny ?? [];
+  //     const allUsers = [...approveUsers, ...denyUsers];
+  //
+  //     //check if the users given exists and are pending
+  //     for (const email of allUsers) {
+  //       //check if the user exists and is pending
+  //       try {
+  //         const user = await UsersAccessor.getUserByEmail(email);
+  //         if (user.status !== AccountStatus.Pending.toString()) {
+  //           throw new ErrorUserStatusAlreadyResolved();
+  //         }
+  //       } catch (e) {
+  //         throw new ErrorUserNotFound();
+  //       }
+  //     }
+  //
+  //     //approve the users
+  //     for (const email of approveUsers) {
+  //       await UsersAccessor.approveUserByEmail(email);
+  //     }
+  //
+  //     //deny the users
+  //     for (const email of denyUsers) {
+  //       await UsersAccessor.denyUserByEmail(email);
+  //     }
+  //
+  //     res.status(201).json({ message: "All users resolved successfully." });
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * @TODO FIX
@@ -476,9 +766,47 @@ export default class UserController {
    * @param {HTTP REQ} req
    * @param {HTTP RES} res
    */
-  static logout(req, res) {
-    res.clearCookie("token");
-    res.status(200).json({ message: "Successfully logged out." });
+  // static logout(req, res) {
+  //   res.clearCookie("token");
+  //   res.status(200).json({ message: "Successfully logged out." });
+  // }
+
+  /**
+   * requestOTP Method
+   *
+   * This method emails a one-time link to the given email if it
+   * belongs to an approved account that has signed up.
+   *
+   * @param {HTTP REQ} req web request object, contains the email
+   * @param {HTTP RES} res web response object
+   */
+  static async requestOTP(req, res) {
+    try {
+      const otpRequest = OTPRequest.safeParse(req.body);
+      if (!otpRequest.success) {
+        throw new ErrorValidation("OTP request validation failed.");
+      }
+
+      const email = otpRequest.data.email;
+      const user = await UsersAccessor.getUserByEmail(email);
+
+      // Only accounts that can log in get a link: approved, with a password from signup.
+      if (user?.password && user.status == AccountStatus.Approved.toString()) {
+        await OTPAccessor.invalidateLoginOTPs(email);
+        const otpEmail = await GenerateEmail.OTP({ to: [email], type: EmailType.OTP.toString() });
+        await ResendEmail.sendEmailWithTemplate(otpEmail);
+        await UserController.saveEmailRecord(otpEmail);
+      }
+
+      // The same response for every email, so it doesn't reveal which ones have accounts.
+      res.status(200).json({ message: "If an account exists for this email, a link was sent." });
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
   }
 
   /**
@@ -494,7 +822,7 @@ export default class UserController {
         throw new ErrorFailedLogin();
       }
 
-      const { success, email } = await OTPAccessor.verifyOTPRecord(token);
+      const { success, email } = await OTPAccessor.verifyOTPRecord(token, "login");
 
       if (!success) {
         throw new ErrorFailedLogin();
@@ -502,8 +830,19 @@ export default class UserController {
 
       const user = await UsersAccessor.getUserByEmail(email);
 
-      if (!user) {
+      // An author an editor added must sign up from their invite first.
+      if (!user || !user.password) {
         throw new ErrorFailedLogin();
+      }
+      // The same status checks as the password login, so a link can't get around them.
+      if (user.status == AccountStatus.Pending.toString()) {
+        throw new ErrorUserPendingLogin();
+      }
+      if (user.status == AccountStatus.Deactivated.toString()) {
+        throw new ErrorUserDeactivatedLogin();
+      }
+      if (user.status == AccountStatus.Denied.toString()) {
+        throw new ErrorUserDeniedLogin();
       }
 
       res.cookie(...LoginToken.generate(user));

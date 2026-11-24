@@ -1,0 +1,31 @@
+# Opt-in local S3 stand-in, so media uploads can be tested without AWS:
+#   docker compose -f docker-compose.yaml -f docker-compose.s3.yaml up -d
+#   npm run s3-local   # once, sets up the bucket
+# Console: http://localhost:9001 (nusci-local / nusci-local-secret)
+# MinIO no longer publishes images, RustFS is a drop-in replacement.
+services:
+  s3:
+    image: rustfs/rustfs:1.0.1
+    container_name: nusci-s3
+    environment:
+      - RUSTFS_ACCESS_KEY=nusci-local
+      - RUSTFS_SECRET_KEY=nusci-local-secret
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - s3-data:/data
+
+  app:
+    depends_on:
+      - s3
+    environment:
+      # server-side calls go over the compose network, presigned URLs
+      # are signed for localhost since that's where the browser sends them
+      - S3_ENDPOINT=http://s3:9000
+      - S3_PUBLIC_ENDPOINT=http://localhost:9000
+      - AWS_ACCESS_KEY_ID=nusci-local
+      - AWS_SECRET_ACCESS_KEY=nusci-local-secret
+
+volumes:
+  s3-data:

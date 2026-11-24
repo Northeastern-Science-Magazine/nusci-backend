@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../../../../app/app.js";
+import tokens from "../../../testData/tokenTestData.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
 
@@ -77,5 +78,47 @@ describe("User Login Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
+  });
+
+  test("should login with an invalid token cookie", async () => {
+    const response = await request(app).post("/user/login").set("Cookie", ["token=invalid"]).send({
+      email: "ethan@ethan.com",
+      password: "123",
+    });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+  });
+
+  test("should not login when already logged in", async () => {
+    const response = await request(app)
+      .post("/user/login")
+      .set("Cookie", [`token=${tokens["ethan@ethan.com"]}`])
+      .send({
+        email: "ethan@ethan.com",
+        password: "123",
+      });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(409);
+  });
+
+  test("should login with a mixed-case, padded email", async () => {
+    const response = await request(app).post("/user/login").send({
+      email: "  Raisa@Raisa.com ",
+      password: "raisa",
+    });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Login successful.");
+  });
+
+  test("should not login without an email", async () => {
+    const response = await request(app).post("/user/login").send({ password: "raisa" });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.headers["set-cookie"]).toBeUndefined();
   });
 });

@@ -1,15 +1,21 @@
 import ArticlesAccessor from "../databaseAccessors/articleAccessor.js";
-import UsersAccessor from "../databaseAccessors/userAccessor.js";
-import Authorize from "../auth/authorization.js";
-import { InternalComment, InternalCommentResolve } from "../models/zodSchemas/internalComment.js";
+import IssueMapAccessor from "../databaseAccessors/issueMapAccessor.js";
+import Accounts from "../models/enums/accounts.js";
 import {
-  ArticleUpdate,
+  ArticleEdit,
   ArticleResponse,
   ArticlePublicListResponse,
   ArticleSearchRequest,
   Article,
 } from "../models/zodSchemas/article.js";
-import { ErrorArticleNotFound, ErrorUnexpected, HttpError, ErrorValidation } from "../error/errors.js";
+import {
+  ErrorArticleNotFound,
+  ErrorDuplicateKey,
+  ErrorIssueMapNotFound,
+  ErrorUnexpected,
+  HttpError,
+  ErrorValidation,
+} from "../error/errors.js";
 import Utils from "./utils.js";
 
 /**
@@ -20,7 +26,12 @@ import Utils from "./utils.js";
  */
 export default class ArticleController {
   /**
+   * createArticle method
    *
+   * Handles the request to create an article. The authors, editors,
+   * photographers, and designers are given as emails; each must belong
+   * to an existing user with the matching role, and is stored as that
+   * user's ID.
    *
    * @param {Request} req
    * @param {Response} res
@@ -36,14 +47,61 @@ export default class ArticleController {
 
       const articleData = parsedArticle.data;
 
-      // gets all the author objects by list of emails provided upon article submission
-      const authors = await UsersAccessor.getUsersByEmails(articleData.authors);
-      articleData.authors = authors.map((author) => author._id);
+      // converts each list of emails into user IDs, throws before anything is written
+      const referenceFields = [
+        ["authors", Accounts.Author],
+        ["editors", Accounts.Editor],
+        ["photographers", Accounts.Photographer],
+        ["designers", Accounts.Designer],
+      ];
+      for (const [field, role] of referenceFields) {
+        if (articleData[field]) {
+          articleData[field] = await Utils.getUserIdsByEmailsWithRole(articleData[field], role, field);
+        }
+      }
 
-      // TODO need to do this ^ for editors, etc, any other ref data
+      let newArticle;
+      try {
+        newArticle = await ArticlesAccessor.createArticle(articleData);
+      } catch (e) {
+        // duplicate key, the slug is the only unique field on an article
+        if (e?.code === 11000) {
+          throw new ErrorDuplicateKey(`An article with the slug "${articleData.slug}" already exists.`);
+        }
+        if (e?.name === "ValidationError") {
+          throw new ErrorValidation(e.message);
+        }
+        throw e;
+      }
 
-      const newArticle = await ArticlesAccessor.createArticle(articleData);
-      res.status(200).json(newArticle);
+      const articleResponse = await ArticleResponse.safeParseAsync(newArticle.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
+
+      res.status(201).json(articleResponse.data);
+    } catch (e) {
+      if (e instanceof HttpError) {
+        e.throwHttp(req, res);
+      } else {
+        new ErrorUnexpected(e.message).throwHttp(req, res);
+      }
+    }
+  }
+
+  /**
+   * getPublishedCount method
+   *
+   * Handles the request to get the number of published
+   * (print or online) articles. Public.
+   *
+   * @param {Request} req
+   * @param {Response} res
+   */
+  static async getPublishedCount(req, res) {
+    try {
+      const count = await ArticlesAccessor.countPublishedArticles();
+      res.status(200).json({ count });
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -71,16 +129,14 @@ export default class ArticleController {
         throw new ErrorArticleNotFound();
       }
 
-      /** Will eventually need to do validation */
-      // // Validate and construct an ArticleResponse instance
-      // const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
-      // if (!articleResponse.success) {
-      //   throw new ErrorValidation("Outgoing response validation failed");
-      // }
+      // Validate the response so private user fields (password hashes, phone
+      // numbers, account status) never leave this public endpoint.
+      const articleResponse = await ArticleResponse.safeParseAsync(article.toObject());
+      if (!articleResponse.success) {
+        throw new ErrorValidation("Outgoing response validation failed");
+      }
 
-      // Send the validated ArticleResponse
-
-      res.status(200).json(article);
+      res.status(200).json(articleResponse.data);
     } catch (e) {
       if (e instanceof HttpError) {
         e.throwHttp(req, res);
@@ -91,29 +147,55 @@ export default class ArticleController {
   }
 
   /**
-   * updateStatus method
+   * editArticle method
    *
-   * Handles the request to update the status of an article.
+   * Handles the request to edit an article from the article edit page.
+   * Any subset of title, content, authors, categories, sources, and
+   * issue number can be changed in one request. The slug is intentionally
+   * left unchanged so that existing links to the article do not break.
    *
    * @param {Request} req
    * @param {Response} res
    */
-  static async updateStatus(req, res) {
+  static async editArticle(req, res) {
     try {
       const { slug } = req.params;
 
-      // const updates = new ArticleUpdate(req.body);
+      const edit = await ArticleEdit.safeParseAsync(req.body);
 
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Incoming update validation failed");
+      if (!edit.success) {
+        throw new ErrorValidation("Incoming edit validation failed");
       }
 
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+      const { issueNumber, ...fields } = edit.data;
+
+      // converts the given author emails into user IDs, throws before anything is written
+      if (fields.authors) {
+        fields.authors = await Utils.getUserIdsByEmails(fields.authors);
+      }
+
+      // throws if the article or the issue map does not exist, before anything is written
+      if (!(await ArticlesAccessor.getArticleBySlug(slug))) {
+        throw new ErrorArticleNotFound();
+      }
+      if (issueNumber !== undefined && !(await IssueMapAccessor.getIssueMapByIssueNumber(issueNumber))) {
+        throw new ErrorIssueMapNotFound();
+      }
+
+      // the fields and issue number are saved together in one write, with one modification time
+      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, {
+        ...fields,
+        ...(issueNumber !== undefined && { issueNumber }),
+        modificationTime: new Date(),
+      });
 
       if (!updatedArticleData) {
         throw new ErrorArticleNotFound();
+      }
+
+      // the article already has its new issue number, so only the issue maps are updated here
+      if (issueNumber !== undefined) {
+        await IssueMapAccessor.moveArticleToIssue(issueNumber, slug, { syncArticle: false });
       }
 
       const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
@@ -133,45 +215,46 @@ export default class ArticleController {
   }
 
   /**
-   * updateAuthors method
+   * updateStatus method
    *
-   * Handles the request to update the list of authors for an article.
+   * Handles the request to update the status of an article.
    *
    * @param {Request} req
    * @param {Response} res
    */
-  static async updateAuthors(req, res) {
-    try {
-      const { slug } = req.params;
-
-      // const updates = new ArticleUpdate(req.body);
-      const updates = await ArticleUpdate.safeParseAsync(req.body);
-
-      if (!updates.success) {
-        throw new ErrorValidation("Validation failed.");
-      }
-
-      const authorIds = await Utils.getUserIdsByEmails(updates.data.authors);
-      updates.data.authors = authorIds;
-      const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
-
-      if (!updatedArticleData) {
-        throw new ErrorArticleNotFound();
-      }
-
-      // Validate and construct an ArticleResponse instance
-      // const updatedArticleResponse = new ArticleResponse(updatedArticleData.toObject());
-      const updatedArticleResponse = await ArticleResponse.parseAsync(updatedArticleData.toObject());
-
-      res.status(200).json(updatedArticleResponse);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async updateStatus(req, res) {
+  //   try {
+  //     const { slug } = req.params;
+  //
+  //     // const updates = new ArticleUpdate(req.body);
+  //
+  //     const updates = await ArticleUpdate.safeParseAsync(req.body);
+  //
+  //     if (!updates.success) {
+  //       throw new ErrorValidation("Incoming update validation failed");
+  //     }
+  //
+  //     const updatedArticleData = await ArticlesAccessor.updateArticle(slug, updates.data);
+  //
+  //     if (!updatedArticleData) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const updatedArticleResponse = await ArticleResponse.safeParseAsync(updatedArticleData.toObject());
+  //     if (!updatedArticleResponse.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     // Send the validated ArticleResponse
+  //     res.status(200).json(updatedArticleResponse.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * addInternalComment Method
@@ -182,40 +265,40 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async addInternalComment(req, res, next) {
-    try {
-      //comment validation
-      const email = Authorize.getEmail(req);
-      const user = await UsersAccessor.getUserByEmail(email);
-      const userID = user._id;
-
-      const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
-      if (!comment.success) {
-        throw new ErrorValidation("Comment creation validation failed.");
-      }
-
-      // modify the article with the new comment
-      const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
-
-      if (!updatedArticle) {
-        throw new ErrorArticleNotFound();
-      }
-
-      const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
-      if (!finalArticle.success) {
-        throw new ErrorValidation("Outgoing response validation failed");
-      }
-
-      //return updated article with new comment
-      res.status(201).json(finalArticle.data);
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async addInternalComment(req, res, next) {
+  //   try {
+  //     //comment validation
+  //     const email = Authorize.getEmail(req);
+  //     const user = await UsersAccessor.getUserByEmail(email);
+  //     const userID = user._id;
+  //
+  //     const comment = await InternalComment.safeParseAsync({ user: userID, comment: req.body.comment });
+  //     if (!comment.success) {
+  //       throw new ErrorValidation("Comment creation validation failed.");
+  //     }
+  //
+  //     // modify the article with the new comment
+  //     const updatedArticle = await ArticlesAccessor.addCommentBySlug(req.params.slug, comment.data);
+  //
+  //     if (!updatedArticle) {
+  //       throw new ErrorArticleNotFound();
+  //     }
+  //
+  //     const finalArticle = await ArticleResponse.safeParseAsync(updatedArticle.toObject());
+  //     if (!finalArticle.success) {
+  //       throw new ErrorValidation("Outgoing response validation failed");
+  //     }
+  //
+  //     //return updated article with new comment
+  //     res.status(201).json(finalArticle.data);
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * resolveInternalComment Method
@@ -226,24 +309,24 @@ export default class ArticleController {
    * @param {HTTP RES} res web response object
    * @param {function} next middleware function
    */
-  static async resolveInternalComment(req, res, next) {
-    try {
-      const resolve = await InternalCommentResolve.safeParseAsync(req.body);
-      if (!resolve.success) {
-        throw new ErrorValidation("Comment resolve validation failed.");
-      }
-
-      // modify the comment status
-      const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
-      res.status(201).json({});
-    } catch (e) {
-      if (e instanceof HttpError) {
-        e.throwHttp(req, res);
-      } else {
-        new ErrorUnexpected(e.message).throwHttp(req, res);
-      }
-    }
-  }
+  // static async resolveInternalComment(req, res, next) {
+  //   try {
+  //     const resolve = await InternalCommentResolve.safeParseAsync(req.body);
+  //     if (!resolve.success) {
+  //       throw new ErrorValidation("Comment resolve validation failed.");
+  //     }
+  //
+  //     // modify the comment status
+  //     const a = await ArticlesAccessor.resolveCommentById(resolve.data.commentId);
+  //     res.status(201).json({});
+  //   } catch (e) {
+  //     if (e instanceof HttpError) {
+  //       e.throwHttp(req, res);
+  //     } else {
+  //       new ErrorUnexpected(e.message).throwHttp(req, res);
+  //     }
+  //   }
+  // }
 
   /**
    * search Method
@@ -256,6 +339,7 @@ export default class ArticleController {
    * - skip: number (optional, default: 0)
    * - textQuery: string (optional, triggers fuzzy search if provided)
    * - categories: array of strings (optional, filters by categories)
+   * - issueNumber: number (optional, positive integer, filters to one issue)
    * - sortBy: "asc" | "desc" (optional, default: "desc" for newest first)
    *
    * @param {HTTP REQ} req web request object
@@ -270,13 +354,16 @@ export default class ArticleController {
         throw new ErrorValidation("Search request validation failed");
       }
 
-      const { limit, skip, textQuery, categories, sortBy } = validationResult.data;
+      const { limit, skip, textQuery, categories, issueNumber, sortBy } = validationResult.data;
       const sortOrder = sortBy === "asc" ? 1 : -1;
 
       // Build query object for non-text search filters
       const query = {};
       if (categories && categories.length > 0) {
         query.categories = { $in: categories };
+      }
+      if (issueNumber) {
+        query.issueNumber = issueNumber;
       }
 
       // Perform search - use fuzzy search if textQuery is provided, otherwise regular search

@@ -57,6 +57,20 @@ export class ErrorTypeOfQuery extends HttpError {
   }
 }
 
+export class ErrorIncorrectPassword extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Current password is incorrect.", message: this.message });
+  }
+}
+
+// One message for unknown, used, and expired invites, so the response
+// doesn't reveal which tokens exist.
+export class ErrorInvalidInvite extends HttpError {
+  throwHttp(req, res) {
+    res.status(400).json({ error: "Invite link is invalid or expired.", message: this.message });
+  }
+}
+
 /**
  * 403 Errors
  *
@@ -123,6 +137,12 @@ export class ErrorIssueMapNotFound extends HttpError {
   }
 }
 
+export class ErrorArchivedIssueNotFound extends HttpError {
+  throwHttp(req, res) {
+    res.status(404).json({ error: "Archived issue not found.", message: this.message });
+  }
+}
+
 export class ErrorInvalidRequestBody extends HttpError {
   throwHttp(req, res) {
     res.status(404).json({ error: "Invalid request body.", message: this.message });
@@ -156,6 +176,12 @@ export class ErrorUserStatusAlreadyResolved extends HttpError {
 export class ErrorDuplicateKey extends HttpError {
   throwHttp(req, res) {
     res.status(409).json({ error: "Entry has duplicate key in entry.", message: this.message });
+  }
+}
+
+export class ErrorIssueMapNotEmpty extends HttpError {
+  throwHttp(req, res) {
+    res.status(409).json({ error: "Issue Map still contains articles.", message: this.message });
   }
 }
 

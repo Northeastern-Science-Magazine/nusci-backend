@@ -14,7 +14,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Update Article Status", () => {
+// route is commented out in articleRoutes.js
+describe.skip("Update Article Status", () => {
   /* In-file testing data */
   const validArticleSlug = "exploring-the-future-ai-integration-in-everyday-life";
   const articleStatusPrint = ArticleStatus.Print.toString();

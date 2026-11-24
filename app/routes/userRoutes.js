@@ -8,15 +8,22 @@ import Accounts from "../models/enums/accounts.js";
 const user = express.Router();
 
 user.route("/login").post(UserController.login);
-// user.route("/signup").post(UserController.signup);
+user.route("/signup").post(UserController.signup);
+user
+  .route("/invite")
+  .post(Authorize.allow([Accounts.Admin]), UserController.sendInvites)
+  .get(UserController.getInvite);
+user.route("/author").post(Authorize.allow([Accounts.Admin, Accounts.Editor]), UserController.createAuthor);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
 user.route("/role/:role").get(UserController.getPublicUsersByRole);
+user.route("/otp").post(UserController.requestOTP);
 user.route("/verify-otp").post(UserController.verifyOTPLink);
 user
   .route("/me")
   .get(Authorize.allow(Accounts.list()), UserController.getMyProfile)
   .patch(Authorize.allow(Accounts.list()), UserController.updateMyProfile);
+user.route("/me/password").patch(Authorize.allow(Accounts.list()), UserController.changeMyPassword);
 user.route("/roles").get(UserController.getMyRoles);
 user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 

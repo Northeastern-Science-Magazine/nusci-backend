@@ -1,0 +1,53 @@
+name: Add PRs to project
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  add-to-project:
+    runs-on: ubuntu-latest
+    env:
+      OWNER: Northeastern-Science-Magazine
+      PROJECT_NUMBER: 7
+    steps:
+      - uses: actions/add-to-project@v2.0.1
+        id: add
+        with:
+          project-url: https://github.com/orgs/Northeastern-Science-Magazine/projects/7
+          github-token: ${{ secrets.NUSCI_ADD_TO_PROJECT }}
+
+      - name: Set status to In review
+        env:
+          GH_TOKEN: ${{ secrets.NUSCI_ADD_TO_PROJECT }}
+          ITEM_ID: ${{ steps.add.outputs.itemId }}
+        run: |
+          set -euo pipefail
+          # Query only the project id + Status field; `gh project view/field-list`
+          # pull every item (incl. PR reviewers), which this token can't read.
+          read -r project_id field_id option_id < <(gh api graphql \
+            -f org="$OWNER" -F num="$PROJECT_NUMBER" -f query='
+              query($org: String!, $num: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $num) {
+                    id
+                    field(name: "Status") {
+                      ... on ProjectV2SingleSelectField { id options { id name } }
+                    }
+                  }
+                }
+              }' \
+            --jq '.data.organization.projectV2 | "\(.id) \(.field.id) \(.field.options[] | select(.name | ascii_downcase == "in review") | .id)"') || true
+          if [ -z "${option_id:-}" ]; then
+            echo "Could not find Status field or 'In review' option on project $PROJECT_NUMBER" >&2
+            exit 1
+          fi
+          gh api graphql \
+            -f project="$project_id" -f item="$ITEM_ID" -f field="$field_id" -f option="$option_id" \
+            -f query='
+              mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+                updateProjectV2ItemFieldValue(input: {
+                  projectId: $project, itemId: $item, fieldId: $field,
+                  value: { singleSelectOptionId: $option }
+                }) { projectV2Item { id } }
+              }'

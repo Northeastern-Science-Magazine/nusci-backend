@@ -2,10 +2,16 @@
 export const log = {
   api: {
     article: {
+      patchArticleContent: false,
+      patchCategories: false,
       patchAuthors: false,
       patchResolveComment: false,
+      patchIssueNumber: false,
+      patchSources: false,
       patchStatus: false,
+      patchTitle: false,
       postCommentCreate: false,
+      postCreate: false,
       getSearch: false,
     },
     default: {
@@ -13,14 +19,24 @@ export const log = {
     },
     user: {
       getEmail: false,
+      getInvite: false,
+      postInvite: false,
       postLogin: false,
+      postOTP: false,
+      postRequestOTP: false,
       postSignup: false,
       putResolveUser: false,
     },
-    article: {},
+    email: {
+      postSendEmail: false,
+    },
     issueMap: {
       patchRemoveArticle: false,
       patchCreateAddArticleToMap: false,
+      postCreateIssueMap: false,
+      patchUpdateIssueMap: false,
+      deleteIssueMap: false,
+      getAllIssueNumbers: false,
     },
     photo: {},
     photoTag: {

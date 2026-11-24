@@ -2,7 +2,7 @@ import * as z from "zod";
 import mongoose from "mongoose";
 import Category from "../enums/categories.js";
 import ArticleContent from "../enums/articleContent.js";
-import { UserPublicResponse } from "./user.js";
+import { NormalizedEmail, UserPublicResponse } from "./user.js";
 import CommentStatus from "../enums/commentStatus.js";
 import PhotographyStatus from "../enums/photographyStatus.js";
 import ArticleStatus from "../enums/articleStatus.js";
@@ -22,7 +22,7 @@ export const Article = z.object({
     z.array(
       z.object({
         contentType: z.enum(ArticleContent.listr()),
-        content: z.string(),
+        content: z.string().min(1),
         href: z.string().nullish(),
       })
     )
@@ -53,9 +53,9 @@ export const Article = z.object({
   designStatus: z.enum(DesignStatus.listr()),
   photographyStatus: z.enum(PhotographyStatus.listr()),
   authors: z.array(z.string()).nullish(),
-  editors: z.array(z.email()).nullish(),
-  designers: z.array(z.email()).nullish(),
-  photographers: z.array(z.email()).nullish(),
+  editors: z.array(NormalizedEmail).nullish(),
+  designers: z.array(NormalizedEmail).nullish(),
+  photographers: z.array(NormalizedEmail).nullish(),
 });
 
 export const ArticleResponse = Article.extend({
@@ -89,6 +89,34 @@ export const ArticleUpdate = Article.extend({
   })
   .partial();
 
+/**
+ * ArticleEdit schema
+ *
+ * Accepts any subset of the fields an admin or editor can change from the
+ * article edit page, but at least one. Unknown fields (statuses, slug,
+ * approvals, etc.) are rejected so this endpoint can never modify unrelated
+ * parts of an article.
+ *
+ * modificationTime is set by the controller at request time.
+ */
+export const ArticleEdit = z
+  .object({
+    title: z.string().trim().min(1),
+    articleContent: Article.shape.articleContent,
+    authors: z.array(z.string()),
+    categories: Article.shape.categories.min(1),
+    sources: z.array(
+      z.object({
+        text: z.string(),
+        href: z.string().nullable(),
+      })
+    ),
+    issueNumber: z.number().int().positive(),
+  })
+  .partial()
+  .strict()
+  .refine((edit) => Object.keys(edit).length > 0, { message: "At least one field must be edited" });
+
 export const ArticleDelete = z.object({
   slug: z.string(),
 });
@@ -98,5 +126,6 @@ export const ArticleSearchRequest = z.object({
   skip: z.number().int().nonnegative().default(0),
   textQuery: z.string().nullish(),
   categories: z.array(z.enum(Category.listr())).nullish(),
+  issueNumber: z.number().int().positive().nullish(),
   sortBy: z.enum(["asc", "desc"]).default("desc"),
 });

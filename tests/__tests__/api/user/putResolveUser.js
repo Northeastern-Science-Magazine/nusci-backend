@@ -13,7 +13,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Approve or deny given users test", () => {
+// resolve-status route was removed from userRoutes.js
+describe.skip("Approve or deny given users test", () => {
   test("test only approving users", async () => {
     const listOfUsers = {
       approve: ["ace@ace.com", "dylan@howard.com"],

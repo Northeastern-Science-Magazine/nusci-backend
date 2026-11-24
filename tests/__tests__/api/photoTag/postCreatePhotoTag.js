@@ -14,7 +14,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Create PhotoTags Test", () => {
+// route is commented out in photoTagRoutes.js
+describe.skip("Create PhotoTags Test", () => {
   const validTag = {
     tagName: "Clouds",
     color: "#4CAF51",
