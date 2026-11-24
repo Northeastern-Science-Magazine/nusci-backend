@@ -325,18 +325,20 @@ export default class UserController {
         throw new ErrorValidation("Invalid Accounts enum given.");
       }
 
-      const users = await UsersAccessor.getUserByRole(account.role);
-      const approvedUsers = users
-        .map((user) => user.toObject())
-        .filter((user) => user.status === AccountStatus.Approved.status)
-        .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName));
+      const users = await UsersAccessor.getApprovedUsersByRole(account.role);
 
-      const usersResponse = await UserPublicResponse.array().safeParseAsync(approvedUsers);
-      if (!usersResponse.success) {
-        throw new ErrorValidation("Outgoing response validation failed.");
-      }
+      // validate each user separately so one bad record doesn't fail the whole listing
+      const results = await Promise.all(users.map((user) => UserPublicResponse.safeParseAsync(user)));
+      const usersResponse = [];
+      results.forEach((result, i) => {
+        if (result.success) {
+          usersResponse.push(result.data);
+        } else {
+          console.log(`Skipping invalid user in role listing: ${users[i].email}`);
+        }
+      });
 
-      res.status(200).json(usersResponse.data);
+      res.status(200).json(usersResponse);
     } catch (e) {
       console.log(e.message);
       if (e instanceof HttpError) {
