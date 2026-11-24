@@ -146,8 +146,6 @@ export default class ArticleController {
     }
   }
 
- 
-
   /**
    * editArticle method
    *
@@ -216,7 +214,7 @@ export default class ArticleController {
     }
   }
 
- /**
+  /**
    * updateStatus method
    *
    * Handles the request to update the status of an article.

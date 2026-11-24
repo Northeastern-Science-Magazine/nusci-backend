@@ -1,4 +1,3 @@
-
 /**
  * PhotoTagController Class
  *
@@ -43,7 +42,6 @@ export default class PhotoTagController {
   //     }
   //   }
   // }
-
   /**
    *
    * @param {Request} req

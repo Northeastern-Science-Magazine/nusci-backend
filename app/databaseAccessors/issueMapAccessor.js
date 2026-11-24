@@ -271,7 +271,7 @@ export default class IssueMapAccessor {
     return updatedIssue;
   }
 
-    /**
+  /**
    * Find an article and move it from the issue it is currently in to the given issue
    *
    * @param {Number} issueNumber - Issue number to move the article to
