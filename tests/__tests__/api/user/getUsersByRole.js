@@ -2,7 +2,7 @@ import request from "supertest";
 import app from "../../../../app/app.js";
 import { log } from "../../../testConfig.js";
 import { executeReset, injectMockConnection, closeMockConnection } from "../../../util/util.js";
-import { userResponseRaisa, userResponseEthan } from "../../../testData/userTestData.js";
+import { userResponseArushi, userResponseRaisa, userResponseEthan } from "../../../testData/userTestData.js";
 import User from "../../../../app/models/dbModels/user.js";
 import AccountStatus from "../../../../app/models/enums/accountStatus.js";
 
@@ -24,7 +24,7 @@ describe("Get Users By Role Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([userResponseRaisa, userResponseEthan]);
+    expect(response.body).toStrictEqual([userResponseArushi, userResponseRaisa, userResponseEthan]);
   });
 
   test("an invalid stored user is skipped instead of failing the listing", async () => {
@@ -44,7 +44,7 @@ describe("Get Users By Role Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([userResponseRaisa, userResponseEthan]);
+    expect(response.body).toStrictEqual([userResponseArushi, userResponseRaisa, userResponseEthan]);
   });
 
   test("get approved editors", async () => {
@@ -70,7 +70,7 @@ describe("Get Users By Role Tests", () => {
 
     showLog && console.log(response.body);
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([userResponseRaisa, userResponseEthan]);
+    expect(response.body).toStrictEqual([userResponseArushi, userResponseRaisa, userResponseEthan]);
   });
 
   test("attempt getting an invalid role", async () => {
