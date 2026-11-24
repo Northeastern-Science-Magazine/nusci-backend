@@ -3,8 +3,8 @@ import ArticleContent from "../../../../app/models/enums/articleContent.js";
 import { ErrorValidation } from "../../../../app/error/errors.js";
 
 describe("Tests for enumerated type ArticleContent", () => {
-  test("toString BodyParagraph", () => {
-    expect(ArticleContent.BodyParagraph.toString()).toStrictEqual("body_paragraph");
+  test("toString Text", () => {
+    expect(ArticleContent.Text.toString()).toStrictEqual("text");
   });
 
   test("toString PullQuote", () => {
@@ -15,8 +15,12 @@ describe("Tests for enumerated type ArticleContent", () => {
     expect(ArticleContent.Image.toString()).toStrictEqual("image");
   });
 
-  test("toArticleContent BodyParagraph", () => {
-    expect(ArticleContent.toArticleContent("body_paragraph")).toStrictEqual(ArticleContent.BodyParagraph);
+  test("toString Link", () => {
+    expect(ArticleContent.Link.toString()).toStrictEqual("link");
+  });
+
+  test("toArticleContent Text", () => {
+    expect(ArticleContent.toArticleContent("text")).toStrictEqual(ArticleContent.Text);
   });
 
   test("toArticleContent PullQuote", () => {
@@ -27,6 +31,10 @@ describe("Tests for enumerated type ArticleContent", () => {
     expect(ArticleContent.toArticleContent("image")).toStrictEqual(ArticleContent.Image);
   });
 
+  test("toArticleContent Link", () => {
+    expect(ArticleContent.toArticleContent("link")).toStrictEqual(ArticleContent.Link);
+  });
+
   test("toArticleContent invalid input", () => {
     expect(() => {
       ArticleContent.toArticleContent("invalid");
@@ -35,13 +43,14 @@ describe("Tests for enumerated type ArticleContent", () => {
 
   test("list ArticleContent", () => {
     expect(ArticleContent.list()).toStrictEqual([
-      ArticleContent.BodyParagraph,
+      ArticleContent.Text,
       ArticleContent.PullQuote,
       ArticleContent.Image,
+      ArticleContent.Link,
     ]);
   });
 
   test("listr ArticleContent", () => {
-    expect(ArticleContent.listr()).toStrictEqual(["body_paragraph", "pull_quote", "image"]);
+    expect(ArticleContent.listr()).toStrictEqual(["text", "pull_quote", "image", "link"]);
   });
 });

@@ -16,11 +16,14 @@ user
 user.route("/author").post(Authorize.allow([Accounts.Admin, Accounts.Editor]), UserController.createAuthor);
 // user.route("/filter");
 user.route("/email/:email").get(UserController.getPublicUserByEmail);
+user.route("/role/:role").get(UserController.getPublicUsersByRole);
+user.route("/otp").post(UserController.requestOTP);
 user.route("/verify-otp").post(UserController.verifyOTPLink);
 user
   .route("/me")
   .get(Authorize.allow(Accounts.list()), UserController.getMyProfile)
   .patch(Authorize.allow(Accounts.list()), UserController.updateMyProfile);
+user.route("/me/password").patch(Authorize.allow(Accounts.list()), UserController.changeMyPassword);
 user.route("/roles").get(UserController.getMyRoles);
 user.route("/list/basic").get(Authorize.allow(Accounts.list()), UserController.getBasicUserList);
 

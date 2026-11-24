@@ -12,11 +12,7 @@ export const PitchSubmission = z.object({
       message: "Please use your Northeastern email.",
     }),
 
-  topic: z
-    .string()
-    .trim()
-    .min(1, "Please describe your article idea.")
-    .max(10000),
+  topic: z.string().trim().min(1, "Please describe your article idea.").max(10000),
 
   draftUrl: z
     .string()

@@ -1,11 +1,12 @@
 import * as z from "zod";
 import EmailType from "../enums/emailType.js";
+import { NormalizedEmail } from "./user.js";
 
 /* Schematics for email templates. Should match the resend templates (todo) */
 
 export const BaseEmail = z.object({
   type: z.enum(EmailType.listr()), // used to determine which template to assign
-  to: z.array(z.email()), //one user or multiple
+  to: z.array(NormalizedEmail), //one user or multiple
 });
 
 export const ReminderEmail = BaseEmail.extend({

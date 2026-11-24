@@ -82,6 +82,19 @@ export default class OTPAccessor {
   }
 
   /**
+   * invalidateLoginOTPs Method
+   *
+   * This method marks every unused login token for an email as used.
+   *
+   * @param {String} email the email whose login tokens are invalidated
+   */
+  static async invalidateLoginOTPs(email) {
+    await Connection.open();
+    // Called before a new link is created, so only the newest link logs in.
+    await OTPModel.updateMany({ email: email, purpose: "login", used: false }, { used: true });
+  }
+
+  /**
    * validOTPFilter Method
    *
    * This method builds the query shared by verifyOTPRecord and findValidOTP.

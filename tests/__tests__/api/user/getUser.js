@@ -37,4 +37,12 @@ describe("Get User By Email Tests", () => {
     expect(response.body).toStrictEqual({ error: "User not found.", message: "" });
     expect(response.status).toBe(404);
   });
+
+  test("get a user by a mixed-case email (Raisa)", async () => {
+    const response = await request(app).get("/user/email/Raisa%40Raisa.com");
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual(userResponseRaisa);
+  });
 });

@@ -140,4 +140,15 @@ describe("Send Invite Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(400);
   });
+
+  test("should send one invite for the same email in different cases", async () => {
+    const response = await request(app)
+      .post("/user/invite")
+      .set("Cookie", adminCookie)
+      .send({ to: ["Invitee@Northeastern.edu", " invitee@northeastern.edu"], roles: [Accounts.Author.toString()] });
+
+    showLog && console.log(response.body);
+    expect(response.body.invited).toEqual(["invitee@northeastern.edu"]);
+    expect(ResendEmail.sendEmailWithTemplate).toHaveBeenCalledTimes(1);
+  });
 });

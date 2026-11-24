@@ -98,7 +98,10 @@ describe("Create Article", () => {
   });
 
   test("should accept a valid email repeated in the same field", async () => {
-    const response = await create({ ...validArticle, authors: ["jasmine@jasmine.com", "jasmine@jasmine.com"] }, "ethan@ethan.com");
+    const response = await create(
+      { ...validArticle, authors: ["jasmine@jasmine.com", "jasmine@jasmine.com"] },
+      "ethan@ethan.com"
+    );
 
     showLog && console.log(response.body);
     expect(response.status).toBe(201);

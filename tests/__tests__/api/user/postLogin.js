@@ -102,4 +102,23 @@ describe("User Login Tests", () => {
     showLog && console.log(response.body);
     expect(response.status).toBe(409);
   });
+
+  test("should login with a mixed-case, padded email", async () => {
+    const response = await request(app).post("/user/login").send({
+      email: "  Raisa@Raisa.com ",
+      password: "raisa",
+    });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Login successful.");
+  });
+
+  test("should not login without an email", async () => {
+    const response = await request(app).post("/user/login").send({ password: "raisa" });
+
+    showLog && console.log(response.body);
+    expect(response.status).toBe(400);
+    expect(response.headers["set-cookie"]).toBeUndefined();
+  });
 });

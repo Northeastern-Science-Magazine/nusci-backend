@@ -2,6 +2,10 @@ import Article from "../models/dbModels/article.js";
 import ArticleStatus from "../models/enums/articleStatus.js";
 import Connection from "../db/connection.js";
 
+// Private user fields to leave out whenever an article populates its users.
+// Response validation strips these too; this keeps them out of memory and logs.
+const HIDDEN_USER_FIELDS = "-password -phone -status";
+
 /**
  * Articles Accessor Class
  *
@@ -57,12 +61,12 @@ export default class ArticlesAccessor {
   static async getArticleBySlug(slug) {
     await Connection.open();
     const article = await Article.findOne({ slug: slug })
-      .populate("authors")
-      .populate("comments.user")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
+      .populate("authors", HIDDEN_USER_FIELDS)
+      .populate("comments.user", HIDDEN_USER_FIELDS)
+      .populate("editors", HIDDEN_USER_FIELDS)
+      .populate("designers", HIDDEN_USER_FIELDS)
+      .populate("photographers", HIDDEN_USER_FIELDS)
+      .populate("approvingUser", HIDDEN_USER_FIELDS)
       .exec();
     return article;
   }
@@ -281,12 +285,12 @@ export default class ArticlesAccessor {
   static async updateArticle(slug, update) {
     await Connection.open();
     const article = await Article.findOneAndUpdate({ slug }, update, { new: true })
-      .populate("authors")
-      .populate("comments.user")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
+      .populate("authors", HIDDEN_USER_FIELDS)
+      .populate("comments.user", HIDDEN_USER_FIELDS)
+      .populate("editors", HIDDEN_USER_FIELDS)
+      .populate("designers", HIDDEN_USER_FIELDS)
+      .populate("photographers", HIDDEN_USER_FIELDS)
+      .populate("approvingUser", HIDDEN_USER_FIELDS)
       .exec();
     return article;
   }
@@ -313,12 +317,12 @@ export default class ArticlesAccessor {
       },
       { returnDocument: "after" }
     )
-      .populate("comments.user")
-      .populate("authors")
-      .populate("editors")
-      .populate("designers")
-      .populate("photographers")
-      .populate("approvingUser")
+      .populate("comments.user", HIDDEN_USER_FIELDS)
+      .populate("authors", HIDDEN_USER_FIELDS)
+      .populate("editors", HIDDEN_USER_FIELDS)
+      .populate("designers", HIDDEN_USER_FIELDS)
+      .populate("photographers", HIDDEN_USER_FIELDS)
+      .populate("approvingUser", HIDDEN_USER_FIELDS)
       .exec();
     return newArticle;
   }
@@ -407,6 +411,7 @@ export default class ArticlesAccessor {
               $expr: { $in: ["$_id", "$$authorIds"] },
             },
           },
+          { $project: { password: 0, phone: 0, status: 0 } },
         ],
         as: "authors",
       },
@@ -475,7 +480,7 @@ export default class ArticlesAccessor {
       mongoQuery = mongoQuery.limit(limit);
     }
 
-    mongoQuery = mongoQuery.populate("authors");
+    mongoQuery = mongoQuery.populate("authors", HIDDEN_USER_FIELDS);
 
     const results = await mongoQuery.exec();
 

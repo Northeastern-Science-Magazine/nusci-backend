@@ -2,6 +2,10 @@ import * as z from "zod";
 import Accounts from "../enums/accounts.js";
 import AccountStatus from "../enums/accountStatus.js";
 
+// Trims and lowercases an email before checking its format, so lookups and
+// stored values always match regardless of how the address was typed.
+export const NormalizedEmail = z.string().trim().toLowerCase().pipe(z.email());
+
 export const BaseUser = z.object({
   firstName: z.string(),
   lastName: z.string(),
@@ -14,15 +18,19 @@ export const BaseUser = z.object({
   bannerImage: z.string().nullish(),
   // Optional because invited users sign up without one and add it later.
   bio: z.string().optional().nullish(),
-  email: z.email(),
+  email: NormalizedEmail,
   roles: z.array(z.enum(Accounts.listr())),
   creationTime: z.coerce.date(),
   modificationTime: z.coerce.date(),
 });
 
 export const Login = z.object({
-  email: z.email(),
+  email: NormalizedEmail,
   password: z.string(),
+});
+
+export const OTPRequest = z.object({
+  email: NormalizedEmail,
 });
 
 export const UserCreate = BaseUser.extend({
@@ -39,7 +47,7 @@ export const UserCreate = BaseUser.extend({
 const InviteRoles = Accounts.listr().filter((role) => role !== Accounts.None.toString());
 
 export const UserInvite = z.object({
-  to: z.array(z.email()).min(1),
+  to: z.array(NormalizedEmail).min(1),
   roles: z.array(z.enum(InviteRoles)).min(1),
 });
 
@@ -47,7 +55,7 @@ export const UserInvite = z.object({
 export const AuthorCreate = z.object({
   firstName: z.string().trim().min(1),
   lastName: z.string().trim().min(1),
-  email: z.email(),
+  email: NormalizedEmail,
 });
 
 // The account saved for an AuthorCreate. It has no password until the
@@ -63,6 +71,17 @@ export const UserSignup = z.object({
   lastName: z.string().trim().min(1),
   graduationYear: z.number(),
 });
+
+// A logged-in user changing their own password. The minimum length matches signup.
+export const PasswordChange = z
+  .object({
+    currentPassword: z.string().min(1),
+    newPassword: z.string().min(8),
+  })
+  .refine((change) => change.newPassword !== change.currentPassword, {
+    message: "New password must be different from the current password.",
+    path: ["newPassword"],
+  });
 
 export const UserUpdate = BaseUser.extend({
   phone: z.string(),
@@ -101,7 +120,7 @@ export const UserApprovals = z.object({
 });
 
 export const UserDelete = z.object({
-  email: z.email(),
+  email: NormalizedEmail,
 });
 
 export const UserPrivateResponse = BaseUser.extend({

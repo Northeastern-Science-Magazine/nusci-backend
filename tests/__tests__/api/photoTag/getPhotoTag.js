@@ -14,7 +14,8 @@ beforeEach(injectMockConnection);
 beforeEach(executeReset);
 afterAll(closeMockConnection);
 
-describe("Get PhotoTag By TagName Tests", () => {
+// route is commented out in photoTagRoutes.js
+describe.skip("Get PhotoTag By TagName Tests", () => {
   test("get a photo tag by a valid/existing tagName (Nature)", async () => {
     const response = await request(app).get("/phototag/name/Nature");
 

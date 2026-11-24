@@ -149,6 +149,25 @@ export default class UsersAccessor {
   }
 
   /**
+   * getApprovedUsersByRole Method
+   *
+   * This method retrieves the approved users with the given role
+   * as plain objects, sorted by last then first name.
+   *
+   * @param {String} role
+   * @returns the approved users associated with the given role.
+   *
+   */
+  static async getApprovedUsersByRole(role) {
+    await Connection.open();
+    const users = await User.find({ roles: role, status: AccountStatus.Approved.status })
+      .collation({ locale: "en" })
+      .sort({ lastName: 1, firstName: 1 })
+      .lean();
+    return users;
+  }
+
+  /**
    * getUserByStatus Method
    *
    * This method retrieves the users MongoDB object from the
